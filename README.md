@@ -3,6 +3,9 @@
 Premier socle du jeu : moteur TypeScript pur, tests Vitest et environnement reproductible.
 Le client graphique et le serveur réseau seront ajoutés progressivement.
 
+Pour reprendre le développement : lire [le suivi du projet](docs/suivi.md), les
+[règles confirmées](docs/regles.md) et les [consignes de développement](AGENTS.md).
+
 ## Démarrer
 
 Prérequis : Git et Docker Desktop démarré avec les conteneurs Linux.

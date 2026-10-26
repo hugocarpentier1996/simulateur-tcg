@@ -12,3 +12,16 @@
 - Ne pas supposer exactement deux joueurs dans les structures de données.
 - Construire des tranches fonctionnelles ; ne pas préconstruire tous les systèmes d'effets.
 - Les règles confirmées sont dans `docs/regles.md`. Ne pas transformer une hypothèse en règle.
+
+## Suivi et GitHub
+
+- Au début d'une reprise, lire `docs/suivi.md`, `docs/regles.md` et l'état Git.
+- À chaque étape fonctionnelle terminée et validée, mettre à jour `docs/suivi.md`
+  avec le travail réalisé, les vérifications, les limites et les suites possibles.
+  Une étape correspond à un changement cohérent, pas à chaque édition de fichier.
+- Créer un commit descriptif puis pousser sur le dépôt distant configuré. L'utilisateur
+  a autorisé ce suivi systématique : ne pas redemander à chaque étape.
+- Vérifier la réussite du push et signaler le commit dans le compte rendu final.
+  Si l'envoi échoue, conserver le travail et expliquer précisément ce qui reste local.
+- Ne pas écraser de modifications tierces ni forcer un push. Ne pas présenter une étape
+  incomplète ou des vérifications en échec comme un résultat validé.

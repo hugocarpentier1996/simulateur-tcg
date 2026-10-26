@@ -1,0 +1,74 @@
+# Suivi du projet
+
+Ce fichier sert à reprendre le travail sans l'historique de conversation. Les règles
+confirmées sont dans `regles.md`, les contrats et commandes dans le README et le code.
+Mettre à jour ce suivi à chaque étape validée, puis créer un commit descriptif et pousser.
+Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
+
+## État au 26 octobre 2026
+
+- Projet : monorepo pnpm, moteur TypeScript pur dans `packages/game-engine`, catalogue
+  de test dans `packages/game-data`. Aucun client graphique ni serveur réseau opérationnel.
+- GitHub : `https://github.com/hugocarpentier1996/simulateur-tcg`, branche publiée `main`.
+- Dernière validation fonctionnelle : `pnpm check` réussi, 113 tests.
+- Environnement principal : Windows/PowerShell, Docker disponible. Voir README pour les commandes.
+- Attentes utilisateur : français, explications des étapes importantes, modules lisibles,
+  contrats d'entrée/sortie documentés, TDD strict, publication GitHub à chaque étape achevée.
+
+## Étapes réalisées
+
+### Socle, tours, unités, combats et sorts — commit `9254b3d`
+
+- Tours automatiques, ressources, paiement par runes, pioche et épuisement des decks.
+- Unités jouées Tap en base, mouvements, Open/Combat Showdown, dégâts simultanés,
+  règles Tank/Backline, retraite, soin global et conquête.
+- Quatre sorts de test : déplacement, +2 Might, −1 Might et pioche, Stun d'un attaquant.
+- Pile de Réactions, réaction sur réaction, fenêtres entre les sorts, effets jusqu'à
+  la fin du tour. 84 tests validés lors de cette étape.
+
+### Victoire, préparation de partie et BO3 — commit `57657b4`
+
+- Victoire à 8 points. Dernier point de conquête conditionné aux autres champs scorés
+  ce tour ; sinon pioche et inscription du champ comme scoré, sans point supplémentaire.
+- Configuration : 39 cartes, chosen champion séparé, légende, 12 runes compatibles
+  avec les couleurs de la légende, trois battlefields par joueur.
+- D20 fournis par le serveur, égalité rejouée, choix du premier joueur ; quatre cartes
+  initiales, mulligan de 0 à 2 sous le deck, puis pioche du premier tour.
+- Channel initial : deux runes pour le premier, trois pour le second à son premier tour.
+- BO1 : battlefield aléatoire par joueur. BO3 : choix avant les dés en manche 1,
+  puis dernier perdant décide du départ aux manches suivantes.
+- Gestionnaire BO3 séparé : `createBo3`, `actBo3`, `rollBo3`, `startNextBo3Game`.
+  Résultats comptés une fois ; série terminée à 2–0 ou 2–1. Chaque joueur ne peut
+  réutiliser une définition de battlefield dans la série, même sous un autre ID d'instance.
+- Validation : `pnpm check`, 113 tests. Les scénarios sont dans `victory.test.ts`,
+  `setup.test.ts` et `bo3.test.ts`.
+
+### Suivi permanent — 26 octobre 2026
+
+- Consigne de commit/push après chaque étape ajoutée à `AGENTS.md`.
+- Création de ce journal et ajout d'un lien de reprise dans le README.
+- Changement documentaire uniquement ; vérification complète avec `pnpm check`.
+
+## Limites à conserver lors d'une reprise
+
+- Capacités déclenchées et effets de mort non implémentés, bien que leurs règles
+  soient discutées dans `regles.md`. Les cartes accordant directement des points restent à ajouter.
+- Effets propres aux battlefields, tags légende/champion et limites de copies à compléter.
+- Les cartes de test utilisent encore `color-1`/`color-2` ; les nouvelles configurations
+  utilisent rouge, vert, bleu, orange, violet, jaune. Harmoniser coûts et runes ensemble.
+- Le moteur reçoit un état serveur de confiance, sans validation générale de JSON client.
+  Ne pas exposer les mains, les choix privés ou le hasard aux clients.
+- Hasard reproductible du prototype non cryptographique. Les decks initiaux sont fournis
+  déjà mélangés ; la production nécessitera un hasard serveur privé, compatible avec les replays.
+- Les choix provisoires de résolution des sorts figurent dans le README ; ne pas les
+  transformer en règles confirmées. Aucune règle de sideboard BO3 n'a été définie.
+- Le mode pris en charge est 1v1 ; les structures restent extensibles à plusieurs joueurs.
+
+## Suites possibles, non encore engagées
+
+- Ajouter une première capacité déclenchée, puis les effets de mort avec leurs tests.
+- Harmoniser les couleurs et construire deux decks de démonstration cohérents.
+- Préparer une interface minimale pour jouer et observer une partie complète.
+
+L'utilisateur choisira la prochaine tranche ; ces pistes ne constituent pas une autorisation
+de toutes les développer. À la reprise, vérifier les modifications locales avant d'agir.
