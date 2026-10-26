@@ -389,6 +389,26 @@ describe('mort, invocation et second combat', () => {
     expect(s.showdown).toBeNull();
     expect(s.players[0]?.score).toBe(0);
   });
+  it.each(['field', 'neutral', 'base-b'])(
+    'refuse une unité depuis la main vers %s sans modifier la partie',
+    (destinationId) => {
+      const input = deathScenario();
+      input.showdown = null;
+      const before = structuredClone(input);
+
+      expect(
+        act(input, {
+          type: 'play-unit',
+          playerId: 'a',
+          cardId: 'hand-unit',
+          destinationId,
+          payment: { energyRunes: [], powerRunes: [] },
+        }),
+      ).toEqual({ ok: false, reason: 'INVALID_SUMMON_DESTINATION' });
+      expect(input).toEqual(before);
+    },
+  );
+
   it('joue main et chosen champion Tap seulement en base ou sur un champ contrôlé', () => {
     const input = deathScenario();
     input.showdown = null;

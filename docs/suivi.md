@@ -10,7 +10,7 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
 - Projet : monorepo pnpm, moteur TypeScript pur dans `packages/game-engine`, catalogue
   de test dans `packages/game-data`. Aucun client graphique ni serveur réseau opérationnel.
 - GitHub : `https://github.com/hugocarpentier1996/simulateur-tcg`, branche publiée `main`.
-- Dernière validation fonctionnelle : `pnpm check` réussi, 140 tests.
+- Dernière validation fonctionnelle : `pnpm check` réussi, 143 tests.
 - Environnement principal : Windows/PowerShell, Docker disponible. Voir README pour les commandes.
 - Attentes utilisateur : français, explications des étapes importantes, modules lisibles,
   contrats d'entrée/sortie documentés, TDD strict, publication GitHub à chaque étape achevée.
@@ -88,6 +88,15 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
   champions, gear, Réaction, deux combats puis tenue. Replay identique vérifié.
 - TDD : tests observés en échec avant l'ajout des comportements. `pnpm check` réussi,
   140 tests. La simulation complète est également une vérification d'intégration.
+
+### Destinations interdites depuis la main — 26 octobre 2026
+
+- Trois cas de régression explicites : jouer une unité depuis la main sur un battlefield
+  adverse, neutre ou dans la base adverse renvoie `INVALID_SUMMON_DESTINATION`.
+- Chaque refus conserve intégralement l'état initial. Les destinations autorisées restent
+  couvertes par le test existant. Aucun changement du moteur nécessaire : les nouveaux
+  tests passent dès leur ajout, le comportement étant déjà implémenté.
+- Validation : test ciblé puis `pnpm check` réussi, 143 tests.
 
 ## Limites à conserver lors d'une reprise
 
