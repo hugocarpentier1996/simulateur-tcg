@@ -4,6 +4,33 @@ Ce document conserve les décisions de conception. Il décrit davantage que le p
 actuel ; le README précise ce qui est implémenté. Les cas particuliers des cartes seront
 introduits par des tests concrets.
 
+## Début de partie
+
+Chaque joueur prépare 39 cartes dans son main deck, un chosen champion séparé
+(la quarantième carte), une légende constante et 12 runes. Les runes peuvent avoir
+au maximum deux couleurs, exclusivement celles de la légende : rouge, vert, bleu,
+orange, violet ou jaune. Légende et chosen champion sont sélectionnés avant les dés.
+
+Chaque joueur apporte trois battlefields. En BO1, un est choisi aléatoirement par joueur.
+En BO3, chacun choisit son battlefield avant de connaître le résultat des dés de la
+première manche, puis à nouveau avant chaque manche. Deux champs sont donc en jeu.
+
+En BO1 et à la première manche d'un BO3, chaque joueur lance un d20. En cas d'égalité,
+les deux relancent ; sinon le plus haut résultat choisit qui commence. Aux manches
+2 et 3 d'un BO3, le perdant de la manche précédente choisit qui commence, sans dés.
+
+Un BO3 est remporté dès deux victoires de manche : 2–0 ou 2–1. Il n'y a pas de
+troisième manche après un 2–0. Chaque joueur conserve ses trois battlefields distincts
+pendant la série et ne peut utiliser chacun qu'une seule fois dans ce BO3. Cette limite
+est propre au joueur : elle n'interdit pas la copie de la même carte chez son adversaire.
+
+Les joueurs reçoivent quatre cartes et peuvent effectuer un mulligan de deux cartes
+au maximum. Les cartes remplacées sont recyclées sous le deck, sans mélange, puis
+le joueur pioche autant de remplaçantes. La légende et le champion restent séparés.
+La pioche habituelle au début du premier tour porte donc la main à cinq cartes.
+Le premier joueur Channel deux runes ; le second en Channel trois à son premier tour
+uniquement. Ensuite, chacun en Channel deux.
+
 ## Tour
 
 Awaken (Ready des cartes du joueur, runes comprises), Beginning (tenue et effets prévus),
@@ -29,7 +56,7 @@ et ne peut normalement pas être détruite. Le champion initial doit avoir le ta
 et partager au moins un tag avec la légende.
 
 Zones prévues : main, deck, base, cimetière, bannissement, légende, champion, runes.
-Les champs sont dynamiques : deux initialement en 1v1, un choisi par chaque joueur,
+Les champs sont dynamiques : deux initialement en 1v1, un par joueur selon le format,
 mais des effets peuvent en ajouter ou les remplacer.
 
 ## Contrôle et score
@@ -44,6 +71,13 @@ HOLD, CARD_EFFECT, OTHER.
 Victoire normale à 8 points, modifiable par les cartes. Le dernier point par conquête
 exige d'avoir conquis ou tenu tous les autres champs pendant ce tour. La tenue et les
 effets de cartes peuvent fournir le dernier point. Autres conditions de victoire/défaite possibles.
+
+Si une conquête devrait fournir le huitième point sans satisfaire cette condition,
+le joueur pioche une carte à la place et reste à sept points. Le champ est néanmoins
+inscrit comme scoré pour ce joueur ce tour : il compte pour la condition des autres
+conquêtes et ne peut plus donner de point ni de pioche de remplacement ce tour.
+Cette règle s'applique aux conquêtes après Open comme après Combat Showdown.
+Atteindre le seuil par un gain autorisé termine immédiatement la partie.
 
 ## Priorité et Showdown
 

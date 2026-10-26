@@ -1,8 +1,10 @@
 import type { ActionResult, GameEvent, GameState } from '../types.js';
+import { scoreBattlefield } from '../scoring/battlefield.js';
 
 /** État en Beginning -> +1 par champ contrôlé non encore scoré ce tour.
  * Conserve la source HOLD et inscrit les champs dans le registre partagé avec
- * la conquête. Le contrôle fourni fait autorité ; aucun Showdown ne doit être actif. */
+ * la conquête. Arrête les gains dès la victoire. Le contrôle fourni fait autorité ;
+ * aucun Showdown ne doit être actif. Les champs suivent leur ordre dans l'état. */
 export function scoreHolding(
   state: GameState,
 ): Extract<ActionResult, { ok: true }> {
@@ -12,26 +14,13 @@ export function scoreHolding(
     (field) =>
       field.controllerId === playerId && !scored.includes(field.zoneId),
   );
-  const events: GameEvent[] = fields.map((field) => ({
-    type: 'point-scored',
-    playerId,
-    battlefieldId: field.zoneId,
-    source: 'HOLD',
-  }));
-  return {
-    ok: true,
-    state: {
-      ...state,
-      players: state.players.map((player) =>
-        player.id === playerId
-          ? { ...player, score: player.score + fields.length }
-          : player,
-      ),
-      scoredBattlefields: {
-        ...state.scoredBattlefields,
-        [playerId]: [...scored, ...fields.map((field) => field.zoneId)],
-      },
-    },
-    events,
-  };
+  const events: GameEvent[] = [];
+  let current = state;
+  for (const field of fields) {
+    if (current.result) break;
+    const result = scoreBattlefield(current, playerId, field.zoneId, 'HOLD');
+    current = result.state;
+    events.push(...result.events);
+  }
+  return { ok: true, state: current, events };
 }

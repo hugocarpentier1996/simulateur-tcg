@@ -1,10 +1,18 @@
 import type { ActionResult, GameEvent, GameState, ZoneKind } from '../types.js';
 
-/** État en Channel -> jusqu'à deux runes du sommet placées Ready dans la zone runes. */
+/** État en Channel -> deux runes Ready, trois au premier tour du second joueur.
+ * Le bonus est consommé même si la pile est insuffisante ou vide. */
 export function channelRunes(
   state: GameState,
 ): Extract<ActionResult, { ok: true }> {
-  return takeFromPile(state, 'rune-pile', 'runes', 2);
+  const bonus = state.initialChannelBonusPlayerId === state.activePlayerId;
+  const result = takeFromPile(state, 'rune-pile', 'runes', bonus ? 3 : 2);
+  return bonus
+    ? {
+        ...result,
+        state: { ...result.state, initialChannelBonusPlayerId: null },
+      }
+    : result;
 }
 
 export { drawCard } from './draw.js';

@@ -10,13 +10,30 @@ import type { SpellBlueprint, SpellEntry } from './spell-types.js';
 export interface GameState {
   activePlayerId: string;
   phase: TurnPhase;
+  /** Second joueur : une rune supplémentaire à son premier Channel, puis null. */
+  initialChannelBonusPlayerId?: string | null;
+  /** Préparation ; activePlayerId n'a pas d'autorité de jeu avant la fin du mulligan. */
+  setup?:
+    | { stage: 'roll' }
+    | { stage: 'choose-first'; chooserId: string }
+    | { stage: 'mulligan'; completedPlayerIds: string[] }
+    | {
+        stage: 'choose-battlefield';
+        options: Record<
+          string,
+          readonly { id: string; definitionId: string }[]
+        >;
+        selections: Record<string, { id: string; definitionId: string }>;
+        nextChooserId: string | null;
+      }
+    | null;
   /** Ordre des tours ; après le dernier joueur, on revient au premier. */
-  /** victoryTarget : seuil de points, 8 par défaut ; appliqué ici aux pénalités de deck. */
+  /** victoryTarget : seuil de points, 8 par défaut (surcharge pour les scénarios de test). */
   players: { id: string; score: number; victoryTarget?: number }[];
   /** État du hasard reproductible, initialisé côté serveur (défaut prototype : 1). */
   randomState?: number;
   /** Absent pendant la partie ; une fois fixé, bloque toute nouvelle action. */
-  result?: { winnerId: string; loserId: string; reason: 'DECK_EXHAUSTION' };
+  result?: GameResult;
   zones: { id: string; kind: ZoneKind; ownerId?: string }[];
   units: UnitState[];
   /** Catalogue de confiance fourni par le serveur, jamais par une intention client. */
@@ -38,7 +55,11 @@ export interface GameState {
   cards: CardInstance[];
   /** Réserves flottantes par joueur ; un Power absent de la table vaut zéro. */
   resources: Record<string, { energy: number; power: Record<string, number> }>;
-  battlefields: { zoneId: string; controllerId: string | null }[];
+  battlefields: {
+    zoneId: string;
+    definitionId?: string;
+    controllerId: string | null;
+  }[];
   /** Par joueur, IDs des champs ayant déjà donné un point de tenue/conquête ce tour. */
   scoredBattlefields: Record<string, string[]>;
   /** `null` hors Showdown ; participants dans l'ordre de priorité.
@@ -106,7 +127,7 @@ export interface DamageAllocation {
 
 /** Étapes observables dans le journal ; le joueur agit normalement en Main. */
 export type TurnPhase =
-  'awaken' | 'beginning' | 'channel' | 'draw' | 'main' | 'end';
+  'setup' | 'awaken' | 'beginning' | 'channel' | 'draw' | 'main' | 'end';
 export type ZoneKind =
   | 'base'
   | 'battlefield'
@@ -147,6 +168,9 @@ export interface CardInstance {
  * `playerId` devra être fourni par le serveur à partir de l'identité authentifiée.
  */
 export type GameAction =
+  | { type: 'choose-battlefield'; playerId: string; battlefieldId: string }
+  | { type: 'choose-first-player'; playerId: string; firstPlayerId: string }
+  | { type: 'mulligan'; playerId: string; cardIds: readonly string[] }
   | {
       type: 'cast-spell';
       playerId: string;
@@ -178,6 +202,20 @@ export type GameAction =
  * retourné et ne suffisent pas, seuls, à reconstruire toute la simulation.
  */
 export type GameEvent =
+  | {
+      type: 'battlefield-selected';
+      playerId: string;
+      battlefieldId: string;
+      method: 'random' | 'choice';
+    }
+  | {
+      type: 'opening-dice-rolled';
+      rolls: Readonly<Record<string, number>>;
+      winnerId: string | null;
+    }
+  | { type: 'first-player-chosen'; playerId: string; firstPlayerId: string }
+  | { type: 'mulligan-completed'; playerId: string; cardIds: string[] }
+  | { type: 'conquest-point-replaced'; playerId: string; battlefieldId: string }
   | {
       type: 'spell-cast' | 'spell-resolved';
       playerId: string;
@@ -213,12 +251,7 @@ export type GameEvent =
       amount: number;
       source: 'OTHER';
     }
-  | {
-      type: 'game-ended';
-      winnerId: string;
-      loserId: string;
-      reason: 'DECK_EXHAUSTION';
-    }
+  | ({ type: 'game-ended' } & GameResult)
   | { type: 'phase-started'; playerId: string; phase: TurnPhase }
   | { type: 'cards-readied'; playerId: string; cardIds: string[] }
   | { type: 'runes-channeled'; playerId: string; cardIds: string[] }
@@ -244,6 +277,12 @@ export type GameEvent =
  *   L'appelant conserve alors son état précédent.
  *
  * Codes actuels de refus :
+ * INVALID_GAME_CONFIG : composition, couleurs ou identifiants initiaux invalides.
+ * SETUP_IN_PROGRESS : terminer la préparation avant les actions de jeu.
+ * NO_ROLL_WINDOW / INVALID_DICE_ROLL : étape incorrecte ou résultats de d20 invalides.
+ * NO_FIRST_PLAYER_CHOICE / NOT_DICE_WINNER : choix de départ hors fenêtre ou mauvais décideur.
+ * NO_BATTLEFIELD_CHOICE / BATTLEFIELD_ALREADY_CHOSEN / INVALID_BATTLEFIELD_CHOICE : choix de champ refusé.
+ * NO_MULLIGAN_WINDOW / MULLIGAN_ALREADY_DONE / INVALID_MULLIGAN : mulligan refusé.
  * UNKNOWN_PLAYER : joueur absent de la partie.
  * GAME_OVER : la partie est terminée.
  * MOVEMENT_WINDOW_CLOSED : mauvais joueur actif, phase incompatible ou Showdown en cours.
@@ -268,3 +307,8 @@ export type GameEvent =
 export type ActionResult =
   | { ok: true; state: GameState; events: GameEvent[] }
   | { ok: false; reason: string };
+
+/** Victoire par seuil de points, ou défaite par épuisement avec perdant explicite. */
+export type GameResult =
+  | { winnerId: string; reason: 'POINTS' }
+  | { winnerId: string; loserId: string; reason: 'DECK_EXHAUSTION' };

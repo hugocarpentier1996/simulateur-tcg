@@ -1,7 +1,7 @@
 import type { ActionResult, GameEvent, GameState } from '../types.js';
 import type { SpellEntry } from '../spell-types.js';
 import { spellTarget, validDestination } from './target.js';
-import { drawCard } from '../turn/draw.js';
+import { drawCardForPlayer } from '../turn/draw.js';
 
 /** Sort payé -> effets dans l'ordre puis carte au cimetière. Aucune fenêtre au milieu
  * des instructions d'un même sort. Cible devenue illégale : effet ciblé ignoré ;
@@ -16,8 +16,8 @@ export function resolveSpell(
     if (state.result) break;
     if (effect.type === 'draw') {
       for (let i = 0; i < effect.count && !state.result; i++) {
-        const drawn = drawCard({ ...state, activePlayerId: entry.casterId });
-        state = { ...drawn.state, activePlayerId: state.activePlayerId };
+        const drawn = drawCardForPlayer(state, entry.casterId);
+        state = drawn.state;
         events.push(...drawn.events);
       }
       continue;

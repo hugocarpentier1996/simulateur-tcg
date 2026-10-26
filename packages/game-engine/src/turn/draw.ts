@@ -2,6 +2,19 @@ import type { ActionResult, CardInstance, GameState } from '../types.js';
 import { shuffle } from '../random/shuffle.js';
 import { applyDeckPenalty } from './deck-penalty.js';
 
+/** Joueur connu -> pioche avec recyclage/pénalité habituels, sans changer le joueur actif.
+ * Utilisé par les effets et les conquêtes, y compris pendant le tour adverse. */
+export function drawCardForPlayer(
+  state: GameState,
+  playerId: string,
+): Extract<ActionResult, { ok: true }> {
+  const drawn = drawCard({ ...state, activePlayerId: playerId });
+  return {
+    ...drawn,
+    state: { ...drawn.state, activePlayerId: state.activePlayerId },
+  };
+}
+
 /** État en Draw -> pioche, précédée si nécessaire du recyclage et de la pénalité.
  * Mélange injectable, alimenté par l'état du hasard conservé dans la partie.
  * Si la pénalité donne la victoire, arrêt immédiat. Les cartes défaussées doivent

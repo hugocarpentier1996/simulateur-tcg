@@ -138,9 +138,11 @@ Le redressement exclut la main, les piles, le cimetière et le bannissement ; le
 empêchant le redressement viendront avec les premières cartes représentatives.
 
 Ce moteur est une tranche de développement, pas encore une partie complète : capacités
-déclenchées, effets de mort, équipes et victoire générale restent à implémenter.
-Le seuil est appliqué aux pénalités de deck ; la victoire par tenue/conquête et la
-restriction du dernier point de conquête restent à implémenter.
+déclenchées, effets de mort et équipes restent à implémenter.
+La victoire à 8 points est appliquée à la tenue, à la conquête autorisée et aux pénalités
+de deck. Le dernier point par conquête exige d'avoir déjà scoré tous les autres champs
+ce tour. Sinon, le conquérant pioche une carte et le champ compte comme scoré sans
+accorder de point. Le contrôle est acquis dans les deux cas.
 Ne pas utiliser ce prototype pour arbitrer une partie complète.
 Les structures utilisent des listes de joueurs ; seul le mode 1v1 est actuellement accepté.
 Le mouvement pris en charge part de la base vers un champ. Le déplacement entre champs
@@ -203,6 +205,94 @@ automatique. La relance par effet de mort attend le futur système d'effets.
 Les modules `combat/allocation.ts` et `combat/resolve.ts` vérifient les choix et résolvent
 le résultat. `play-unit.test.ts` couvre aussi un parcours complet depuis une carte réelle
 du catalogue jusqu'à la conquête, en passant par paiement et redressement au tour suivant.
+
+## Créer une partie
+
+`createGame(config)` construit les zones, les cartes et l'état de préparation.
+Chaque entrée de `config.players` fournit `id`, `deck` (39 instances), `runes` (12),
+`legend` (avec `colors`), `champion` et `battlefields` (3 candidats). Une instance
+contient `id` et `definitionId` ; les runes ont aussi `color`. Les identifiants d'instances
+doivent être uniques même si plusieurs cartes utilisent la même définition.
+Les couleurs de runes acceptées ici sont `rouge`, `vert`, `bleu`, `orange`, `violet`, `jaune`.
+Les anciennes cartes de test utilisent encore `color-1`/`color-2` : adapter leurs coûts
+et leurs runes ensemble avant de les intégrer à une configuration de partie réelle.
+
+Les decks arrivent dans leur ordre déjà mélangé par l'appelant de confiance. Le moteur
+ne fait aucun appel à une horloge ou à `Math.random`. Pour les champs BO1, `randomState`
+alimente le hasard reproductible du prototype (défaut : 1). Comme pour le recyclage,
+le hasard de production devra être produit par le serveur et rester privé.
+
+- **BO1** (défaut, ou `match: { format: 'bo1' }`) : sélection d'un champ par joueur,
+  puis `recordOpeningRoll(state, { alice: 17, bob: 8 })`. Les résultats de d20 viennent
+  du serveur ; ce n'est pas une action libre du client. Une égalité laisse les dés ouverts.
+- **BO3, manche 1** : `match: { format: 'bo3', gameNumber: 1 }`. Les joueurs utilisent
+  `choose-battlefield` avec `battlefieldId` avant que les dés soient autorisés.
+- **BO3, manches 2/3** : ajouter `previousLoserId` au contexte de la manche. Après les
+  choix de champs, ce joueur choisit le premier sans lancer de dés. Pour une série complète,
+  utiliser le gestionnaire BO3 ci-dessous, qui calcule cette information automatiquement.
+
+Le décideur utilise `act(state, { type: 'choose-first-player', playerId, firstPlayerId })`.
+Le moteur distribue quatre cartes chacun et attend deux actions `mulligan`, avec
+`playerId` et `cardIds` (0, 1 ou 2 identifiants de sa main). Les cartes vont sous le deck
+dans l'ordre donné puis les remplaçantes sont piochées. Chaque joueur décide une seule fois.
+Le premier tour démarre après les deux décisions : deux runes, puis la cinquième carte.
+Le second joueur reçoit trois runes à son premier Channel, puis le bonus est consommé.
+
+`setup.stage` décrit l'attente : `choose-battlefield`, `roll`, `choose-first` ou `mulligan`.
+Les actions ordinaires sont bloquées pendant cette préparation. Les mains, les choix
+intermédiaires et le hasard font partie de l'état serveur ; ne pas transmettre l'état
+complet aux clients. Les modules de `src/setup/` documentent les entrées, sorties et refus.
+Les tags Champion/légende, limites de copies et effets propres aux battlefields restent
+à valider ou implémenter lorsque les catalogues correspondants seront disponibles.
+
+## Suivre une série BO3
+
+`createBo3(config)` crée la série à 0–0 et sa première partie. Utiliser ensuite
+`actBo3(series, action)` et `rollBo3(series, rolls)` à la place des entrées de partie
+seule : elles conservent la partie dans `series.game` et enregistrent automatiquement
+son résultat. Les points d'une partie restent dans `game.players`, les victoires de
+manches dans `wins`. `completedGames` conserve les résultats, et `winnerId` désigne
+le vainqueur de la série dès sa deuxième victoire.
+
+Après une manche, `startNextBo3Game(series, config)` crée une partie neuve et transmet
+le dernier perdant au choix du départ. Le serveur fournit à nouveau les decks mélangés.
+Cette opération refuse une manche encore active ou une série gagnée, et ne permet pas
+de remplacer les joueurs ou leurs trois définitions de battlefield. Les autres règles
+de changement de deck entre manches ne sont pas définies par ce gestionnaire.
+
+Les champs utilisés sont suivis par joueur dans `usedBattlefields`, par `definitionId`.
+Ils sont retirés des options de préparation suivantes ; changer l'identifiant d'instance
+ne permet pas de rejouer le même battlefield. Le joueur adverse conserve ses propres
+choix. La série s'arrête à 2–0 ou 2–1, sans compter deux fois une manche terminée.
+
+Les fonctions renvoient `{ ok: true, state, events }` ou `{ ok: false, reason }` et
+ne modifient pas leurs entrées. Les événements de partie sont complétés par
+`match-game-recorded` et `match-ended`. Les refus propres à la série incluent
+`MATCH_OVER`, `GAME_NOT_RECORDED`, `MATCH_PLAYERS_CHANGED`, `INVALID_BATTLEFIELD_POOL`
+et `BATTLEFIELD_POOL_CHANGED`. `bo3.test.ts` illustre les séries complètes.
+
+L'état de série est un état serveur de confiance : ne pas exposer aux clients une
+possibilité de modifier directement `game`, `wins` ou l'historique. Pour conserver
+le suivi BO3, toujours remplacer la série par l'état renvoyé par ces fonctions.
+
+## Score et victoire
+
+`scoring/battlefield.ts` reçoit l'état, le joueur, le champ et la source (`HOLD` ou
+`CONQUEST`). Il renvoie l'état et les événements : point, pioche de remplacement,
+ou aucun gain si le champ a déjà été scoré. Une victoire fixe `state.result` avec
+`reason: 'POINTS'` ; `act` refuse ensuite les actions avec `GAME_OVER`.
+Les étapes automatiques s'arrêtent dès la victoire, notamment au Beginning.
+
+Exemple à 7 points sur trois champs A/B/C : conquérir A fait piocher et marque A ;
+conquérir B fait piocher et marque B ; conquérir C permet alors de gagner à 8 points.
+Les champs tenus au Beginning comptent aussi dans ce registre, remis à zéro à chaque
+nouveau tour. Le registre de l'adversaire ne contribue pas à cette condition.
+
+L'événement `conquest-point-replaced` explique la pioche sans prétendre qu'un point
+a été gagné. La pioche utilise les règles habituelles de recyclage et de pénalité :
+elle peut donc faire gagner l'adversaire. `victory.test.ts` couvre ces parcours.
+Les futurs effets accordant directement des points restent à raccorder quand leurs
+cartes seront ajoutées ; ils ne seront pas soumis à la restriction de conquête.
 
 ## Lancer un sort et résoudre une chaîne
 

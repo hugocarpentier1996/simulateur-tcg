@@ -20,7 +20,7 @@ export function startNextTurn(
 ): Extract<ActionResult, { ok: true }> {
   const nextPlayerId = getNextPlayerId(state);
   const end = runPhase(state, 'end', (s) => clearResources(s, 'end'));
-  let current: GameState = {
+  const current: GameState = {
     ...end.state,
     units: end.state.units.map((unit) => ({ ...unit, temporaryEffects: [] })),
     priorityPlayerId: nextPlayerId,
@@ -29,9 +29,27 @@ export function startNextTurn(
       state.players.map((player) => [player.id, []]),
     ),
   };
+  const started = startTurn(current);
+  return {
+    ok: true,
+    state: started.state,
+    events: [
+      ...end.events,
+      { type: 'turn-ended', playerId: state.activePlayerId },
+      ...started.events,
+    ],
+  };
+}
+
+/** État prêt à démarrer, joueur actif déjà choisi -> Awaken à Main, sans fin de tour.
+ * Réutilisé après le mulligan et après une vraie fin de tour. Arrêt immédiat si victoire. */
+export function startTurn(
+  state: GameState,
+): Extract<ActionResult, { ok: true }> {
+  if (state.result) return { ok: true, state, events: [] };
+  let current = state;
+  const nextPlayerId = state.activePlayerId;
   const events: GameEvent[] = [
-    ...end.events,
-    { type: 'turn-ended', playerId: state.activePlayerId },
     { type: 'turn-started', playerId: nextPlayerId },
   ];
   const steps = [

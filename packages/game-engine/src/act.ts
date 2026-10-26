@@ -7,6 +7,9 @@ import { assignDamage } from './actions/assign-damage.js';
 import { castSpell } from './actions/cast-spell.js';
 import { passStack } from './actions/pass-stack.js';
 import { afterEffects } from './showdown/after-effects.js';
+import { chooseFirstPlayer } from './setup/choose-first.js';
+import { mulligan } from './setup/mulligan.js';
+import { chooseBattlefield } from './setup/battlefields.js';
 
 /**
  * Point d'entrée du moteur : état courant + intention -> résultat de l'action.
@@ -28,7 +31,8 @@ import { afterEffects } from './showdown/after-effects.js';
  * Même état + même action = même résultat, sans effet réseau ni horloge implicite.
  * Les parties inchangées de l'état peuvent partager leurs objets avec l'entrée :
  * traiter les états comme des instantanés et éviter de les modifier après un appel.
- * Les restrictions du dernier point de victoire restent à ajouter.
+ * Un gain autorisé atteignant le seuil termine la partie ; une conquête finale
+ * inéligible est remplacée par une pioche, avec le champ inscrit comme scoré.
  */
 export function act(state: GameState, action: GameAction): ActionResult {
   const result = dispatch(state, action);
@@ -53,6 +57,13 @@ function dispatch(state: GameState, action: GameAction): ActionResult {
     return { ok: false, reason: 'UNKNOWN_PLAYER' };
   }
 
+  if (action.type === 'choose-battlefield')
+    return chooseBattlefield(state, action);
+  if (action.type === 'choose-first-player')
+    return chooseFirstPlayer(state, action);
+  if (action.type === 'mulligan') return mulligan(state, action);
+  if (state.setup || state.phase === 'setup')
+    return { ok: false, reason: 'SETUP_IN_PROGRESS' };
   if (state.stack && action.type !== 'cast-spell' && action.type !== 'pass')
     return { ok: false, reason: 'STACK_IN_PROGRESS' };
   if (
