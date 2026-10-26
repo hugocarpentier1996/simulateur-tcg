@@ -1,0 +1,32 @@
+import type { GameState, UnitState } from '../types.js';
+import type { SpellBlueprint } from '../spell-types.js';
+
+/** État + ciblage -> unité encore légale, ou undefined (pas de remboursement à la résolution). */
+export function spellTarget(
+  state: GameState,
+  definition: SpellBlueprint,
+  targetId: string,
+): UnitState | undefined {
+  const unit = state.units.find((u) => u.id === targetId);
+  if (!unit || definition.target.combatRole === 'any') return unit;
+  const combat = state.showdown;
+  return combat?.kind === 'combat' &&
+    unit.ownerId === combat.initiatorId &&
+    unit.zoneId === combat.battlefieldId
+    ? unit
+    : undefined;
+}
+
+/** Déplacement par effet : champ de bataille ou base du propriétaire, jamais une zone de cartes. */
+export function validDestination(
+  state: GameState,
+  unit: UnitState,
+  destinationId?: string,
+): boolean {
+  return state.zones.some(
+    (z) =>
+      z.id === destinationId &&
+      (z.kind === 'battlefield' ||
+        (z.kind === 'base' && z.ownerId === unit.ownerId)),
+  );
+}

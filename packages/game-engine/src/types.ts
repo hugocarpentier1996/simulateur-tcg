@@ -1,0 +1,270 @@
+import type { SpellBlueprint, SpellEntry } from './spell-types.js';
+
+/**
+ * État de la simulation fourni à `act`, puis retourné après une action acceptée.
+ * Les identifiants relient joueurs, unités et zones : ils doivent être uniques
+ * dans leur collection et les références doivent désigner des éléments existants.
+ * L'appelant fournit un état cohérent ; ce prototype ne valide pas un JSON externe.
+ * Les étapes automatiques conduisent jusqu'à Main, sans effets de cartes personnalisés.
+ */
+export interface GameState {
+  activePlayerId: string;
+  phase: TurnPhase;
+  /** Ordre des tours ; après le dernier joueur, on revient au premier. */
+  /** victoryTarget : seuil de points, 8 par défaut ; appliqué ici aux pénalités de deck. */
+  players: { id: string; score: number; victoryTarget?: number }[];
+  /** État du hasard reproductible, initialisé côté serveur (défaut prototype : 1). */
+  randomState?: number;
+  /** Absent pendant la partie ; une fois fixé, bloque toute nouvelle action. */
+  result?: { winnerId: string; loserId: string; reason: 'DECK_EXHAUSTION' };
+  zones: { id: string; kind: ZoneKind; ownerId?: string }[];
+  units: UnitState[];
+  /** Catalogue de confiance fourni par le serveur, jamais par une intention client. */
+  unitDefinitions?: readonly UnitBlueprint[];
+  spellDefinitions?: readonly SpellBlueprint[];
+  /** Pile du bas vers le haut ; cartes retirées de la main, pas encore au cimetière. */
+  stack?: {
+    entries: SpellEntry[];
+    initiatorId: string;
+    priorityPlayerId: string;
+    consecutivePasses: number;
+  } | null;
+  /** Priorité après une chaîne hors Showdown ; une passe la rend au joueur actif. */
+  priorityPlayerId?: string;
+  /** Arrivées par effet à traiter après la chaîne et le Showdown courant. */
+  pendingShowdowns?: { battlefieldId: string; initiatorId: string }[];
+  /** Cartes hors unités en jeu. Une instance ne figure jamais aussi dans `units`.
+   * Dans chaque zone ordonnée, leur ordre ici va du sommet au dessous de la pile. */
+  cards: CardInstance[];
+  /** Réserves flottantes par joueur ; un Power absent de la table vaut zéro. */
+  resources: Record<string, { energy: number; power: Record<string, number> }>;
+  battlefields: { zoneId: string; controllerId: string | null }[];
+  /** Par joueur, IDs des champs ayant déjà donné un point de tenue/conquête ce tour. */
+  scoredBattlefields: Record<string, string[]>;
+  /** `null` hors Showdown ; participants dans l'ordre de priorité.
+   * En combat, stage sépare la fenêtre des passes et celle des répartitions.
+   * assignments contient des choix privés jusqu'à l'application simultanée des dégâts. */
+  showdown:
+    | ({
+        battlefieldId: string;
+        initiatorId: string;
+        participants: string[];
+        priorityPlayerId: string;
+        consecutivePasses: number;
+      } & (
+        | { kind: 'open' }
+        | {
+            kind: 'combat';
+            defenderId: string;
+            stage: 'priority' | 'damage';
+            assignments: Record<string, readonly DamageAllocation[]>;
+          }
+      ))
+    | null;
+}
+
+/** Définition structurelle acceptée par le moteur ; compatible avec le catalogue game-data. */
+export interface UnitBlueprint {
+  readonly id: string;
+  readonly type: 'unit';
+  readonly cost: {
+    readonly energy: number;
+    readonly power: Readonly<Record<string, number>>;
+  };
+  readonly might: number;
+}
+
+/** Instance en jeu : définition, Might et dégâts explicites, même lorsque leur valeur est zéro. */
+export interface UnitState {
+  temporaryEffects?: (
+    { type: 'modify-might'; amount: number } | { type: 'stun' }
+  )[];
+  id: string;
+  ownerId: string;
+  zoneId: string;
+  ready: boolean;
+  definitionId: string;
+  might: number;
+  damage: number;
+  tank?: boolean;
+  backline?: boolean;
+  stunned?: boolean;
+  cannotDealDamage?: boolean;
+}
+
+/** Choix du joueur : runes tap pour l'énergie, puis recyclées pour le Power.
+ * Une rune peut figurer une fois dans chaque liste (Tap puis recyclage). */
+export interface PaymentPlan {
+  readonly energyRunes: readonly string[];
+  readonly powerRunes: readonly string[];
+}
+/** Attribution ordonnée : une cible doit recevoir des dégâts létaux avant la suivante. */
+export interface DamageAllocation {
+  targetId: string;
+  amount: number;
+}
+
+/** Étapes observables dans le journal ; le joueur agit normalement en Main. */
+export type TurnPhase =
+  'awaken' | 'beginning' | 'channel' | 'draw' | 'main' | 'end';
+export type ZoneKind =
+  | 'base'
+  | 'battlefield'
+  | 'deck'
+  | 'hand'
+  | 'rune-pile'
+  | 'runes'
+  | 'legend'
+  | 'champion'
+  | 'graveyard'
+  | 'banished';
+
+/** Instance identifiable : la définition de carte sera fournie par game-data.
+ * `ready` absent signifie que la carte n'utilise pas Ready/Tap ; `color` identifie
+ * la couleur d'une rune, sans fixer ici les noms des six couleurs du jeu. */
+export interface CardInstance {
+  id: string;
+  definitionId: string;
+  ownerId: string;
+  zoneId: string;
+  ready?: boolean;
+  color?: string;
+}
+
+/**
+ * Intention en entrée du moteur, sans garantie qu'elle soit autorisée.
+ * - move : joueur demandeur, unité concernée, ID de la zone de destination.
+ *   Unité Ready de sa base vers un champ vide, allié ou adverse, en Main, en 1v1.
+ * - play-unit : carte en main, coût tiré du catalogue, choix des runes à utiliser.
+ * - cast-spell : carte en main, cible et destination pour un déplacement, paiement.
+ *   Valide le timing puis empile ; les effets attendent les passes de la fenêtre.
+ *   Entre en base Tap. L'action ne peut pas fournir son propre coût ou sa Might.
+ * - assign-damage : répartition ordonnée des dégâts sur les unités adverses du champ.
+ *   Jouable une fois par camp après les deux passes ; les dégâts attendent les deux choix.
+ * - pass : joueur qui renonce à agir dans l'Open Showdown où il a la priorité.
+ * - end-turn : joueur actif qui termine sa Main, hors Showdown ; le suivant entre
+ *   en Main après fin de tour, Awaken, Beginning, Channel et Draw automatiques.
+ * `playerId` devra être fourni par le serveur à partir de l'identité authentifiée.
+ */
+export type GameAction =
+  | {
+      type: 'cast-spell';
+      playerId: string;
+      cardId: string;
+      targetId: string;
+      destinationId?: string;
+      payment: PaymentPlan;
+    }
+  | {
+      type: 'play-unit';
+      playerId: string;
+      cardId: string;
+      payment: PaymentPlan;
+    }
+  | {
+      type: 'assign-damage';
+      playerId: string;
+      allocations: readonly DamageAllocation[];
+    }
+  | { type: 'move'; playerId: string; unitId: string; destinationId: string }
+  | { type: 'pass'; playerId: string }
+  | { type: 'end-turn'; playerId: string };
+
+/**
+ * Faits produits en sortie d'une action acceptée, dans l'ordre de traitement.
+ * Les IDs permettent de retrouver les entités ; `from`/`to` sont des IDs de zones.
+ * `point-scored` représente exactement +1, avec sa source de conquête ou tenue.
+ * Ces événements servent à expliquer le résultat ; ils ne remplacent pas l'état
+ * retourné et ne suffisent pas, seuls, à reconstruire toute la simulation.
+ */
+export type GameEvent =
+  | {
+      type: 'spell-cast' | 'spell-resolved';
+      playerId: string;
+      cardId: string;
+      targetId: string;
+    }
+  | {
+      type: 'cost-paid';
+      playerId: string;
+      cardId: string;
+      energy: number;
+      power: Readonly<Record<string, number>>;
+    }
+  | {
+      type: 'unit-played';
+      playerId: string;
+      unitId: string;
+      definitionId: string;
+      zoneId: string;
+    }
+  | { type: 'combat-damage-window'; battlefieldId: string }
+  | { type: 'damage-assigned'; playerId: string }
+  | { type: 'combat-damage'; allocations: readonly DamageAllocation[] }
+  | { type: 'unit-died'; unitId: string; zoneId: string }
+  | { type: 'unit-retreated'; unitId: string; zoneId: string }
+  | { type: 'units-healed'; unitIds: string[] }
+  | { type: 'showdown-ended'; battlefieldId: string }
+  | { type: 'deck-recycled'; playerId: string; cardIds: string[] }
+  | {
+      type: 'deck-penalty';
+      playerId: string;
+      drawingPlayerId: string;
+      amount: number;
+      source: 'OTHER';
+    }
+  | {
+      type: 'game-ended';
+      winnerId: string;
+      loserId: string;
+      reason: 'DECK_EXHAUSTION';
+    }
+  | { type: 'phase-started'; playerId: string; phase: TurnPhase }
+  | { type: 'cards-readied'; playerId: string; cardIds: string[] }
+  | { type: 'runes-channeled'; playerId: string; cardIds: string[] }
+  | { type: 'card-drawn'; playerId: string; cardId: string }
+  | { type: 'resources-cleared'; boundary: 'end' | 'draw' }
+  | { type: 'turn-ended'; playerId: string }
+  | { type: 'turn-started'; playerId: string }
+  | { type: 'unit-moved'; unitId: string; from: string; to: string }
+  | { type: 'showdown-opened'; battlefieldId: string }
+  | { type: 'priority-passed'; playerId: string }
+  | { type: 'battlefield-conquered'; playerId: string; battlefieldId: string }
+  | {
+      type: 'point-scored';
+      playerId: string;
+      battlefieldId: string;
+      source: 'CONQUEST' | 'HOLD';
+    };
+
+/**
+ * Sortie à examiner via `ok` avant de lire les autres champs.
+ * - true : `state` est le nouvel état à conserver ; `events` décrit cette action.
+ * - false : `reason` explique le refus ; aucun nouvel état ni événement n'est fourni.
+ *   L'appelant conserve alors son état précédent.
+ *
+ * Codes actuels de refus :
+ * UNKNOWN_PLAYER : joueur absent de la partie.
+ * GAME_OVER : la partie est terminée.
+ * MOVEMENT_WINDOW_CLOSED : mauvais joueur actif, phase incompatible ou Showdown en cours.
+ * INVALID_UNIT : unité absente ou appartenant à un autre joueur.
+ * UNIT_NOT_READY : unité Tap.
+ * UNSUPPORTED_DESTINATION : origine/destination invalide ou déplacement non pris en charge.
+ * UNSUPPORTED_MODE : déplacement demandé dans un mode autre que 1v1.
+ * NO_PRIORITY : pas de Showdown ou priorité détenue par un autre joueur.
+ * INVALID_PARTICIPANTS : impossible de déterminer le prochain participant.
+ * NOT_ACTIVE_PLAYER : seul le joueur actif peut terminer son tour.
+ * NOT_MAIN_PHASE : la fin volontaire du tour exige la phase Main.
+ * SHOWDOWN_IN_PROGRESS : terminer le Showdown avant de terminer le tour.
+ * PLAY_WINDOW_CLOSED / CARD_NOT_IN_HAND / UNKNOWN_UNIT_DEFINITION / MISSING_BASE : mise en jeu impossible.
+ * DUPLICATE_RUNE / INVALID_RUNE / RUNE_NOT_READY / MISSING_RUNE_PILE : plan de paiement invalide.
+ * INSUFFICIENT_RESOURCES : coût non couvert, aucun paiement partiel.
+ * DAMAGE_ASSIGNMENT_REQUIRED / NO_DAMAGE_WINDOW : mauvaise fenêtre de combat.
+ * DAMAGE_ALREADY_ASSIGNED / INVALID_DAMAGE_ALLOCATION : répartition refusée.
+ * STACK_IN_PROGRESS : seuls les Réactions et les passes sont possibles.
+ * SPELL_WINDOW_CLOSED : timing ou priorité incompatible avec le sort.
+ * UNKNOWN_SPELL_DEFINITION / INVALID_TARGET / MISSING_GRAVEYARD : sort ou contexte invalide.
+ */
+export type ActionResult =
+  | { ok: true; state: GameState; events: GameEvent[] }
+  | { ok: false; reason: string };

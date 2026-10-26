@@ -1,0 +1,18 @@
+services:
+  dev:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    working_dir: /workspace
+    init: true
+    volumes:
+      - .:/workspace
+      - dependencies:/workspace/node_modules
+      - pnpm-store:/pnpm/store
+    environment:
+      PNPM_HOME: /pnpm
+    command: sh -c "pnpm install --frozen-lockfile --store-dir /pnpm/store && pnpm test:watch"
+
+volumes:
+  dependencies:
+  pnpm-store:
