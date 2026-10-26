@@ -58,3 +58,12 @@ Les coûts sont provisoires pour tester les mécaniques. Fournir ce catalogue da
 de Might sont continus, sans expiration de fin de tour. Les exceptions gear-unité ne sont
 pas encore représentées. `gears.test.ts` vérifie les données ; les scénarios du moteur
 vérifient les paiements, les bonus, les déplacements du porteur et son décès.
+
+## Première capacité de mort
+
+`deathTestUnits` fournit le Gardien du dernier souffle (`reborn`, 1 Might, coût 1 Énergie)
+et l'Esprit gardien (`spirit`, jeton de 3 Might). `onDeath` référence la définition à invoquer.
+Fournir les deux au moteur : il demandera une destination légale après le transfert des
+morts au cimetière, puis ouvrira une fenêtre de Réaction. Le coût imprimé zéro du jeton
+sert à sa définition ; l'invocation ne demande aucun paiement. Les valeurs de cette carte
+sont destinées aux tests, sans équilibrage définitif.

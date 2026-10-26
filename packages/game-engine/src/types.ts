@@ -1,5 +1,6 @@
 import type { SpellBlueprint, SpellEntry } from './spell-types.js';
 import type { GearBlueprint, GearState } from './gear-types.js';
+import type { DeathEffect, DeathEntry, DeathTrigger } from './death-types.js';
 
 /**
  * État de la simulation fourni à `act`, puis retourné après une action acceptée.
@@ -42,13 +43,18 @@ export interface GameState {
   spellDefinitions?: readonly SpellBlueprint[];
   gearDefinitions?: readonly GearBlueprint[];
   gears?: GearState[];
-  /** Pile du bas vers le haut ; cartes retirées de la main, pas encore au cimetière. */
+  /** Pile du bas vers le haut : sorts payés et effets de mort dont la source a quitté le terrain. */
   stack?: {
-    entries: SpellEntry[];
+    entries: (SpellEntry | DeathEntry)[];
     initiatorId: string;
     priorityPlayerId: string;
     consecutivePasses: number;
   } | null;
+  /** Choix des effets après transfert de tous les morts, attaquant puis défenseur. */
+  pendingDeaths?: { playerOrder: string[]; triggers: DeathTrigger[] } | null;
+  /** Conquête/retraite suspendues jusqu'à la fin des réactions aux morts. */
+  combatAftermath?: { defenderEliminated: boolean } | null;
+  nextTokenId?: number;
   /** Priorité après une chaîne hors Showdown ; une passe la rend au joueur actif. */
   priorityPlayerId?: string;
   /** Arrivées par effet à traiter après la chaîne et le Showdown courant. */
@@ -80,7 +86,7 @@ export interface GameState {
         | {
             kind: 'combat';
             defenderId: string;
-            stage: 'priority' | 'damage';
+            stage: 'priority' | 'damage' | 'effects';
             assignments: Record<string, readonly DamageAllocation[]>;
           }
       ))
@@ -89,6 +95,7 @@ export interface GameState {
 
 /** Définition structurelle acceptée par le moteur ; compatible avec le catalogue game-data. */
 export interface UnitBlueprint {
+  readonly onDeath?: DeathEffect;
   readonly id: string;
   readonly type: 'unit';
   readonly cost: {
@@ -100,6 +107,7 @@ export interface UnitBlueprint {
 
 /** Instance en jeu : définition, Might et dégâts explicites, même lorsque leur valeur est zéro. */
 export interface UnitState {
+  token?: boolean;
   temporaryEffects?: (
     { type: 'modify-might'; amount: number } | { type: 'stun' }
   )[];
@@ -159,8 +167,10 @@ export interface CardInstance {
  * Intention en entrée du moteur, sans garantie qu'elle soit autorisée.
  * - move : joueur demandeur, unité concernée, ID de la zone de destination.
  *   Unité Ready de sa base vers un champ vide, allié ou adverse, en Main, en 1v1.
- * - play-unit : carte en main, coût tiré du catalogue, choix des runes à utiliser.
- *   Entre en base Tap. L'action ne peut pas fournir son propre coût ou sa Might.
+ * - play-unit : carte en main ou zone champion, coût du catalogue et choix de runes.
+ *   Entre Tap en base par défaut ou à destinationId si ce champ est contrôlé.
+ * - queue-death-effects : liste complète des sources du joueur attendu, dans l'ordre
+ *   d'empilement choisi, chacune avec sa destination d'invocation autorisée.
  * - play-gear : carte en main et paiement -> permanent Ready dans la base.
  * - equip-gear : équipement libre, unité alliée et paiement supplémentaire -> attachement.
  *   Ces deux actions exigent sa Main hors Showdown, sans pile en cours.
@@ -174,6 +184,11 @@ export interface CardInstance {
  * `playerId` devra être fourni par le serveur à partir de l'identité authentifiée.
  */
 export type GameAction =
+  | {
+      type: 'queue-death-effects';
+      playerId: string;
+      effects: readonly { sourceId: string; destinationId: string }[];
+    }
   | {
       type: 'play-gear';
       playerId: string;
@@ -202,6 +217,7 @@ export type GameAction =
       type: 'play-unit';
       playerId: string;
       cardId: string;
+      destinationId?: string;
       payment: PaymentPlan;
     }
   | {
@@ -221,6 +237,12 @@ export type GameAction =
  * retourné et ne suffisent pas, seuls, à reconstruire toute la simulation.
  */
 export type GameEvent =
+  | { type: 'death-triggered'; sourceId: string; playerId: string }
+  | { type: 'death-effects-queued'; playerId: string; sourceIds: string[] }
+  | { type: 'death-effect-resolved'; sourceId: string }
+  | { type: 'token-summoned'; unitId: string; playerId: string; zoneId: string }
+  | { type: 'token-removed'; unitId: string }
+  | { type: 'combat-restarted'; battlefieldId: string }
   | { type: 'gear-played'; playerId: string; gearId: string; zoneId: string }
   | { type: 'gear-equipped'; playerId: string; gearId: string; unitId: string }
   | {
@@ -306,6 +328,9 @@ export type GameEvent =
  *   L'appelant conserve alors son état précédent.
  *
  * Codes actuels de refus :
+ * DEATH_CHOICES_REQUIRED / NO_DEATH_CHOICE / INVALID_DEATH_CHOICES : choix d'effets de mort attendus/refusés.
+ * DEATH_EFFECTS_IN_PROGRESS : pas de passe en fenêtre d'Action après les dégâts.
+ * INVALID_SUMMON_DESTINATION : mise en jeu hors base propre ou champ contrôlé.
  * INVALID_GAME_CONFIG : composition, couleurs ou identifiants initiaux invalides.
  * SETUP_IN_PROGRESS : terminer la préparation avant les actions de jeu.
  * NO_ROLL_WINDOW / INVALID_DICE_ROLL : étape incorrecte ou résultats de d20 invalides.

@@ -10,7 +10,7 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
 - Projet : monorepo pnpm, moteur TypeScript pur dans `packages/game-engine`, catalogue
   de test dans `packages/game-data`. Aucun client graphique ni serveur réseau opérationnel.
 - GitHub : `https://github.com/hugocarpentier1996/simulateur-tcg`, branche publiée `main`.
-- Dernière validation fonctionnelle : `pnpm check` réussi, 127 tests.
+- Dernière validation fonctionnelle : `pnpm check` réussi, 140 tests.
 - Environnement principal : Windows/PowerShell, Docker disponible. Voir README pour les commandes.
 - Attentes utilisateur : français, explications des étapes importantes, modules lisibles,
   contrats d'entrée/sortie documentés, TDD strict, publication GitHub à chaque étape achevée.
@@ -67,10 +67,33 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
   immédiats dans cette tranche ; pas de fenêtre de Réaction spécifique à ces opérations.
   Le bannissement d'un porteur et les autres effets de gears restent à définir.
 
+### Mort, champion, actions jouables et partie complète — 26 octobre 2026
+
+- Carte `reborn` : à la mort, invoque `spirit`, jeton Tap de 3 Might. Le jeton disparaît
+  à sa mort. Catalogue `deathTestUnits` à fournir avec les deux définitions.
+- `play-unit` accepte la zone champion et `destinationId` : base propre ou battlefield
+  contrôlé uniquement, arrivée Tap et coût normal. Même règle pour l'invocation.
+- Dégâts, soin, déclenchements puis transfert des morts avant les choix. `pendingDeaths`
+  attend `queue-death-effects` : ordre choisi par chaque propriétaire, attaquant puis défenseur.
+- Pile commune aux sorts et effets de mort, Réactions possibles entre résolutions.
+  `combatAftermath` diffère la conquête. `combat/finish.ts` relance si le défenseur éliminé
+  a été remplacé, sans score intermédiaire ; sinon conquête/retraite/clôture normale.
+- Tests : victoire après deux combats, défaite au second sans point, pas de victoire
+  prématurée à 7, ordre des morts, réaction, et absence de relance si un défenseur avait survécu.
+- `getLegalActions(state, playerId)` valide les candidats par `act`, avec un paiement
+  réalisable par choix. Inclut préparation, sorts, unités/champion, gears, dégâts et choix de mort.
+  Pas d'énumération de tous les plans de paiement ; combinaisons de dégâts/morts coûteuses
+  sur grand plateau. Pour BO3 : lire `series.game`, exécuter ensuite via `actBo3`.
+- `full-game.test.ts` joue un BO1 complet via les actions autorisées, jusqu'à **8–1** :
+  champions, gear, Réaction, deux combats puis tenue. Replay identique vérifié.
+- TDD : tests observés en échec avant l'ajout des comportements. `pnpm check` réussi,
+  140 tests. La simulation complète est également une vérification d'intégration.
+
 ## Limites à conserver lors d'une reprise
 
-- Capacités déclenchées et effets de mort non implémentés, bien que leurs règles
-  soient discutées dans `regles.md`. Les cartes accordant directement des points restent à ajouter.
+- Première capacité de mort implémentée pour les morts de combat. Autres déclencheurs,
+  nouvelles sources de dégâts et cartes accordant des points restent à ajouter.
+  Destination d'invocation devenue illégale : effet ignoré, choix provisoire documenté.
 - Effets propres aux battlefields, tags légende/champion et limites de copies à compléter.
 - Les cartes de test utilisent encore `color-1`/`color-2` ; les nouvelles configurations
   utilisent rouge, vert, bleu, orange, violet, jaune. Harmoniser coûts et runes ensemble.
@@ -84,7 +107,7 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
 
 ## Suites possibles, non encore engagées
 
-- Ajouter une première capacité déclenchée, puis les effets de mort avec leurs tests.
+- Étendre les capacités avec des cartes concrètes et tester leurs interactions.
 - Harmoniser les couleurs et construire deux decks de démonstration cohérents.
 - Préparer une interface minimale pour jouer et observer une partie complète.
 

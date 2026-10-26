@@ -37,7 +37,9 @@ Awaken (Ready des cartes du joueur, runes comprises), Beginning (tenue et effets
 Channel (2 runes utilisables), Draw (1 carte), Main (cartes et mouvements dans l'ordre choisi),
 fin de tour. Énergie et Power flottants sont remis à zéro à la fin de Draw et du tour.
 Une unité doit normalement être Ready pour un mouvement basique et devient Tap en bougeant.
-Une unité jouée depuis la main entre Tap dans sa base.
+Une unité jouée entre Tap, uniquement dans sa base ou sur un battlefield contrôlé.
+Le chosen champion peut être joué depuis sa zone, avec les mêmes coûts et restrictions
+que depuis la main ; il quitte alors sa zone de champion.
 
 Une pile de runes vide n'a aucune conséquence : prendre seulement les runes disponibles.
 Si une pioche est demandée dans un deck vide, recycler toute sa défausse (cimetière)
@@ -141,6 +143,12 @@ Les morts sont irréversibles mais restent temporairement sur le terrain.
 Toutes les unités survivantes de la partie sont soignées, même hors du combat.
 Les effets de mort se déclenchent ensuite juste avant le transfert au cimetière.
 Toutes les morts concernées sont au cimetière avant le choix des cibles des effets.
+
+Première carte de test : le Gardien du dernier souffle invoque à sa mort un jeton de
+3 Might. Le propriétaire choisit sa base ou un champ qu'il contrôle. Le défenseur peut
+donc invoquer sur le champ du combat dont il conserve le contrôle ; l'attaquant ne peut
+pas invoquer sur ce champ adverse. Le jeton entre Tap et disparaît à sa mort, sans carte
+au cimetière. Aucun point n'est attribué entre le combat initial et sa relance éventuelle.
 
 L'attaquant ordonne et empile ses effets, puis le défenseur les siens. Résolution du dernier
 au premier : le défenseur résout les siens avant l'attaquant. Les effets de nouvelles morts

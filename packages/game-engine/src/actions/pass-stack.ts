@@ -1,8 +1,11 @@
 import type { ActionResult, GameState } from '../types.js';
 import { resolveSpell } from '../effects/resolve-spell.js';
+import { resolveDeathEffect } from '../effects/death.js';
+import { finishCombat } from '../combat/finish.js';
 
 /** Passe en closed state -> priorité suivante ou résolution du sommet après deux passes.
- * Rouvre une fenêtre pour le sommet restant ; chaîne vide : priorité à l'autre lanceur. */
+ * Rouvre une fenêtre pour le sommet restant. Chaîne de sorts vide : priorité à l'autre lanceur.
+ * Après les morts : clôture du combat ou redémarrage, sans fenêtre d'Action intermédiaire. */
 export function passStack(state: GameState, playerId: string): ActionResult {
   const stack = state.stack;
   if (!stack || stack.priorityPlayerId !== playerId)
@@ -24,11 +27,17 @@ export function passStack(state: GameState, playerId: string): ActionResult {
     };
   const entry = stack.entries.at(-1)!;
   const entries = stack.entries.slice(0, -1);
-  const resolved = resolveSpell(
-    { ...state, stack: { ...stack, entries } },
-    entry,
-  );
+  const resolved = !('card' in entry)
+    ? resolveDeathEffect({ ...state, stack: { ...stack, entries } }, entry)
+    : resolveSpell({ ...state, stack: { ...stack, entries } }, entry);
   const next = resolved.state;
+  if (!entries.length && next.combatAftermath && !next.result) {
+    const finished = finishCombat({ ...next, stack: null });
+    return {
+      ...finished,
+      events: [event, ...resolved.events, ...finished.events],
+    };
+  }
   const priorityPlayerId = state.players.find(
     (p) => p.id !== stack.initiatorId,
   )!.id;

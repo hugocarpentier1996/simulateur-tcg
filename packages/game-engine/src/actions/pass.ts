@@ -17,6 +17,8 @@ export function passPriority(
   action: Extract<GameAction, { type: 'pass' }>,
 ): ActionResult {
   const showdown = state.showdown;
+  if (showdown?.kind === 'combat' && showdown.stage === 'effects')
+    return { ok: false, reason: 'DEATH_EFFECTS_IN_PROGRESS' };
   if (showdown?.kind === 'combat' && showdown.stage === 'damage')
     return { ok: false, reason: 'DAMAGE_ASSIGNMENT_REQUIRED' };
   if (!showdown || showdown.priorityPlayerId !== action.playerId)

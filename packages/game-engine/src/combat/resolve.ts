@@ -5,14 +5,15 @@ import type {
   GameState,
   UnitState,
 } from '../types.js';
-import { resolveOpenShowdown } from '../showdown/resolve-open.js';
+import { finishCombat } from './finish.js';
+import { deathTriggers } from '../effects/death.js';
 import { effectiveMight } from '../effects/modifiers.js';
 
 type Combat = Extract<NonNullable<GameState['showdown']>, { kind: 'combat' }>;
 
-/** Deux répartitions validées -> dégâts simultanés, morts, soin global puis résultat.
- * Aucun effet de mort dans cette version. Les morts sont identifiés avant le
- * soin, puis transférés au cimetière avec leur definitionId pour pouvoir être recyclés. */
+/** Deux répartitions validées -> dégâts simultanés, morts, soin global puis choix des effets.
+ * Les sources mortes déclenchent après le soin, puis quittent le terrain avant les choix.
+ * Les jetons disparaissent. Sans effet en attente, clôture immédiate via finishCombat. */
 export function resolveCombat(
   state: GameState,
   combat: Combat,
@@ -42,7 +43,21 @@ export function resolveCombat(
         .map((unit) => unit.id),
     },
   ];
-  const graveCards = dead.map((unit) => toGraveyard(state, unit));
+  events.push(
+    ...deathTriggers(state, dead).map((t) => ({
+      type: 'death-triggered' as const,
+      sourceId: t.sourceId,
+      playerId: t.ownerId,
+    })),
+  );
+  const graveCards = dead
+    .filter((unit) => !unit.token)
+    .map((unit) => toGraveyard(state, unit));
+  events.push(
+    ...dead
+      .filter((unit) => unit.token)
+      .map((unit) => ({ type: 'token-removed' as const, unitId: unit.id })),
+  );
   events.push(
     ...graveCards.map((card) => ({
       type: 'unit-died' as const,
@@ -55,66 +70,28 @@ export function resolveCombat(
     units: survivors.map((unit) => ({ ...unit, damage: 0 })),
     cards: [...state.cards, ...graveCards],
   };
-  const attackers = next.units.filter(
-    (unit) =>
-      unit.zoneId === combat.battlefieldId &&
-      unit.ownerId === combat.initiatorId,
-  );
-  const defenders = next.units.filter(
-    (unit) =>
-      unit.zoneId === combat.battlefieldId &&
-      unit.ownerId === combat.defenderId,
-  );
-  if (attackers.length && !defenders.length) {
-    const conquered = resolveOpenShowdown(next, combat);
-    return {
-      ...conquered,
-      events: [
-        ...events,
-        ...conquered.events,
-        { type: 'showdown-ended', battlefieldId: combat.battlefieldId },
-      ],
-    };
-  }
-  if (attackers.length) {
-    const base = state.zones.find(
-      (zone) => zone.kind === 'base' && zone.ownerId === combat.initiatorId,
-    );
-    if (!base) throw new Error('Base absente pour la retraite.');
-    const ids = new Set(attackers.map((unit) => unit.id));
+  const triggers = deathTriggers(state, dead);
+  if (triggers.length) {
+    const order = [
+      combat.initiatorId,
+      ...combat.participants.filter((id) => id !== combat.initiatorId),
+    ].filter((id) => triggers.some((t) => t.ownerId === id));
     next = {
       ...next,
-      units: next.units.map((unit) =>
-        ids.has(unit.id) ? { ...unit, zoneId: base.id } : unit,
-      ),
+      showdown: { ...combat, stage: 'effects' },
+      combatAftermath: {
+        defenderEliminated: !survivors.some(
+          (u) =>
+            u.zoneId === combat.battlefieldId &&
+            u.ownerId === combat.defenderId,
+        ),
+      },
+      pendingDeaths: { playerOrder: order, triggers },
     };
-    events.push(
-      ...attackers.map((unit) => ({
-        type: 'unit-retreated' as const,
-        unitId: unit.id,
-        zoneId: base.id,
-      })),
-    );
+    return { ok: true, state: next, events };
   }
-  return {
-    ok: true,
-    state: {
-      ...next,
-      showdown: null,
-      battlefields: next.battlefields.map((field) =>
-        field.zoneId === combat.battlefieldId
-          ? {
-              ...field,
-              controllerId: defenders.length ? combat.defenderId : null,
-            }
-          : field,
-      ),
-    },
-    events: [
-      ...events,
-      { type: 'showdown-ended', battlefieldId: combat.battlefieldId },
-    ],
-  };
+  const finished = finishCombat(next);
+  return { ...finished, events: [...events, ...finished.events] };
 }
 
 /** Unité morte -> instance de carte au cimetière, débarrassée de son état de combat. */

@@ -1,8 +1,10 @@
 import type { GameState, GameAction, ActionResult } from '../types.js';
 import { payCost } from '../cost/payment.js';
+import { canSummonAt } from './unit-destination.js';
 
-/** Main hors Showdown + carte en main + paiement -> unité en base Tap, ou refus atomique.
- * La Might vient du catalogue et peut valoir zéro. Les sorts ne sont pas pris en charge. */
+/** Main hors Showdown + carte en main/zone champion + paiement -> unité Tap.
+ * Destination : base propre par défaut, ou champ contrôlé ; refus atomique sinon.
+ * Le chosen champion suit le coût du catalogue et quitte sa zone comme une carte en main. */
 export function playUnit(
   state: GameState,
   action: Extract<GameAction, { type: 'play-unit' }>,
@@ -14,15 +16,13 @@ export function playUnit(
   )
     return { ok: false, reason: 'PLAY_WINDOW_CLOSED' };
   const card = state.cards.find((c) => c.id === action.cardId);
-  const hand = state.zones.find(
-    (z) => z.kind === 'hand' && z.ownerId === action.playerId,
+  const source = state.zones.find(
+    (z) =>
+      z.id === card?.zoneId &&
+      ['hand', 'champion'].includes(z.kind) &&
+      z.ownerId === action.playerId,
   );
-  if (
-    !card ||
-    !hand ||
-    card.zoneId !== hand.id ||
-    card.ownerId !== action.playerId
-  )
+  if (!card || !source || card.ownerId !== action.playerId)
     return { ok: false, reason: 'CARD_NOT_IN_HAND' };
   const definition = state.unitDefinitions?.find(
     (d) => d.id === card.definitionId,
@@ -33,6 +33,9 @@ export function playUnit(
     (z) => z.kind === 'base' && z.ownerId === action.playerId,
   );
   if (!base) return { ok: false, reason: 'MISSING_BASE' };
+  const destinationId = action.destinationId ?? base.id;
+  if (!canSummonAt(state, action.playerId, destinationId))
+    return { ok: false, reason: 'INVALID_SUMMON_DESTINATION' };
   const payment = payCost(
     state,
     action.playerId,
@@ -51,7 +54,7 @@ export function playUnit(
           id: card.id,
           definitionId: card.definitionId,
           ownerId: card.ownerId,
-          zoneId: base.id,
+          zoneId: destinationId,
           ready: false,
           might: definition.might,
           damage: 0,
@@ -71,7 +74,7 @@ export function playUnit(
         playerId: action.playerId,
         unitId: card.id,
         definitionId: definition.id,
-        zoneId: base.id,
+        zoneId: destinationId,
       },
     ],
   };

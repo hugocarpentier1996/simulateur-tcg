@@ -9,6 +9,10 @@ export interface CardCost {
  * `id` correspond au `definitionId` de ses instances. Might 0 est une valeur valide.
  * Propriétaire, zone, Ready/Tap et dégâts appartiennent à chaque instance en partie. */
 export interface UnitDefinition {
+  readonly onDeath?: {
+    readonly type: 'summon-token';
+    readonly definitionId: string;
+  };
   readonly id: string;
   readonly name: string;
   readonly type: 'unit';
@@ -37,6 +41,7 @@ export function defineUnit(input: UnitDefinition): UnitDefinition {
   }
   return Object.freeze({
     ...input,
+    ...(input.onDeath ? { onDeath: Object.freeze({ ...input.onDeath }) } : {}),
     cost: Object.freeze({
       energy: input.cost.energy,
       power: Object.freeze({ ...input.cost.power }),

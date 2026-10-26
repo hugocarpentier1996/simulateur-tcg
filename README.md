@@ -140,8 +140,8 @@ effectif est une erreur d'état. Les zones personnelles de même type doivent ê
 Le redressement exclut la main, les piles, le cimetière et le bannissement ; les effets
 empêchant le redressement viendront avec les premières cartes représentatives.
 
-Ce moteur est une tranche de développement, pas encore une partie complète : capacités
-déclenchées, effets de mort et équipes restent à implémenter.
+Ce moteur reste un prototype : les capacités déclenchées sont limitées à la première
+invocation de jeton à la mort. Les autres effets et les équipes restent à implémenter.
 La victoire à 8 points est appliquée à la tenue, à la conquête autorisée et aux pénalités
 de deck. Le dernier point par conquête exige d'avoir déjà scoré tous les autres champs
 ce tour. Sinon, le conquérant pioche une carte et le champ compte comme scoré sans
@@ -155,7 +155,8 @@ et le mouvement groupé restent à ajouter lorsque leurs règles seront précis�
 
 Fournir les définitions de confiance dans `state.unitDefinitions` (par exemple `testUnits`
 du package game-data). Le coût et la Might sont lus dans ce catalogue. La carte doit être
-dans la main du joueur actif, en Main et hors Showdown. Elle entre Tap dans sa base.
+dans la main ou la zone champion du joueur actif, en Main et hors Showdown. Elle entre
+Tap dans sa base par défaut ; `destinationId` permet de choisir un champ contrôlé.
 
 ```ts
 act(state, {
@@ -202,8 +203,9 @@ Les deux répartitions sont appliquées simultanément. Might 0 exige au moins u
 mourir. Les morts sont identifiés avant le soin global, puis transférés au cimetière.
 Si seul l'attaquant reste, il conquiert ; si les deux camps restent, il retourne en base
 sans être redressé ; si personne ne reste, le champ n'a plus de contrôleur.
-Le contrôle, le score et les événements sont actualisés sans ouvrir un second combat
-automatique. La relance par effet de mort attend le futur système d'effets.
+Le contrôle et le score attendent tous les effets de mort et leurs Réactions. Si le défenseur
+a été éliminé puis remplacé et que les deux camps sont présents, un nouveau combat démarre
+sans conquête ni point intermédiaire. Sinon, le résultat normal s'applique.
 
 Les modules `combat/allocation.ts` et `combat/resolve.ts` vérifient les choix et résolvent
 le résultat. `play-unit.test.ts` couvre aussi un parcours complet depuis une carte réelle
@@ -380,8 +382,51 @@ est bornée à zéro ; une cible devenue illégale fait ignorer l'effet ciblé s
 mais la pioche indépendante reste exécutée. Les instructions d'un même sort se résolvent
 ensemble. Un déplacement vers un autre champ pendant un Showdown attend sa clôture avant
 d'ouvrir le suivant ; les arrivées sont traitées dans leur ordre de résolution.
-Cette pile accueille pour l'instant les sorts : les capacités déclenchées et effets de mort
-nécessiteront une prochaine tranche avec leurs propres tests.
+La pile accueille aussi la première capacité de mort décrite ci-dessous.
+
+## Mort et invocation de jeton
+
+`deathTestUnits` contient le Gardien du dernier souffle (`reborn`, 1 Might, coût de test
+1 Énergie) et son jeton (`spirit`, 3 Might). Fournir les deux définitions au catalogue.
+Les dégâts identifient les morts, soignent les survivants et déclenchent les capacités.
+Les cartes mortes rejoignent le cimetière avant que `pendingDeaths` demande les choix.
+
+Le joueur indiqué par `pendingDeaths.playerOrder[0]` soumet `queue-death-effects` avec
+`effects: [{ sourceId, destinationId }, ...]`. Il doit fournir tous ses effets une fois,
+dans l'ordre d'empilement voulu (le dernier résout le premier). L'attaquant choisit avant
+le défenseur ; seuls les joueurs ayant des effets doivent intervenir. Les destinations
+sont validées par la même règle que la mise en jeu : base propre ou battlefield contrôlé.
+
+Une fois les choix terminés, la priorité de Réaction revient à l'attaquant. Deux passes
+résolvent le sommet ; une nouvelle fenêtre s'ouvre pour le suivant. Le jeton entre Tap,
+sans coût supplémentaire, avec un ID déterministe. À sa mort, il disparaît.
+`combatAftermath` suspend la conquête. Après toute la chaîne, `combat/finish.ts` décide
+du résultat ou émet `combat-restarted` et ouvre un nouveau combat avec les mêmes rôles.
+
+Les tests couvrent victoire et défaite au second combat, absence de huitième point anticipé,
+choix d'ordre, Réactions et retraite lorsque des défenseurs avaient survécu au premier combat.
+Limites : ce déclenchement est raccordé aux morts du combat ; les futures sources de dégâts
+et capacités nécessiteront leurs propres déclencheurs. Si une destination cesse d'être légale
+avant résolution, l'invocation est ignorée (choix provisoire du prototype, comme le ciblage des sorts).
+
+## Actions jouables et partie complète
+
+`getLegalActions(state, playerId)` retourne des intentions concrètes acceptées par `act`.
+Les phases, priorités, cibles, contrôle des champs et ressources disponibles sont vérifiés
+par le moteur lui-même. Les runes Tap restent utilisables pour le Power ; une rune Ready
+peut produire Énergie puis Power dans le même paiement. Les ressources flottantes comptent.
+
+Un paiement déterministe sans production superflue est proposé pour chaque choix : cette
+liste n'énumère pas toutes les stratégies possibles de recyclage des runes. Le client peut
+toujours soumettre un autre paiement à `act`. Les permutations de dégâts et de choix de mort
+sont énumérées ; leur coût est combinatoire sur de grands plateaux. Les dés restent une
+entrée serveur et ne sont pas présentés comme une action client. En BO3, passer `series.game`
+à cette fonction, puis exécuter l'action choisie avec `actBo3` pour conserver le suivi.
+
+`full-game.test.ts` simule un BO1 complet sans modifier artificiellement les scores :
+préparation, champions, gear, Réaction, deux combats, puis tenue jusqu'à une victoire **8–1**.
+Chaque décision provient des actions jouables. Le replay des mêmes intentions reproduit
+exactement l'état final. Lancer `pnpm exec vitest run packages/game-engine/src/full-game.test.ts`.
 
 ## TDD et débogage
 

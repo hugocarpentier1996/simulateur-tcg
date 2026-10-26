@@ -13,6 +13,7 @@ import { chooseBattlefield } from './setup/battlefields.js';
 import { playGear } from './actions/play-gear.js';
 import { equipGear } from './actions/equip-gear.js';
 import { syncAttachments } from './effects/attachments.js';
+import { queueDeathEffects } from './effects/death.js';
 
 /**
  * Point d'entrée du moteur : état courant + intention -> résultat de l'action.
@@ -61,6 +62,10 @@ function dispatch(state: GameState, action: GameAction): ActionResult {
   if (!state.players.some((player) => player.id === action.playerId)) {
     return { ok: false, reason: 'UNKNOWN_PLAYER' };
   }
+  if (action.type === 'queue-death-effects')
+    return queueDeathEffects(state, action);
+  if (state.pendingDeaths)
+    return { ok: false, reason: 'DEATH_CHOICES_REQUIRED' };
 
   if (action.type === 'choose-battlefield')
     return chooseBattlefield(state, action);
