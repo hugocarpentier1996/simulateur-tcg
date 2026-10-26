@@ -1,10 +1,13 @@
-import type { UnitState } from '../types.js';
+import type { GameState, UnitState } from '../types.js';
+import { gearMightBonus } from './gear-bonus.js';
 
-/** Unité -> Might actuelle, sans modifier sa valeur imprimée. */
-export function effectiveMight(unit: UnitState): number {
+/** Unité + état -> Might actuelle avec auras/équipement, sans modifier la valeur imprimée.
+ * Sans état : seulement Might de base et modificateurs temporaires (compatibilité des anciens appels). */
+export function effectiveMight(unit: UnitState, state?: GameState): number {
   return Math.max(
     0,
     unit.might +
+      (state ? gearMightBonus(unit, state) : 0) +
       (unit.temporaryEffects ?? []).reduce(
         (sum, effect) =>
           sum + (effect.type === 'modify-might' ? effect.amount : 0),

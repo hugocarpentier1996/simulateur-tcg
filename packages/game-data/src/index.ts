@@ -8,3 +8,6 @@ export type {
   SpellDefinition,
 } from './spell-definition.js';
 export { testSpells } from './test-spells.js';
+export { defineGear } from './gear-definition.js';
+export type { GearDefinition, GearEffect } from './gear-definition.js';
+export { testGears } from './test-gears.js';

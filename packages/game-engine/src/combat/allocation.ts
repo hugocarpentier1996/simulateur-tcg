@@ -1,19 +1,27 @@
-import type { DamageAllocation, UnitState } from '../types.js';
+import type { DamageAllocation, UnitState, GameState } from '../types.js';
 import { effectiveMight, isStunned } from '../effects/modifiers.js';
 
 /** Unités du camp -> dégâts qu'il doit attribuer, même si elles mourront simultanément. */
-export function combatPower(units: readonly UnitState[]): number {
+export function combatPower(
+  units: readonly UnitState[],
+  state?: GameState,
+): number {
   return units.reduce(
     (sum, unit) =>
       sum +
-      (isStunned(unit) || unit.cannotDealDamage ? 0 : effectiveMight(unit)),
+      (isStunned(unit) || unit.cannotDealDamage
+        ? 0
+        : effectiveMight(unit, state)),
     0,
   );
 }
 
 /** Unité vivante -> dégâts supplémentaires nécessaires pour la tuer ; Might 0 exige 1. */
-export function lethalDamage(unit: UnitState): number {
-  return Math.max(0, Math.max(1, effectiveMight(unit)) - (unit.damage ?? 0));
+export function lethalDamage(unit: UnitState, state?: GameState): number {
+  return Math.max(
+    0,
+    Math.max(1, effectiveMight(unit, state)) - (unit.damage ?? 0),
+  );
 }
 
 /** Dégâts disponibles + cibles + choix ordonné -> validité. Aucune mutation.
@@ -23,6 +31,7 @@ export function validAllocation(
   power: number,
   targets: readonly UnitState[],
   allocations: readonly DamageAllocation[],
+  state?: GameState,
 ): boolean {
   let remaining = power;
   const available = new Map(targets.map((unit) => [unit.id, unit]));
@@ -37,7 +46,7 @@ export function validAllocation(
     )
       return false;
     if (!canTarget(target, [...available.values()])) return false;
-    const lethal = lethalDamage(target);
+    const lethal = lethalDamage(target, state);
     if (allocation.amount !== Math.min(remaining, lethal)) return false;
     remaining -= allocation.amount;
     if (allocation.amount < lethal && index !== allocations.length - 1)

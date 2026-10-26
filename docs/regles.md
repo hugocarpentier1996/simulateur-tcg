@@ -59,6 +59,22 @@ Zones prévues : main, deck, base, cimetière, bannissement, légende, champion,
 Les champs sont dynamiques : deux initialement en 1v1, un par joueur selon le format,
 mais des effets peuvent en ajouter ou les remplacer.
 
+## Gears et équipements
+
+Les gears sont des permanents distincts des unités, sauf précision de carte. Ils arrivent
+Ready, dans la base par défaut. Ils ne subissent pas de dégâts et ne se déplacent pas
+de manière autonome. Ils peuvent avoir un effet passif, par exemple +1 Might pour toutes
+les unités alliées, y compris en base et sur les champs.
+
+Un gear équipement est d'abord posé, puis son coût d'équipement supplémentaire permet
+de l'attacher à une unité alliée. Pose et équipement se font pendant sa Main hors Showdown,
+avec paiement en Énergie/Power, sans épuiser le gear. Un bonus d'équipement comme +2 Might
+dure tant que l'équipement est attaché et ne s'expire pas en fin de tour.
+
+L'équipement suit les déplacements de son porteur. Tant que celui-ci est vivant,
+il ne peut pas être rééquipé sur une unité, même en payant à nouveau. À la mort du porteur,
+il revient en base, détaché, et peut être équipé à nouveau contre son coût.
+
 ## Contrôle et score
 
 Le contrôle dépend de la présence d'unités. Pendant un Showdown, le défenseur conserve

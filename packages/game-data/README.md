@@ -43,3 +43,18 @@ vérifie la validation et le catalogue. Fournir `testSpells` dans `GameState.spe
 permet de lancer les instances en main avec `cast-spell`. Les tests de partie dans
 `game-engine/src/spells.test.ts` couvrent paiement, pile, fenêtres de Réaction,
 ciblage à la résolution, combat et expiration en fin de tour.
+
+## Gears de test
+
+`testGears` fournit deux définitions validées et figées par `defineGear` :
+
+| Carte                  | ID       | Pose      | Équipement                  | Effet continu                        |
+| ---------------------- | -------- | --------- | --------------------------- | ------------------------------------ |
+| Bannière de ralliement | `banner` | 2 Énergie | —                           | +1 Might à toutes les unités alliées |
+| Lame renforcée         | `blade`  | 1 Énergie | 1 Énergie + 1 Power color-1 | +2 Might au porteur                  |
+
+Les coûts sont provisoires pour tester les mécaniques. Fournir ce catalogue dans
+`gearDefinitions`, puis jouer avec `play-gear` et attacher avec `equip-gear`. Les effets
+de Might sont continus, sans expiration de fin de tour. Les exceptions gear-unité ne sont
+pas encore représentées. `gears.test.ts` vérifie les données ; les scénarios du moteur
+vérifient les paiements, les bonus, les déplacements du porteur et son décès.

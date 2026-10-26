@@ -29,7 +29,7 @@ export function resolveCombat(
   const dead = damaged.filter(
     (unit) =>
       unit.zoneId === combat.battlefieldId &&
-      (unit.damage ?? 0) >= Math.max(1, effectiveMight(unit)),
+      (unit.damage ?? 0) >= Math.max(1, effectiveMight(unit, state)),
   );
   const deadIds = new Set(dead.map((unit) => unit.id));
   const survivors = damaged.filter((unit) => !deadIds.has(unit.id));

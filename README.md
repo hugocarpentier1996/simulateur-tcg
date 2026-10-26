@@ -297,6 +297,44 @@ elle peut donc faire gagner l'adversaire. `victory.test.ts` couvre ces parcours.
 Les futurs effets accordant directement des points restent à raccorder quand leurs
 cartes seront ajoutées ; ils ne seront pas soumis à la restriction de conquête.
 
+## Gears et équipements
+
+Fournir `testGears` de game-data dans `gearDefinitions` (configuration de partie ou état).
+`play-gear` reçoit `playerId`, `cardId` et `payment`, comme la pose d'une unité. Le gear
+quitte `cards` pour `gears`, Ready en base, sans entrer dans `units`.
+
+```ts
+act(state, {
+  type: 'equip-gear',
+  playerId: 'alice',
+  gearId: 'instance-de-la-lame',
+  unitId: 'unite-alliee',
+  payment: { energyRunes: ['rune-1'], powerRunes: ['rune-1'] },
+});
+```
+
+Le gear doit avoir un `equipCost` dans son catalogue et être libre. Le coût d'attachement
+est payé séparément de la pose. Pose et équipement exigent sa Main, la priorité, aucune
+pile et aucun Showdown. Le gear conserve son Ready/Tap ; le porteur n'a pas besoin d'être
+Ready. Un équipement attaché ne peut pas être réassigné tant que le porteur vit.
+
+Pour afficher ou utiliser la Might totale, appeler **`effectiveMight(unit, state)`**.
+L'état est nécessaire pour inclure les auras et les équipements ; l'ancien appel avec
+l'unité seule ne calcule que sa base et ses modificateurs temporaires. Les dégâts et
+seuils de mort du combat utilisent bien l'état complet. Les effets continus s'additionnent
+aux modificateurs temporaires avant le plancher zéro, sans modifier `unit.might`.
+
+Les événements `gear-played`, `gear-equipped`, `gear-followed` et `gear-detached` expliquent
+les changements. Après un déplacement, une retraite ou une mort, le moteur synchronise
+les attachements. À la mort, le gear revient en base sans modifier Ready/Tap et devient
+réutilisable. Les gears ne contribuent pas aux dégâts, ne peuvent pas en recevoir et ne
+contrôlent pas de champ. Awaken redresse aussi les gears du joueur.
+
+Cette tranche couvre les bonus continus de Might. Les exceptions gear-unité, destruction
+de gear et capacités déclenchées restent à ajouter avec des cartes concrètes. La pose et
+l'attachement sont immédiats ici ; aucune nouvelle fenêtre de Réaction spécifique n'est
+modélisée pour ces opérations. Les règles de bannissement d'un porteur restent à préciser.
+
 ## Lancer un sort et résoudre une chaîne
 
 Fournir `testSpells` de game-data dans `state.spellDefinitions`, ainsi que les instances

@@ -10,6 +10,9 @@ import { afterEffects } from './showdown/after-effects.js';
 import { chooseFirstPlayer } from './setup/choose-first.js';
 import { mulligan } from './setup/mulligan.js';
 import { chooseBattlefield } from './setup/battlefields.js';
+import { playGear } from './actions/play-gear.js';
+import { equipGear } from './actions/equip-gear.js';
+import { syncAttachments } from './effects/attachments.js';
 
 /**
  * Point d'entrée du moteur : état courant + intention -> résultat de l'action.
@@ -37,17 +40,19 @@ import { chooseBattlefield } from './setup/battlefields.js';
 export function act(state: GameState, action: GameAction): ActionResult {
   const result = dispatch(state, action);
   if (!result.ok) return result;
-  const next = afterEffects(result.state);
+  const attached = syncAttachments(result.state);
+  const next = afterEffects(attached.state);
+  const events = [...result.events, ...attached.events];
   const opened = !result.state.showdown && next.showdown;
   return {
     ...result,
     state: next,
     events: opened
       ? [
-          ...result.events,
+          ...events,
           { type: 'showdown-opened', battlefieldId: opened.battlefieldId },
         ]
-      : result.events,
+      : events,
   };
 }
 
@@ -74,6 +79,10 @@ function dispatch(state: GameState, action: GameAction): ActionResult {
   )
     return { ok: false, reason: 'NO_PRIORITY' };
   switch (action.type) {
+    case 'play-gear':
+      return playGear(state, action);
+    case 'equip-gear':
+      return equipGear(state, action);
     case 'cast-spell':
       return castSpell(state, action);
     case 'play-unit':

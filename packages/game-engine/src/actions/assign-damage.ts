@@ -22,7 +22,14 @@ export function assignDamage(
   );
   const sources = present.filter((unit) => unit.ownerId === action.playerId);
   const targets = present.filter((unit) => unit.ownerId !== action.playerId);
-  if (!validAllocation(combatPower(sources), targets, action.allocations))
+  if (
+    !validAllocation(
+      combatPower(sources, state),
+      targets,
+      action.allocations,
+      state,
+    )
+  )
     return { ok: false, reason: 'INVALID_DAMAGE_ALLOCATION' };
   const nextCombat = {
     ...combat,

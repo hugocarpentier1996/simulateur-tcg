@@ -1,4 +1,5 @@
 import type { SpellBlueprint, SpellEntry } from './spell-types.js';
+import type { GearBlueprint, GearState } from './gear-types.js';
 
 /**
  * État de la simulation fourni à `act`, puis retourné après une action acceptée.
@@ -39,6 +40,8 @@ export interface GameState {
   /** Catalogue de confiance fourni par le serveur, jamais par une intention client. */
   unitDefinitions?: readonly UnitBlueprint[];
   spellDefinitions?: readonly SpellBlueprint[];
+  gearDefinitions?: readonly GearBlueprint[];
+  gears?: GearState[];
   /** Pile du bas vers le haut ; cartes retirées de la main, pas encore au cimetière. */
   stack?: {
     entries: SpellEntry[];
@@ -50,7 +53,7 @@ export interface GameState {
   priorityPlayerId?: string;
   /** Arrivées par effet à traiter après la chaîne et le Showdown courant. */
   pendingShowdowns?: { battlefieldId: string; initiatorId: string }[];
-  /** Cartes hors unités en jeu. Une instance ne figure jamais aussi dans `units`.
+  /** Cartes hors permanents en jeu. Une instance ne figure jamais aussi dans `units` ou `gears`.
    * Dans chaque zone ordonnée, leur ordre ici va du sommet au dessous de la pile. */
   cards: CardInstance[];
   /** Réserves flottantes par joueur ; un Power absent de la table vaut zéro. */
@@ -157,9 +160,12 @@ export interface CardInstance {
  * - move : joueur demandeur, unité concernée, ID de la zone de destination.
  *   Unité Ready de sa base vers un champ vide, allié ou adverse, en Main, en 1v1.
  * - play-unit : carte en main, coût tiré du catalogue, choix des runes à utiliser.
+ *   Entre en base Tap. L'action ne peut pas fournir son propre coût ou sa Might.
+ * - play-gear : carte en main et paiement -> permanent Ready dans la base.
+ * - equip-gear : équipement libre, unité alliée et paiement supplémentaire -> attachement.
+ *   Ces deux actions exigent sa Main hors Showdown, sans pile en cours.
  * - cast-spell : carte en main, cible et destination pour un déplacement, paiement.
  *   Valide le timing puis empile ; les effets attendent les passes de la fenêtre.
- *   Entre en base Tap. L'action ne peut pas fournir son propre coût ou sa Might.
  * - assign-damage : répartition ordonnée des dégâts sur les unités adverses du champ.
  *   Jouable une fois par camp après les deux passes ; les dégâts attendent les deux choix.
  * - pass : joueur qui renonce à agir dans l'Open Showdown où il a la priorité.
@@ -168,6 +174,19 @@ export interface CardInstance {
  * `playerId` devra être fourni par le serveur à partir de l'identité authentifiée.
  */
 export type GameAction =
+  | {
+      type: 'play-gear';
+      playerId: string;
+      cardId: string;
+      payment: PaymentPlan;
+    }
+  | {
+      type: 'equip-gear';
+      playerId: string;
+      gearId: string;
+      unitId: string;
+      payment: PaymentPlan;
+    }
   | { type: 'choose-battlefield'; playerId: string; battlefieldId: string }
   | { type: 'choose-first-player'; playerId: string; firstPlayerId: string }
   | { type: 'mulligan'; playerId: string; cardIds: readonly string[] }
@@ -202,6 +221,16 @@ export type GameAction =
  * retourné et ne suffisent pas, seuls, à reconstruire toute la simulation.
  */
 export type GameEvent =
+  | { type: 'gear-played'; playerId: string; gearId: string; zoneId: string }
+  | { type: 'gear-equipped'; playerId: string; gearId: string; unitId: string }
+  | {
+      type: 'gear-followed';
+      gearId: string;
+      unitId: string;
+      from: string;
+      to: string;
+    }
+  | { type: 'gear-detached'; gearId: string; unitId: string; zoneId: string }
   | {
       type: 'battlefield-selected';
       playerId: string;
@@ -303,6 +332,8 @@ export type GameEvent =
  * STACK_IN_PROGRESS : seuls les Réactions et les passes sont possibles.
  * SPELL_WINDOW_CLOSED : timing ou priorité incompatible avec le sort.
  * UNKNOWN_SPELL_DEFINITION / INVALID_TARGET / MISSING_GRAVEYARD : sort ou contexte invalide.
+ * UNKNOWN_GEAR_DEFINITION / INVALID_GEAR : définition ou gear en jeu absent/non possédé.
+ * NOT_EQUIPMENT / GEAR_ALREADY_ATTACHED : coût d'équipement absent ou porteur encore attaché.
  */
 export type ActionResult =
   | { ok: true; state: GameState; events: GameEvent[] }

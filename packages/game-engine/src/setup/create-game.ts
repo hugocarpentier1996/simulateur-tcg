@@ -30,6 +30,7 @@ export interface GameConfig {
   randomState?: number;
   unitDefinitions?: GameState['unitDefinitions'];
   spellDefinitions?: GameState['spellDefinitions'];
+  gearDefinitions?: GameState['gearDefinitions'];
 }
 
 /** Configuration -> état neuf en attente des dés, aucune main distribuée avant le choix.
@@ -99,6 +100,9 @@ export function createGame(config: GameConfig): ActionResult {
       : {}),
     ...(config.spellDefinitions
       ? { spellDefinitions: config.spellDefinitions }
+      : {}),
+    ...(config.gearDefinitions
+      ? { gearDefinitions: config.gearDefinitions }
       : {}),
   };
   return prepareBattlefields(state, config);

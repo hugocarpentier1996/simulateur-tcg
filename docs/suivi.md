@@ -10,7 +10,7 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
 - Projet : monorepo pnpm, moteur TypeScript pur dans `packages/game-engine`, catalogue
   de test dans `packages/game-data`. Aucun client graphique ni serveur réseau opérationnel.
 - GitHub : `https://github.com/hugocarpentier1996/simulateur-tcg`, branche publiée `main`.
-- Dernière validation fonctionnelle : `pnpm check` réussi, 113 tests.
+- Dernière validation fonctionnelle : `pnpm check` réussi, 127 tests.
 - Environnement principal : Windows/PowerShell, Docker disponible. Voir README pour les commandes.
 - Attentes utilisateur : français, explications des étapes importantes, modules lisibles,
   contrats d'entrée/sortie documentés, TDD strict, publication GitHub à chaque étape achevée.
@@ -48,6 +48,24 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
 - Consigne de commit/push après chaque étape ajoutée à `AGENTS.md`.
 - Création de ce journal et ajout d'un lien de reprise dans le README.
 - Changement documentaire uniquement ; vérification complète avec `pnpm check`.
+
+### Gears et équipements — 26 octobre 2026
+
+- Permanents non-unités dans `GameState.gears`, catalogue `gearDefinitions`, transmis
+  aussi par `createGame`. Pose Ready en base via `play-gear`, paiement commun aux cartes.
+- `equip-gear` paie un coût distinct et attache à une unité alliée. Main active hors
+  Showdown, sans pile en cours ; pas d'épuisement ni de rééquipement tant que le porteur vit.
+- Auras et bonus du porteur calculés par `effectiveMight(unit, state)`, utilisés pour
+  les dégâts et seuils létaux. Attention : l'ancien appel sans état omet les gears.
+- Synchronisation après chaque action : suivi des déplacements/retraites, retour en
+  base et détachement à la mort du porteur, Ready/Tap conservé. Awaken inclut les gears.
+- Deux cartes de test : Bannière de ralliement (+1 Might aux alliés) et Lame renforcée
+  (+2 au porteur). Coûts provisoires, avec les identifiants de couleur de test existants.
+- Tests écrits puis observés en échec avant implémentation ; 14 nouveaux tests,
+  validation complète `pnpm check` réussie (127 tests).
+- Exceptions gear-unité et capacités déclenchées non couvertes. Pose/attachement
+  immédiats dans cette tranche ; pas de fenêtre de Réaction spécifique à ces opérations.
+  Le bannissement d'un porteur et les autres effets de gears restent à définir.
 
 ## Limites à conserver lors d'une reprise
 

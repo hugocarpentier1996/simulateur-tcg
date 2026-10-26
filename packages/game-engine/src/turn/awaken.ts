@@ -32,6 +32,7 @@ export function awaken(state: GameState): Extract<ActionResult, { ok: true }> {
       ...state,
       units: state.units.map(ready),
       cards: state.cards.map(ready),
+      ...(state.gears ? { gears: state.gears.map(ready) } : {}),
     },
     events: [
       { type: 'cards-readied', playerId: state.activePlayerId, cardIds },
