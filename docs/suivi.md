@@ -5,12 +5,12 @@ confirmées sont dans `regles.md`, les contrats et commandes dans le README et l
 Mettre à jour ce suivi à chaque étape validée, puis créer un commit descriptif et pousser.
 Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
 
-## État au 26 octobre 2026
+## État au 27 octobre 2026
 
 - Projet : monorepo pnpm, moteur TypeScript pur dans `packages/game-engine`, catalogue
-  de test dans `packages/game-data`. Aucun client graphique ni serveur réseau opérationnel.
+  de test dans `packages/game-data`. Table locale dans `apps/table`, aucun serveur réseau de jeu.
 - GitHub : `https://github.com/hugocarpentier1996/simulateur-tcg`, branche publiée `main`.
-- Dernière validation fonctionnelle : `pnpm check` réussi, 143 tests.
+- Dernière validation fonctionnelle : `pnpm check` réussi, 150 tests et build Vite.
 - Environnement principal : Windows/PowerShell, Docker disponible. Voir README pour les commandes.
 - Attentes utilisateur : français, explications des étapes importantes, modules lisibles,
   contrats d'entrée/sortie documentés, TDD strict, publication GitHub à chaque étape achevée.
@@ -98,6 +98,27 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
   tests passent dès leur ajout, le comportement étant déjà implémenté.
 - Validation : test ciblé puis `pnpm check` réussi, 143 tests.
 
+### Première table locale, plateau en miroir et placement automatique — 27 octobre 2026
+
+- Application TypeScript/Vite dans `apps/table`. `pnpm dev` ouvre le serveur local sur
+  127.0.0.1:5173 ; commande Docker et port local documentés. `pnpm check` inclut le build.
+- Session préparée via les API publiques : decks fixes de 39 unités, 12 runes rouge/bleu,
+  champions, dés fixes et aucun mulligan, jusqu'à la première Main. Pas de changement moteur.
+- Plateau en miroir : deck de runes à gauche, runes de couleur au centre, deck et défausse
+  à droite ; base au-dessus, champs centraux à colonnes dynamiques, adversaire en miroir.
+  Légendes/champions près des bases, main adverse masquée et main active en éventail.
+- À la demande de l'utilisateur, paiement manuel remplacé par un paiement automatique :
+  `placementOptions` consomme `getLegalActions`, `placeUnit` revérifie au dépôt. Zones
+  autorisées éclairées, glisser-déposer par événements pointeur (souris/tactile), alternative
+  sélection puis clic/clavier sur « Poser ici ». Pas de dépense si refus ou annulation.
+- Passage de tour, scores, ressources, unités Ready/Tap et journal français affichés.
+- Tests de session et géométrie ajoutés avant implémentation : 150 tests au total.
+  Vérification navigateur : paiement, passage au joueur 2 avec trois runes, placement
+  par clic et par glisser-déposer (Éclaireur Tap et rune recyclée). `pnpm check` + build validés.
+- Limites : démo locale sans sauvegarde ni écran de préparation. Aucun déplacement de
+  permanents, combat, spell ou gear interactif pour cette tranche. Le paiement automatique
+  propose un plan déterministe sans choix stratégique. Les règles restent dans le moteur.
+
 ## Limites à conserver lors d'une reprise
 
 - Première capacité de mort implémentée pour les morts de combat. Autres déclencheurs,
@@ -118,7 +139,7 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
 
 - Étendre les capacités avec des cartes concrètes et tester leurs interactions.
 - Harmoniser les couleurs et construire deux decks de démonstration cohérents.
-- Préparer une interface minimale pour jouer et observer une partie complète.
+- Étendre la table locale aux déplacements et aux interactions de Showdown.
 
 L'utilisateur choisira la prochaine tranche ; ces pistes ne constituent pas une autorisation
 de toutes les développer. À la reprise, vérifier les modifications locales avant d'agir.

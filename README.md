@@ -1,7 +1,7 @@
 # Simulateur TCG
 
-Premier socle du jeu : moteur TypeScript pur, tests Vitest et environnement reproductible.
-Le client graphique et le serveur réseau seront ajoutés progressivement.
+Moteur TypeScript pur, table de jeu locale et tests Vitest dans un environnement reproductible.
+Le serveur réseau sera ajouté progressivement.
 
 Pour reprendre le développement : lire [le suivi du projet](docs/suivi.md), les
 [règles confirmées](docs/regles.md) et les [consignes de développement](AGENTS.md).
@@ -16,8 +16,37 @@ docker compose up --build
 ```
 
 Cette commande construit l'environnement Node 24, installe les versions du fichier
-`pnpm-lock.yaml` et démarre les tests en surveillance. À ce stade, il n'y a pas de
-page web à ouvrir. Les résultats apparaissent dans le terminal. Ctrl+C arrête le service.
+`pnpm-lock.yaml` et démarre les tests en surveillance.
+Les résultats apparaissent dans le terminal. Ctrl+C arrête le service.
+
+## Ouvrir la table de jeu
+
+Avec Docker Desktop démarré, depuis le dossier du projet :
+
+```powershell
+docker compose run --rm --service-ports dev sh -c "pnpm install --frozen-lockfile --store-dir /pnpm/store && pnpm dev --host 0.0.0.0"
+```
+
+Ouvrir **http://127.0.0.1:5173/**. Le port Docker est publié uniquement sur la machine locale.
+Avec Node et pnpm déjà installés : `pnpm install --frozen-lockfile`, puis `pnpm dev`.
+Si le port 5173 est occupé par une table déjà lancée, utiliser celle-ci ou arrêter son terminal.
+
+La table est partagée sur le même écran : le joueur actif est en bas et sa main est visible.
+Glisser une unité de la main ou le chosen champion vers une zone éclairée pour la jouer.
+Alternative clavier/tactile : sélectionner la carte, puis « Poser ici » dans sa destination.
+Le moteur propose un paiement réalisable et le vérifie à nouveau au dépôt ; aucun coût
+n'est dépensé lors d'un refus. Les runes utilisées sont choisies automatiquement ; cette
+première interface ne permet pas de modifier cette stratégie de paiement.
+
+« Terminer le tour » exécute les étapes automatiques et passe au joueur suivant.
+Les piles, runes de couleur, bases et champs sont disposés en miroir ; la main forme un
+éventail. Le nombre de colonnes des champs suit celui fourni par le moteur.
+
+Limites de cette tranche : préparation fixe sans écran de dés/mulligan, unités de test
+uniquement, pas encore de commandes de déplacement, combat, sort ou gear. Les champs
+neutres ne sont donc pas des destinations jouables depuis la main. Pas de sauvegarde :
+recharger la page ou démarrer une nouvelle partie remet la démo à zéro.
+`pnpm build` crée `apps/table/dist` ; `pnpm check` vérifie aussi cette construction.
 
 Pour exécuter toutes les vérifications puis quitter :
 
@@ -54,7 +83,8 @@ Après modification des dépendances, committer ensemble `package.json` et `pnpm
 - `packages/game-data` : futur contenu des cartes.
 - `packages/shared` : futurs contrats réseau et vues filtrées.
 - `packages/test-utils` : futurs helpers de scénarios.
-- `apps/client` et `apps/server` : emplacements réservés.
+- `apps/table` : première interface locale TypeScript/Vite (voir son README).
+- `apps/client` et `apps/server` : emplacements réservés aux futurs clients/réseau.
 - `tests/e2e` : futurs parcours Playwright multijoueurs.
 - `docs/regles.md` : règles conservées depuis la conception.
 - `.github/workflows/ci.yml` : vérifications à chaque push et pull request une fois le dépôt hébergé sur GitHub.
