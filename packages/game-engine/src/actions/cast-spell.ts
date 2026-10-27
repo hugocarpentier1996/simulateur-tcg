@@ -1,7 +1,11 @@
 import type { ActionResult, GameAction, GameState } from '../types.js';
 import type { SpellBlueprint } from '../spell-types.js';
 import { payCost } from '../cost/payment.js';
-import { spellTarget, validDestination } from '../effects/target.js';
+import {
+  spellTarget,
+  validDestination,
+  duelEnemyTarget,
+} from '../effects/target.js';
 
 /** Intention de lancement -> coût payé et sort empilé, sans appliquer ses effets.
  * Refuse timing/priorité, cible/destination, carte absente ou paiement invalide sans mutation.
@@ -38,6 +42,11 @@ export function castSpell(
   );
   if (!target) return { ok: false, reason: 'INVALID_TARGET' };
   if (
+    definition.effects.some((e) => e.type === 'duel') &&
+    !duelEnemyTarget(state, action.playerId, action.secondaryTargetId)
+  )
+    return { ok: false, reason: 'INVALID_TARGET' };
+  if (
     definition.effects.some((e) => e.type === 'move-unit') &&
     !validDestination(state, target, action.destinationId)
   )
@@ -63,6 +72,9 @@ export function castSpell(
             definition,
             casterId: action.playerId,
             targetId: action.targetId,
+            ...(action.secondaryTargetId !== undefined
+              ? { secondaryTargetId: action.secondaryTargetId }
+              : {}),
             ...(action.destinationId
               ? { destinationId: action.destinationId }
               : {}),

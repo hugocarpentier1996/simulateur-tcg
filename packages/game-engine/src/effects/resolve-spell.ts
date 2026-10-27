@@ -1,6 +1,7 @@
 import type { ActionResult, GameEvent, GameState } from '../types.js';
 import type { SpellEntry } from '../spell-types.js';
-import { spellTarget, validDestination } from './target.js';
+import { spellTarget, validDestination, duelEnemyTarget } from './target.js';
+import { resolveDuel } from './duel.js';
 import { drawCardForPlayer } from '../turn/draw.js';
 import { settleLethalUnits } from './lethal-units.js';
 
@@ -30,7 +31,17 @@ export function resolveSpell(
       entry.casterId,
     );
     if (!target) continue;
-    if (effect.type === 'damage') {
+    if (effect.type === 'duel') {
+      const enemy = duelEnemyTarget(
+        state,
+        entry.casterId,
+        entry.secondaryTargetId,
+      );
+      if (!enemy) continue;
+      const duel = resolveDuel(state, target, enemy);
+      state = duel.state;
+      events.push(...duel.events);
+    } else if (effect.type === 'damage') {
       state = {
         ...state,
         units: state.units.map((u) =>

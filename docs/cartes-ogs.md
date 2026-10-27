@@ -17,8 +17,9 @@ différentes cartes portant le même nom. Les fichiers bruts restent hors de ces
 | OGS-013/024 Garen (Order)      | 6 Énergie, 1 jaune, 5 Might ; +1 aux autres alliés ici                | Base/champ, exclusions, cumul, déplacement, coût, mort et soin en combat                                         | Hors decks de démo                |
 | OGS-003/024 Incinerate         | Action, 2 Énergie, 2 dégâts à une unité sur un champ                  | Ciblage, persistance, mort, Highlander, effets de mort et absence de score prématuré                             | Hors decks de démo                |
 | OGS-022/024 Final Spark        | Action, 8 Énergie, 8 dégâts à une unité                               | Cible en base/champ, coût, refus à 7 énergie, dégâts létaux/non létaux                                           | Hors decks de démo                |
+| OGS-008/024 Gentlemen's Duel   | Action, 6 Énergie + 1 orange ; +3 Might puis duel                     | Deux cibles, dégâts simultanés d'unités hors combat, Stun, réactions, Highlander                                 | Hors decks de démo                |
 
-Définitions exportées : `vanguardAttendant`, `zephyrSage`, `garenBody`, `garenOrder`, `masterYiBody`, `masterYiCalm`, `highlander`, `incinerate`, `finalSpark`, dans `packages/game-data/src/ogs`.
+Définitions exportées : `vanguardAttendant`, `zephyrSage`, `garenBody`, `garenOrder`, `masterYiBody`, `masterYiCalm`, `highlander`, `incinerate`, `finalSpark`, `gentlemensDuel`, dans `packages/game-data/src/ogs`.
 Texte et URL d'image conservés comme métadonnées ; aucune image téléchargée.
 Tests : `packages/game-engine/src/ogs-vanguard-attendant.test.ts`.
 Tests Shield : `packages/game-engine/src/ogs-zephyr-sage.test.ts`.
@@ -38,9 +39,9 @@ Tests Shield : `packages/game-engine/src/ogs-zephyr-sage.test.ts`.
 
 ## Reprise
 
-15 cartes restent à implémenter. Procéder carte par carte en TDD et commit/push après
+14 cartes restent à implémenter. Procéder carte par carte en TDD et commit/push après
 chaque carte validée, en mettant ce tableau à jour. Demander les précisions propres
 à chaque mécanique lors de sa tranche, sans préconstruire tous les systèmes.
 L'arrivée Ready est une propriété statique de mise en jeu, pas un effet mis sur la pile.
-Question en attente pour Gentlemen's Duel OGS-008 : l'ennemi est-il choisi au lancement
-ou pendant la résolution, après le bonus à l'allié ? Ne pas figer ce timing sans réponse.
+Gentlemen's Duel confirmé : deux cibles au lancement, Stun n'empêche pas le duel,
+dégâts directement infligés par les unités (ni sort, ni capacité, ni combat).

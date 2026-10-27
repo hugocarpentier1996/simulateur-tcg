@@ -10,6 +10,7 @@ export { masterYiCalm } from './ogs/master-yi-calm.js';
 export { garenOrder } from './ogs/garen-order.js';
 export { incinerate } from './ogs/incinerate.js';
 export { finalSpark } from './ogs/final-spark.js';
+export { gentlemensDuel } from './ogs/gentlemens-duel.js';
 export { deathTestUnits } from './death-units.js';
 export { defineSpell } from './spell-definition.js';
 export type {

@@ -1,6 +1,15 @@
 import type { GameState, UnitState } from '../types.js';
 import type { SpellBlueprint } from '../spell-types.js';
 
+/** Cible secondaire du duel -> unité adverse encore présente, sans restriction de zone. */
+export function duelEnemyTarget(
+  state: GameState,
+  casterId: string,
+  targetId?: string,
+): UnitState | undefined {
+  return state.units.find((u) => u.id === targetId && u.ownerId !== casterId);
+}
+
 /** État + ciblage -> unité encore légale, ou undefined (pas de remboursement à la résolution). */
 export function spellTarget(
   state: GameState,

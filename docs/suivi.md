@@ -257,6 +257,21 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
   de l'ennemi au lancement ou à la résolution après le +3 ? Réponse encore attendue.
 - Validation complète : `pnpm check`, 209 tests et build réussis.
 
+### Gentlemen's Duel OGS-008 — 27 octobre 2026
+
+- 6 Énergie + 1 orange, Action. `targetId` alliée et `secondaryTargetId` ennemie requis
+  dès le lancement, vérifiés avant paiement et revérifiés à la résolution. Les actions
+  légales énumèrent les paires. +3 Might pour le tour, puis dégâts réciproques simultanés.
+- Confirmation : Stun ne bloque que les dégâts de combat. Le duel produit des événements
+  `unit-damage`, contexte `duel`, avec chaque unité comme source. Ni dégâts de sort,
+  ni de capacité, ni de combat ; les futures préventions doivent respecter cette distinction.
+- TDD : huit échecs pertinents puis douze tests validés : coûts, ciblage/refus, pile,
+  réactions, morts simultanées, Stun, Highlander, provenance et expiration du bonus.
+- Comportement provisoire hérité du moteur : allié disparu = aucun effet ciblé ; ennemi
+  disparu = bonus allié conservé, pas de duel, pas de nouvelle cible ni remboursement.
+- Suivi OGS : 10/24, hors decks de démo. Pas de système de prévention préconstruit.
+- Validation complète : `pnpm check`, 221 tests et build réussis (lint du test corrigé).
+
 ## Limites à conserver lors d'une reprise
 
 - Première capacité de mort implémentée pour les morts de combat et hors combat. Autres déclencheurs,

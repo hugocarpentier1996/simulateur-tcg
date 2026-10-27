@@ -80,7 +80,12 @@ function* candidates(
             targetId: target.id,
             payment,
           };
-          if (spell.effects.some((e) => e.type === 'move-unit'))
+          if (spell.effects.some((e) => e.type === 'duel'))
+            for (const enemy of state.units.filter(
+              (u) => u.ownerId !== playerId,
+            ))
+              yield { ...base, secondaryTargetId: enemy.id };
+          else if (spell.effects.some((e) => e.type === 'move-unit'))
             for (const zone of destinations)
               yield { ...base, destinationId: zone.id };
           else yield base;

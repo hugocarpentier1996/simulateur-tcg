@@ -225,6 +225,8 @@ export type GameAction =
       playerId: string;
       cardId: string;
       targetId: string;
+      /** Duel : seconde unité, ennemie, choisie dès le lancement. */
+      secondaryTargetId?: string;
       destinationId?: string;
       payment: PaymentPlan;
     }
@@ -309,6 +311,14 @@ export type GameEvent =
   | { type: 'unit-retreated'; unitId: string; zoneId: string }
   | { type: 'unit-recalled'; unitId: string; zoneId: string }
   | { type: 'spell-damage'; cardId: string; unitId: string; amount: number }
+  /** Dégâts infligés directement par une unité hors combat, distincts d'un sort/capacité. */
+  | {
+      type: 'unit-damage';
+      context: 'duel';
+      sourceId: string;
+      unitId: string;
+      amount: number;
+    }
   | { type: 'units-healed'; unitIds: string[] }
   | { type: 'showdown-ended'; battlefieldId: string }
   | { type: 'deck-recycled'; playerId: string; cardIds: string[] }

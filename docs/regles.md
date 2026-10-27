@@ -137,6 +137,12 @@ jamais une unité défendant le champ.
 
 ## Combat et mort
 
+Gentlemen's Duel : les deux unités sont choisies au lancement (une alliée, une ennemie).
+Le +3 Might jusqu'à la fin du tour est appliqué avant les dégâts réciproques, calculés
+sur leurs Might actuelles. Stun ne bloque pas ces dégâts : il bloque ceux de combat.
+Les unités infligent elles-mêmes les dégâts du duel, hors combat. Ce ne sont des dégâts
+ni de sort ni de capacité : les futures préventions réservées à ces sources ne s'y appliquent pas.
+
 Highlander protège une unité alliée jusqu'à la fin du tour courant. Sa prochaine mort
 est remplacée par un rappel Tap en base : ses dégâts sont soignés immédiatement,
 ses équipements, bonus, malus et Stun sont conservés. Ce rappel n'est pas un déplacement

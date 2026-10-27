@@ -13,6 +13,7 @@ export interface SpellBlueprint {
     readonly combatRole: 'any' | 'attacker';
   };
   readonly effects: readonly (
+    | { readonly type: 'duel' }
     | { readonly type: 'damage'; readonly amount: number }
     | { readonly type: 'recall-on-death'; readonly duration: 'end-of-turn' }
     | {
@@ -40,5 +41,7 @@ export interface SpellEntry {
   definition: SpellBlueprint;
   casterId: string;
   targetId: string;
+  /** Adversaire du duel choisi au lancement ; requis pour l'effet duel. */
+  secondaryTargetId?: string;
   destinationId?: string;
 }
