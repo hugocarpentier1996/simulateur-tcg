@@ -37,6 +37,15 @@ Tests Shield : `packages/game-engine/src/ogs-zephyr-sage.test.ts`.
 - Shield/Assault : défense/attaque uniquement dans un Combat Showdown, jamais en Open,
   jusqu'à la clôture. Shield et Assault sont implémentés.
 
+### Annie Fury OGS-001 — première tranche validée
+
+5 Énergie, 1 rouge, 4 Might, arrivée Tap. Bonus continu de +1 par instance de dégâts
+de sort, cumulable, toutes zones. Tests : coût, Ready/Tap/Stun, cumul, départ de source,
+instances multiples, exclusion du combat et du duel. Export `annieFury`.
+Le calcul est partagé pour les sorts/capacités ; le raccordement à une véritable capacité
+de dégâts reste à tester avec Tibbers. Ne pas compter cette tranche comme la validation
+de toutes les interactions de la carte. Hors decks de démo.
+
 ## Reprise
 
 14 cartes restent à implémenter. Procéder carte par carte en TDD et commit/push après

@@ -4,6 +4,7 @@ import { spellTarget, validDestination, duelEnemyTarget } from './target.js';
 import { resolveDuel } from './duel.js';
 import { drawCardForPlayer } from '../turn/draw.js';
 import { settleLethalUnits } from './lethal-units.js';
+import { spellAbilityDamageBonus } from './damage-bonus.js';
 
 /** Sort payé -> effets dans l'ordre puis carte au cimetière. Aucune fenêtre au milieu
  * des instructions d'un même sort. Cible devenue illégale : effet ciblé ignoré ;
@@ -42,17 +43,19 @@ export function resolveSpell(
       state = duel.state;
       events.push(...duel.events);
     } else if (effect.type === 'damage') {
+      const amount =
+        effect.amount + spellAbilityDamageBonus(state, entry.casterId);
       state = {
         ...state,
         units: state.units.map((u) =>
-          u.id === target.id ? { ...u, damage: u.damage + effect.amount } : u,
+          u.id === target.id ? { ...u, damage: u.damage + amount } : u,
         ),
       };
       events.push({
         type: 'spell-damage',
         cardId: entry.card.id,
         unitId: target.id,
-        amount: effect.amount,
+        amount,
       });
     } else if (effect.type === 'move-unit') {
       if (!validDestination(state, target, entry.destinationId)) continue;

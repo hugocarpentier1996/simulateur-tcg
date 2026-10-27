@@ -272,6 +272,17 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
 - Suivi OGS : 10/24, hors decks de démo. Pas de système de prévention préconstruit.
 - Validation complète : `pnpm check`, 221 tests et build réussis (lint du test corrigé).
 
+### Annie Fury OGS-001 — 27 octobre 2026
+
+- 5 Énergie + 1 rouge, 4 Might, Tap. +1 par instance de dégâts de sort du propriétaire.
+  Bonus continu cumulable, indépendant de la zone/Ready/Stun, calculé à la résolution.
+- TDD : quatre échecs pertinents constatés, puis sept tests valident le bonus, le coût,
+  le cumul, le départ de source et les exclusions du combat/duel.
+- `spellAbilityDamageBonus` servira également aux capacités de dégâts, mais aucune
+  n'existe encore : raccordement et test avec Tibbers à faire. Carte suivie comme tranche
+  partielle dans le registre (10 cartes complètes + Annie partielle), hors démo.
+- Validation complète : `pnpm check`, 228 tests et build réussis.
+
 ## Limites à conserver lors d'une reprise
 
 - Première capacité de mort implémentée pour les morts de combat et hors combat. Autres déclencheurs,
