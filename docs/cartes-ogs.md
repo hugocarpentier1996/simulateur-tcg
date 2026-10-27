@@ -16,8 +16,9 @@ différentes cartes portant le même nom. Les fichiers bruts restent hors de ces
 | OGS-004/024 Master Yi (Calm)   | 5 Énergie, 1 vert, 4 Might ; +4 avec 8 runes en jeu                   | Seuil 7/8/9, Ready/Tap, exclusions, recyclage Power, coût, combat                                                | Hors decks de démo                |
 | OGS-013/024 Garen (Order)      | 6 Énergie, 1 jaune, 5 Might ; +1 aux autres alliés ici                | Base/champ, exclusions, cumul, déplacement, coût, mort et soin en combat                                         | Hors decks de démo                |
 | OGS-003/024 Incinerate         | Action, 2 Énergie, 2 dégâts à une unité sur un champ                  | Ciblage, persistance, mort, Highlander, effets de mort et absence de score prématuré                             | Hors decks de démo                |
+| OGS-022/024 Final Spark        | Action, 8 Énergie, 8 dégâts à une unité                               | Cible en base/champ, coût, refus à 7 énergie, dégâts létaux/non létaux                                           | Hors decks de démo                |
 
-Définitions exportées : `vanguardAttendant`, `zephyrSage`, `garenBody`, `garenOrder`, `masterYiBody`, `masterYiCalm`, `highlander`, `incinerate`, dans `packages/game-data/src/ogs`.
+Définitions exportées : `vanguardAttendant`, `zephyrSage`, `garenBody`, `garenOrder`, `masterYiBody`, `masterYiCalm`, `highlander`, `incinerate`, `finalSpark`, dans `packages/game-data/src/ogs`.
 Texte et URL d'image conservés comme métadonnées ; aucune image téléchargée.
 Tests : `packages/game-engine/src/ogs-vanguard-attendant.test.ts`.
 Tests Shield : `packages/game-engine/src/ogs-zephyr-sage.test.ts`.
@@ -37,8 +38,9 @@ Tests Shield : `packages/game-engine/src/ogs-zephyr-sage.test.ts`.
 
 ## Reprise
 
-16 cartes restent à implémenter. Procéder carte par carte en TDD et commit/push après
+15 cartes restent à implémenter. Procéder carte par carte en TDD et commit/push après
 chaque carte validée, en mettant ce tableau à jour. Demander les précisions propres
 à chaque mécanique lors de sa tranche, sans préconstruire tous les systèmes.
 L'arrivée Ready est une propriété statique de mise en jeu, pas un effet mis sur la pile.
-Prochaine carte envisagée : Final Spark OGS-022, réutilisant les dégâts ciblés.
+Question en attente pour Gentlemen's Duel OGS-008 : l'ennemi est-il choisi au lancement
+ou pendant la résolution, après le bonus à l'allié ? Ne pas figer ce timing sans réponse.

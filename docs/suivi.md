@@ -247,6 +247,16 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
   pour leurs cartes ; aucun nouveau mécanisme générique de déclenchement préconstruit.
 - Validation complète : `pnpm check`, 206 tests et build réussis.
 
+### Final Spark OGS-022 — 27 octobre 2026
+
+- Action, 8 Énergie sans Power, 8 dégâts à toute unité en jeu, base comprise.
+  Réutilise les dégâts et morts d'Incinerate sans code moteur supplémentaire.
+- TDD : carte absente du catalogue constatée, puis trois scénarios validés : cible
+  en base/champ, paiement complet/refus à 7, survie à 9 Might avec 8 dégâts conservés.
+- Suivi OGS : 9/24, hors decks de démo. Question posée pour Gentlemen's Duel : choix
+  de l'ennemi au lancement ou à la résolution après le +3 ? Réponse encore attendue.
+- Validation complète : `pnpm check`, 209 tests et build réussis.
+
 ## Limites à conserver lors d'une reprise
 
 - Première capacité de mort implémentée pour les morts de combat et hors combat. Autres déclencheurs,
