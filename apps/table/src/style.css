@@ -588,6 +588,15 @@ main {
   font-size: 24px;
   font-weight: 700;
 }
+.unit[data-card] {
+  touch-action: none;
+  cursor: grab;
+  text-align: left;
+}
+.action-panel > .primary {
+  margin-top: 16px;
+  width: 100%;
+}
 .reserve {
   display: flex;
   justify-content: space-between;

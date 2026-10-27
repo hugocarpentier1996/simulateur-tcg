@@ -39,6 +39,12 @@ n'est dépensé lors d'un refus. Les runes utilisées sont choisies automatiquem
 première interface ne permet pas de modifier cette stratégie de paiement.
 
 « Terminer le tour » exécute les étapes automatiques et passe au joueur suivant.
+Une unité Ready en base peut être glissée vers un champ libre ou allié éclairé (ou
+sélectionnée puis déplacée par clic). Elle devient Tap, sans coût supplémentaire.
+Sur un champ libre, un Open Showdown s'ouvre : cliquer « Passer » pour chacun des deux
+joueurs prioritaires. Le contrôle et le point de conquête sont attribués à la clôture.
+Au début de son prochain tour, le contrôleur gagne automatiquement le point de tenue
+(holding), selon les règles de score du moteur. Le journal distingue ces deux gains.
 Le bouton « Annuler l’action », au-dessus du plateau, permet de revenir jusqu'à dix
 actions réussies en arrière, avec leur paiement et leurs effets automatiques. Le compteur
 indique les retours encore disponibles ; les refus et simples sélections ne comptent pas.
@@ -47,8 +53,10 @@ Les piles, runes de couleur, bases et champs sont disposés en miroir ; la main 
 La légende est entre la base et le chosen champion, à droite pour le joueur actif.
 
 Limites de cette tranche : préparation fixe sans écran de dés/mulligan, unités de test
-uniquement, pas encore de commandes de déplacement, combat, sort ou gear. Les champs
-neutres ne sont donc pas des destinations jouables depuis la main. Pas de sauvegarde :
+uniquement, pas encore de commandes de combat, sort ou gear. Les déplacements sont limités
+à la base vers un champ sans unité adverse ; les attaques seront accessibles avec
+l'interface de combat. Les champs neutres restent interdits à la mise en jeu depuis la main.
+Pas de sauvegarde :
 recharger la page ou démarrer une nouvelle partie remet la démo à zéro.
 `pnpm build` crée `apps/table/dist` ; `pnpm check` vérifie aussi cette construction.
 

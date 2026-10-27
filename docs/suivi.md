@@ -10,7 +10,7 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
 - Projet : monorepo pnpm, moteur TypeScript pur dans `packages/game-engine`, catalogue
   de test dans `packages/game-data`. Table locale dans `apps/table`, aucun serveur réseau de jeu.
 - GitHub : `https://github.com/hugocarpentier1996/simulateur-tcg`, branche publiée `main`.
-- Dernière validation fonctionnelle : `pnpm check` réussi, 154 tests et build Vite.
+- Dernière validation fonctionnelle : `pnpm check` réussi, 157 tests et build Vite.
 - Environnement principal : Windows/PowerShell, Docker disponible. Voir README pour les commandes.
 - Attentes utilisateur : français, explications des étapes importantes, modules lisibles,
   contrats d'entrée/sortie documentés, TDD strict, publication GitHub à chaque étape achevée.
@@ -131,6 +131,23 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
   limite de dix sur treize actions, refus et nouvelle action après retour).
   `pnpm check` réussi : 154 tests et construction Vite.
 
+### Déplacements, conquête et tenue dans la table — 27 octobre 2026
+
+- Unités en jeu sélectionnables et déplaçables par glisser-déposer ou clic. `boardOptions`
+  et `playOrMove` réutilisent les actions légales ; mouvement Ready depuis sa base vers
+  un champ libre/allié, arrivée Tap sans paiement. Aucun changement des règles moteur.
+- Open Showdown visible dans le panneau : priorité et compteur de passes, bouton pour
+  le joueur prioritaire. Fin de tour bloquée pendant le Showdown. Conquête après toutes
+  les passes, contrôle affiché puis tenue automatique au prochain Beginning.
+- Journal : mouvement, passes, contrôle, conquête, tenue et pioche de remplacement.
+  Annulation conservée sur mouvements et passes, y compris retour avant une conquête.
+- Limite UI explicite : attaques masquées tant que les commandes de combat n'existent
+  pas. Aucun mouvement entre champs ni retour volontaire en base ajouté.
+- TDD : trois scénarios observés en échec puis validés (Tap/adversaire/refus, conquête
+  puis holding avec annulation, renfort sans point et exclusion temporaire des attaques).
+  Vérification navigateur : glisser-déposer, deux passes, score 0 → 1 → 2 au tour suivant.
+  `pnpm check` : 157 tests + build. Serveur de vérification temporaire sur 5174 arrêté après essai.
+
 ## Limites à conserver lors d'une reprise
 
 - Première capacité de mort implémentée pour les morts de combat. Autres déclencheurs,
@@ -151,7 +168,7 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
 
 - Étendre les capacités avec des cartes concrètes et tester leurs interactions.
 - Harmoniser les couleurs et construire deux decks de démonstration cohérents.
-- Étendre la table locale aux déplacements et aux interactions de Showdown.
+- Étendre la table locale aux combats et aux sorts pendant les Showdowns.
 
 L'utilisateur choisira la prochaine tranche ; ces pistes ne constituent pas une autorisation
 de toutes les développer. À la reprise, vérifier les modifications locales avant d'agir.

@@ -1,9 +1,10 @@
 import {
   createDemo,
   dispatch,
-  placementOptions,
-  placeUnit,
+  boardOptions,
+  playOrMove,
   undo,
+  passShowdown,
 } from './session.js';
 import { renderTable, type Selection } from './view.js';
 import './style.css';
@@ -21,7 +22,7 @@ function render() {
 
 function place(destinationId: string) {
   if (!selection) return;
-  session = placeUnit(session, selection.cardId, destinationId);
+  session = playOrMove(session, selection.cardId, destinationId);
   if (!session.error) selection = null;
   render();
 }
@@ -33,7 +34,7 @@ root.addEventListener('click', (event) => {
   }
   const target = event.target as HTMLElement;
   const zone = target.closest<HTMLElement>('[data-zone]');
-  if (zone && selection) {
+  if (zone && selection && !target.closest('[data-card]')) {
     place(zone.dataset.zone!);
     return;
   }
@@ -42,6 +43,9 @@ root.addEventListener('click', (event) => {
   if (button.dataset.card) {
     selection = { cardId: button.dataset.card };
     session = { ...session, error: null };
+  } else if (button.dataset.action === 'pass') {
+    session = passShowdown(session);
+    selection = null;
   } else if (button.dataset.action === 'undo') {
     session = undo(session);
     selection = null;
@@ -89,9 +93,7 @@ root.addEventListener('pointerdown', (event) => {
     y: event.clientY,
     source,
     ghost: null,
-    targets: placementOptions(session.state, cardId).map(
-      (a) => a.destinationId!,
-    ),
+    targets: boardOptions(session.state, cardId).map((a) => a.destinationId!),
   };
 });
 root.addEventListener('pointermove', (event) => {

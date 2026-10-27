@@ -8,7 +8,7 @@ import {
   cardName,
   demoUnits,
   playerName,
-  placementOptions,
+  boardOptions,
   type Session,
 } from './session.js';
 import { fanLayout } from './fan.js';
@@ -62,15 +62,23 @@ function zone(
 ): string {
   const units = state.units.filter((u) => u.zoneId === zoneId);
   return `<section data-zone="${escape(zoneId)}" class="zone ${destinations.includes(zoneId) ? 'drop-target' : ''} ${battlefield ? 'battlefield' : 'base'}"><header><h3>${escape(title)}</h3><span>${escape(subtitle)}</span></header>
-    <div class="units">${units.length ? units.map((u) => `<article class="unit ${u.ready ? 'ready' : 'tapped'}"><span class="unit-might">${effectiveMight(u, state)}</span><div><strong>${escape(cardName(u.definitionId).replace(' de test', ''))}</strong><small>${escape(playerName(u.ownerId))} · ${u.ready ? 'Ready' : 'Tap'} · ${u.damage} dégât(s)</small></div></article>`).join('') : `<p class="empty">${battlefield ? 'Aucune unité sur ce champ' : 'Aucune unité en base'}</p>`}</div>${destinations.includes(zoneId) ? '<button type="button" class="place-here">Poser ici · paiement automatique</button>' : ''}</section>`;
+    <div class="units">${units.length ? units.map((u) => `<button type="button" id="unit-${escape(u.id)}" data-card="${escape(u.id)}" class="unit ${u.ready ? 'ready' : 'tapped'}"><span class="unit-might">${effectiveMight(u, state)}</span><div><strong>${escape(cardName(u.definitionId).replace(' de test', ''))}</strong><small>${escape(playerName(u.ownerId))} · ${u.ready ? 'Ready' : 'Tap'} · ${u.damage} dégât(s)</small></div></button>`).join('') : `<p class="empty">${battlefield ? 'Aucune unité sur ce champ' : 'Aucune unité en base'}</p>`}</div>${destinations.includes(zoneId) ? '<button type="button" class="place-here">Choisir cette destination</button>' : ''}</section>`;
 }
 
 function paymentPanel(session: Session, selection: Selection | null): string {
+  const showdown = session.state.showdown;
+  if (showdown?.kind === 'open')
+    return `<div class="eyebrow">Open Showdown</div><h3>Champ de bataille ${session.state.battlefields.findIndex((b) => b.zoneId === showdown.battlefieldId) + 1}</h3><p class="help">Priorité à ${escape(playerName(showdown.priorityPlayerId))}. Le contrôle et le point de conquête seront attribués après les passes des deux joueurs.</p><p>${showdown.consecutivePasses} / ${showdown.participants.length} passes</p><button class="primary" data-action="pass">Passer · ${escape(playerName(showdown.priorityPlayerId))}</button>`;
+  const unit = session.state.units.find((u) => u.id === selection?.cardId);
+  if (unit) {
+    const canMove = boardOptions(session.state, unit.id).length > 0;
+    return `<div class="eyebrow">Déplacement</div><h3>${escape(cardName(unit.definitionId))}</h3><p class="help">${canMove ? 'Glisse cette unité Ready vers un champ éclairé, ou clique sa destination. Elle deviendra Tap, sans payer de coût.' : 'Déplacement indisponible. Une unité doit être Ready dans ta base pendant ta Main. Les attaques de champs adverses ne sont pas encore disponibles.'}</p><button class="quiet" data-action="cancel">Annuler la sélection</button>`;
+  }
   if (!selection)
-    return '<div class="selection-empty"><span aria-hidden="true">↙</span><h3>Pose une carte pour jouer</h3><p>Glisse une unité sur une zone éclairée. Son coût est payé automatiquement.</p><p>Tu peux aussi cliquer la carte, puis sa destination.</p></div>';
+    return '<div class="selection-empty"><span aria-hidden="true">↙</span><h3>Pose une carte pour jouer</h3><p>Glisse une unité sur une zone éclairée. Son coût est payé automatiquement.</p><p>Tu peux aussi cliquer la carte, puis sa destination. Une unité Ready en base peut rejoindre un champ libre ou allié.</p></div>';
   const instance = session.state.cards.find((c) => c.id === selection.cardId)!;
   const def = demoUnits.find((d) => d.id === instance.definitionId)!;
-  const options = placementOptions(session.state, selection.cardId);
+  const options = boardOptions(session.state, selection.cardId);
   return `<div class="eyebrow">Carte sélectionnée</div><h3>${escape(def.name)}</h3><p class="cost-summary">${def.cost.energy} énergie + ${escape(powerText(def.cost.power))} Power</p><p class="payment-status" role="status">${options.length ? 'Pose la carte sur une zone éclairée. Le paiement sera effectué automatiquement.' : 'Cette carte n’est pas jouable maintenant : ressources insuffisantes ou fenêtre fermée.'}</p><p class="help">Les runes nécessaires seront épuisées pour l’Énergie et recyclées pour le Power.</p><button class="quiet" type="button" data-action="cancel">Annuler la sélection</button>`;
 }
 
@@ -125,7 +133,7 @@ export function renderTable(
 ): string {
   const state = session.state;
   const destinations = selected
-    ? placementOptions(state, selected.cardId).map((a) => a.destinationId!)
+    ? boardOptions(state, selected.cardId).map((a) => a.destinationId!)
     : [];
   const active = state.activePlayerId;
   const priority =
@@ -141,7 +149,7 @@ export function renderTable(
   const canEnd = act(state, { type: 'end-turn', playerId: active }).ok;
   return `<header class="topbar"><div class="brand"><span class="brand-icon" aria-hidden="true">◇</span><div><h1>Simulateur TCG</h1><p>La table d’essai</p></div></div><div class="local-tag"><span></span> Local · 2 joueurs</div><button id="undo-action" class="quiet" data-action="undo" title="Annuler la dernière action réussie (10 maximum)" ${session.history.length === 0 ? 'disabled' : ''}>↶ Annuler l’action (${session.history.length}/10)</button><button class="quiet" data-action="reset">Nouvelle partie</button></header>
     <main><section class="play-area"><div class="scoreboard">${state.players.map((p) => `<div class="player ${p.id === active ? 'active' : ''}"><span>${escape(playerName(p.id))}<small>${p.id === active ? 'Tour actif' : 'En attente'}</small></span><strong>${p.score}<small> / ${p.victoryTarget ?? 8}</small></strong></div>`).join('')}</div>
-    <div class="turnbar"><div><span class="eyebrow">${state.result ? 'Partie terminée' : 'Phase principale · Main'}</span><h2>${state.result ? `${escape(playerName(state.result.winnerId))} gagne` : `À ${escape(playerName(active))} de jouer`}</h2></div><span class="priority">Priorité : ${escape(playerName(priority))}</span><button class="primary" data-action="end" ${!canEnd ? 'disabled' : ''}>Terminer le tour →</button></div>
+    <div class="turnbar"><div><span class="eyebrow">${state.result ? 'Partie terminée' : state.showdown ? 'Main · Showdown en cours' : 'Phase principale · Main'}</span><h2>${state.result ? `${escape(playerName(state.result.winnerId))} gagne` : `À ${escape(playerName(active))} de jouer`}</h2></div><span class="priority">Priorité : ${escape(playerName(priority))}</span><button class="primary" data-action="end" ${!canEnd ? 'disabled' : ''}>Terminer le tour →</button></div>
     <div class="board">
       ${state.players
         .filter((p) => p.id !== active)
@@ -162,5 +170,5 @@ export function renderTable(
       .map((line) => `<li>${escape(line)}</li>`)
       .join(
         '',
-      )}</ol></section></aside></main><footer>Prototype local · Préparation fixe, sans sauvegarde · Déplacements et combats interactifs à venir</footer>`;
+      )}</ol></section></aside></main><footer>Prototype local · Préparation fixe, sans sauvegarde · Déplacements base → champ · Combats interactifs à venir</footer>`;
 }

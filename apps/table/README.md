@@ -15,6 +15,11 @@ Cette application consomme le moteur sans le modifier ni lui ajouter de dépenda
 - `placementOptions(state, cardId)` demande à `getLegalActions` les destinations et
   paiements valides. `placeUnit(session, cardId, destinationId)` les recalcule au dépôt
   et joue l'action correspondante. Une carte impayable n'a aucune destination.
+- `boardOptions` étend ces choix aux unités en jeu et `playOrMove` exécute le dépôt :
+  déplacement sans paiement ou mise en jeu avec paiement. Les mouvements légaux sont
+  fournis par le moteur ; la table masque temporairement ceux vers une unité adverse
+  en attendant l'interface de combat. `passShowdown` passe pour le joueur prioritaire
+  de l'Open Showdown ; conquête, tenue et victoire restent calculées par le moteur.
 - `src/view.ts` : transforme une session et une sélection en HTML échappé. Le plateau
   montre les zones en miroir ; les colonnes de battlefield suivent leur nombre réel.
 - `src/main.ts` : traduit les clics et gestes pointeur en intentions. La carte flottante

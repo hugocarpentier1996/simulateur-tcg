@@ -115,6 +115,18 @@ const refusals: Record<string, string> = {
 
 function describe(event: GameEvent): string | null {
   switch (event.type) {
+    case 'unit-moved':
+      return 'Une unité se déplace sur un champ de bataille et devient Tap.';
+    case 'showdown-opened':
+      return 'Showdown ouvert : chaque joueur doit passer la priorité.';
+    case 'priority-passed':
+      return `${playerName(event.playerId)} passe la priorité.`;
+    case 'battlefield-conquered':
+      return `${playerName(event.playerId)} prend le contrôle du champ.`;
+    case 'point-scored':
+      return `${playerName(event.playerId)} gagne 1 point de ${event.source === 'HOLD' ? 'tenue (holding)' : 'conquête'}.`;
+    case 'conquest-point-replaced':
+      return `${playerName(event.playerId)} pioche à la place du dernier point de conquête.`;
     case 'unit-played':
       return `${playerName(event.playerId)} joue ${cardName(event.definitionId)} — arrivée Tap.`;
     case 'cost-paid':
@@ -210,4 +222,50 @@ export function placeUnit(
         'Placement impossible : destination non autorisée ou ressources insuffisantes.',
     };
   return dispatch(session, action);
+}
+
+/** Carte ou unité -> placements/déplacements autorisés par le moteur.
+ * Limite UI temporaire : masque les attaques de champs occupés par un adversaire,
+ * car la résolution du combat n'est pas encore accessible depuis cette table. */
+export function boardOptions(state: GameState, id: string) {
+  if (!state.units.some((u) => u.id === id)) return placementOptions(state, id);
+  return getLegalActions(state, state.activePlayerId).filter(
+    (a): a is Extract<GameAction, { type: 'move' }> =>
+      a.type === 'move' &&
+      a.unitId === id &&
+      !state.units.some(
+        (u) =>
+          u.zoneId === a.destinationId && u.ownerId !== state.activePlayerId,
+      ),
+  );
+}
+
+/** Dépôt d'une carte ou unité : recalcule les choix actuels et conserve état/historique si refus. */
+export function playOrMove(
+  session: Session,
+  id: string,
+  destinationId: string,
+): Session {
+  const action = boardOptions(session.state, id).find(
+    (a) => a.destinationId === destinationId,
+  );
+  return action
+    ? dispatch(session, action)
+    : {
+        ...session,
+        error:
+          'Destination indisponible : vérifie Ready, le tour, les ressources et l’absence d’unités adverses sur le champ.',
+      };
+}
+
+/** Passe du joueur prioritaire dans l'Open Showdown ; le moteur clôture après les passes requises.
+ * Sans Open Showdown, refuse sans créer d'historique. Aucun combat automatisé. */
+export function passShowdown(session: Session): Session {
+  const showdown = session.state.showdown;
+  if (showdown?.kind !== 'open')
+    return { ...session, error: 'Aucun Open Showdown en attente.' };
+  return dispatch(session, {
+    type: 'pass',
+    playerId: showdown.priorityPlayerId,
+  });
 }
