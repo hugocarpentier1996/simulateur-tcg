@@ -12,6 +12,7 @@ export { incinerate } from './ogs/incinerate.js';
 export { finalSpark } from './ogs/final-spark.js';
 export { gentlemensDuel } from './ogs/gentlemens-duel.js';
 export { annieFury } from './ogs/annie-fury.js';
+export { blastOfPower } from './ogs/blast-of-power.js';
 export { deathTestUnits } from './death-units.js';
 export { defineSpell } from './spell-definition.js';
 export type {

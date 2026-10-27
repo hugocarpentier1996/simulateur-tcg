@@ -283,6 +283,17 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
   partielle dans le registre (10 cartes complètes + Annie partielle), hors démo.
 - Validation complète : `pnpm check`, 228 tests et build réussis.
 
+### Blast of Power OGS-012 — 27 octobre 2026
+
+- Action, 6 Énergie + 1 jaune : tue une unité sur un battlefield, sans dégâts ni soin.
+  Cible revérifiée à la résolution. Highlander remplace aussi cette mort directe.
+- `settleLethalUnits` accepte des IDs condamnés explicitement, consommés une fois ;
+  le reste du traitement (capacités, jetons, aura perdue, contrôle) reste commun.
+- TDD : cinq échecs pertinents puis sept tests validés, notamment Might 0/100,
+  refus base/couleur, rappel Highlander et effets de mort sans score prématuré.
+- Registre : 11 cartes complètes, Annie Fury partielle, toutes hors decks de démo.
+- Validation complète : `pnpm check`, 235 tests et build réussis.
+
 ## Limites à conserver lors d'une reprise
 
 - Première capacité de mort implémentée pour les morts de combat et hors combat. Autres déclencheurs,

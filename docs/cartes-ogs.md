@@ -18,8 +18,9 @@ différentes cartes portant le même nom. Les fichiers bruts restent hors de ces
 | OGS-003/024 Incinerate         | Action, 2 Énergie, 2 dégâts à une unité sur un champ                  | Ciblage, persistance, mort, Highlander, effets de mort et absence de score prématuré                             | Hors decks de démo                |
 | OGS-022/024 Final Spark        | Action, 8 Énergie, 8 dégâts à une unité                               | Cible en base/champ, coût, refus à 7 énergie, dégâts létaux/non létaux                                           | Hors decks de démo                |
 | OGS-008/024 Gentlemen's Duel   | Action, 6 Énergie + 1 orange ; +3 Might puis duel                     | Deux cibles, dégâts simultanés d'unités hors combat, Stun, réactions, Highlander                                 | Hors decks de démo                |
+| OGS-012/024 Blast of Power     | Action, 6 Énergie + 1 jaune ; tue une unité sur un champ              | Mort sans dégâts, ciblage, coût, Highlander, jeton et capacité de mort                                           | Hors decks de démo                |
 
-Définitions exportées : `vanguardAttendant`, `zephyrSage`, `garenBody`, `garenOrder`, `masterYiBody`, `masterYiCalm`, `highlander`, `incinerate`, `finalSpark`, `gentlemensDuel`, dans `packages/game-data/src/ogs`.
+Définitions exportées : `vanguardAttendant`, `zephyrSage`, `garenBody`, `garenOrder`, `masterYiBody`, `masterYiCalm`, `highlander`, `incinerate`, `finalSpark`, `gentlemensDuel`, `blastOfPower`, dans `packages/game-data/src/ogs`.
 Texte et URL d'image conservés comme métadonnées ; aucune image téléchargée.
 Tests : `packages/game-engine/src/ogs-vanguard-attendant.test.ts`.
 Tests Shield : `packages/game-engine/src/ogs-zephyr-sage.test.ts`.
@@ -48,7 +49,7 @@ de toutes les interactions de la carte. Hors decks de démo.
 
 ## Reprise
 
-14 cartes restent à implémenter. Procéder carte par carte en TDD et commit/push après
+13 cartes restent à terminer (dont Annie Fury partiellement raccordée). Procéder carte par carte en TDD et commit/push après
 chaque carte validée, en mettant ce tableau à jour. Demander les précisions propres
 à chaque mécanique lors de sa tranche, sans préconstruire tous les systèmes.
 L'arrivée Ready est une propriété statique de mise en jeu, pas un effet mis sur la pile.

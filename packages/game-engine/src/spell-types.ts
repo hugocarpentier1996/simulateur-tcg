@@ -13,6 +13,7 @@ export interface SpellBlueprint {
     readonly combatRole: 'any' | 'attacker';
   };
   readonly effects: readonly (
+    | { readonly type: 'kill-unit' }
     | { readonly type: 'duel' }
     | { readonly type: 'damage'; readonly amount: number }
     | { readonly type: 'recall-on-death'; readonly duration: 'end-of-turn' }

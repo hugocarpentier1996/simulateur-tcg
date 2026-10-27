@@ -32,7 +32,11 @@ export function resolveSpell(
       entry.casterId,
     );
     if (!target) continue;
-    if (effect.type === 'duel') {
+    if (effect.type === 'kill-unit') {
+      const killed = settleLethalUnits(state, new Set([target.id]));
+      state = killed.state;
+      events.push(...killed.events);
+    } else if (effect.type === 'duel') {
       const enemy = duelEnemyTarget(
         state,
         entry.casterId,

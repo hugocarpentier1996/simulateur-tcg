@@ -4,21 +4,29 @@ import { effectiveMight } from './modifiers.js';
 import { replaceDeaths } from './replace-death.js';
 import { deathTriggers } from './death.js';
 
-/** État après une action/effet -> morts par dégâts non nuls >= Might actuelle.
+/** État après une action/effet + éventuelles morts directes -> résolution des morts.
+ * Les IDs forcés désignent des unités à tuer sans dégâts (IDs absents ignorés).
+ * Ils sont consommés une seule fois, même si Highlander remplace la mort.
+ * Les autres morts exigent des dégâts non nuls >= Might actuelle.
  * Applique les rappels avant les morts, puis recommence si une aura disparue rend
  * d'autres blessures létales. Aucun soin global. Cimetières avant choix des effets ;
  * priorité des choix : attaquant/joueur actif puis ordre des joueurs. Le contrôle du
  * showdown actif est conservé. État de confiance, cimetière requis pour chaque carte. */
 export function settleLethalUnits(
   input: GameState,
+  destroyedIds: ReadonlySet<string> = new Set(),
 ): Extract<ActionResult, { ok: true }> {
   let state = input;
   const events: GameEvent[] = [];
   const triggers: DeathTrigger[] = [];
+  let forced = destroyedIds;
   while (!state.result) {
     const lethal = state.units.filter(
-      (u) => u.damage > 0 && u.damage >= effectiveMight(u, state),
+      (u) =>
+        forced.has(u.id) ||
+        (u.damage > 0 && u.damage >= effectiveMight(u, state)),
     );
+    forced = new Set();
     if (!lethal.length) break;
     const replaced = replaceDeaths(state, new Set(lethal.map((u) => u.id)));
     events.push(...replaced.events);

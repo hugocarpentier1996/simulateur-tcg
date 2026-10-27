@@ -9,6 +9,7 @@ export type SpellTiming = 'normal' | 'action' | 'reaction';
  * cible choisie ; draw concerne le lanceur. Fin de tour = tour courant, pas prochain
  * tour du propriétaire. Un déplacement par effet conserve l'état Ready/Tap existant. */
 export type SpellEffect =
+  | { readonly type: 'kill-unit' }
   | { readonly type: 'duel' }
   | { readonly type: 'damage'; readonly amount: number }
   | { readonly type: 'recall-on-death'; readonly duration: 'end-of-turn' }
