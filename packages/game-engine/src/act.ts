@@ -14,6 +14,7 @@ import { playGear } from './actions/play-gear.js';
 import { equipGear } from './actions/equip-gear.js';
 import { syncAttachments } from './effects/attachments.js';
 import { queueDeathEffects } from './effects/death.js';
+import { settleLethalUnits } from './effects/lethal-units.js';
 
 /**
  * Point d'entrée du moteur : état courant + intention -> résultat de l'action.
@@ -41,9 +42,10 @@ import { queueDeathEffects } from './effects/death.js';
 export function act(state: GameState, action: GameAction): ActionResult {
   const result = dispatch(state, action);
   if (!result.ok) return result;
-  const attached = syncAttachments(result.state);
+  const settled = settleLethalUnits(result.state);
+  const attached = syncAttachments(settled.state);
   const next = afterEffects(attached.state);
-  const events = [...result.events, ...attached.events];
+  const events = [...result.events, ...settled.events, ...attached.events];
   const opened = !result.state.showdown && next.showdown;
   return {
     ...result,

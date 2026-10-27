@@ -141,8 +141,8 @@ Highlander protège une unité alliée jusqu'à la fin du tour courant. Sa proch
 est remplacée par un rappel Tap en base : ses dégâts sont soignés immédiatement,
 ses équipements, bonus, malus et Stun sont conservés. Ce rappel n'est pas un déplacement
 et ne déclenche pas de capacité de mort. La protection est consommée par ce rappel.
-Implémentation actuelle : morts de combat ; le même remplacement devra être appelé
-par les futures sources de mort (sorts de dégâts, destruction, baisse de Might).
+Implémentation actuelle : morts de combat, dégâts de sort et baisse de Might ;
+la destruction directe devra également utiliser ce remplacement lorsqu'elle sera ajoutée.
 
 Shield N donne +N Might uniquement à une unité qui défend sur le champ d'un Combat
 Showdown. Assault N applique le bonus uniquement à une unité attaquante dans ce même

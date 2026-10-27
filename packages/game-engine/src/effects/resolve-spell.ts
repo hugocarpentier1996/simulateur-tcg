@@ -2,6 +2,7 @@ import type { ActionResult, GameEvent, GameState } from '../types.js';
 import type { SpellEntry } from '../spell-types.js';
 import { spellTarget, validDestination } from './target.js';
 import { drawCardForPlayer } from '../turn/draw.js';
+import { settleLethalUnits } from './lethal-units.js';
 
 /** Sort payé -> effets dans l'ordre puis carte au cimetière. Aucune fenêtre au milieu
  * des instructions d'un même sort. Cible devenue illégale : effet ciblé ignoré ;
@@ -29,7 +30,20 @@ export function resolveSpell(
       entry.casterId,
     );
     if (!target) continue;
-    if (effect.type === 'move-unit') {
+    if (effect.type === 'damage') {
+      state = {
+        ...state,
+        units: state.units.map((u) =>
+          u.id === target.id ? { ...u, damage: u.damage + effect.amount } : u,
+        ),
+      };
+      events.push({
+        type: 'spell-damage',
+        cardId: entry.card.id,
+        unitId: target.id,
+        amount: effect.amount,
+      });
+    } else if (effect.type === 'move-unit') {
       if (!validDestination(state, target, entry.destinationId)) continue;
       const destinationId = entry.destinationId!;
       state = {
@@ -100,5 +114,6 @@ export function resolveSpell(
     cardId: entry.card.id,
     targetId: entry.targetId,
   });
-  return { ok: true, state, events };
+  const settled = settleLethalUnits(state);
+  return { ...settled, events: [...events, ...settled.events] };
 }

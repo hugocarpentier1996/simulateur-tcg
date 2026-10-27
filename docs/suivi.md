@@ -230,9 +230,26 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
   première tranche de dégâts de sort avec le traitement des morts hors combat.
 - Validation complète : `pnpm check`, 194 tests et build réussis.
 
+### Incinerate OGS-003 — 27 octobre 2026
+
+- Action, 2 Énergie, aucun Power : 2 dégâts à une unité sur un battlefield, alliée ou
+  adverse. Zone revérifiée à la résolution. Dégâts persistants, pas de soin par sort.
+- `settleLethalUnits` traite les morts après effets/actions et en cascade lors de la
+  perte d'une aura. Réutilise Highlander, gère jetons/cimetières, conserve le contrôle
+  du showdown et empile les nouveaux effets de mort au-dessus de la pile restante.
+- `passStack` attend les choix de ces effets avant de terminer la chaîne ou le combat.
+  Une élimination du défenseur pendant l'après-combat est mémorisée pour sa relance.
+- Soin global de fin de tour ajouté avant expiration des modificateurs temporaires.
+- TDD : dégâts absents, cible de base acceptée, morts/soin absents observés en échec ;
+  test de relance initialement en échec puis corrigé. Douze tests ciblés couvrent ces
+  cas, les réactions, les cascades d'aura et le recyclage de la huitième rune de Yi.
+- Suivi OGS : 8/24, hors decks de démo. Destruction directe et dégâts de zone restent
+  pour leurs cartes ; aucun nouveau mécanisme générique de déclenchement préconstruit.
+- Validation complète : `pnpm check`, 206 tests et build réussis.
+
 ## Limites à conserver lors d'une reprise
 
-- Première capacité de mort implémentée pour les morts de combat. Autres déclencheurs,
+- Première capacité de mort implémentée pour les morts de combat et hors combat. Autres déclencheurs,
   nouvelles sources de dégâts et cartes accordant des points restent à ajouter.
   Destination d'invocation devenue illégale : effet ignoré, choix provisoire documenté.
 - Effets propres aux battlefields, tags légende/champion et limites de copies à compléter.

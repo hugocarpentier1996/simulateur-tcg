@@ -9,6 +9,11 @@ export function spellTarget(
   casterId?: string,
 ): UnitState | undefined {
   const unit = state.units.find((u) => u.id === targetId);
+  if (
+    definition.target.zone === 'battlefield' &&
+    !state.zones.some((z) => z.id === unit?.zoneId && z.kind === 'battlefield')
+  )
+    return undefined;
   if (definition.target.allegiance === 'friendly' && unit?.ownerId !== casterId)
     return undefined;
   if (!unit || definition.target.combatRole === 'any') return unit;

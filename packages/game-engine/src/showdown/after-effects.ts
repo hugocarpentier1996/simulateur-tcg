@@ -3,7 +3,7 @@ import type { GameState } from '../types.js';
 /** Chaîne terminée -> Open converti en combat si contesté, ou prochaine arrivée traitée.
  * Ne clôture pas le Showdown actif et ne modifie pas son contrôleur pendant la fenêtre. */
 export function afterEffects(state: GameState): GameState {
-  if (state.stack || state.result) return state;
+  if (state.stack || state.pendingDeaths || state.result) return state;
   const current = state.showdown;
   if (current) {
     const defender = state.units.find(

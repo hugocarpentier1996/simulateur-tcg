@@ -22,7 +22,11 @@ export function startNextTurn(
   const end = runPhase(state, 'end', (s) => clearResources(s, 'end'));
   const current: GameState = {
     ...end.state,
-    units: end.state.units.map((unit) => ({ ...unit, temporaryEffects: [] })),
+    units: end.state.units.map((unit) => ({
+      ...unit,
+      damage: 0,
+      temporaryEffects: [],
+    })),
     priorityPlayerId: nextPlayerId,
     activePlayerId: nextPlayerId,
     scoredBattlefields: Object.fromEntries(
@@ -35,6 +39,10 @@ export function startNextTurn(
     state: started.state,
     events: [
       ...end.events,
+      {
+        type: 'units-healed',
+        unitIds: end.state.units.filter((u) => u.damage > 0).map((u) => u.id),
+      },
       { type: 'turn-ended', playerId: state.activePlayerId },
       ...started.events,
     ],

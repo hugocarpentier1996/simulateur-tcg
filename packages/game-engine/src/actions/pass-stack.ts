@@ -31,6 +31,20 @@ export function passStack(state: GameState, playerId: string): ActionResult {
     ? resolveDeathEffect({ ...state, stack: { ...stack, entries } }, entry)
     : resolveSpell({ ...state, stack: { ...stack, entries } }, entry);
   const next = resolved.state;
+  if (next.pendingDeaths)
+    return {
+      ok: true,
+      state: {
+        ...next,
+        stack: {
+          ...stack,
+          entries,
+          consecutivePasses: 0,
+          priorityPlayerId: next.showdown?.initiatorId ?? next.activePlayerId,
+        },
+      },
+      events: [event, ...resolved.events],
+    };
   if (!entries.length && next.combatAftermath && !next.result) {
     const finished = finishCombat({ ...next, stack: null });
     return {

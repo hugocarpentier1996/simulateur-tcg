@@ -308,6 +308,7 @@ export type GameEvent =
   | { type: 'unit-died'; unitId: string; zoneId: string }
   | { type: 'unit-retreated'; unitId: string; zoneId: string }
   | { type: 'unit-recalled'; unitId: string; zoneId: string }
+  | { type: 'spell-damage'; cardId: string; unitId: string; amount: number }
   | { type: 'units-healed'; unitIds: string[] }
   | { type: 'showdown-ended'; battlefieldId: string }
   | { type: 'deck-recycled'; playerId: string; cardIds: string[] }

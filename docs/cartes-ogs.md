@@ -15,8 +15,9 @@ différentes cartes portant le même nom. Les fichiers bruts restent hors de ces
 | OGS-020/024 Highlander         | Réaction, 4 Énergie ; prochaine mort remplacée par rappel Tap et soin | Cible alliée, conservation effets/équipement, usage unique, expiration, jeton, dégâts simultanés                 | Hors decks de démo                |
 | OGS-004/024 Master Yi (Calm)   | 5 Énergie, 1 vert, 4 Might ; +4 avec 8 runes en jeu                   | Seuil 7/8/9, Ready/Tap, exclusions, recyclage Power, coût, combat                                                | Hors decks de démo                |
 | OGS-013/024 Garen (Order)      | 6 Énergie, 1 jaune, 5 Might ; +1 aux autres alliés ici                | Base/champ, exclusions, cumul, déplacement, coût, mort et soin en combat                                         | Hors decks de démo                |
+| OGS-003/024 Incinerate         | Action, 2 Énergie, 2 dégâts à une unité sur un champ                  | Ciblage, persistance, mort, Highlander, effets de mort et absence de score prématuré                             | Hors decks de démo                |
 
-Définitions exportées : `vanguardAttendant`, `zephyrSage`, `garenBody`, `garenOrder`, `masterYiBody`, `masterYiCalm`, `highlander`, dans `packages/game-data/src/ogs`.
+Définitions exportées : `vanguardAttendant`, `zephyrSage`, `garenBody`, `garenOrder`, `masterYiBody`, `masterYiCalm`, `highlander`, `incinerate`, dans `packages/game-data/src/ogs`.
 Texte et URL d'image conservés comme métadonnées ; aucune image téléchargée.
 Tests : `packages/game-engine/src/ogs-vanguard-attendant.test.ts`.
 Tests Shield : `packages/game-engine/src/ogs-zephyr-sage.test.ts`.
@@ -28,16 +29,16 @@ Tests Shield : `packages/game-engine/src/ogs-zephyr-sage.test.ts`.
   couleurs de la carte. À implémenter avant Tibbers ou Decisive Strike ; le modèle actuel
   de coûts fixes par couleur ne suffit pas pour ce choix.
 - Mort si dégâts non nuls >= Might actuelle, y compris après baisse de Might. Dégâts
-  conservés jusqu'aux soins globaux de fin de combat/fin de tour. À raccorder lors des
-  cartes de dégâts : ne pas considérer cette confirmation comme déjà entièrement codée.
+  conservés jusqu'aux soins globaux de fin de combat/fin de tour. Raccordé avec Incinerate,
+  y compris la perte d'une aura ou du bonus de Master Yi lors d'un paiement.
 - Capacités ADD : production sans fenêtre de réaction, à introduire avec Lux OGS-014.
 - Shield/Assault : défense/attaque uniquement dans un Combat Showdown, jamais en Open,
   jusqu'à la clôture. Shield et Assault sont implémentés.
 
 ## Reprise
 
-17 cartes restent à implémenter. Procéder carte par carte en TDD et commit/push après
+16 cartes restent à implémenter. Procéder carte par carte en TDD et commit/push après
 chaque carte validée, en mettant ce tableau à jour. Demander les précisions propres
 à chaque mécanique lors de sa tranche, sans préconstruire tous les systèmes.
 L'arrivée Ready est une propriété statique de mise en jeu, pas un effet mis sur la pile.
-Prochaine carte envisagée : Incinerate OGS-003, dégâts de sort et morts hors combat.
+Prochaine carte envisagée : Final Spark OGS-022, réutilisant les dégâts ciblés.

@@ -7,11 +7,13 @@ export interface SpellBlueprint {
   readonly timing: 'normal' | 'action' | 'reaction';
   readonly cost: UnitBlueprint['cost'];
   readonly target: {
+    readonly zone?: 'battlefield';
     readonly allegiance?: 'friendly';
     readonly kind: 'unit';
     readonly combatRole: 'any' | 'attacker';
   };
   readonly effects: readonly (
+    | { readonly type: 'damage'; readonly amount: number }
     | { readonly type: 'recall-on-death'; readonly duration: 'end-of-turn' }
     | {
         readonly type: 'move-unit';
