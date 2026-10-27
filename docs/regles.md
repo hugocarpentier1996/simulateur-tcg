@@ -37,6 +37,9 @@ Awaken (Ready des cartes du joueur, runes comprises), Beginning (tenue et effets
 Channel (2 runes utilisables), Draw (1 carte), Main (cartes et mouvements dans l'ordre choisi),
 fin de tour. Énergie et Power flottants sont remis à zéro à la fin de Draw et du tour.
 Une unité doit normalement être Ready pour un mouvement basique et devient Tap en bougeant.
+Ganking autorise également le mouvement entre deux champs distincts, en conservant ces
+conditions Ready/Tap. Quitter un champ sans y laisser d'unité lui fait perdre son contrôle,
+sans effacer les points déjà scorés ce tour. « I enter ready » remplace l'arrivée Tap.
 Une unité jouée entre Tap, uniquement dans sa base ou sur un battlefield contrôlé.
 Le chosen champion peut être joué depuis sa zone, avec les mêmes coûts et restrictions
 que depuis la main ; il quitte alors sa zone de champion.

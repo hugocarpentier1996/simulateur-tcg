@@ -9,7 +9,8 @@ type MoveValidation =
  * Entrée : état cohérent et intention de mouvement d'un joueur connu.
  * Sortie : refus ou unité déplacée/Tap. Un champ adverse ouvre un combat, un champ
  * neutre un Open Showdown ; renforcer son propre champ n'en ouvre pas.
- * Le mouvement va de la base vers un champ ; l'entrée est préservée.
+ * Base vers champ, ou champ vers champ avec Ganking ; l'entrée est préservée.
+ * Quitter seul un champ libère son contrôle sans effacer le registre des points du tour.
  */
 export function moveUnit(state: GameState, action: MoveAction): ActionResult {
   const validation = validateMove(state, action);
@@ -34,11 +35,16 @@ function validateMove(state: GameState, action: MoveAction): MoveValidation {
   if (!unit || unit.ownerId !== action.playerId)
     return { ok: false, reason: 'INVALID_UNIT' };
   if (!unit.ready) return { ok: false, reason: 'UNIT_NOT_READY' };
-  // Mouvement de base vers un champ ; son occupation détermine le type de Showdown.
+  const ganking =
+    state.unitDefinitions?.find((d) => d.id === unit.definitionId)?.ganking ===
+    true;
+  const validOrigin =
+    origin &&
+    ((origin.kind === 'base' && origin.ownerId === action.playerId) ||
+      (origin.kind === 'battlefield' && ganking));
   if (
-    !origin ||
-    origin.kind !== 'base' ||
-    origin.ownerId !== action.playerId ||
+    !validOrigin ||
+    unit.zoneId === action.destinationId ||
     !battlefield ||
     !state.zones.some(
       (zone) => zone.id === action.destinationId && zone.kind === 'battlefield',
@@ -84,6 +90,14 @@ function applyMove(
     ok: true,
     state: {
       ...state,
+      battlefields: state.battlefields.map((field) =>
+        field.zoneId === unit.zoneId &&
+        !state.units.some(
+          (other) => other.id !== unit.id && other.zoneId === unit.zoneId,
+        )
+          ? { ...field, controllerId: null }
+          : field,
+      ),
       units: state.units.map((candidate) =>
         candidate.id === unit.id
           ? { ...candidate, ready: false, zoneId: action.destinationId }

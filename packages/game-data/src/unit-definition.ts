@@ -9,6 +9,8 @@ export interface CardCost {
  * `id` correspond au `definitionId` de ses instances. Might 0 est une valeur valide.
  * Propriétaire, zone, Ready/Tap et dégâts appartiennent à chaque instance en partie. */
 export interface UnitDefinition {
+  /** Autorise le mouvement basique entre deux champs distincts, avec Ready puis Tap. */
+  readonly ganking?: boolean;
   /** Bonus de Might uniquement en attaque sur le champ du Combat Showdown. */
   readonly assault?: number;
   /** Bonus de Might uniquement en défense sur le champ du Combat Showdown. */

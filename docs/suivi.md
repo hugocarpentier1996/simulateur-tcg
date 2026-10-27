@@ -10,7 +10,7 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
 - Projet : monorepo pnpm, moteur TypeScript pur dans `packages/game-engine`, catalogue
   de test dans `packages/game-data`. Table locale dans `apps/table`, aucun serveur réseau de jeu.
 - GitHub : `https://github.com/hugocarpentier1996/simulateur-tcg`, branche publiée `main`.
-- Dernière validation fonctionnelle : `pnpm check` réussi, 168 tests et build Vite.
+- Dernière validation fonctionnelle : `pnpm check` réussi, 173 tests et build Vite.
 - Environnement principal : Windows/PowerShell, Docker disponible. Voir README pour les commandes.
 - Attentes utilisateur : français, explications des étapes importantes, modules lisibles,
   contrats d'entrée/sortie documentés, TDD strict, publication GitHub à chaque étape achevée.
@@ -179,6 +179,17 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
 - TDD : attaque observée en échec, quatre tests validés (attaque/défense complètes,
   exclusions et mise en jeu Tap). Validation complète : 168 tests + build.
 - Suivi OGS : 3/24, catalogue/moteur uniquement, hors decks de démo.
+
+### Master Yi Body OGS-009 — 27 octobre 2026
+
+- 7 Énergie, 1 orange, 6 Might ; arrivée Ready et Ganking. Export `masterYiBody`.
+- Mouvement basique étendu aux champs d'origine pour Ganking : Ready obligatoire, Tap
+  après déplacement, refus même champ/base et hors fenêtre. Champ quitté neutralisé
+  seulement si aucune unité n'y reste, registre des points conservé. Actions légales
+  mises à jour automatiquement par validation dans `act`.
+- TDD : déplacements observés en échec puis cinq tests validés (Open sans double score,
+  maintien du contrôle et entrée en combat, exclusions, coût/Ready, renfort allié).
+- Validation complète : 173 tests + build. Suivi OGS : 4/24, hors decks de démo.
 
 ## Limites à conserver lors d'une reprise
 
