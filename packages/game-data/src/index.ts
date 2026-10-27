@@ -7,6 +7,7 @@ export { garenBody } from './ogs/garen-body.js';
 export { masterYiBody } from './ogs/master-yi-body.js';
 export { highlander } from './ogs/highlander.js';
 export { masterYiCalm } from './ogs/master-yi-calm.js';
+export { garenOrder } from './ogs/garen-order.js';
 export { deathTestUnits } from './death-units.js';
 export { defineSpell } from './spell-definition.js';
 export type {

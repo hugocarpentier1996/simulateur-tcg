@@ -218,6 +218,18 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
   raccorder avec les premières cartes de dégâts, comme pour les autres bonus/malus.
 - Validation complète : `pnpm check`, 188 tests et build réussis.
 
+### Garen Order OGS-013 — 27 octobre 2026
+
+- 6 Énergie, 1 jaune, 5 Might, arrivée Tap ; +1 Might aux autres unités alliées dans
+  sa zone (base comprise). Pas de bonus à soi-même, à l'adversaire ni ailleurs.
+- Aura continue recalculée sans pile : suit la source et cesse à son départ, fonctionne
+  Tap/Stun ; plusieurs sources se cumulent et peuvent se renforcer mutuellement.
+- TDD : six tests observés en échec puis validés. Combat avec mort de Garen : l'allié
+  profite du bonus pour survivre, reçoit le soin global, puis perd l'aura.
+- Suivi OGS : 7/24, catalogue/moteur, hors decks de démo. Suite proposée : Incinerate,
+  première tranche de dégâts de sort avec le traitement des morts hors combat.
+- Validation complète : `pnpm check`, 194 tests et build réussis.
+
 ## Limites à conserver lors d'une reprise
 
 - Première capacité de mort implémentée pour les morts de combat. Autres déclencheurs,

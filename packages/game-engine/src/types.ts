@@ -95,6 +95,7 @@ export interface GameState {
 
 /** Définition structurelle acceptée par le moteur ; compatible avec le catalogue game-data. */
 export interface UnitBlueprint {
+  readonly otherAlliesHereMightBonus?: number;
   readonly runeMightBonus?: {
     readonly minimum: number;
     readonly amount: number;

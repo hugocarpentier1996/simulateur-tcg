@@ -9,6 +9,8 @@ export interface CardCost {
  * `id` correspond au `definitionId` de ses instances. Might 0 est une valeur valide.
  * Propriétaire, zone, Ready/Tap et dégâts appartiennent à chaque instance en partie. */
 export interface UnitDefinition {
+  /** Aura locale : bonus aux autres unités alliées dans la zone de cette unité. */
+  readonly otherAlliesHereMightBonus?: number;
   /** Bonus statique selon le nombre de runes en jeu du propriétaire, Ready ou Tap. */
   readonly runeMightBonus?: {
     readonly minimum: number;
@@ -53,6 +55,7 @@ export function defineUnit(input: UnitDefinition): UnitDefinition {
     might: input.might,
     shield: input.shield ?? 0,
     assault: input.assault ?? 0,
+    otherAlliesHereMightBonus: input.otherAlliesHereMightBonus ?? 0,
     ...Object.fromEntries(
       Object.entries(input.cost.power).map(([color, amount]) => [
         `power.${color}`,

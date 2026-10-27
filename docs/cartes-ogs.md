@@ -14,8 +14,9 @@ différentes cartes portant le même nom. Les fichiers bruts restent hors de ces
 | OGS-009/024 Master Yi (Body)   | 7 Énergie, 1 orange, 6 Might ; Ready et Ganking                       | Champ à champ, Ready/Tap, contrôle au départ, Open/combat/renfort, registre des scores et actions légales        | Hors decks de démo                |
 | OGS-020/024 Highlander         | Réaction, 4 Énergie ; prochaine mort remplacée par rappel Tap et soin | Cible alliée, conservation effets/équipement, usage unique, expiration, jeton, dégâts simultanés                 | Hors decks de démo                |
 | OGS-004/024 Master Yi (Calm)   | 5 Énergie, 1 vert, 4 Might ; +4 avec 8 runes en jeu                   | Seuil 7/8/9, Ready/Tap, exclusions, recyclage Power, coût, combat                                                | Hors decks de démo                |
+| OGS-013/024 Garen (Order)      | 6 Énergie, 1 jaune, 5 Might ; +1 aux autres alliés ici                | Base/champ, exclusions, cumul, déplacement, coût, mort et soin en combat                                         | Hors decks de démo                |
 
-Définitions exportées : `vanguardAttendant`, `zephyrSage`, `garenBody`, `masterYiBody`, `masterYiCalm`, `highlander`, dans `packages/game-data/src/ogs`.
+Définitions exportées : `vanguardAttendant`, `zephyrSage`, `garenBody`, `garenOrder`, `masterYiBody`, `masterYiCalm`, `highlander`, dans `packages/game-data/src/ogs`.
 Texte et URL d'image conservés comme métadonnées ; aucune image téléchargée.
 Tests : `packages/game-engine/src/ogs-vanguard-attendant.test.ts`.
 Tests Shield : `packages/game-engine/src/ogs-zephyr-sage.test.ts`.
@@ -35,8 +36,8 @@ Tests Shield : `packages/game-engine/src/ogs-zephyr-sage.test.ts`.
 
 ## Reprise
 
-18 cartes restent à implémenter. Procéder carte par carte en TDD et commit/push après
+17 cartes restent à implémenter. Procéder carte par carte en TDD et commit/push après
 chaque carte validée, en mettant ce tableau à jour. Demander les précisions propres
 à chaque mécanique lors de sa tranche, sans préconstruire tous les systèmes.
 L'arrivée Ready est une propriété statique de mise en jeu, pas un effet mis sur la pile.
-Prochaine carte envisagée : Garen OGS-013, aura locale pour les autres unités alliées.
+Prochaine carte envisagée : Incinerate OGS-003, dégâts de sort et morts hors combat.
