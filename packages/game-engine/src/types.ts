@@ -95,6 +95,10 @@ export interface GameState {
 
 /** Définition structurelle acceptée par le moteur ; compatible avec le catalogue game-data. */
 export interface UnitBlueprint {
+  readonly runeMightBonus?: {
+    readonly minimum: number;
+    readonly amount: number;
+  };
   /** Autorise le mouvement basique de champ à champ ; ne dispense pas de Ready. */
   readonly ganking?: boolean;
   /** Bonus de Might en attaque, uniquement sur le champ du Combat Showdown. */

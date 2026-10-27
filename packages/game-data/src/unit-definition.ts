@@ -9,6 +9,11 @@ export interface CardCost {
  * `id` correspond au `definitionId` de ses instances. Might 0 est une valeur valide.
  * Propriétaire, zone, Ready/Tap et dégâts appartiennent à chaque instance en partie. */
 export interface UnitDefinition {
+  /** Bonus statique selon le nombre de runes en jeu du propriétaire, Ready ou Tap. */
+  readonly runeMightBonus?: {
+    readonly minimum: number;
+    readonly amount: number;
+  };
   /** Autorise le mouvement basique entre deux champs distincts, avec Ready puis Tap. */
   readonly ganking?: boolean;
   /** Bonus de Might uniquement en attaque sur le champ du Combat Showdown. */
@@ -35,6 +40,14 @@ export interface UnitDefinition {
  * Refuse par RangeError les coûts ou la Might négatifs, NaN ou infinis.
  * Aucun effet de carte ni traitement de paiement n'est exécuté ici. */
 export function defineUnit(input: UnitDefinition): UnitDefinition {
+  if (
+    input.runeMightBonus &&
+    (!Number.isInteger(input.runeMightBonus.minimum) ||
+      input.runeMightBonus.minimum < 0 ||
+      !Number.isFinite(input.runeMightBonus.amount) ||
+      input.runeMightBonus.amount < 0)
+  )
+    throw new RangeError(`${input.id}: bonus conditionnel de runes invalide.`);
   for (const [field, value] of Object.entries({
     energy: input.cost.energy,
     might: input.might,
@@ -54,6 +67,9 @@ export function defineUnit(input: UnitDefinition): UnitDefinition {
   }
   return Object.freeze({
     ...input,
+    ...(input.runeMightBonus
+      ? { runeMightBonus: Object.freeze({ ...input.runeMightBonus }) }
+      : {}),
     ...(input.onDeath ? { onDeath: Object.freeze({ ...input.onDeath }) } : {}),
     cost: Object.freeze({
       energy: input.cost.energy,

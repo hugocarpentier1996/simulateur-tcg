@@ -206,6 +206,18 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
 - Autorisation actuelle : continuer les cartes OGS sans demander sauf doute de règle,
   avec validation complète puis commit/push distinct après chaque carte.
 
+### Master Yi Calm OGS-004 — 27 octobre 2026
+
+- 5 Énergie, 1 Power vert, 4 Might, arrivée Tap. Bonus statique de +4 Might si son
+  propriétaire a au moins huit runes en jeu (Ready ou Tap), jamais celles du deck.
+- `runeMightBonus` est recalculé par `effectiveMight` : un paiement qui recycle la
+  huitième rune fait immédiatement perdre le bonus. Aucun effet mis sur la pile.
+- TDD : bonus absent, combat refusé et définition mutable observés en échec ; six
+  tests passent pour les seuils 7/8/9, le coût/recyclage et un combat complet.
+- Suivi OGS : 6/24, toujours hors decks de démo. Les morts hors combat restent à
+  raccorder avec les premières cartes de dégâts, comme pour les autres bonus/malus.
+- Validation complète : `pnpm check`, 188 tests et build réussis.
+
 ## Limites à conserver lors d'une reprise
 
 - Première capacité de mort implémentée pour les morts de combat. Autres déclencheurs,
