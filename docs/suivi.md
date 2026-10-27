@@ -191,6 +191,21 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
   maintien du contrôle et entrée en combat, exclusions, coût/Ready, renfort allié).
 - Validation complète : 173 tests + build. Suivi OGS : 4/24, hors decks de démo.
 
+### Highlander OGS-020 — 27 octobre 2026
+
+- Réaction à 4 Énergie, cible alliée revérifiée à la résolution. Ajoute une protection
+  temporaire contre la prochaine mort : rappel Tap en base et soin immédiat.
+- Équipement, bonus/malus et Stun conservés ; pas de déplacement ni de capacité de mort.
+  `replaceDeaths` précède le traitement simultané des morts de combat ; à réutiliser
+  lors de l'ajout des autres sources de mort. Aucun système de dégâts de sorts ajouté.
+- TDD : cible ennemie acceptée et protection absente observées en échec ; puis mort au
+  lieu du rappel observée en échec. Neuf tests couvrent paiement/pile, cible, attaque et
+  défense, usage unique, expiration, jeton, soin immédiat et dégâts simultanés.
+- Suivi OGS : 5/24, catalogue/moteur seulement. Highlander hors decks de démonstration.
+- Validation complète : `pnpm check`, 182 tests et build réussis.
+- Autorisation actuelle : continuer les cartes OGS sans demander sauf doute de règle,
+  avec validation complète puis commit/push distinct après chaque carte.
+
 ## Limites à conserver lors d'une reprise
 
 - Première capacité de mort implémentée pour les morts de combat. Autres déclencheurs,

@@ -22,7 +22,12 @@ export function resolveSpell(
       }
       continue;
     }
-    const target = spellTarget(state, entry.definition, entry.targetId);
+    const target = spellTarget(
+      state,
+      entry.definition,
+      entry.targetId,
+      entry.casterId,
+    );
     if (!target) continue;
     if (effect.type === 'move-unit') {
       if (!validDestination(state, target, entry.destinationId)) continue;
@@ -65,9 +70,9 @@ export function resolveSpell(
       });
     } else {
       const modifier =
-        effect.type === 'stun'
-          ? { type: 'stun' as const }
-          : { type: 'modify-might' as const, amount: effect.amount };
+        effect.type === 'modify-might'
+          ? { type: 'modify-might' as const, amount: effect.amount }
+          : { type: effect.type };
       state = {
         ...state,
         units: state.units.map((u) =>

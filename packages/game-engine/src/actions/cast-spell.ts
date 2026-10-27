@@ -30,7 +30,12 @@ export function castSpell(
   if (!definition) return { ok: false, reason: 'UNKNOWN_SPELL_DEFINITION' };
   if (!canCast(state, action.playerId, definition))
     return { ok: false, reason: 'SPELL_WINDOW_CLOSED' };
-  const target = spellTarget(state, definition, action.targetId);
+  const target = spellTarget(
+    state,
+    definition,
+    action.targetId,
+    action.playerId,
+  );
   if (!target) return { ok: false, reason: 'INVALID_TARGET' };
   if (
     definition.effects.some((e) => e.type === 'move-unit') &&

@@ -5,6 +5,7 @@ export { vanguardAttendant } from './ogs/vanguard-attendant.js';
 export { zephyrSage } from './ogs/zephyr-sage.js';
 export { garenBody } from './ogs/garen-body.js';
 export { masterYiBody } from './ogs/master-yi-body.js';
+export { highlander } from './ogs/highlander.js';
 export { deathTestUnits } from './death-units.js';
 export { defineSpell } from './spell-definition.js';
 export type {

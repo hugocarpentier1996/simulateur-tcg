@@ -137,6 +137,13 @@ jamais une unité défendant le champ.
 
 ## Combat et mort
 
+Highlander protège une unité alliée jusqu'à la fin du tour courant. Sa prochaine mort
+est remplacée par un rappel Tap en base : ses dégâts sont soignés immédiatement,
+ses équipements, bonus, malus et Stun sont conservés. Ce rappel n'est pas un déplacement
+et ne déclenche pas de capacité de mort. La protection est consommée par ce rappel.
+Implémentation actuelle : morts de combat ; le même remplacement devra être appelé
+par les futures sources de mort (sorts de dégâts, destruction, baisse de Might).
+
 Shield N donne +N Might uniquement à une unité qui défend sur le champ d'un Combat
 Showdown. Assault N applique le bonus uniquement à une unité attaquante dans ce même
 contexte. Sans nombre, le bonus vaut 1. Aucun bonus dans un Open Showdown, en base

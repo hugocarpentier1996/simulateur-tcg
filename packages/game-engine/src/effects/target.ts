@@ -6,8 +6,11 @@ export function spellTarget(
   state: GameState,
   definition: SpellBlueprint,
   targetId: string,
+  casterId?: string,
 ): UnitState | undefined {
   const unit = state.units.find((u) => u.id === targetId);
+  if (definition.target.allegiance === 'friendly' && unit?.ownerId !== casterId)
+    return undefined;
   if (!unit || definition.target.combatRole === 'any') return unit;
   const combat = state.showdown;
   return combat?.kind === 'combat' &&

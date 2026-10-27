@@ -8,6 +8,7 @@ import type {
 import { finishCombat } from './finish.js';
 import { deathTriggers } from '../effects/death.js';
 import { effectiveMight } from '../effects/modifiers.js';
+import { replaceDeaths } from '../effects/replace-death.js';
 
 type Combat = Extract<NonNullable<GameState['showdown']>, { kind: 'combat' }>;
 
@@ -27,15 +28,21 @@ export function resolveCombat(
       ? { ...unit, damage: (unit.damage ?? 0) + damage.get(unit.id)! }
       : unit,
   );
-  const dead = damaged.filter(
+  const lethal = damaged.filter(
     (unit) =>
       unit.zoneId === combat.battlefieldId &&
       (unit.damage ?? 0) >= Math.max(1, effectiveMight(unit, state)),
   );
+  const replaced = replaceDeaths(
+    { ...state, units: damaged },
+    new Set(lethal.map((unit) => unit.id)),
+  );
+  const dead = replaced.dead;
   const deadIds = new Set(dead.map((unit) => unit.id));
-  const survivors = damaged.filter((unit) => !deadIds.has(unit.id));
+  const survivors = replaced.units.filter((unit) => !deadIds.has(unit.id));
   const events: GameEvent[] = [
     { type: 'combat-damage', allocations },
+    ...replaced.events,
     {
       type: 'units-healed',
       unitIds: survivors

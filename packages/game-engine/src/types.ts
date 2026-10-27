@@ -117,7 +117,9 @@ export interface UnitBlueprint {
 export interface UnitState {
   token?: boolean;
   temporaryEffects?: (
-    { type: 'modify-might'; amount: number } | { type: 'stun' }
+    | { type: 'modify-might'; amount: number }
+    | { type: 'stun' }
+    | { type: 'recall-on-death' }
   )[];
   id: string;
   ownerId: string;
@@ -300,6 +302,7 @@ export type GameEvent =
   | { type: 'combat-damage'; allocations: readonly DamageAllocation[] }
   | { type: 'unit-died'; unitId: string; zoneId: string }
   | { type: 'unit-retreated'; unitId: string; zoneId: string }
+  | { type: 'unit-recalled'; unitId: string; zoneId: string }
   | { type: 'units-healed'; unitIds: string[] }
   | { type: 'showdown-ended'; battlefieldId: string }
   | { type: 'deck-recycled'; playerId: string; cardIds: string[] }
