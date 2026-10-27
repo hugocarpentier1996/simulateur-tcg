@@ -8,6 +8,10 @@ Cette application consomme le moteur sans le modifier ni lui ajouter de dépenda
 - `src/session.ts` : `createDemo()` fournit une session déterministe en Main. `dispatch`
   transmet une intention à `act` et conserve son résultat et un journal français.
   Un refus conserve l'état et le journal précédents, et ajoute un message d'erreur.
+- `undo(session)` restaure l'état complet et le journal précédents, puis enlève un retour
+  de l'historique (dix actions réussies maximum). Les instantanés partagent les données
+  immuables du moteur sans historique imbriqué. Aucun rétablissement, aucune persistance ;
+  une nouvelle partie repart sans historique et un refus n'ajoute pas d'instantané.
 - `placementOptions(state, cardId)` demande à `getLegalActions` les destinations et
   paiements valides. `placeUnit(session, cardId, destinationId)` les recalcule au dépôt
   et joue l'action correspondante. Une carte impayable n'a aucune destination.

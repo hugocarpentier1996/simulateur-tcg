@@ -39,8 +39,12 @@ n'est dépensé lors d'un refus. Les runes utilisées sont choisies automatiquem
 première interface ne permet pas de modifier cette stratégie de paiement.
 
 « Terminer le tour » exécute les étapes automatiques et passe au joueur suivant.
+Le bouton « Annuler l’action », au-dessus du plateau, permet de revenir jusqu'à dix
+actions réussies en arrière, avec leur paiement et leurs effets automatiques. Le compteur
+indique les retours encore disponibles ; les refus et simples sélections ne comptent pas.
 Les piles, runes de couleur, bases et champs sont disposés en miroir ; la main forme un
 éventail. Le nombre de colonnes des champs suit celui fourni par le moteur.
+La légende est entre la base et le chosen champion, à droite pour le joueur actif.
 
 Limites de cette tranche : préparation fixe sans écran de dés/mulligan, unités de test
 uniquement, pas encore de commandes de déplacement, combat, sort ou gear. Les champs

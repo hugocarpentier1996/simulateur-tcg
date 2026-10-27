@@ -10,7 +10,7 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
 - Projet : monorepo pnpm, moteur TypeScript pur dans `packages/game-engine`, catalogue
   de test dans `packages/game-data`. Table locale dans `apps/table`, aucun serveur réseau de jeu.
 - GitHub : `https://github.com/hugocarpentier1996/simulateur-tcg`, branche publiée `main`.
-- Dernière validation fonctionnelle : `pnpm check` réussi, 150 tests et build Vite.
+- Dernière validation fonctionnelle : `pnpm check` réussi, 154 tests et build Vite.
 - Environnement principal : Windows/PowerShell, Docker disponible. Voir README pour les commandes.
 - Attentes utilisateur : français, explications des étapes importantes, modules lisibles,
   contrats d'entrée/sortie documentés, TDD strict, publication GitHub à chaque étape achevée.
@@ -118,6 +118,18 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
 - Limites : démo locale sans sauvegarde ni écran de préparation. Aucun déplacement de
   permanents, combat, spell ou gear interactif pour cette tranche. Le paiement automatique
   propose un plan déterministe sans choix stratégique. Les règles restent dans le moteur.
+
+### Placement de la légende et annulation locale — 27 octobre 2026
+
+- Légende entre la base et le chosen champion : à droite pour le joueur actif, miroir
+  à gauche pour l'adversaire, y compris sur écran étroit.
+- Bouton hors plateau « Annuler l’action (N/10) », désactivé sans historique. Chaque
+  action réussie sauvegarde l'état et le journal précédents ; `undo` les restaure et efface
+  erreur/sélection. Les refus ne comptent pas. Dix instantanés maximum, sans historique
+  imbriqué, sans rétablissement, réinitialisés à la nouvelle partie ou au rechargement.
+- TDD : quatre tests observés en échec puis validés (mise en jeu/paiement, fin de tour,
+  limite de dix sur treize actions, refus et nouvelle action après retour).
+  `pnpm check` réussi : 154 tests et construction Vite.
 
 ## Limites à conserver lors d'une reprise
 

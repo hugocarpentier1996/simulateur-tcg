@@ -109,7 +109,7 @@ function playerBase(
   const base = state.zones.find(
     (z) => z.kind === 'base' && z.ownerId === ownerId,
   )!;
-  return `<div class="base-row ${opponent ? 'opponent-base' : ''}"><div class="identity-zone"><span class="legend-mark" aria-hidden="true">♔</span><span>Légende<small>Rouge · Bleu</small></span></div>${zone(state, base.id, `Base · ${playerName(ownerId)}`, 'Unités en jeu', false, destinations)}<div class="chosen-zone">${champion ? (opponent ? `<div class="champion-back"><span>Chosen champion</span><strong>${escape(cardName(champion.definitionId))}</strong><b>♜</b></div>` : card(champion, selected, true)) : '<p class="empty">Zone champion vide</p>'}</div></div>`;
+  return `<div class="base-row ${opponent ? 'opponent-base' : ''}">${zone(state, base.id, `Base · ${playerName(ownerId)}`, 'Unités en jeu', false, destinations)}<div class="identity-zone"><span class="legend-mark" aria-hidden="true">♔</span><span>Légende<small>Rouge · Bleu</small></span></div><div class="chosen-zone">${champion ? (opponent ? `<div class="champion-back"><span>Chosen champion</span><strong>${escape(cardName(champion.definitionId))}</strong><b>♜</b></div>` : card(champion, selected, true)) : '<p class="empty">Zone champion vide</p>'}</div></div>`;
 }
 
 function handFan(hand: CardInstance[], selected: Selection | null): string {
@@ -139,7 +139,7 @@ export function renderTable(
     ),
   );
   const canEnd = act(state, { type: 'end-turn', playerId: active }).ok;
-  return `<header class="topbar"><div class="brand"><span class="brand-icon" aria-hidden="true">◇</span><div><h1>Simulateur TCG</h1><p>La table d’essai</p></div></div><div class="local-tag"><span></span> Local · 2 joueurs</div><button class="quiet" data-action="reset">Nouvelle partie</button></header>
+  return `<header class="topbar"><div class="brand"><span class="brand-icon" aria-hidden="true">◇</span><div><h1>Simulateur TCG</h1><p>La table d’essai</p></div></div><div class="local-tag"><span></span> Local · 2 joueurs</div><button id="undo-action" class="quiet" data-action="undo" title="Annuler la dernière action réussie (10 maximum)" ${session.history.length === 0 ? 'disabled' : ''}>↶ Annuler l’action (${session.history.length}/10)</button><button class="quiet" data-action="reset">Nouvelle partie</button></header>
     <main><section class="play-area"><div class="scoreboard">${state.players.map((p) => `<div class="player ${p.id === active ? 'active' : ''}"><span>${escape(playerName(p.id))}<small>${p.id === active ? 'Tour actif' : 'En attente'}</small></span><strong>${p.score}<small> / ${p.victoryTarget ?? 8}</small></strong></div>`).join('')}</div>
     <div class="turnbar"><div><span class="eyebrow">${state.result ? 'Partie terminée' : 'Phase principale · Main'}</span><h2>${state.result ? `${escape(playerName(state.result.winnerId))} gagne` : `À ${escape(playerName(active))} de jouer`}</h2></div><span class="priority">Priorité : ${escape(playerName(priority))}</span><button class="primary" data-action="end" ${!canEnd ? 'disabled' : ''}>Terminer le tour →</button></div>
     <div class="board">

@@ -33,6 +33,8 @@ export interface Session {
   state: GameState;
   log: string[];
   error: string | null;
+  /** Dix états précédant les actions réussies, sans historique imbriqué. */
+  history: { state: GameState; log: string[] }[];
 }
 
 export const playerName = (id: string) =>
@@ -91,6 +93,7 @@ export function createDemo(): Session {
     );
   return {
     state,
+    history: [],
     log: [
       'Partie de test préparée : dés 19 / 8, aucune carte remplacée.',
       'Joueur 1 commence : 2 runes et 5 cartes en main.',
@@ -157,6 +160,10 @@ export function dispatch(session: Session, action: GameAction): Session {
     };
   return {
     state: result.state,
+    history: [
+      ...session.history,
+      { state: session.state, log: session.log },
+    ].slice(-10),
     error: null,
     log: [
       ...session.log,
@@ -165,6 +172,15 @@ export function dispatch(session: Session, action: GameAction): Session {
         .filter((line): line is string => line !== null),
     ].slice(-200),
   };
+}
+
+/** Session -> état et journal précédents, en retirant un niveau d'historique.
+ * Restaure toute l'action (paiement, pioche et étapes automatiques inclus) et efface l'erreur.
+ * Sans historique, retourne la session inchangée. Annulation locale, sans rétablissement. */
+export function undo(session: Session): Session {
+  const previous = session.history.at(-1);
+  if (!previous) return session;
+  return { ...previous, error: null, history: session.history.slice(0, -1) };
 }
 
 /** État actuel + carte -> placements autorisés avec un paiement déterministe du moteur.

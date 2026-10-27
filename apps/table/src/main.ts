@@ -3,6 +3,7 @@ import {
   dispatch,
   placementOptions,
   placeUnit,
+  undo,
 } from './session.js';
 import { renderTable, type Selection } from './view.js';
 import './style.css';
@@ -41,6 +42,9 @@ root.addEventListener('click', (event) => {
   if (button.dataset.card) {
     selection = { cardId: button.dataset.card };
     session = { ...session, error: null };
+  } else if (button.dataset.action === 'undo') {
+    session = undo(session);
+    selection = null;
   } else if (button.dataset.action === 'cancel') selection = null;
   else if (button.dataset.action === 'end') {
     session = dispatch(session, {
