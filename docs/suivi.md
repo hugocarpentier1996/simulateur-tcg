@@ -10,7 +10,7 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
 - Projet : monorepo pnpm, moteur TypeScript pur dans `packages/game-engine`, catalogue
   de test dans `packages/game-data`. Table locale dans `apps/table`, aucun serveur réseau de jeu.
 - GitHub : `https://github.com/hugocarpentier1996/simulateur-tcg`, branche publiée `main`.
-- Dernière validation fonctionnelle : `pnpm check` réussi, 164 tests et build Vite.
+- Dernière validation fonctionnelle : `pnpm check` réussi, 168 tests et build Vite.
 - Environnement principal : Windows/PowerShell, Docker disponible. Voir README pour les commandes.
 - Attentes utilisateur : français, explications des étapes importantes, modules lisibles,
   contrats d'entrée/sortie documentés, TDD strict, publication GitHub à chaque étape achevée.
@@ -171,6 +171,14 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
   coût et arrivée Tap. `pnpm check` : 164 tests + build.
 - Assault confirmé avec le même timing côté attaquant ; à implémenter avec Garen OGS-007.
   Suivi OGS : 2/24 cartes, toujours hors decks de démonstration. Aucune image analysée.
+
+### Garen Body OGS-007 — 27 octobre 2026
+
+- 6 Énergie, 1 orange, 5 Might, Assault 2 / Shield 2. Bonus choisi selon le rôle :
+  jamais +4, jamais en Open ni hors du champ de combat. Export `garenBody`.
+- TDD : attaque observée en échec, quatre tests validés (attaque/défense complètes,
+  exclusions et mise en jeu Tap). Validation complète : 168 tests + build.
+- Suivi OGS : 3/24, catalogue/moteur uniquement, hors decks de démo.
 
 ## Limites à conserver lors d'une reprise
 

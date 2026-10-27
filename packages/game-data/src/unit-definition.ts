@@ -9,6 +9,8 @@ export interface CardCost {
  * `id` correspond au `definitionId` de ses instances. Might 0 est une valeur valide.
  * Propriétaire, zone, Ready/Tap et dégâts appartiennent à chaque instance en partie. */
 export interface UnitDefinition {
+  /** Bonus de Might uniquement en attaque sur le champ du Combat Showdown. */
+  readonly assault?: number;
   /** Bonus de Might uniquement en défense sur le champ du Combat Showdown. */
   readonly shield?: number;
   /** Exception imprimée : arrivée Ready au lieu de Tap ; false/absent garde Tap. */
@@ -35,6 +37,7 @@ export function defineUnit(input: UnitDefinition): UnitDefinition {
     energy: input.cost.energy,
     might: input.might,
     shield: input.shield ?? 0,
+    assault: input.assault ?? 0,
     ...Object.fromEntries(
       Object.entries(input.cost.power).map(([color, amount]) => [
         `power.${color}`,

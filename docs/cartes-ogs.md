@@ -11,7 +11,9 @@ différentes cartes portant le même nom. Les fichiers bruts restent hors de ces
 | OGS-016/024 Vanguard Attendant | 6 Énergie, 1 Power jaune, 5 Might ; `entersReady` | Coût réel, arrivée Ready base/champ contrôlé, déplacement immédiat, refus coût/couleur/destination               | Pas encore dans les decks de démo |
 | OGS-005/024 Zephyr Sage        | 6 Énergie, 1 Power vert, 6 Might ; Shield 1       | Bonus en défense pendant Combat Showdown seulement, dégâts/seuil létal, survie puis soin et disparition du bonus | Pas encore dans les decks de démo |
 
-Définitions exportées : `vanguardAttendant` et `zephyrSage`, dans `packages/game-data/src/ogs`.
+| OGS-007/024 Garen (Body) | 6 Énergie, 1 orange, 5 Might ; Assault 2 / Shield 2 | Combat attaque/défense, non-cumul, absence en Open, coût et Tap | Hors decks de démo |
+
+Définitions exportées : `vanguardAttendant`, `zephyrSage`, `garenBody`, dans `packages/game-data/src/ogs`.
 Texte et URL d'image conservés comme métadonnées ; aucune image téléchargée.
 Tests : `packages/game-engine/src/ogs-vanguard-attendant.test.ts`.
 Tests Shield : `packages/game-engine/src/ogs-zephyr-sage.test.ts`.
@@ -27,12 +29,12 @@ Tests Shield : `packages/game-engine/src/ogs-zephyr-sage.test.ts`.
   cartes de dégâts : ne pas considérer cette confirmation comme déjà entièrement codée.
 - Capacités ADD : production sans fenêtre de réaction, à introduire avec Lux OGS-014.
 - Shield/Assault : défense/attaque uniquement dans un Combat Showdown, jamais en Open,
-  jusqu'à la clôture. Shield est implémenté ; Assault reste à ajouter avec Garen OGS-007.
+  jusqu'à la clôture. Shield et Assault sont implémentés.
 
 ## Reprise
 
-22 cartes restent à implémenter. Procéder carte par carte en TDD et commit/push après
+21 cartes restent à implémenter. Procéder carte par carte en TDD et commit/push après
 chaque carte validée, en mettant ce tableau à jour. Demander les précisions propres
 à chaque mécanique lors de sa tranche, sans préconstruire tous les systèmes.
 L'arrivée Ready est une propriété statique de mise en jeu, pas un effet mis sur la pile.
-Prochaine carte simple : Garen OGS-007 (Assault 2 et Shield 2), dont le timing est confirmé.
+Prochaine carte : Master Yi OGS-009 (Ganking et arrivée Ready).

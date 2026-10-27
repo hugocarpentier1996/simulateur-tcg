@@ -2,7 +2,7 @@ import type { GameState, UnitState } from '../types.js';
 import { gearMightBonus } from './gear-bonus.js';
 import { combatMightBonus } from './combat-bonus.js';
 
-/** Unité + état -> Might actuelle avec auras/équipement et Shield, sans modifier la valeur imprimée.
+/** Unité + état -> Might actuelle avec auras/équipement et Assault/Shield, sans modifier la valeur imprimée.
  * Sans état : seulement Might de base et modificateurs temporaires (compatibilité des anciens appels). */
 export function effectiveMight(unit: UnitState, state?: GameState): number {
   return Math.max(

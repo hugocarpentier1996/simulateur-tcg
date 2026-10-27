@@ -3,6 +3,7 @@ export type { CardCost, UnitDefinition } from './unit-definition.js';
 export { testUnits } from './test-units.js';
 export { vanguardAttendant } from './ogs/vanguard-attendant.js';
 export { zephyrSage } from './ogs/zephyr-sage.js';
+export { garenBody } from './ogs/garen-body.js';
 export { deathTestUnits } from './death-units.js';
 export { defineSpell } from './spell-definition.js';
 export type {
