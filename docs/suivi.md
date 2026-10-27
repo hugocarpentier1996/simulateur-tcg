@@ -10,7 +10,7 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
 - Projet : monorepo pnpm, moteur TypeScript pur dans `packages/game-engine`, catalogue
   de test dans `packages/game-data`. Table locale dans `apps/table`, aucun serveur réseau de jeu.
 - GitHub : `https://github.com/hugocarpentier1996/simulateur-tcg`, branche publiée `main`.
-- Dernière validation fonctionnelle : `pnpm check` réussi, 160 tests et build Vite.
+- Dernière validation fonctionnelle : `pnpm check` réussi, 164 tests et build Vite.
 - Environnement principal : Windows/PowerShell, Docker disponible. Voir README pour les commandes.
 - Attentes utilisateur : français, explications des étapes importantes, modules lisibles,
   contrats d'entrée/sortie documentés, TDD strict, publication GitHub à chaque étape achevée.
@@ -159,6 +159,18 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
 - Confirmations couleurs, Power bicolore, létalité après baisse de Might et exception ADD
   inscrites dans les règles. Les mécanismes bicolores/ADD/dégâts généraux restent à coder
   au fil des cartes concernées. Suivi carte par carte : `docs/cartes-ogs.md` (1/24).
+
+### Zephyr Sage et Shield — 27 octobre 2026
+
+- OGS-005/024 : 6 Énergie, 1 vert, 6 Might, Shield 1, arrivée Tap par défaut.
+- `shield` dans le catalogue ; `combatMightBonus` ajoute le bonus dans `effectiveMight`
+  uniquement pour le défenseur sur le champ du Combat Showdown, jusqu'à sa clôture.
+  Le calcul commun couvre dégâts, seuil létal et affichage. Aucun effet de pile ajouté.
+- TDD : bonus et survie observés en échec, puis quatre tests validés : toutes les étapes
+  du combat, absence hors contexte, survie à 6 dégâts puis soin global et retour à 6 Might,
+  coût et arrivée Tap. `pnpm check` : 164 tests + build.
+- Assault confirmé avec le même timing côté attaquant ; à implémenter avec Garen OGS-007.
+  Suivi OGS : 2/24 cartes, toujours hors decks de démonstration. Aucune image analysée.
 
 ## Limites à conserver lors d'une reprise
 

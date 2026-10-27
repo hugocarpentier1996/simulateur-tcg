@@ -134,6 +134,11 @@ jamais une unité défendant le champ.
 
 ## Combat et mort
 
+Shield N donne +N Might uniquement à une unité qui défend sur le champ d'un Combat
+Showdown. Assault N applique le bonus uniquement à une unité attaquante dans ce même
+contexte. Sans nombre, le bonus vaut 1. Aucun bonus dans un Open Showdown, en base
+ou sur un autre champ. Le bonus dure jusqu'à la clôture du Combat Showdown.
+
 Dégâts simultanés égaux à la Might contributive. Stun et d'autres effets peuvent empêcher
 une unité de contribuer. Chaque joueur distribue ses dégâts aux adversaires : assigner
 de quoi tuer une cible avant de passer à la suivante, et assigner tous les dégâts possibles,
