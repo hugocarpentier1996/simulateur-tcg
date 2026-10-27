@@ -95,6 +95,8 @@ export interface GameState {
 
 /** Définition structurelle acceptée par le moteur ; compatible avec le catalogue game-data. */
 export interface UnitBlueprint {
+  /** Arrivée Ready lors de la mise en jeu ; absent ou false signifie Tap. */
+  readonly entersReady?: boolean;
   readonly onDeath?: DeathEffect;
   readonly id: string;
   readonly type: 'unit';

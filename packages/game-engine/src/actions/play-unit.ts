@@ -2,7 +2,7 @@ import type { GameState, GameAction, ActionResult } from '../types.js';
 import { payCost } from '../cost/payment.js';
 import { canSummonAt } from './unit-destination.js';
 
-/** Main hors Showdown + carte en main/zone champion + paiement -> unité Tap.
+/** Main hors Showdown + carte en main/zone champion + paiement -> unité Tap, sauf entersReady.
  * Destination : base propre par défaut, ou champ contrôlé ; refus atomique sinon.
  * Le chosen champion suit le coût du catalogue et quitte sa zone comme une carte en main. */
 export function playUnit(
@@ -55,7 +55,7 @@ export function playUnit(
           definitionId: card.definitionId,
           ownerId: card.ownerId,
           zoneId: destinationId,
-          ready: false,
+          ready: definition.entersReady === true,
           might: definition.might,
           damage: 0,
         },

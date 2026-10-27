@@ -49,6 +49,10 @@ l'adversaire : le joueur qui doit piocher perd la partie.
 
 ## Ressources et préparation
 
+Correspondance des domaines : Fury = rouge, Calm = vert, Mind = bleu, Body = orange,
+Chaos = violet, Order = jaune. Un coût de Power bicolore peut être payé avec n'importe
+quelle combinaison des deux couleurs de la carte (ex. deux de la même ou une de chaque).
+
 Six couleurs de runes. Tap une rune produit 1 énergie incolore ; renvoyer une rune sous
 sa pile produit 1 Power de sa couleur. Les coûts peuvent demander les deux ressources.
 Une rune déjà Tap peut être recyclée pour son Power. Une rune Ready peut donc produire
@@ -119,6 +123,8 @@ Timings des sorts : Normal seulement pendant sa Main hors Showdown ; Action éga
 avec priorité en open state de Showdown (aucun effet en attente) ; Réaction dans ces
 fenêtres et en réponse en closed state. Une Réaction peut répondre à une Réaction.
 Tout sort, même Normal, et toute capacité déclenchée ouvrent une fenêtre de Réaction.
+Exception : les capacités de type ADD produisant des ressources ne permettent aucune
+Réaction (notamment Lux OGS-014). Ce n'est pas une fenêtre de pile ordinaire.
 Open/closed state est distinct du type Open/Combat Showdown.
 
 Pour les quatre sorts de test, bonus et malus de Might ainsi que Stun durent jusqu'à
@@ -139,6 +145,10 @@ non Backline. Tank + Backline peut être ciblé avec les Tanks ou ignoré jusque
 unités normales ; les cas plus complexes seront fixés avec des cartes représentatives.
 
 Les dégâts atteignant la Might tuent ; Might 0 exige au moins un dégât.
+Plus généralement, une unité meurt si ses dégâts sont non nuls et supérieurs ou égaux
+à sa Might actuelle. Une baisse de Might après des dégâts peut donc la tuer.
+Les dégâts non mortels, y compris ceux des sorts, restent jusqu'au soin global de fin
+de combat ou de fin de tour ; la résolution d'un sort ne soigne pas par elle-même.
 Les morts sont irréversibles mais restent temporairement sur le terrain.
 Toutes les unités survivantes de la partie sont soignées, même hors du combat.
 Les effets de mort se déclenchent ensuite juste avant le transfert au cimetière.

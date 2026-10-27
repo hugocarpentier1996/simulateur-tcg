@@ -9,6 +9,11 @@ export interface CardCost {
  * `id` correspond au `definitionId` de ses instances. Might 0 est une valeur valide.
  * Propriétaire, zone, Ready/Tap et dégâts appartiennent à chaque instance en partie. */
 export interface UnitDefinition {
+  /** Exception imprimée : arrivée Ready au lieu de Tap ; false/absent garde Tap. */
+  readonly entersReady?: boolean;
+  /** Métadonnées d'affichage, jamais chargées par le moteur. */
+  readonly imageUrl?: string;
+  readonly text?: string;
   readonly onDeath?: {
     readonly type: 'summon-token';
     readonly definitionId: string;

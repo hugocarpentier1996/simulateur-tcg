@@ -3,3 +3,5 @@ pnpm-lock.yaml
 dist
 coverage
 work
+# Exports de référence fournis par l'utilisateur, à préserver tels quels.
+ListeCartes

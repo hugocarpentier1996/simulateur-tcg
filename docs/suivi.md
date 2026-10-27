@@ -10,7 +10,7 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
 - Projet : monorepo pnpm, moteur TypeScript pur dans `packages/game-engine`, catalogue
   de test dans `packages/game-data`. Table locale dans `apps/table`, aucun serveur réseau de jeu.
 - GitHub : `https://github.com/hugocarpentier1996/simulateur-tcg`, branche publiée `main`.
-- Dernière validation fonctionnelle : `pnpm check` réussi, 157 tests et build Vite.
+- Dernière validation fonctionnelle : `pnpm check` réussi, 160 tests et build Vite.
 - Environnement principal : Windows/PowerShell, Docker disponible. Voir README pour les commandes.
 - Attentes utilisateur : français, explications des étapes importantes, modules lisibles,
   contrats d'entrée/sortie documentés, TDD strict, publication GitHub à chaque étape achevée.
@@ -147,6 +147,18 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
   puis holding avec annulation, renfort sans point et exclusion temporaire des attaques).
   Vérification navigateur : glisser-déposer, deux passes, score 0 → 1 → 2 au tour suivant.
   `pnpm check` : 157 tests + build. Serveur de vérification temporaire sur 5174 arrêté après essai.
+
+### Première carte réelle : Vanguard Attendant — 27 octobre 2026
+
+- OGS-016/024 dans `game-data/src/ogs`, export `vanguardAttendant` : 6 Énergie, 1 jaune,
+  5 Might, arrivée Ready. Métadonnées texte/URL conservées, aucune image consultée.
+- `entersReady` optionnel dans la définition et le contrat moteur ; mise en jeu Ready
+  si true, Tap par défaut. Aucun changement aux decks de démonstration de l'interface.
+- TDD : arrivée Ready observée en échec, puis trois cas validés : base/champ contrôlé,
+  paiement, déplacement immédiat et refus coût/couleur/destination. `pnpm check` : 160 tests.
+- Confirmations couleurs, Power bicolore, létalité après baisse de Might et exception ADD
+  inscrites dans les règles. Les mécanismes bicolores/ADD/dégâts généraux restent à coder
+  au fil des cartes concernées. Suivi carte par carte : `docs/cartes-ogs.md` (1/24).
 
 ## Limites à conserver lors d'une reprise
 
