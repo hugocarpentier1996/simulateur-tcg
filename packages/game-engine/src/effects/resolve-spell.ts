@@ -1,10 +1,15 @@
 import type { ActionResult, GameEvent, GameState } from '../types.js';
 import type { SpellEntry } from '../spell-types.js';
-import { spellTarget, validDestination, duelEnemyTarget } from './target.js';
+import {
+  spellTarget,
+  validDestination,
+  duelEnemyTarget,
+  validBattlefieldTarget,
+} from './target.js';
 import { resolveDuel } from './duel.js';
 import { drawCardForPlayer } from '../turn/draw.js';
 import { settleLethalUnits } from './lethal-units.js';
-import { spellAbilityDamageBonus } from './damage-bonus.js';
+import { dealSpellDamage } from './spell-damage.js';
 
 /** Sort payé -> effets dans l'ordre puis carte au cimetière. Aucune fenêtre au milieu
  * des instructions d'un même sort. Cible devenue illégale : effet ciblé ignoré ;
@@ -23,6 +28,22 @@ export function resolveSpell(
         state = drawn.state;
         events.push(...drawn.events);
       }
+      continue;
+    }
+    if (effect.type === 'damage-enemies-at-battlefield') {
+      if (!validBattlefieldTarget(state, entry.targetId)) continue;
+      const targets = state.units.filter(
+        (u) => u.zoneId === entry.targetId && u.ownerId !== entry.casterId,
+      );
+      const damaged = dealSpellDamage(
+        state,
+        entry.card.id,
+        entry.casterId,
+        targets,
+        effect.amount,
+      );
+      state = damaged.state;
+      events.push(...damaged.events);
       continue;
     }
     const target = spellTarget(
@@ -47,20 +68,15 @@ export function resolveSpell(
       state = duel.state;
       events.push(...duel.events);
     } else if (effect.type === 'damage') {
-      const amount =
-        effect.amount + spellAbilityDamageBonus(state, entry.casterId);
-      state = {
-        ...state,
-        units: state.units.map((u) =>
-          u.id === target.id ? { ...u, damage: u.damage + amount } : u,
-        ),
-      };
-      events.push({
-        type: 'spell-damage',
-        cardId: entry.card.id,
-        unitId: target.id,
-        amount,
-      });
+      const damaged = dealSpellDamage(
+        state,
+        entry.card.id,
+        entry.casterId,
+        [target],
+        effect.amount,
+      );
+      state = damaged.state;
+      events.push(...damaged.events);
     } else if (effect.type === 'move-unit') {
       if (!validDestination(state, target, entry.destinationId)) continue;
       const destinationId = entry.destinationId!;

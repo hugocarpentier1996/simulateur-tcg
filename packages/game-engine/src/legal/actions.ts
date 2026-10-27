@@ -72,7 +72,9 @@ function* candidates(
     if (spell) {
       const payment = findPayment(state, playerId, spell.cost);
       if (payment)
-        for (const target of state.units) {
+        for (const target of spell.target.kind === 'battlefield'
+          ? state.battlefields.map((f) => ({ id: f.zoneId }))
+          : state.units) {
           const base = {
             type: 'cast-spell' as const,
             playerId,

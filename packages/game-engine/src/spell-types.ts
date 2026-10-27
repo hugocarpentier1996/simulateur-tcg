@@ -6,13 +6,19 @@ export interface SpellBlueprint {
   readonly type: 'spell';
   readonly timing: 'normal' | 'action' | 'reaction';
   readonly cost: UnitBlueprint['cost'];
-  readonly target: {
-    readonly zone?: 'battlefield';
-    readonly allegiance?: 'friendly';
-    readonly kind: 'unit';
-    readonly combatRole: 'any' | 'attacker';
-  };
+  readonly target:
+    | { readonly kind: 'battlefield' }
+    | {
+        readonly zone?: 'battlefield';
+        readonly allegiance?: 'friendly';
+        readonly kind: 'unit';
+        readonly combatRole: 'any' | 'attacker';
+      };
   readonly effects: readonly (
+    | {
+        readonly type: 'damage-enemies-at-battlefield';
+        readonly amount: number;
+      }
     | { readonly type: 'kill-unit' }
     | { readonly type: 'duel' }
     | { readonly type: 'damage'; readonly amount: number }

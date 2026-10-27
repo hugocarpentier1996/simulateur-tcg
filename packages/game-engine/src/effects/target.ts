@@ -17,6 +17,7 @@ export function spellTarget(
   targetId: string,
   casterId?: string,
 ): UnitState | undefined {
+  if (definition.target.kind !== 'unit') return undefined;
   const unit = state.units.find((u) => u.id === targetId);
   if (
     definition.target.zone === 'battlefield' &&
@@ -32,6 +33,17 @@ export function spellTarget(
     unit.zoneId === combat.battlefieldId
     ? unit
     : undefined;
+}
+
+/** ID ciblé -> champ de bataille encore présent dans l'état de partie. */
+export function validBattlefieldTarget(
+  state: GameState,
+  targetId: string,
+): boolean {
+  return (
+    state.battlefields.some((f) => f.zoneId === targetId) &&
+    state.zones.some((z) => z.id === targetId && z.kind === 'battlefield')
+  );
 }
 
 /** Déplacement par effet : champ de bataille ou base du propriétaire, jamais une zone de cartes. */

@@ -294,6 +294,21 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
 - Registre : 11 cartes complètes, Annie Fury partielle, toutes hors decks de démo.
 - Validation complète : `pnpm check`, 235 tests et build réussis.
 
+### Firestorm OGS-002 — 27 octobre 2026
+
+- Sort Normal, 6 Énergie + 1 rouge, cible un battlefield. Inflige simultanément
+  3 dégâts à chaque ennemi qui y est présent à la résolution, sans toucher les alliés,
+  les bases ni les autres champs. Interdit en showdown et en réaction.
+- Ciblage de champ ajouté à `SpellDefinition`/`SpellBlueprint` et aux actions légales.
+  `dealSpellDamage` partage les dégâts ciblés/de zone ; bonus d'Annie par unité touchée,
+  tous les dégâts avant les morts et leurs choix. Aucun score par le sort lui-même.
+- TDD : six échecs constatés puis huit tests validés, dont réactions modifiant les
+  présences, champ supprimé, Annie et plusieurs effets de mort simultanés.
+- Confirmation supplémentaire : Blast of Power ne tue pas une cible revenue en base
+  avant sa résolution. Test déjà présent ; futur test d'intégration avec Flash à ajouter.
+- Registre : 12 cartes complètes, Annie Fury partielle ; hors decks de démo.
+- Validation complète : `pnpm check`, 243 tests et build réussis.
+
 ## Limites à conserver lors d'une reprise
 
 - Première capacité de mort implémentée pour les morts de combat et hors combat. Autres déclencheurs,

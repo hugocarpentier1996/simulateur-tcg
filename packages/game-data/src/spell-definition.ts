@@ -9,6 +9,7 @@ export type SpellTiming = 'normal' | 'action' | 'reaction';
  * cible choisie ; draw concerne le lanceur. Fin de tour = tour courant, pas prochain
  * tour du propriétaire. Un déplacement par effet conserve l'état Ready/Tap existant. */
 export type SpellEffect =
+  | { readonly type: 'damage-enemies-at-battlefield'; readonly amount: number }
   | { readonly type: 'kill-unit' }
   | { readonly type: 'duel' }
   | { readonly type: 'damage'; readonly amount: number }
@@ -38,13 +39,15 @@ export interface SpellDefinition {
   readonly type: 'spell';
   readonly timing: SpellTiming;
   readonly cost: CardCost;
-  readonly target: {
-    readonly zone?: 'battlefield';
-    /** Absent : toute unité ; friendly : unité du lanceur, revérifiée à la résolution. */
-    readonly allegiance?: 'friendly';
-    readonly kind: 'unit';
-    readonly combatRole: 'any' | 'attacker';
-  };
+  readonly target:
+    | { readonly kind: 'battlefield' }
+    | {
+        readonly zone?: 'battlefield';
+        /** Absent : toute unité ; friendly : unité du lanceur, revérifiée à la résolution. */
+        readonly allegiance?: 'friendly';
+        readonly kind: 'unit';
+        readonly combatRole: 'any' | 'attacker';
+      };
   readonly effects: readonly SpellEffect[];
 }
 
@@ -59,7 +62,8 @@ export function defineSpell(input: SpellDefinition): SpellDefinition {
   if (!input.effects.length) throw new RangeError(`${input.id}: aucun effet.`);
   for (const effect of input.effects) {
     if (
-      effect.type === 'damage' &&
+      (effect.type === 'damage' ||
+        effect.type === 'damage-enemies-at-battlefield') &&
       (!Number.isFinite(effect.amount) || effect.amount < 0)
     )
       throw new RangeError(`${input.id}: dégâts invalides.`);

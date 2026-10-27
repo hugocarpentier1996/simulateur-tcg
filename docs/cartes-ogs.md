@@ -21,6 +21,10 @@ différentes cartes portant le même nom. Les fichiers bruts restent hors de ces
 | OGS-012/024 Blast of Power     | Action, 6 Énergie + 1 jaune ; tue une unité sur un champ              | Mort sans dégâts, ciblage, coût, Highlander, jeton et capacité de mort                                           | Hors decks de démo                |
 
 Définitions exportées : `vanguardAttendant`, `zephyrSage`, `garenBody`, `garenOrder`, `masterYiBody`, `masterYiCalm`, `highlander`, `incinerate`, `finalSpark`, `gentlemensDuel`, `blastOfPower`, dans `packages/game-data/src/ogs`.
+Firestorm OGS-002 est également exporté (`firestorm`) : sort Normal, 6 Énergie + 1 rouge,
+3 dégâts simultanés aux ennemis d'un champ. Tests de portée, timing, morts et bonus Annie.
+Hors decks de démo.
+
 Texte et URL d'image conservés comme métadonnées ; aucune image téléchargée.
 Tests : `packages/game-engine/src/ogs-vanguard-attendant.test.ts`.
 Tests Shield : `packages/game-engine/src/ogs-zephyr-sage.test.ts`.
@@ -49,7 +53,7 @@ de toutes les interactions de la carte. Hors decks de démo.
 
 ## Reprise
 
-13 cartes restent à terminer (dont Annie Fury partiellement raccordée). Procéder carte par carte en TDD et commit/push après
+12 cartes restent à terminer (dont Annie Fury partiellement raccordée). Procéder carte par carte en TDD et commit/push après
 chaque carte validée, en mettant ce tableau à jour. Demander les précisions propres
 à chaque mécanique lors de sa tranche, sans préconstruire tous les systèmes.
 L'arrivée Ready est une propriété statique de mise en jeu, pas un effet mis sur la pile.

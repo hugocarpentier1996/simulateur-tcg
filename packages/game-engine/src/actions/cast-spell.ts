@@ -5,6 +5,7 @@ import {
   spellTarget,
   validDestination,
   duelEnemyTarget,
+  validBattlefieldTarget,
 } from '../effects/target.js';
 
 /** Intention de lancement -> coût payé et sort empilé, sans appliquer ses effets.
@@ -40,7 +41,12 @@ export function castSpell(
     action.targetId,
     action.playerId,
   );
-  if (!target) return { ok: false, reason: 'INVALID_TARGET' };
+  if (
+    definition.target.kind === 'battlefield'
+      ? !validBattlefieldTarget(state, action.targetId)
+      : !target
+  )
+    return { ok: false, reason: 'INVALID_TARGET' };
   if (
     definition.effects.some((e) => e.type === 'duel') &&
     !duelEnemyTarget(state, action.playerId, action.secondaryTargetId)
@@ -48,7 +54,7 @@ export function castSpell(
     return { ok: false, reason: 'INVALID_TARGET' };
   if (
     definition.effects.some((e) => e.type === 'move-unit') &&
-    !validDestination(state, target, action.destinationId)
+    (!target || !validDestination(state, target, action.destinationId))
   )
     return { ok: false, reason: 'UNSUPPORTED_DESTINATION' };
   if (

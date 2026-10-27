@@ -149,6 +149,9 @@ ses équipements, bonus, malus et Stun sont conservés. Ce rappel n'est pas un d
 et ne déclenche pas de capacité de mort. La protection est consommée par ce rappel.
 Implémentation actuelle : morts de combat, dégâts de sort, baisse de Might et mort
 directe avec Blast of Power. « Kill » tue sans infliger de dégâts.
+Pour Blast of Power, la cible doit encore être sur un battlefield à la résolution.
+Si elle est revenue en base, le sort ne la tue pas ; le coût reste payé et le sort
+rejoint le cimetière. À vérifier également via une vraie réaction Flash à son ajout.
 
 Shield N donne +N Might uniquement à une unité qui défend sur le champ d'un Combat
 Showdown. Assault N applique le bonus uniquement à une unité attaquante dans ce même
