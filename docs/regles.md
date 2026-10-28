@@ -229,3 +229,12 @@ Might of Demacia : seuil de quatre unités vérifié à la conquête et à la r�
 Pour les unités autorisées sur un « open battlefield », le champ doit être entièrement
 vide ; base propre et champs contrôlés restent autorisés. La réduction d’énergie
 d’Eager Apprentice ne modifie pas le coût imprimé utilisé par Lux et Lady of Luminosity.
+
+## Sortie du terrain et Gust
+
+Une unité qui quitte le terrain pour la main ou toute autre zone hors terrain perd
+ses dégâts, bonus, malus et Stun. Ses équipements se détachent et retournent en base.
+Un jeton quittant le terrain disparaît. Le passage d'un battlefield à la base reste
+un déplacement sur le terrain et ne relève pas de cette remise à zéro.
+Gust revérifie ses restrictions de cible à la résolution : si la Might de la cible
+dépasse 3 après les réactions, le sort fizzle et ne renvoie pas l'unité en main.

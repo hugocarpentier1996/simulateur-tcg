@@ -569,6 +569,14 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
   docs/questions-origins.md. Stop à dix conformément à la demande utilisateur.
 - Validation : pnpm check, 347 tests et build réussis.
 
+### Réponse groupée Origins : Gust — 28 octobre 2026
+
+- Question 1 confirmée : sortie du terrain = perte dégâts/modificateurs/Stun,
+  détachement des équipements en base ; disparition des jetons.
+- Gust : contrôle de Might <= 3 à la résolution ; dépassement = effet ignoré.
+- Documentation uniquement. Gust reste à implémenter et à tester ; questions 2–5
+  encore ouvertes. Pas de nouvelle fournée engagée pendant les réponses.
+
 ## Limites à conserver lors d'une reprise
 
 - Première capacité de mort implémentée pour les morts de combat et hors combat. Autres déclencheurs,

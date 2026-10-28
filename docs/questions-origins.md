@@ -4,9 +4,10 @@ Les comportements ci-dessous ne sont pas encore implémentés. Ils ne modifient 
 les dix cartes livrées. Répondre par numéro ; les choix deviendront ensuite des règles
 confirmées et des tests. Aucun autre lot ne démarre avant ce compte rendu.
 
-1. **Gust — retour en main.** Lorsqu'une unité équipée retourne en main, ses
-   équipements reviennent-ils en base et perd-elle tous ses dégâts, bonus/malus et Stun ?
-   Proposition : oui ; un jeton renvoyé en main disparaît. Confirmer aussi ce cas du jeton.
+1. **Gust — confirmé le 28 octobre 2026.** Toute sortie du terrain remet l'unité
+   à zéro : dégâts, bonus/malus et Stun supprimés, équipements détachés en base.
+   Un jeton quittant le terrain disparaît. Gust revérifie la Might à la résolution :
+   si elle dépasse 3, le sort fizzle (aucun retour en main). Implémentation à venir.
 2. **Noxian Drummer — jeton « ici ».** Son déplacement vers un battlefield ennemi
    permet-il d'y invoquer sa Recrue malgré l'absence de contrôle ? Proposition : oui,
    exception imprimée à la règle générale d'invocation en base/champ contrôlé.
