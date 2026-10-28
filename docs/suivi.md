@@ -664,6 +664,13 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
 
 - Validation : pnpm check, 379 tests et build réussis.
 
+### Origins fournée 3 : Body Rune — 28 octobre 2026
+
+- Définition orange et création d'instance pour la préparation des decks. Réutilise Channel et paiement existants.
+- Test de contrat : identifiant de définition et couleur transmis au moteur.
+
+- Validation : pnpm check, 380 tests et build réussis.
+
 ## Limites à conserver lors d'une reprise
 
 - Première capacité de mort implémentée pour les morts de combat et hors combat. Autres déclencheurs,

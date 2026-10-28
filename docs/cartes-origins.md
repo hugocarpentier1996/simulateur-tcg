@@ -41,7 +41,7 @@ Les images restent des URL de métadonnées ; les fichiers bruts ne sont pas pub
 - [x] Traveling Merchant — ogn-185-298
 - [x] Vanguard Sergeant — ogn-219-298
 - [x] Wielder of Water — ogn-055-298
-- [ ] Body Rune — ogn-126-298
+- [x] Body Rune — ogn-126-298
 - [ ] Calm Rune — ogn-042-298
 - [ ] Chaos Rune — ogn-166-298
 - [ ] Fury Rune — ogn-007-298

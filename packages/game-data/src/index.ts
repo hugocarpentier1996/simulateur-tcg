@@ -85,3 +85,8 @@ export { noxianDrummer } from './ogn/noxian-drummer.js';
 export { travelingMerchant } from './ogn/traveling-merchant.js';
 
 export { duneDrake } from './ogn/dune-drake.js';
+
+export { bodyRune } from './ogn/body-rune.js';
+
+export { createRuneCard } from './rune-definition.js';
+export type { RuneDefinition } from './rune-definition.js';
