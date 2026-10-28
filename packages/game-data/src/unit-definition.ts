@@ -21,6 +21,7 @@ export interface UnitDefinition {
   /** Après tout déplacement : défausser une carte disponible puis piocher, via la pile. */
   readonly onMoveLoot?: boolean;
   readonly tank?: boolean;
+  readonly onPlayReadyOther?: boolean;
   /** Effet de mise en jeu, empilé avant résolution. */
   readonly onPlayEffect?: {
     readonly type: 'channel-exhausted' | 'draw';

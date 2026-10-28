@@ -137,6 +137,7 @@ export interface UnitBlueprint {
   /** Après tout déplacement : défausser une carte disponible puis piocher, via la pile. */
   readonly onMoveLoot?: boolean;
   readonly tank?: boolean;
+  readonly onPlayReadyOther?: boolean;
   /** Effet de mise en jeu, empilé avant résolution. */
   readonly onPlayEffect?: {
     readonly type: 'channel-exhausted' | 'draw';
@@ -304,6 +305,8 @@ export type GameAction =
     }
   | {
       type: 'play-unit';
+      /** Cible de capacité choisie à la mise en jeu, avant réactions. */
+      onPlayTargetId?: string;
       /** Annie Chaos : sort choisi avant les réactions ; requis si un sort est récupérable. */
       returnSpellId?: string;
       playerId: string;

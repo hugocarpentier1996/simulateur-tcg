@@ -727,6 +727,13 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
 
 - Validation : pnpm check, 390 tests et build réussis.
 
+### Origins fournée 3 : First Mate — 28 octobre 2026
+
+- Cible annoncée à la mise en jeu : une autre unité, alliée ou ennemie ; redressée après réactions.
+- Sans autre unité, capacité sans effet. Actions légales raccordées ; refus de l'auto-ciblage.
+
+- Validation : pnpm check, 392 tests et build réussis.
+
 ## Limites à conserver lors d'une reprise
 
 - Première capacité de mort implémentée pour les morts de combat et hors combat. Autres déclencheurs,

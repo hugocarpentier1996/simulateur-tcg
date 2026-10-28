@@ -1,3 +1,4 @@
+import { playTargetChoices } from '../effects/play-targets.js';
 import { endTurnChoices } from '../effects/end-runes.js';
 import type { GameAction, GameState } from '../types.js';
 import { act } from '../act.js';
@@ -72,19 +73,21 @@ function* candidates(
       const payment = findPayment(state, playerId, unit.cost);
       if (payment)
         for (const zone of destinations)
-          for (const returnSpellId of unit.onPlayReturnSpell
-            ? recoverableSpells(state, playerId).length
-              ? recoverableSpells(state, playerId)
-              : [undefined]
-            : [undefined])
-            yield {
-              type: 'play-unit',
-              ...(returnSpellId ? { returnSpellId } : {}),
-              playerId,
-              cardId: card.id,
-              destinationId: zone.id,
-              payment,
-            };
+          for (const onPlayTargetId of playTargetChoices(state, card.id, unit))
+            for (const returnSpellId of unit.onPlayReturnSpell
+              ? recoverableSpells(state, playerId).length
+                ? recoverableSpells(state, playerId)
+                : [undefined]
+              : [undefined])
+              yield {
+                type: 'play-unit',
+                ...(onPlayTargetId ? { onPlayTargetId } : {}),
+                ...(returnSpellId ? { returnSpellId } : {}),
+                playerId,
+                cardId: card.id,
+                destinationId: zone.id,
+                payment,
+              };
     }
     const gear = state.gearDefinitions?.find((d) => d.id === card.definitionId);
     if (gear) {

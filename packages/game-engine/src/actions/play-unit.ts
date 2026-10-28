@@ -1,3 +1,4 @@
+import { playTargetChoices } from '../effects/play-targets.js';
 import type { PlayEffectEntry } from '../effects/play-effect.js';
 import type { GameState, GameAction, ActionResult } from '../types.js';
 import {
@@ -51,6 +52,22 @@ export function playUnit(
   if (!canSummonAt(state, action.playerId, destinationId) && !openField)
     return { ok: false, reason: 'INVALID_SUMMON_DESTINATION' };
   const entries: (ReturnSpellEntry | UnitPlayEntry | PlayEffectEntry)[] = [];
+  if (
+    !playTargetChoices(state, card.id, definition).includes(
+      action.onPlayTargetId,
+    )
+  )
+    return { ok: false, reason: 'INVALID_TARGET' };
+  if (definition.onPlayReadyOther)
+    entries.push({
+      kind: 'play-effect',
+      sourceId: card.id,
+      ownerId: card.ownerId,
+      effect: {
+        type: 'ready-other',
+        ...(action.onPlayTargetId ? { targetId: action.onPlayTargetId } : {}),
+      },
+    });
   if (definition.onPlayEffect)
     entries.push({
       kind: 'play-effect',

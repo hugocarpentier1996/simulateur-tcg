@@ -106,3 +106,5 @@ export { mobilize } from './ogn/mobilize.js';
 export { stormclawUrsine } from './ogn/stormclaw-ursine.js';
 
 export { lecturingYordle } from './ogn/lecturing-yordle.js';
+
+export { firstMate } from './ogn/first-mate.js';
