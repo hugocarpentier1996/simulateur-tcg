@@ -15,6 +15,11 @@ export interface UnitDefinition {
   readonly spellAbilityDamageBonus?: number;
   /** Capacité ADD : épuiser cette unité Ready pour produire cette énergie réservée aux sorts. */
   readonly spellEnergyAbility?: number;
+  /** Au lancement d'un sort de coût imprimé suffisant : bonus personnel pour le tour, via la pile. */
+  readonly onExpensiveSpell?: {
+    readonly minimumEnergy: number;
+    readonly mightBonus: number;
+  };
   /** Aura locale : bonus aux autres unités alliées dans la zone de cette unité. */
   readonly otherAlliesHereMightBonus?: number;
   /** Bonus statique selon le nombre de runes en jeu du propriétaire, Ready ou Tap. */
@@ -64,6 +69,8 @@ export function defineUnit(input: UnitDefinition): UnitDefinition {
     otherAlliesHereMightBonus: input.otherAlliesHereMightBonus ?? 0,
     spellAbilityDamageBonus: input.spellAbilityDamageBonus ?? 0,
     spellEnergyAbility: input.spellEnergyAbility ?? 0,
+    minimumSpellEnergy: input.onExpensiveSpell?.minimumEnergy ?? 0,
+    spellMightBonus: input.onExpensiveSpell?.mightBonus ?? 0,
     ...Object.fromEntries(
       Object.entries(input.cost.power).map(([color, amount]) => [
         `power.${color}`,
@@ -78,6 +85,9 @@ export function defineUnit(input: UnitDefinition): UnitDefinition {
   }
   return Object.freeze({
     ...input,
+    ...(input.onExpensiveSpell
+      ? { onExpensiveSpell: Object.freeze({ ...input.onExpensiveSpell }) }
+      : {}),
     ...(input.runeMightBonus
       ? { runeMightBonus: Object.freeze({ ...input.runeMightBonus }) }
       : {}),

@@ -16,6 +16,7 @@ export { blastOfPower } from './ogs/blast-of-power.js';
 export { firestorm } from './ogs/firestorm.js';
 export { decisiveStrike } from './ogs/decisive-strike.js';
 export { flash } from './ogs/flash.js';
+export { luxMind } from './ogs/lux-mind.js';
 export { luxOrder } from './ogs/lux-order.js';
 export { deathTestUnits } from './death-units.js';
 export { defineSpell } from './spell-definition.js';

@@ -354,6 +354,22 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
   15 cartes complètes, Annie Fury toujours partielle pour les dégâts de capacités.
 - Validation complète : `pnpm check`, 278 tests et build réussis.
 
+### Lux Mind OGS-006 — 28 octobre 2026
+
+- Unité 6 Énergie + 1 bleu, 5 Might, arrivée Tap. `onExpensiveSpell` déclenche
+  un bonus personnel de +3 Might pour le tour au lancement accepté d'un sort de coût
+  imprimé au moins 5 énergie. Le mode de paiement ne modifie pas ce seuil.
+- Nouvelle entrée `SpellPlayEntry`, distincte des sorts et des morts : bonus empilé
+  au-dessus du sort, réactions avant chaque résolution. Aucun bonus immédiat.
+- Sources alliées en jeu, Ready/Tap ou Stun : une entrée par exemplaire. Bonus cumulables,
+  expiration habituelle en fin de tour ; source absente à la résolution ignorée.
+- TDD : six échecs pertinents observés, puis 13 tests coût/Tap, seuil 4/5/6,
+  priorité, réponses, cumul, source disparue, propriétaire, réserves et expiration.
+- Limite : ordre automatique des unités pour ces bonus personnels sans choix ;
+  un choix d'ordre général des capacités simultanées reste à introduire si nécessaire.
+  Aucun branchement UI/deck de démo. 16 cartes complètes, Annie Fury partielle.
+- Validation complète : `pnpm check`, 291 tests et build réussis.
+
 ## Limites à conserver lors d'une reprise
 
 - Première capacité de mort implémentée pour les morts de combat et hors combat. Autres déclencheurs,

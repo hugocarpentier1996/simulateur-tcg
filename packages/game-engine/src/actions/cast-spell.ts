@@ -1,5 +1,6 @@
 import type { ActionResult, GameAction, GameState } from '../types.js';
 import { canUseTiming } from './timing.js';
+import { expensiveSpellTriggers } from '../effects/expensive-spell.js';
 import { payCost } from '../cost/payment.js';
 import { validFlashSelection } from '../effects/flash.js';
 import {
@@ -81,6 +82,11 @@ export function castSpell(
     'spell',
   );
   if (!paid.ok) return paid;
+  const triggers = expensiveSpellTriggers(
+    paid.state,
+    action.playerId,
+    definition.cost.energy,
+  );
   return {
     ok: true,
     state: {
@@ -104,6 +110,7 @@ export function castSpell(
               ? { destinationId: action.destinationId }
               : {}),
           },
+          ...triggers,
         ],
         initiatorId: state.stack?.initiatorId ?? action.playerId,
         priorityPlayerId: state.showdown?.initiatorId ?? state.activePlayerId,
@@ -123,6 +130,10 @@ export function castSpell(
         cardId: card.id,
         targetId: action.targetId,
       },
+      ...triggers.map((t) => ({
+        type: 'spell-play-effect-queued' as const,
+        sourceId: t.sourceId,
+      })),
     ],
   };
 }

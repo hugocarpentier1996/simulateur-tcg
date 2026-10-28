@@ -1,3 +1,4 @@
+import type { SpellPlayEntry } from './effects/expensive-spell.js';
 import type { SpellBlueprint, SpellEntry } from './spell-types.js';
 import type { GearBlueprint, GearState } from './gear-types.js';
 import type { DeathEffect, DeathEntry, DeathTrigger } from './death-types.js';
@@ -43,9 +44,9 @@ export interface GameState {
   spellDefinitions?: readonly SpellBlueprint[];
   gearDefinitions?: readonly GearBlueprint[];
   gears?: GearState[];
-  /** Pile du bas vers le haut : sorts payés et effets de mort dont la source a quitté le terrain. */
+  /** Pile du bas vers le haut : sorts payés, bonus déclenchés au lancement et effets de mort. */
   stack?: {
-    entries: (SpellEntry | DeathEntry)[];
+    entries: (SpellEntry | DeathEntry | SpellPlayEntry)[];
     initiatorId: string;
     priorityPlayerId: string;
     consecutivePasses: number;
@@ -105,6 +106,11 @@ export interface UnitBlueprint {
   readonly spellAbilityDamageBonus?: number;
   /** Capacité ADD : épuiser cette unité Ready pour produire cette énergie réservée aux sorts. */
   readonly spellEnergyAbility?: number;
+  /** Au lancement d'un sort de coût imprimé suffisant : bonus personnel pour le tour, via la pile. */
+  readonly onExpensiveSpell?: {
+    readonly minimumEnergy: number;
+    readonly mightBonus: number;
+  };
   readonly otherAlliesHereMightBonus?: number;
   readonly runeMightBonus?: {
     readonly minimum: number;
@@ -268,6 +274,10 @@ export type GameAction =
  * retourné et ne suffisent pas, seuls, à reconstruire toute la simulation.
  */
 export type GameEvent =
+  | {
+      type: 'spell-play-effect-queued' | 'spell-play-effect-resolved';
+      sourceId: string;
+    }
   | {
       type: 'spell-energy-added';
       playerId: string;

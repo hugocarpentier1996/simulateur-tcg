@@ -75,3 +75,12 @@ Unité 4 Énergie, 2 Might, arrivée Tap. Capacité Réaction : épuiser Lux pou
 priorité. Le paiement automatique utilise cette réserve en premier ; unités, gears
 et équipement ne peuvent pas la dépenser. Expiration aux frontières End/Draw.
 Export `luxOrder`, hors decks de démonstration. 15 cartes complètes et Annie Fury partielle.
+
+### Lux Mind OGS-006
+
+Unité 6 Énergie + 1 bleu, 5 Might, arrivée Tap. Chaque sort allié joué de coût
+imprimé 5+ Énergie déclenche +3 Might sur cette Lux jusqu'à la fin du tour.
+Le bonus est empilé après le sort, résout avant lui et permet les Réactions.
+Cumul, plusieurs Lux, seuil, coût, disparition de la source et expiration testés.
+Export `luxMind`, hors decks de démonstration. 16 cartes complètes, Annie Fury partielle.
+Ordre provisoire des déclenchements simultanés : ordre des unités de l'état.

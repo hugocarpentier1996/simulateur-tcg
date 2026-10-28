@@ -1,5 +1,6 @@
 import type { ActionResult, GameState } from '../types.js';
 import { resolveSpell } from '../effects/resolve-spell.js';
+import { resolveSpellPlay } from '../effects/expensive-spell.js';
 import { resolveDeathEffect } from '../effects/death.js';
 import { finishCombat } from '../combat/finish.js';
 
@@ -27,9 +28,13 @@ export function passStack(state: GameState, playerId: string): ActionResult {
     };
   const entry = stack.entries.at(-1)!;
   const entries = stack.entries.slice(0, -1);
-  const resolved = !('card' in entry)
-    ? resolveDeathEffect({ ...state, stack: { ...stack, entries } }, entry)
-    : resolveSpell({ ...state, stack: { ...stack, entries } }, entry);
+  const popped = { ...state, stack: { ...stack, entries } };
+  const resolved =
+    'card' in entry
+      ? resolveSpell(popped, entry)
+      : entry.kind === 'death'
+        ? resolveDeathEffect(popped, entry)
+        : resolveSpellPlay(popped, entry);
   const next = resolved.state;
   if (next.pendingDeaths)
     return {
