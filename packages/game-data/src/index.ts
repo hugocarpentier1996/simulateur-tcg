@@ -35,3 +35,7 @@ export { testSpells } from './test-spells.js';
 export { defineGear } from './gear-definition.js';
 export type { GearDefinition, GearEffect } from './gear-definition.js';
 export { testGears } from './test-gears.js';
+
+export { wujuBladesman } from './ogs/wuju-bladesman.js';
+export { defineLegend } from './legend-definition.js';
+export type { LegendDefinition } from './legend-definition.js';

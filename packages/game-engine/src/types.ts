@@ -1,3 +1,4 @@
+import type { LegendBlueprint } from './legend-types.js';
 import type { ReturnSpellEntry } from './effects/return-spell.js';
 import type { UnitPlayEntry } from './effects/unit-play.js';
 import type { SpellPlayEntry } from './effects/expensive-spell.js';
@@ -43,6 +44,7 @@ export interface GameState {
   zones: { id: string; kind: ZoneKind; ownerId?: string }[];
   units: UnitState[];
   /** Catalogue de confiance fourni par le serveur, jamais par une intention client. */
+  legendDefinitions?: readonly LegendBlueprint[];
   unitDefinitions?: readonly UnitBlueprint[];
   spellDefinitions?: readonly SpellBlueprint[];
   gearDefinitions?: readonly GearBlueprint[];

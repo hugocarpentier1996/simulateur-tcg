@@ -1,3 +1,4 @@
+import { activeLegends } from './legends.js';
 import type { GameState, UnitState } from '../types.js';
 
 /** Unité + état -> bonus Assault/Shield du catalogue selon le rôle en Combat Showdown.
@@ -10,6 +11,20 @@ export function combatMightBonus(unit: UnitState, state: GameState): number {
     (d) => d.id === unit.definitionId,
   );
   if (unit.ownerId === combat.initiatorId) return definition?.assault ?? 0;
-  if (unit.ownerId === combat.defenderId) return definition?.shield ?? 0;
+  if (unit.ownerId === combat.defenderId) {
+    const alone =
+      state.units.filter(
+        (u) => u.ownerId === unit.ownerId && u.zoneId === combat.battlefieldId,
+      ).length === 1;
+    return (
+      (definition?.shield ?? 0) +
+      (alone
+        ? activeLegends(state, unit.ownerId).reduce(
+            (sum, l) => sum + (l.definition.aloneDefenseBonus ?? 0),
+            0,
+          )
+        : 0)
+    );
+  }
   return 0;
 }

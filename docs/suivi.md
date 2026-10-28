@@ -454,6 +454,16 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
 - Limite : représentation moteur et API, pas de modification de l'affichage du plateau.
 - Validation complète : `pnpm check`, 319 tests et build réussis.
 
+### Wuju Bladesman OGS-019 — 28 octobre 2026
+
+- Catalogue `legendDefinitions` transmis par createGame ; instances permanentes dans
+  cards en zone legend, sans Might/dégâts. Les passifs restent actifs même Tap.
+- +2 Might à l'unique défenseur sur le champ du Combat Showdown, jusqu'à sa clôture.
+  Aucun bonus en attaque, Open, base, ou si un second défenseur est présent.
+- TDD : échec du bonus constaté puis deux scénarios ciblés. 21 cartes complètes.
+- Hors démo ; capacités activées de légendes non implémentées sans carte concrète.
+- `pnpm check` : 321 tests et build réussis.
+
 ## Limites à conserver lors d'une reprise
 
 - Première capacité de mort implémentée pour les morts de combat et hors combat. Autres déclencheurs,

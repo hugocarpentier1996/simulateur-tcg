@@ -220,3 +220,8 @@ Représentation moteur : un côté est référencé par le battlefield et le jou
 (`BattlefieldSide`). La position structurée est dérivée de la zone parente et du
 propriétaire de l'unité ; le contrôle du battlefield ne change pas l'identité des côtés.
 Une union de plusieurs zones décrit la portée d'un même effet de dégâts de zone.
+
+Les légendes sont toujours présentes, sans points de vie ; leurs passifs restent actifs
+même Tap. Les futures capacités activées pourront demander Tap et un coût supplémentaire.
+Dark Child : choix des runes avant les réactions, puis passage au tour suivant après la pile.
+Might of Demacia : seuil de quatre unités vérifié à la conquête et à la résolution.

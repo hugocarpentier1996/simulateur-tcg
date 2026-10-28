@@ -28,6 +28,7 @@ export interface GameConfig {
     | { format: 'bo3'; gameNumber: 1 }
     | { format: 'bo3'; gameNumber: 2 | 3; previousLoserId: string };
   randomState?: number;
+  legendDefinitions?: GameState['legendDefinitions'];
   unitDefinitions?: GameState['unitDefinitions'];
   spellDefinitions?: GameState['spellDefinitions'];
   gearDefinitions?: GameState['gearDefinitions'];
@@ -94,6 +95,9 @@ export function createGame(config: GameConfig): ActionResult {
     showdown: null,
     ...(config.randomState !== undefined
       ? { randomState: config.randomState }
+      : {}),
+    ...(config.legendDefinitions
+      ? { legendDefinitions: config.legendDefinitions }
       : {}),
     ...(config.unitDefinitions
       ? { unitDefinitions: config.unitDefinitions }
