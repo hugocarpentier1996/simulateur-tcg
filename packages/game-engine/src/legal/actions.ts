@@ -25,6 +25,21 @@ function* candidates(
   state: GameState,
   playerId: string,
 ): Generator<GameAction> {
+  if (state.pendingDiscard) {
+    if (state.pendingDiscard.playerId === playerId)
+      for (const card of state.cards)
+        if (
+          card.ownerId === playerId &&
+          state.zones.some(
+            (z) =>
+              z.id === card.zoneId &&
+              z.kind === 'hand' &&
+              z.ownerId === playerId,
+          )
+        )
+          yield { type: 'choose-discard', playerId, cardId: card.id };
+    return;
+  }
   if (state.setup) {
     yield* setupChoices(state, playerId);
     return;

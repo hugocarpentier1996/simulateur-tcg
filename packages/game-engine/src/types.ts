@@ -21,6 +21,8 @@ import type { DeathEffect, DeathEntry, DeathTrigger } from './death-types.js';
 export interface GameState {
   /** Fin de tour suspendue jusqu'à résolution des capacités, morts et Showdowns induits. */
   pendingTurnEnd?: boolean;
+  /** Choix obligatoire pendant une r�solution ; aucune r�action entre d�fausse et pioche. */
+  pendingDiscard?: { playerId: string; sourceId: string } | null;
   activePlayerId: string;
   phase: TurnPhase;
   /** Second joueur : une rune supplémentaire à son premier Channel, puis null. */
@@ -128,6 +130,8 @@ export interface UnitBlueprint {
   readonly canPlayToOpenBattlefield?: boolean;
   /** D�placement vers un champ : invoquer ce jeton ici via la pile, sans condition de contr�le. */
   readonly onMoveSummonHere?: string;
+  /** Apr�s tout d�placement : d�fausser une carte disponible puis piocher, via la pile. */
+  readonly onMoveLoot?: boolean;
   readonly spellAbilityDamageBonus?: number;
   /** Capacité ADD : épuiser cette unité Ready pour produire cette énergie réservée aux sorts. */
   readonly spellEnergyAbility?: number;
@@ -249,6 +253,7 @@ export interface CardInstance {
  * `playerId` devra être fourni par le serveur à partir de l'identité authentifiée.
  */
 export type GameAction =
+  | { type: 'choose-discard'; playerId: string; cardId: string }
   | { type: 'activate-spell-energy'; playerId: string; unitId: string }
   | {
       type: 'queue-death-effects';
@@ -315,6 +320,7 @@ export type GameAction =
  * retourné et ne suffisent pas, seuls, à reconstruire toute la simulation.
  */
 export type GameEvent =
+  | { type: 'card-discarded'; playerId: string; cardId: string }
   | {
       type: 'movement-effect-queued' | 'movement-effect-resolved';
       sourceId: string;

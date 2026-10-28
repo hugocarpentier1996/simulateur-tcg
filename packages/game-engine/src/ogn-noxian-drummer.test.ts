@@ -20,7 +20,7 @@ function setup() {
   };
 }
 it.each([false, true])(
-  'Noxian Drummer invoque ici malgré le contrôle ennemi et la disparition de sa source : %s',
+  'Noxian Drummer invoque ici sauf si Gust retire sa source : %s',
   (removed) => {
     let s = step(setup(), {
       type: 'move',
@@ -43,12 +43,14 @@ it.each([false, true])(
       expect(s.stack?.entries).toHaveLength(1);
     }
     s = resolveTop(s);
-    expect(s.units.find((u) => u.token)).toMatchObject({
-      ownerId: 'a',
-      zoneId: 'g',
-      might: 1,
-      ready: false,
-    });
+    if (removed) expect(s.units.some((u) => u.token)).toBe(false);
+    else
+      expect(s.units.find((u) => u.token)).toMatchObject({
+        ownerId: 'a',
+        zoneId: 'g',
+        might: 1,
+        ready: false,
+      });
     expect(s.battlefields.find((f) => f.zoneId === 'g')?.controllerId).toBe(
       'b',
     );

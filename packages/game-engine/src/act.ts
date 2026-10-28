@@ -1,3 +1,4 @@
+import { chooseDiscard } from './actions/choose-discard.js';
 import { queueMovementEffects } from './effects/movement-triggers.js';
 import { startNextTurn } from './turn/progression.js';
 import { queueConquestLegends } from './effects/conquest-legends.js';
@@ -89,6 +90,9 @@ function dispatch(state: GameState, action: GameAction): ActionResult {
   if (!state.players.some((player) => player.id === action.playerId)) {
     return { ok: false, reason: 'UNKNOWN_PLAYER' };
   }
+  if (action.type === 'choose-discard') return chooseDiscard(state, action);
+  if (state.pendingDiscard)
+    return { ok: false, reason: 'DISCARD_CHOICE_REQUIRED' };
   if (action.type === 'queue-death-effects')
     return queueDeathEffects(state, action);
   if (state.pendingDeaths)

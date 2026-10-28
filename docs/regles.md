@@ -243,6 +243,8 @@ dépasse 3 après les réactions, le sort fizzle et ne renvoie pas l'unité en m
 
 - Noxian Drummer : « here » impose l'invocation du jeton sur le battlefield d'arrivée,
   même non contrôlé ou ennemi ; le joueur ne choisit pas une autre destination.
+- Noxian Drummer retiré du terrain par Gust avant résolution : « here » n’a plus
+  de destination ; aucune Recrue n’est invoquée.
 - Traveling Merchant : si la main est vide, la pioche s'effectue sans défausse.
 - Dune Drake : présence d'un ennemi Ready vérifiée à l'attaque et à la résolution
   de sa capacité déclenchée, après les réactions, avant les dégâts de combat.

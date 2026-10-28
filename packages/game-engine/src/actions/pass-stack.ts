@@ -7,7 +7,8 @@ import { resolveUnitPlay } from '../effects/unit-play.js';
 import { resolveSpell } from '../effects/resolve-spell.js';
 import { resolveSpellPlay } from '../effects/expensive-spell.js';
 import { resolveDeathEffect } from '../effects/death.js';
-import { finishCombat } from '../combat/finish.js';
+import { continueStack } from './continue-stack.js';
+import { queueMovementEffects } from '../effects/movement-triggers.js';
 
 /** Passe en closed state -> priorité suivante ou résolution du sommet après deux passes.
  * Rouvre une fenêtre pour le sommet restant. Chaîne de sorts vide : priorité à l'autre lanceur.
@@ -50,55 +51,10 @@ export function passStack(state: GameState, playerId: string): ActionResult {
                 : entry.kind === 'legend-ready-runes'
                   ? resolveReadyRunes(popped, entry)
                   : resolveSpellPlay(popped, entry);
-  const next = resolved.state;
-  if (next.pendingDeaths)
-    return {
-      ok: true,
-      state: {
-        ...next,
-        stack: {
-          ...stack,
-          entries,
-          consecutivePasses: 0,
-          priorityPlayerId: next.showdown?.initiatorId ?? next.activePlayerId,
-        },
-      },
-      events: [event, ...resolved.events],
-    };
-  if (!entries.length && next.combatAftermath && !next.result) {
-    const finished = finishCombat({ ...next, stack: null });
-    return {
-      ...finished,
-      events: [event, ...resolved.events, ...finished.events],
-    };
-  }
-  const priorityPlayerId = state.players.find(
-    (p) => p.id !== stack.initiatorId,
-  )!.id;
-  return {
-    ok: true,
-    state: {
-      ...next,
-      stack: entries.length
-        ? {
-            ...stack,
-            entries,
-            consecutivePasses: 0,
-            priorityPlayerId: next.showdown?.initiatorId ?? next.activePlayerId,
-          }
-        : null,
-      ...(!entries.length
-        ? next.showdown
-          ? {
-              showdown: {
-                ...next.showdown,
-                priorityPlayerId,
-                consecutivePasses: 0,
-              },
-            }
-          : { priorityPlayerId }
-        : {}),
-    },
-    events: [event, ...resolved.events],
-  };
+  const moved = queueMovementEffects(state, resolved.state, resolved.events);
+  return continueStack(moved.state, [
+    event,
+    ...resolved.events,
+    ...moved.events,
+  ]);
 }

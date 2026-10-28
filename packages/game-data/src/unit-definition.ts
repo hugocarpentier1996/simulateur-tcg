@@ -18,6 +18,8 @@ export interface UnitDefinition {
   readonly canPlayToOpenBattlefield?: boolean;
   /** D�placement vers un champ : invoquer ce jeton ici via la pile, sans condition de contr�le. */
   readonly onMoveSummonHere?: string;
+  /** Apr�s tout d�placement : d�fausser une carte disponible puis piocher, via la pile. */
+  readonly onMoveLoot?: boolean;
   readonly spellAbilityDamageBonus?: number;
   /** Capacité ADD : épuiser cette unité Ready pour produire cette énergie réservée aux sorts. */
   readonly spellEnergyAbility?: number;

@@ -38,7 +38,7 @@ Les images restent des URL de métadonnées ; les fichiers bruts ne sont pas pub
 - [x] Stalwart Poro — ogn-052-298
 - [ ] Stormclaw Ursine — ogn-137-298
 - [x] Stupefy — ogn-095-298
-- [ ] Traveling Merchant — ogn-185-298
+- [x] Traveling Merchant — ogn-185-298
 - [x] Vanguard Sergeant — ogn-219-298
 - [x] Wielder of Water — ogn-055-298
 - [ ] Body Rune — ogn-126-298

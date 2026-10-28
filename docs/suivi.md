@@ -639,10 +639,20 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
 ### Origins fournée 2 : Noxian Drummer — 28 octobre 2026
 
 - Déclencheurs de mouvement mutualisés, empilés avec fenêtre de réaction ; les mises en jeu ne les déclenchent pas.
-- Invocation « here » obligatoire sur le champ annoncé, même adverse et même après Gust sur la source.
+- Invocation « here » obligatoire sur le champ annoncé, même adverse. Le cas Gust initialement accepté a été corrigé sur précision utilisateur (voir ci-dessous).
 - Réutilise le jeton Recrue et le résolveur d'invocation commun.
 
 - Validation : pnpm check, 368 tests et build réussis.
+
+### Origins fournée 2 : Traveling Merchant — 28 octobre 2026
+
+- Capacité après mouvement, y compris Flash : défausse puis pioche ; main vide = pioche seule.
+- Choix obligatoire à la résolution (hypothèse à confirmer), exposé par les actions légales ; aucune réaction entre défausse et pioche.
+- Reprise de pile extraite dans continue-stack ; les nouveaux déclencheurs retardent la clôture du combat et le score.
+- Correction utilisateur Noxian Drummer : Gust retire la destination « here », donc aucune Recrue. Test inversé, échec constaté puis correction.
+- Tests : choix/refus, main vide, Flash avec pile restante, absence de score prématuré.
+
+- Validation : pnpm check, 372 tests et build réussis.
 
 ## Limites à conserver lors d'une reprise
 
