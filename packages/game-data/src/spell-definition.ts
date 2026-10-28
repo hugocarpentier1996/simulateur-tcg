@@ -21,6 +21,7 @@ export type SpellEffect =
       readonly duration: 'end-of-turn';
     }
   | { readonly type: 'damage-enemies-at-battlefield'; readonly amount: number }
+  | { readonly type: 'return-unit-to-hand' }
   | { readonly type: 'kill-unit' }
   | { readonly type: 'duel' }
   | { readonly type: 'damage'; readonly amount: number }
@@ -55,6 +56,7 @@ export interface SpellDefinition {
     | { readonly kind: 'battlefield' }
     | {
         readonly zone?: 'battlefield';
+        readonly maximumMight?: number;
         /** Absent : toute unité ; friendly : unité du lanceur, revérifiée à la résolution. */
         readonly allegiance?: 'friendly';
         readonly kind: 'unit';

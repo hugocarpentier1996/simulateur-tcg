@@ -1,3 +1,4 @@
+import { effectiveMight } from './modifiers.js';
 import type { GameState, UnitState } from '../types.js';
 import type { SpellBlueprint } from '../spell-types.js';
 
@@ -25,6 +26,12 @@ export function spellTarget(
   )
     return undefined;
   if (definition.target.allegiance === 'friendly' && unit?.ownerId !== casterId)
+    return undefined;
+  if (
+    unit &&
+    definition.target.maximumMight !== undefined &&
+    effectiveMight(unit, state) > definition.target.maximumMight
+  )
     return undefined;
   if (!unit || definition.target.combatRole === 'any') return unit;
   const combat = state.showdown;

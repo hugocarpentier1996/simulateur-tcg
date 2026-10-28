@@ -1,3 +1,4 @@
+import { leaveBoard } from './leave-board.js';
 import { getBattlefieldSides } from '../battlefield-areas.js';
 import { dealAreaDamage } from './area-damage.js';
 import type { ActionResult, GameEvent, GameState } from '../types.js';
@@ -96,7 +97,11 @@ export function resolveSpell(
       entry.casterId,
     );
     if (!target) continue;
-    if (effect.type === 'kill-unit') {
+    if (effect.type === 'return-unit-to-hand') {
+      const left = leaveBoard(state, target, 'hand');
+      state = left.state;
+      events.push(...left.events);
+    } else if (effect.type === 'kill-unit') {
       const killed = settleLethalUnits(state, new Set([target.id]));
       state = killed.state;
       events.push(...killed.events);

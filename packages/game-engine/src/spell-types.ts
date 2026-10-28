@@ -11,6 +11,7 @@ export interface SpellBlueprint {
     | { readonly kind: 'battlefield' }
     | {
         readonly zone?: 'battlefield';
+        readonly maximumMight?: number;
         readonly allegiance?: 'friendly';
         readonly kind: 'unit';
         readonly combatRole: 'any' | 'attacker';
@@ -31,6 +32,7 @@ export interface SpellBlueprint {
         readonly type: 'damage-enemies-at-battlefield';
         readonly amount: number;
       }
+    | { readonly type: 'return-unit-to-hand' }
     | { readonly type: 'kill-unit' }
     | { readonly type: 'duel' }
     | { readonly type: 'damage'; readonly amount: number }

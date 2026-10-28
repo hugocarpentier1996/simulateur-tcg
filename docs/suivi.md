@@ -586,6 +586,14 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
 - Documentation uniquement ; ces comportements restent à implémenter et tester.
   La fournée précédente reste à dix cartes, aucune nouvelle carte ajoutée ici.
 
+### Origins fournée 2 : Gust — 28 octobre 2026
+
+- Retour en main commun : retrait des effets, détachement des équipements, disparition des jetons.
+- Might maximale revérifiée à la résolution ; contrôle du champ conservé pendant le showdown.
+- Trois scénarios ciblés ajoutés en TDD.
+
+- Validation : pnpm check, 350 tests et build réussis.
+
 ## Limites à conserver lors d'une reprise
 
 - Première capacité de mort implémentée pour les morts de combat et hors combat. Autres déclencheurs,

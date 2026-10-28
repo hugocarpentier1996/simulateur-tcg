@@ -2,7 +2,7 @@ import type { GameState, GameEvent, ActionResult } from '../types.js';
 
 /** Après une action acceptée -> synchronise les équipements avec leurs porteurs.
  * Un porteur sorti de units rend le gear à la base de son propriétaire, sans changer Ready/Tap.
- * Actuellement cette sortie correspond à une mort ; les futurs bannissements devront préciser leurs règles.
+ * Toute sortie du terrain détache le gear : mort, retour en main ou bannissement.
  * Refuse par erreur interne un état sans base de retour. Aucune mutation ni conquête par un gear. */
 export function syncAttachments(
   state: GameState,

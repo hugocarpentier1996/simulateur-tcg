@@ -18,7 +18,7 @@ Les images restent des URL de métadonnées ; les fichiers bruts ne sont pas pub
 - [ ] Faithful Manufactor — ogn-211-298
 - [x] Falling Comet — ogn-085-298
 - [ ] First Mate — ogn-132-298
-- [ ] Gust — ogn-169-298
+- [x] Gust — ogn-169-298
 - [ ] Lecturing Yordle — ogn-087-298
 - [ ] Maddened Marauder — ogn-191-298
 - [ ] Meditation — ogn-048-298

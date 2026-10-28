@@ -309,6 +309,7 @@ export type GameAction =
  * retourné et ne suffisent pas, seuls, à reconstruire toute la simulation.
  */
 export type GameEvent =
+  | { type: 'unit-left-board'; unitId: string; zoneId: string }
   | {
       type: 'legend-effect-queued' | 'legend-effect-resolved';
       sourceId: string;
