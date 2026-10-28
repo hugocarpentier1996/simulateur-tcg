@@ -31,7 +31,7 @@ Les images restent des URL de métadonnées ; les fichiers bruts ne sont pas pub
 - [x] Petty Officer — ogn-215-298
 - [x] Playful Phantom — ogn-049-298
 - [ ] Pouty Poro — ogn-013-298
-- [ ] Ravenbloom Student — ogn-103-298
+- [x] Ravenbloom Student — ogn-103-298
 - [ ] Sai Scout — ogn-174-298
 - [ ] Singularity — ogn-105-298
 - [ ] Sneaky Deckhand — ogn-176-298

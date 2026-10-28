@@ -553,6 +553,13 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
 - TDD : refus de définition inconnue puis test de coût, résolution et exclusion des bases.
 - Hors démo. Validation : pnpm check, 342 tests et build réussis.
 
+### Origins : Ravenbloom Student — 28 octobre 2026
+
+- 2 Énergie, 2 Might. Réutilise le déclenchement de Lux avec seuil zéro : +1 Might
+  temporaire à chaque sort joué, via la pile, y compris un sort gratuit.
+- TDD : deux échecs pertinents puis tests des coûts 0/2 et de la résolution différée.
+- Hors démo. Validation : pnpm check, 344 tests et build réussis.
+
 ## Limites à conserver lors d'une reprise
 
 - Première capacité de mort implémentée pour les morts de combat et hors combat. Autres déclencheurs,
