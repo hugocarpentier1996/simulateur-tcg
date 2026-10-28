@@ -51,3 +51,5 @@ export { daringPoro } from './ogn/daring-poro.js';
 export { pettyOfficer } from './ogn/petty-officer.js';
 
 export { stalwartPoro } from './ogn/stalwart-poro.js';
+
+export { megaMech } from './ogn/mega-mech.js';

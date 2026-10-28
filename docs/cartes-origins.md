@@ -22,7 +22,7 @@ Les images restent des URL de métadonnées ; les fichiers bruts ne sont pas pub
 - [ ] Lecturing Yordle — ogn-087-298
 - [ ] Maddened Marauder — ogn-191-298
 - [ ] Meditation — ogn-048-298
-- [ ] Mega-Mech — ogn-088-298
+- [x] Mega-Mech — ogn-088-298
 - [ ] Mobilize — ogn-134-298
 - [ ] Morbid Return — ogn-170-298
 - [ ] Mountain Drake — ogn-142-298
