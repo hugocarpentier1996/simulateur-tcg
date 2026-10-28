@@ -1,3 +1,4 @@
+import { resolveLegendDraw } from '../effects/legend-draw.js';
 import type { ActionResult, GameState } from '../types.js';
 import { resolveReturnSpell } from '../effects/return-spell.js';
 import { resolveUnitPlay } from '../effects/unit-play.js';
@@ -40,7 +41,9 @@ export function passStack(state: GameState, playerId: string): ActionResult {
           ? resolveUnitPlay(popped, entry)
           : entry.kind === 'return-spell'
             ? resolveReturnSpell(popped, entry)
-            : resolveSpellPlay(popped, entry);
+            : entry.kind === 'legend-draw'
+              ? resolveLegendDraw(popped, entry)
+              : resolveSpellPlay(popped, entry);
   const next = resolved.state;
   if (next.pendingDeaths)
     return {

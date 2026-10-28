@@ -7,8 +7,18 @@ export interface LegendDefinition {
   readonly text: string;
   readonly imageUrl: string;
   readonly aloneDefenseBonus?: number;
+  readonly spellDraw?: {
+    readonly minimumEnergy: number;
+    readonly count: number;
+  };
 }
 /** Définition de confiance -> copie figée, dont les couleurs. */
 export function defineLegend(input: LegendDefinition): LegendDefinition {
-  return Object.freeze({ ...input, colors: Object.freeze([...input.colors]) });
+  return Object.freeze({
+    ...input,
+    ...(input.spellDraw
+      ? { spellDraw: Object.freeze({ ...input.spellDraw }) }
+      : {}),
+    colors: Object.freeze([...input.colors]),
+  });
 }

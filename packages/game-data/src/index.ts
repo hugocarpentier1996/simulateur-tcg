@@ -39,3 +39,5 @@ export { testGears } from './test-gears.js';
 export { wujuBladesman } from './ogs/wuju-bladesman.js';
 export { defineLegend } from './legend-definition.js';
 export type { LegendDefinition } from './legend-definition.js';
+
+export { ladyOfLuminosity } from './ogs/lady-of-luminosity.js';

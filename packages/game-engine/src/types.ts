@@ -1,4 +1,4 @@
-import type { LegendBlueprint } from './legend-types.js';
+import type { LegendBlueprint, LegendEntry } from './legend-types.js';
 import type { ReturnSpellEntry } from './effects/return-spell.js';
 import type { UnitPlayEntry } from './effects/unit-play.js';
 import type { SpellPlayEntry } from './effects/expensive-spell.js';
@@ -57,6 +57,7 @@ export interface GameState {
       | SpellPlayEntry
       | UnitPlayEntry
       | ReturnSpellEntry
+      | LegendEntry
     )[];
     initiatorId: string;
     priorityPlayerId: string;
@@ -295,6 +296,10 @@ export type GameAction =
  * retourné et ne suffisent pas, seuls, à reconstruire toute la simulation.
  */
 export type GameEvent =
+  | {
+      type: 'legend-effect-queued' | 'legend-effect-resolved';
+      sourceId: string;
+    }
   | { type: 'spell-returned'; playerId: string; cardId: string }
   | { type: 'ability-damage'; sourceId: string; unitId: string; amount: number }
   | {

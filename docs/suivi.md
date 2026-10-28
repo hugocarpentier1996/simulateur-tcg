@@ -464,6 +464,15 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
 - Hors démo ; capacités activées de légendes non implémentées sans carte concrète.
 - `pnpm check` : 321 tests et build réussis.
 
+### Lady of Luminosity OGS-021 — 28 octobre 2026
+
+- Pioche 1 au lancement accepté d'un sort de coût imprimé 5+, via une entrée de pile
+  indépendante. Réactions permises ; défaite par épuisement interrompt la chaîne.
+- Passif actif même Tap ; uniquement les sorts du propriétaire. Ordre automatique
+  actuel : bonus des unités puis déclenchement de légende empilé au-dessus.
+- TDD : échecs initiaux puis trois scénarios ciblés. 22 cartes complètes, hors démo.
+- `pnpm check` : 324 tests et build réussis.
+
 ## Limites à conserver lors d'une reprise
 
 - Première capacité de mort implémentée pour les morts de combat et hors combat. Autres déclencheurs,

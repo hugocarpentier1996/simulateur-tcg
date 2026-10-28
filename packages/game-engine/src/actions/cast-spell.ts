@@ -1,3 +1,4 @@
+import { activeLegends } from '../effects/legends.js';
 import type { ActionResult, GameAction, GameState } from '../types.js';
 import { canUseTiming } from './timing.js';
 import { expensiveSpellTriggers } from '../effects/expensive-spell.js';
@@ -97,6 +98,20 @@ export function castSpell(
     action.playerId,
     definition.cost.energy,
   );
+  const legendTriggers = activeLegends(paid.state, action.playerId).flatMap(
+    ({ card, definition: legend }) =>
+      legend.spellDraw &&
+      definition.cost.energy >= legend.spellDraw.minimumEnergy
+        ? [
+            {
+              kind: 'legend-draw' as const,
+              sourceId: card.id,
+              ownerId: action.playerId,
+              count: legend.spellDraw.count,
+            },
+          ]
+        : [],
+  );
   return {
     ok: true,
     state: {
@@ -124,6 +139,7 @@ export function castSpell(
               : {}),
           },
           ...triggers,
+          ...legendTriggers,
         ],
         initiatorId: state.stack?.initiatorId ?? action.playerId,
         priorityPlayerId: state.showdown?.initiatorId ?? state.activePlayerId,
@@ -143,6 +159,10 @@ export function castSpell(
         cardId: card.id,
         targetId: action.targetId,
       },
+      ...legendTriggers.map((t) => ({
+        type: 'legend-effect-queued' as const,
+        sourceId: t.sourceId,
+      })),
       ...triggers.map((t) => ({
         type: 'spell-play-effect-queued' as const,
         sourceId: t.sourceId,
