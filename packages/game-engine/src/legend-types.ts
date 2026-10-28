@@ -4,6 +4,7 @@ export interface LegendBlueprint {
   readonly id: string;
   readonly type: 'legend';
   readonly aloneDefenseBonus?: number;
+  readonly readyRunesAtEnd?: number;
   readonly conquestDraw?: {
     readonly minimumUnits: number;
     readonly count: number;
@@ -21,4 +22,12 @@ export interface LegendEntry {
   sourceId: string;
   ownerId: string;
   count: number;
+}
+
+/** Choix copié à la fin de tour, avant les réactions. */
+export interface ReadyRunesEntry {
+  kind: 'legend-ready-runes';
+  sourceId: string;
+  ownerId: string;
+  runeIds: readonly string[];
 }

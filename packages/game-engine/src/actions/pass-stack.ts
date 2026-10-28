@@ -1,3 +1,4 @@
+import { resolveReadyRunes } from '../effects/end-runes.js';
 import { resolveLegendDraw } from '../effects/legend-draw.js';
 import type { ActionResult, GameState } from '../types.js';
 import { resolveReturnSpell } from '../effects/return-spell.js';
@@ -43,7 +44,9 @@ export function passStack(state: GameState, playerId: string): ActionResult {
             ? resolveReturnSpell(popped, entry)
             : entry.kind === 'legend-draw'
               ? resolveLegendDraw(popped, entry)
-              : resolveSpellPlay(popped, entry);
+              : entry.kind === 'legend-ready-runes'
+                ? resolveReadyRunes(popped, entry)
+                : resolveSpellPlay(popped, entry);
   const next = resolved.state;
   if (next.pendingDeaths)
     return {

@@ -60,7 +60,7 @@ Decisive Strike OGS-024 (`decisiveStrike`) terminé : 5 Énergie + un Power oran
 jaune, +2 Might aux alliés présents à la résolution jusqu'à la fin du tour. Paiement,
 timing Action, portée et expiration testés. Hors decks de démo.
 
-4 cartes restent à terminer : les quatre légendes. Procéder carte par carte en TDD et commit/push après
+Les 24 cartes sont désormais implémentées ; voir le bilan des légendes ci-dessous. Procéder carte par carte en TDD et commit/push après
 chaque carte validée, en mettant ce tableau à jour. Demander les précisions propres
 à chaque mécanique lors de sa tranche, sans préconstruire tous les systèmes.
 L'arrivée Ready est une propriété statique de mise en jeu, pas un effet mis sur la pile.
@@ -105,3 +105,21 @@ Might 1, Tap, sur les destinations légales choisies à l'empilement. Partage le
 de jetons des effets de mort. Destinations revérifiées après les réactions : invocation
 ignorée si devenue illégale (convention de prototype). Hors decks de démonstration.
 Bilan courant : 20 cartes OGS complètes ; quatre légendes restantes.
+
+## Légendes OGS — catalogue complet
+
+Les instances restent en zone `legend` dans `cards`, sans Might ni dégâts ; leurs
+passifs restent actifs même Tap. `legendDefinitions` est transmis par `createGame`.
+
+- `wujuBladesman` OGS-019 : +2 Might à l'unique défenseur du Combat Showdown.
+- `ladyOfLuminosity` OGS-021 : pioche 1 sur lancement de sort de coût imprimé 5+.
+- `mightOfDemacia` OGS-023 : pioche 2 après conquête avec 4+ unités sur ce champ,
+  seuil vérifié à la conquête et à la résolution (confirmation utilisateur).
+- `darkChild` OGS-017 : redresse deux runes en fin de tour, choix avant les réactions.
+  Le tour suivant attend la fin des effets ; moins de deux runes = choisir ce qui existe.
+
+Bilan courant : 24/24 cartes implémentées et testées, hors decks de démonstration.
+Les capacités déclenchées utilisent la pile ; les futures capacités activées Tap/coût
+restent à ajouter avec une carte concrète. Pour plusieurs déclenchements simultanés,
+le prototype garde son ordre déterministe (unités puis légende au lancement d'un sort) ;
+un choix d'ordre général reste à ajouter. Les effets de mort ont déjà leur choix d'ordre.

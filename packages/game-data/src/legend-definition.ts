@@ -7,6 +7,7 @@ export interface LegendDefinition {
   readonly text: string;
   readonly imageUrl: string;
   readonly aloneDefenseBonus?: number;
+  readonly readyRunesAtEnd?: number;
   readonly conquestDraw?: {
     readonly minimumUnits: number;
     readonly count: number;

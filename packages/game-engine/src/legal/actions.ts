@@ -1,3 +1,4 @@
+import { endTurnChoices } from '../effects/end-runes.js';
 import type { GameAction, GameState } from '../types.js';
 import { act } from '../act.js';
 import { canSummonAt } from '../actions/unit-destination.js';
@@ -36,7 +37,7 @@ function* candidates(
     return;
   }
   yield { type: 'pass', playerId };
-  yield { type: 'end-turn', playerId };
+  yield* endTurnChoices(state, playerId);
   const destinations = state.zones.filter(
     (z) => z.kind === 'base' || z.kind === 'battlefield',
   );

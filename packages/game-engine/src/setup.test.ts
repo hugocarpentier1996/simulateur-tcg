@@ -8,6 +8,29 @@ import {
 } from './index.js';
 import { withDrawSupplies } from './test-fixtures.js';
 import { startTurn } from './turn/progression.js';
+import { darkChild } from '../../game-data/src/index.js';
+
+it('conserve le catalogue des légendes et pose leur instance Ready hors des unités', () => {
+  const input = config();
+  for (const player of input.players) {
+    player.legend.definitionId = darkChild.id;
+    player.legend.colors = [...darkChild.colors];
+    for (const rune of player.runes) rune.color = 'rouge';
+  }
+  const state = accepted(
+    createGame({ ...input, legendDefinitions: [darkChild] }),
+  );
+  expect(state.legendDefinitions).toEqual([darkChild]);
+  expect(
+    state.cards.filter((c) => c.definitionId === darkChild.id),
+  ).toHaveLength(2);
+  expect(
+    state.cards
+      .filter((c) => c.definitionId === darkChild.id)
+      .every((c) => c.ready === true),
+  ).toBe(true);
+  expect(state.units).toEqual([]);
+});
 
 function config() {
   return {

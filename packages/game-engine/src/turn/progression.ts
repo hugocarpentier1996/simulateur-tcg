@@ -19,9 +19,13 @@ export function startNextTurn(
   state: GameState,
 ): Extract<ActionResult, { ok: true }> {
   const nextPlayerId = getNextPlayerId(state);
-  const end = runPhase(state, 'end', (s) => clearResources(s, 'end'));
+  const end =
+    state.phase === 'end'
+      ? clearResources(state, 'end')
+      : runPhase(state, 'end', (s) => clearResources(s, 'end'));
   const current: GameState = {
     ...end.state,
+    ...(state.pendingTurnEnd ? { pendingTurnEnd: false } : {}),
     units: end.state.units.map((unit) => ({
       ...unit,
       damage: 0,

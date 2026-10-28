@@ -483,6 +483,21 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
 - 23 cartes complètes, hors démo.
 - `pnpm check` : 328 tests et build réussis.
 
+### Dark Child OGS-017 — 28 octobre 2026
+
+- Fin de tour suspendue : `end-turn.readyRuneIds` choisit les deux runes avant les
+  réactions. `pendingTurnEnd` attend fin des piles, morts et Showdowns induits avant
+  de nettoyer les ressources/bonus puis démarrer le joueur suivant.
+- Choix de min(2, nombre de runes en jeu), sans doublon, runes Ready ou Tap ; celles
+  recyclées avant résolution sont ignorées. La légende n'est pas épuisée par son passif.
+- Actions légales : combinaisons de runes proposées. Aucun changement des fins de
+  tour sans cette légende. Une seule légende par joueur dans la configuration normale.
+- TDD : cinq échecs initiaux puis cinq scénarios ; test de création de partie ajouté
+  pour le passage du catalogue et les instances Ready sans présence dans units.
+- Les quatre légendes OGS sont raccordées : 24 cartes sur 24, hors decks de démo.
+  Aucune capacité activée de légende n'a été inventée pour ces quatre passifs.
+- `pnpm check` : 334 tests et build réussis.
+
 ## Limites à conserver lors d'une reprise
 
 - Première capacité de mort implémentée pour les morts de combat et hors combat. Autres déclencheurs,

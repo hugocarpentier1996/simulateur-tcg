@@ -1,4 +1,8 @@
-import type { LegendBlueprint, LegendEntry } from './legend-types.js';
+import type {
+  LegendBlueprint,
+  LegendEntry,
+  ReadyRunesEntry,
+} from './legend-types.js';
 import type { ReturnSpellEntry } from './effects/return-spell.js';
 import type { UnitPlayEntry } from './effects/unit-play.js';
 import type { SpellPlayEntry } from './effects/expensive-spell.js';
@@ -14,6 +18,8 @@ import type { DeathEffect, DeathEntry, DeathTrigger } from './death-types.js';
  * Les étapes automatiques conduisent jusqu'à Main, sans effets de cartes personnalisés.
  */
 export interface GameState {
+  /** Fin de tour suspendue jusqu'à résolution des capacités, morts et Showdowns induits. */
+  pendingTurnEnd?: boolean;
   activePlayerId: string;
   phase: TurnPhase;
   /** Second joueur : une rune supplémentaire à son premier Channel, puis null. */
@@ -58,6 +64,7 @@ export interface GameState {
       | UnitPlayEntry
       | ReturnSpellEntry
       | LegendEntry
+      | ReadyRunesEntry
     )[];
     initiatorId: string;
     priorityPlayerId: string;
@@ -286,7 +293,11 @@ export type GameAction =
     }
   | { type: 'move'; playerId: string; unitId: string; destinationId: string }
   | { type: 'pass'; playerId: string }
-  | { type: 'end-turn'; playerId: string };
+  | {
+      type: 'end-turn';
+      playerId: string;
+      /** Choix Dark Child, avant réactions. */ readyRuneIds?: readonly string[];
+    };
 
 /**
  * Faits produits en sortie d'une action acceptée, dans l'ordre de traitement.

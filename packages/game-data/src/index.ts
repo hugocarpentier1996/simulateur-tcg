@@ -43,3 +43,5 @@ export type { LegendDefinition } from './legend-definition.js';
 export { ladyOfLuminosity } from './ogs/lady-of-luminosity.js';
 
 export { mightOfDemacia } from './ogs/might-of-demacia.js';
+
+export { darkChild } from './ogs/dark-child.js';

@@ -1,3 +1,4 @@
+import { startNextTurn } from './turn/progression.js';
 import { queueConquestLegends } from './effects/conquest-legends.js';
 import type { GameState, GameAction, ActionResult } from './types.js';
 import { activateSpellEnergy } from './actions/activate-spell-energy.js';
@@ -54,6 +55,16 @@ export function act(state: GameState, action: GameAction): ActionResult {
     ...attached.events,
     ...queued.events,
   ];
+  if (
+    next.pendingTurnEnd &&
+    !next.result &&
+    !next.stack &&
+    !next.pendingDeaths &&
+    !next.showdown
+  ) {
+    const started = startNextTurn(next);
+    return { ...started, events: [...events, ...started.events] };
+  }
   const opened = !result.state.showdown && next.showdown;
   return {
     ...result,
