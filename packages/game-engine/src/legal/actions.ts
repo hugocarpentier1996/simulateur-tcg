@@ -1,5 +1,6 @@
 import type { GameAction, GameState } from '../types.js';
 import { act } from '../act.js';
+import { recoverableSpells } from '../effects/return-spell.js';
 import { findPayment } from './payment.js';
 import { resolutionChoices, setupChoices } from './choices.js';
 
@@ -54,13 +55,19 @@ function* candidates(
       const payment = findPayment(state, playerId, unit.cost);
       if (payment)
         for (const zone of destinations)
-          yield {
-            type: 'play-unit',
-            playerId,
-            cardId: card.id,
-            destinationId: zone.id,
-            payment,
-          };
+          for (const returnSpellId of unit.onPlayReturnSpell
+            ? recoverableSpells(state, playerId).length
+              ? recoverableSpells(state, playerId)
+              : [undefined]
+            : [undefined])
+            yield {
+              type: 'play-unit',
+              ...(returnSpellId ? { returnSpellId } : {}),
+              playerId,
+              cardId: card.id,
+              destinationId: zone.id,
+              payment,
+            };
     }
     const gear = state.gearDefinitions?.find((d) => d.id === card.definitionId);
     if (gear) {

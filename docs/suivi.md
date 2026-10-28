@@ -391,6 +391,18 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
 - Tests futurs : cibler les nouveaux comportements et leurs raccordements ; ne pas
   dupliquer par carte les scénarios déjà couverts par les systèmes partagés.
 
+### Annie Chaos OGS-010 — 28 octobre 2026
+
+- 4 Énergie + 1 violet, 3 Might, arrivée Tap. La capacité récupère le sort choisi
+  du cimetière vers la main après sa fenêtre de réaction, même si Annie a disparu.
+- Choix `returnSpellId` à l'empilement confirmé par l'utilisateur. Actions légales
+  raccordées. Refus avant paiement des choix invalides ou omis si un sort est disponible.
+- Sans sort récupérable, Annie reste jouable et sa capacité n'a aucun effet ; cible
+  devenue illégale ignorée sans remplacement (convention actuelle du prototype).
+- TDD : quatre échecs puis quatre scénarios ciblés, dont réaction réelle et chosen champion.
+- 19 cartes complètes. Hors decks de démonstration.
+- Validation complète : `pnpm check`, 308 tests et build réussis.
+
 ## Limites à conserver lors d'une reprise
 
 - Première capacité de mort implémentée pour les morts de combat et hors combat. Autres déclencheurs,

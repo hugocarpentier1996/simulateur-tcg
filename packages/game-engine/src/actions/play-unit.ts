@@ -1,4 +1,9 @@
 import type { GameState, GameAction, ActionResult } from '../types.js';
+import {
+  recoverableSpells,
+  type ReturnSpellEntry,
+} from '../effects/return-spell.js';
+import type { UnitPlayEntry } from '../effects/unit-play.js';
 import { payCost } from '../cost/payment.js';
 import { canSummonAt } from './unit-destination.js';
 
@@ -37,6 +42,29 @@ export function playUnit(
   const destinationId = action.destinationId ?? base.id;
   if (!canSummonAt(state, action.playerId, destinationId))
     return { ok: false, reason: 'INVALID_SUMMON_DESTINATION' };
+  const entries: (ReturnSpellEntry | UnitPlayEntry)[] = [];
+  if (definition.onPlayReturnSpell) {
+    const choices = recoverableSpells(state, action.playerId);
+    if (
+      action.returnSpellId
+        ? !choices.includes(action.returnSpellId)
+        : choices.length > 0
+    )
+      return { ok: false, reason: 'INVALID_RETURN_SPELL' };
+    entries.push({
+      kind: 'return-spell',
+      sourceId: card.id,
+      ownerId: card.ownerId,
+      ...(action.returnSpellId ? { targetId: action.returnSpellId } : {}),
+    });
+  }
+  if (definition.onPlayBattlefieldDamage !== undefined)
+    entries.push({
+      kind: 'unit-play',
+      sourceId: card.id,
+      ownerId: card.ownerId,
+      amount: definition.onPlayBattlefieldDamage,
+    });
   const payment = payCost(
     state,
     action.playerId,
@@ -48,17 +76,10 @@ export function playUnit(
     ok: true,
     state: {
       ...payment.state,
-      ...(definition.onPlayBattlefieldDamage !== undefined
+      ...(entries.length
         ? {
             stack: {
-              entries: [
-                {
-                  kind: 'unit-play' as const,
-                  sourceId: card.id,
-                  ownerId: card.ownerId,
-                  amount: definition.onPlayBattlefieldDamage,
-                },
-              ],
+              entries,
               initiatorId: action.playerId,
               priorityPlayerId: state.activePlayerId,
               consecutivePasses: 0,
@@ -94,7 +115,7 @@ export function playUnit(
         definitionId: definition.id,
         zoneId: destinationId,
       },
-      ...(definition.onPlayBattlefieldDamage !== undefined
+      ...(entries.length
         ? [{ type: 'unit-play-effect-queued' as const, sourceId: card.id }]
         : []),
     ],

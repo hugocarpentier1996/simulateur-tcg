@@ -1,3 +1,4 @@
+import type { ReturnSpellEntry } from './effects/return-spell.js';
 import type { UnitPlayEntry } from './effects/unit-play.js';
 import type { SpellPlayEntry } from './effects/expensive-spell.js';
 import type { SpellBlueprint, SpellEntry } from './spell-types.js';
@@ -47,7 +48,13 @@ export interface GameState {
   gears?: GearState[];
   /** Pile du bas vers le haut : sorts payés, bonus déclenchés au lancement et effets de mort. */
   stack?: {
-    entries: (SpellEntry | DeathEntry | SpellPlayEntry | UnitPlayEntry)[];
+    entries: (
+      | SpellEntry
+      | DeathEntry
+      | SpellPlayEntry
+      | UnitPlayEntry
+      | ReturnSpellEntry
+    )[];
     initiatorId: string;
     priorityPlayerId: string;
     consecutivePasses: number;
@@ -109,6 +116,8 @@ export interface UnitBlueprint {
   readonly spellEnergyAbility?: number;
   /** Capacité déclenchée à la mise en jeu : dégâts à toutes les unités sur les champs. */
   readonly onPlayBattlefieldDamage?: number;
+  /** À la mise en jeu, récupérer le sort choisi de son cimetière via la pile. */
+  readonly onPlayReturnSpell?: boolean;
   /** Au lancement d'un sort de coût imprimé suffisant : bonus personnel pour le tour, via la pile. */
   readonly onExpensiveSpell?: {
     readonly minimumEnergy: number;
@@ -257,6 +266,8 @@ export type GameAction =
     }
   | {
       type: 'play-unit';
+      /** Annie Chaos : sort choisi avant les réactions ; requis si un sort est récupérable. */
+      returnSpellId?: string;
       playerId: string;
       cardId: string;
       destinationId?: string;
@@ -279,6 +290,7 @@ export type GameAction =
  * retourné et ne suffisent pas, seuls, à reconstruire toute la simulation.
  */
 export type GameEvent =
+  | { type: 'spell-returned'; playerId: string; cardId: string }
   | { type: 'ability-damage'; sourceId: string; unitId: string; amount: number }
   | {
       type: 'unit-play-effect-queued' | 'unit-play-effect-resolved';

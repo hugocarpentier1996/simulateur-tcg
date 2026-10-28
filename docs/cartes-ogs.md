@@ -91,3 +91,9 @@ infligeant 3 dégâts simultanés aux unités présentes sur tous les champs à 
 Alliés et Tibbers compris, bases exclues. Réponse Flash, bonus Annie, morts simultanées,
 effets de mort et paiements bicolores testés. Export `tibbers`, hors decks de démo.
 Bilan courant : 18 cartes complètes, dont Annie Fury désormais raccordée aux capacités.
+
+### Annie Chaos OGS-010
+
+Export `annieChaos` : 4 Énergie + 1 violet, 3 Might, Tap. Récupère un sort du cimetière
+choisi avant les réactions, puis revérifié à la résolution. Main/champion et actions
+légales raccordés. Sans cible disponible : jouable, effet vide. Hors decks de démo.

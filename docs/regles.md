@@ -201,3 +201,9 @@ commence sans score intermédiaire, avec les mêmes rôles, priorité et déroul
 
 1v1 d'abord. FFA et équipes ensuite : listes de joueurs et équipes, relations allié/ennemi,
 sans inscrire des règles FFA non confirmées dans le fonctionnement actuel.
+
+## Choix des cartes OGS
+
+Annie Chaos : le sort récupéré est choisi à l’empilement de sa capacité, avant les réactions.
+Recruit the Vanguard : les destinations des quatre Recrues sont choisies à l’empilement
+du sort, avant les réactions. Ces choix sont revérifiés à la résolution.

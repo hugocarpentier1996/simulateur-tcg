@@ -19,6 +19,8 @@ export interface UnitDefinition {
   readonly spellEnergyAbility?: number;
   /** Capacité déclenchée à la mise en jeu : dégâts à toutes les unités sur les champs. */
   readonly onPlayBattlefieldDamage?: number;
+  /** À la mise en jeu, récupérer le sort choisi de son cimetière via la pile. */
+  readonly onPlayReturnSpell?: boolean;
   /** Au lancement d'un sort de coût imprimé suffisant : bonus personnel pour le tour, via la pile. */
   readonly onExpensiveSpell?: {
     readonly minimumEnergy: number;
