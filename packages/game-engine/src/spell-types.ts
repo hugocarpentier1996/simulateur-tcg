@@ -41,6 +41,11 @@ export interface SpellBlueprint {
       }
     | { readonly type: 'damage-enemies-in-combat'; readonly amount: number }
     | { readonly type: 'return-graveyard-unit' }
+    | {
+        readonly type: 'channel-exhausted';
+        readonly count: number;
+        readonly drawIfEmpty?: boolean;
+      }
     | { readonly type: 'return-unit-to-hand' }
     | { readonly type: 'kill-unit' }
     | { readonly type: 'duel' }

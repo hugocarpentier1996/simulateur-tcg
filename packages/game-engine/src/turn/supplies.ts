@@ -25,8 +25,9 @@ function takeFromPile(
   source: ZoneKind,
   target: ZoneKind,
   count: number,
+  playerId = state.activePlayerId,
+  ready = true,
 ): Extract<ActionResult, { ok: true }> {
-  const playerId = state.activePlayerId;
   const from = state.zones.find(
     (zone) => zone.ownerId === playerId && zone.kind === source,
   );
@@ -54,11 +55,23 @@ function takeFromPile(
           ? {
               ...card,
               zoneId: to.id,
-              ...(source === 'rune-pile' ? { ready: true } : {}),
+              ...(source === 'rune-pile' ? { ready } : {}),
             }
           : card,
       ),
     },
     events,
   };
+}
+
+/** Channel explicite par effet : propriétaire, quantité et Ready/Tap ; pile vide sans pénalité. */
+export function channelForPlayer(
+  state: GameState,
+  playerId: string,
+  count: number,
+  ready = false,
+) {
+  if (!Number.isInteger(count) || count < 0)
+    throw new RangeError('Quantité de runes invalide.');
+  return takeFromPile(state, 'rune-pile', 'runes', count, playerId, ready);
 }

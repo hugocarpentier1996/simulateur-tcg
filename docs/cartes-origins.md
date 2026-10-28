@@ -23,7 +23,7 @@ Les images restent des URL de métadonnées ; les fichiers bruts ne sont pas pub
 - [ ] Maddened Marauder — ogn-191-298
 - [ ] Meditation — ogn-048-298
 - [x] Mega-Mech — ogn-088-298
-- [ ] Mobilize — ogn-134-298
+- [x] Mobilize — ogn-134-298
 - [x] Morbid Return — ogn-170-298
 - [x] Mountain Drake — ogn-142-298
 - [ ] Mystic Poro — ogn-171-298

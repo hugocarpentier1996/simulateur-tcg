@@ -706,6 +706,13 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
 
 - Validation : pnpm check, 385 tests et build réussis.
 
+### Origins fournée 3 : Mobilize — 28 octobre 2026
+
+- Channel Tap partagé pour les effets, propriétaire explicite ; pioche seulement si aucune rune ne peut être canalisée.
+- Tests pile disponible/vide, effet différé après réactions.
+
+- Validation : pnpm check, 387 tests et build réussis.
+
 ## Limites à conserver lors d'une reprise
 
 - Première capacité de mort implémentée pour les morts de combat et hors combat. Autres déclencheurs,

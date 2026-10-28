@@ -1,3 +1,4 @@
+import { channelForPlayer } from '../turn/supplies.js';
 import { returnGraveyardCard } from './graveyard-card.js';
 import { effectiveMight } from './modifiers.js';
 import { leaveBoard } from './leave-board.js';
@@ -81,6 +82,22 @@ export function resolveSpell(
         entry.targetId,
         'unit',
       );
+      continue;
+    }
+    if (effect.type === 'channel-exhausted') {
+      const channeled = channelForPlayer(state, entry.casterId, effect.count);
+      state = channeled.state;
+      events.push(...channeled.events);
+      if (
+        effect.drawIfEmpty &&
+        !channeled.events.some(
+          (e) => e.type === 'runes-channeled' && e.cardIds.length,
+        )
+      ) {
+        const drawn = drawCardForPlayer(state, entry.casterId);
+        state = drawn.state;
+        events.push(...drawn.events);
+      }
       continue;
     }
     if (effect.type === 'draw') {
