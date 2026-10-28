@@ -1,4 +1,5 @@
 import type { GameState, GameAction, ActionResult } from './types.js';
+import { activateSpellEnergy } from './actions/activate-spell-energy.js';
 import { moveUnit } from './actions/move.js';
 import { passPriority } from './actions/pass.js';
 import { endTurn } from './actions/end-turn.js';
@@ -76,7 +77,12 @@ function dispatch(state: GameState, action: GameAction): ActionResult {
   if (action.type === 'mulligan') return mulligan(state, action);
   if (state.setup || state.phase === 'setup')
     return { ok: false, reason: 'SETUP_IN_PROGRESS' };
-  if (state.stack && action.type !== 'cast-spell' && action.type !== 'pass')
+  if (
+    state.stack &&
+    action.type !== 'cast-spell' &&
+    action.type !== 'pass' &&
+    action.type !== 'activate-spell-energy'
+  )
     return { ok: false, reason: 'STACK_IN_PROGRESS' };
   if (
     !state.stack &&
@@ -86,6 +92,8 @@ function dispatch(state: GameState, action: GameAction): ActionResult {
   )
     return { ok: false, reason: 'NO_PRIORITY' };
   switch (action.type) {
+    case 'activate-spell-energy':
+      return activateSpellEnergy(state, action);
     case 'play-gear':
       return playGear(state, action);
     case 'equip-gear':

@@ -38,7 +38,7 @@ Tests Shield : `packages/game-engine/src/ogs-zephyr-sage.test.ts`.
 - Mort si dégâts non nuls >= Might actuelle, y compris après baisse de Might. Dégâts
   conservés jusqu'aux soins globaux de fin de combat/fin de tour. Raccordé avec Incinerate,
   y compris la perte d'une aura ou du bonus de Master Yi lors d'un paiement.
-- Capacités ADD : production sans fenêtre de réaction, à introduire avec Lux OGS-014.
+- Capacités ADD : production sans fenêtre de réaction, implémentée avec Lux OGS-014.
 - Shield/Assault : défense/attaque uniquement dans un Combat Showdown, jamais en Open,
   jusqu'à la clôture. Shield et Assault sont implémentés.
 
@@ -67,3 +67,11 @@ chaque carte validée, en mettant ce tableau à jour. Demander les précisions p
 L'arrivée Ready est une propriété statique de mise en jeu, pas un effet mis sur la pile.
 Gentlemen's Duel confirmé : deux cibles au lancement, Stun n'empêche pas le duel,
 dégâts directement infligés par les unités (ni sort, ni capacité, ni combat).
+
+### Lux Order OGS-014
+
+Unité 4 Énergie, 2 Might, arrivée Tap. Capacité Réaction : épuiser Lux pour ajouter
+2 énergie réservée aux sorts. Production immédiate sans empilement ni transfert de
+priorité. Le paiement automatique utilise cette réserve en premier ; unités, gears
+et équipement ne peuvent pas la dépenser. Expiration aux frontières End/Draw.
+Export `luxOrder`, hors decks de démonstration. 15 cartes complètes et Annie Fury partielle.

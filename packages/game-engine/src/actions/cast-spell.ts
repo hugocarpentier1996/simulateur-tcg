@@ -1,5 +1,5 @@
 import type { ActionResult, GameAction, GameState } from '../types.js';
-import type { SpellBlueprint } from '../spell-types.js';
+import { canUseTiming } from './timing.js';
 import { payCost } from '../cost/payment.js';
 import { validFlashSelection } from '../effects/flash.js';
 import {
@@ -34,7 +34,7 @@ export function castSpell(
     (d) => d.id === card.definitionId,
   );
   if (!definition) return { ok: false, reason: 'UNKNOWN_SPELL_DEFINITION' };
-  if (!canCast(state, action.playerId, definition))
+  if (!canUseTiming(state, action.playerId, definition.timing))
     return { ok: false, reason: 'SPELL_WINDOW_CLOSED' };
   if (
     definition.effects.some(
@@ -73,7 +73,13 @@ export function castSpell(
     )
   )
     return { ok: false, reason: 'MISSING_GRAVEYARD' };
-  const paid = payCost(state, action.playerId, definition.cost, action.payment);
+  const paid = payCost(
+    state,
+    action.playerId,
+    definition.cost,
+    action.payment,
+    'spell',
+  );
   if (!paid.ok) return paid;
   return {
     ok: true,
@@ -119,27 +125,4 @@ export function castSpell(
       },
     ],
   };
-}
-
-function canCast(
-  state: GameState,
-  playerId: string,
-  definition: SpellBlueprint,
-): boolean {
-  if (state.stack)
-    return (
-      definition.timing === 'reaction' &&
-      state.stack.priorityPlayerId === playerId
-    );
-  if (state.showdown)
-    return (
-      definition.timing !== 'normal' &&
-      state.showdown.priorityPlayerId === playerId &&
-      (state.showdown.kind === 'open' || state.showdown.stage === 'priority')
-    );
-  return (
-    state.phase === 'main' &&
-    state.activePlayerId === playerId &&
-    (state.priorityPlayerId ?? playerId) === playerId
-  );
 }

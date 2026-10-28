@@ -6,6 +6,7 @@ import type {
 } from '../types.js';
 
 /** État + coût de confiance + choix de runes -> paiement entier ou refus sans mutation.
+ * purpose='spell' consomme en priorité la réserve spellEnergy ; ordinary ne peut pas l'utiliser.
  * Utilise les réserves flottantes et la production choisie. Les surplus restent disponibles.
  * Les runes de Power (même Tap) vont sous la pile dans l'ordre de la sélection. */
 export function payCost(
@@ -13,6 +14,7 @@ export function payCost(
   playerId: string,
   cost: UnitBlueprint['cost'],
   plan: PaymentPlan,
+  purpose: 'ordinary' | 'spell' = 'ordinary',
 ): { ok: true; state: GameState } | Extract<ActionResult, { ok: false }> {
   const energyIds = new Set(plan.energyRunes);
   const powerIds = new Set(plan.powerRunes);
@@ -46,7 +48,9 @@ export function payCost(
   if (powerIds.size && !pile) return { ok: false, reason: 'MISSING_RUNE_PILE' };
   const previous = state.resources[playerId] ?? { energy: 0, power: {} };
   const power = { ...previous.power };
-  const energy = previous.energy + energyIds.size;
+  const restrictedSpent =
+    purpose === 'spell' ? Math.min(previous.spellEnergy ?? 0, cost.energy) : 0;
+  const energy = previous.energy + energyIds.size + restrictedSpent;
   for (const card of selected)
     if (card && powerIds.has(card.id))
       power[card.color!] = (power[card.color!] ?? 0) + 1;
@@ -76,7 +80,14 @@ export function payCost(
       ...state,
       resources: {
         ...state.resources,
-        [playerId]: { energy: energy - cost.energy, power },
+        [playerId]: {
+          ...previous,
+          energy: energy - cost.energy,
+          power,
+          ...(previous.spellEnergy !== undefined
+            ? { spellEnergy: previous.spellEnergy - restrictedSpent }
+            : {}),
+        },
       },
       cards: [
         ...state.cards

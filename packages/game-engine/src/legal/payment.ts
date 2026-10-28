@@ -2,12 +2,14 @@ import type { GameState, PaymentPlan, UnitBlueprint } from '../types.js';
 import { payCost } from '../cost/payment.js';
 
 /** Coût -> un paiement déterministe sans production superflue, ou null si impayable.
+ * purpose='spell' permet la réserve réservée aux sorts ; ordinary l'exclut.
  * Power : runes Tap d'abord. Énergie : Ready, y compris celles recyclées dans ce paiement.
  * Ne prétend pas énumérer toutes les stratégies de paiement ; act accepte les autres plans valides. */
 export function findPayment(
   state: GameState,
   playerId: string,
   cost: UnitBlueprint['cost'],
+  purpose: 'ordinary' | 'spell' = 'ordinary',
 ): PaymentPlan | null {
   if (cost.powerChoice) {
     const floating = state.resources[playerId]?.power ?? {};
@@ -17,10 +19,15 @@ export function findPayment(
         Number((floating[a] ?? 0) > (cost.power[a] ?? 0)),
     );
     for (const color of colors) {
-      const plan = findPayment(state, playerId, {
-        energy: cost.energy,
-        power: { ...cost.power, [color]: (cost.power[color] ?? 0) + 1 },
-      });
+      const plan = findPayment(
+        state,
+        playerId,
+        {
+          energy: cost.energy,
+          power: { ...cost.power, [color]: (cost.power[color] ?? 0) + 1 },
+        },
+        purpose,
+      );
       if (plan) return plan;
     }
     return null;
@@ -47,12 +54,19 @@ export function findPayment(
     if (candidates.length < required) return null;
     powerRunes.push(...candidates.slice(0, required).map((r) => r.id));
   }
-  const count = Math.max(0, Math.ceil(cost.energy - floating.energy));
+  const count = Math.max(
+    0,
+    Math.ceil(
+      cost.energy -
+        floating.energy -
+        (purpose === 'spell' ? (floating.spellEnergy ?? 0) : 0),
+    ),
+  );
   const ready = runes.filter((r) => r.ready === true);
   if (ready.length < count) return null;
   const payment = {
     energyRunes: ready.slice(0, count).map((r) => r.id),
     powerRunes,
   };
-  return payCost(state, playerId, cost, payment).ok ? payment : null;
+  return payCost(state, playerId, cost, payment, purpose).ok ? payment : null;
 }

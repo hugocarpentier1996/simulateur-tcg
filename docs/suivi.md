@@ -338,6 +338,22 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
 - Registre : 14 cartes complètes, Annie Fury partielle ; aucune légende implémentée.
 - Validation complète : `pnpm check`, 263 tests et build réussis.
 
+### Lux Order OGS-014 — 28 octobre 2026
+
+- Unité 4 Énergie, 2 Might, arrivée Tap. Première capacité activée ADD :
+  `activate-spell-energy` épuise une unité Ready possédant `spellEnergyAbility`.
+- Fenêtres de Réaction partagées avec les sorts ; production immédiate, sans pile
+  supplémentaire ni changement de priorité. Événement `spell-energy-added`.
+- Réserve `spellEnergy` facultative par joueur, dépensée en priorité par les sorts
+  uniquement. Les paiements ordinaires la préservent ; End/Draw l'effacent.
+- Actions légales : activation proposée et paiements des sorts raccordés.
+- TDD : cinq échecs pertinents constatés avant implémentation. Tests coût/Tap,
+  restrictions unités/gears/équipement, Power flexible, priorité et fenêtres de
+  Showdown, absence de réaction à ADD, expiration et non-mutation.
+- Limite : activation explicite du moteur ; pas de bouton dédié ni Lux dans la démo.
+  15 cartes complètes, Annie Fury toujours partielle pour les dégâts de capacités.
+- Validation complète : `pnpm check`, 278 tests et build réussis.
+
 ## Limites à conserver lors d'une reprise
 
 - Première capacité de mort implémentée pour les morts de combat et hors combat. Autres déclencheurs,

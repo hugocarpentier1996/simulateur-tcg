@@ -63,7 +63,14 @@ export interface GameState {
    * Dans chaque zone ordonnée, leur ordre ici va du sommet au dessous de la pile. */
   cards: CardInstance[];
   /** Réserves flottantes par joueur ; un Power absent de la table vaut zéro. */
-  resources: Record<string, { energy: number; power: Record<string, number> }>;
+  resources: Record<
+    string,
+    {
+      energy: number;
+      power: Record<string, number>;
+      /** Réserve réservée au lancement de sorts, effacée avec les ressources flottantes. */ spellEnergy?: number;
+    }
+  >;
   battlefields: {
     zoneId: string;
     definitionId?: string;
@@ -96,6 +103,8 @@ export interface GameState {
 /** Définition structurelle acceptée par le moteur ; compatible avec le catalogue game-data. */
 export interface UnitBlueprint {
   readonly spellAbilityDamageBonus?: number;
+  /** Capacité ADD : épuiser cette unité Ready pour produire cette énergie réservée aux sorts. */
+  readonly spellEnergyAbility?: number;
   readonly otherAlliesHereMightBonus?: number;
   readonly runeMightBonus?: {
     readonly minimum: number;
@@ -201,6 +210,7 @@ export interface CardInstance {
  * `playerId` devra être fourni par le serveur à partir de l'identité authentifiée.
  */
 export type GameAction =
+  | { type: 'activate-spell-energy'; playerId: string; unitId: string }
   | {
       type: 'queue-death-effects';
       playerId: string;
@@ -258,6 +268,12 @@ export type GameAction =
  * retourné et ne suffisent pas, seuls, à reconstruire toute la simulation.
  */
 export type GameEvent =
+  | {
+      type: 'spell-energy-added';
+      playerId: string;
+      unitId: string;
+      amount: number;
+    }
   | { type: 'death-triggered'; sourceId: string; playerId: string }
   | { type: 'death-effects-queued'; playerId: string; sourceIds: string[] }
   | { type: 'death-effect-resolved'; sourceId: string }
@@ -385,7 +401,8 @@ export type GameEvent =
  * INSUFFICIENT_RESOURCES : coût non couvert, aucun paiement partiel.
  * DAMAGE_ASSIGNMENT_REQUIRED / NO_DAMAGE_WINDOW : mauvaise fenêtre de combat.
  * DAMAGE_ALREADY_ASSIGNED / INVALID_DAMAGE_ALLOCATION : répartition refusée.
- * STACK_IN_PROGRESS : seuls les Réactions et les passes sont possibles.
+ * STACK_IN_PROGRESS : seuls les Réactions, les capacités ADD et les passes sont possibles.
+ * NO_RESOURCE_ABILITY / ABILITY_WINDOW_CLOSED : capacité ADD absente ou fenêtre/priorité fermée.
  * SPELL_WINDOW_CLOSED : timing ou priorité incompatible avec le sort.
  * UNKNOWN_SPELL_DEFINITION / INVALID_TARGET / MISSING_GRAVEYARD : sort ou contexte invalide.
  * UNKNOWN_GEAR_DEFINITION / INVALID_GEAR : définition ou gear en jeu absent/non possédé.

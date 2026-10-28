@@ -39,6 +39,8 @@ function* candidates(
     (z) => z.kind === 'base' || z.kind === 'battlefield',
   );
   for (const unit of state.units)
+    yield { type: 'activate-spell-energy', playerId, unitId: unit.id };
+  for (const unit of state.units)
     for (const field of state.battlefields)
       yield {
         type: 'move',
@@ -70,7 +72,7 @@ function* candidates(
       (d) => d.id === card.definitionId,
     );
     if (spell) {
-      const payment = findPayment(state, playerId, spell.cost);
+      const payment = findPayment(state, playerId, spell.cost, 'spell');
       if (payment)
         for (const target of spell.target.kind === 'battlefield'
           ? state.battlefields.map((f) => ({ id: f.zoneId }))
