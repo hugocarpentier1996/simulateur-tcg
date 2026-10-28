@@ -39,7 +39,7 @@ Les images restent des URL de métadonnées ; les fichiers bruts ne sont pas pub
 - [ ] Stormclaw Ursine — ogn-137-298
 - [ ] Stupefy — ogn-095-298
 - [ ] Traveling Merchant — ogn-185-298
-- [ ] Vanguard Sergeant — ogn-219-298
+- [x] Vanguard Sergeant — ogn-219-298
 - [ ] Wielder of Water — ogn-055-298
 - [ ] Body Rune — ogn-126-298
 - [ ] Calm Rune — ogn-042-298
