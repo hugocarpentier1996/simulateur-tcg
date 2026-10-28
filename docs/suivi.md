@@ -692,6 +692,13 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
 
 - Validation : pnpm check, 383 tests et build réussis.
 
+### Origins fournée 3 : Mind Rune — 28 octobre 2026
+
+- Définition bleu, métadonnées et instance compatibles avec Channel/paiement communs.
+- Test du contrat de couleur et d'identifiant.
+
+- Validation : pnpm check, 384 tests et build réussis.
+
 ## Limites à conserver lors d'une reprise
 
 - Première capacité de mort implémentée pour les morts de combat et hors combat. Autres déclencheurs,

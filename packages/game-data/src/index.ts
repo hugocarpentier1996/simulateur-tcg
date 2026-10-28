@@ -96,3 +96,5 @@ export { calmRune } from './ogn/calm-rune.js';
 export { chaosRune } from './ogn/chaos-rune.js';
 
 export { furyRune } from './ogn/fury-rune.js';
+
+export { mindRune } from './ogn/mind-rune.js';
