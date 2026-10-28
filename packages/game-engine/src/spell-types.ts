@@ -38,6 +38,7 @@ export interface SpellBlueprint {
         readonly type: 'damage-enemies-at-battlefield';
         readonly amount: number;
       }
+    | { readonly type: 'damage-enemies-in-combat'; readonly amount: number }
     | { readonly type: 'return-unit-to-hand' }
     | { readonly type: 'kill-unit' }
     | { readonly type: 'duel' }

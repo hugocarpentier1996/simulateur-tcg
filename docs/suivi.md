@@ -615,6 +615,13 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
 
 - Validation : pnpm check, 359 tests et build réussis.
 
+### Origins fournée 2 : Cannon Barrage — 28 octobre 2026
+
+- Dégâts de zone communs appliqués aux côtés ennemis du combat actif.
+- Les autres champs, bases et alliés sont épargnés ; aucun dégât en Open Showdown.
+
+- Validation : pnpm check, 361 tests et build réussis.
+
 ## Limites à conserver lors d'une reprise
 
 - Première capacité de mort implémentée pour les morts de combat et hors combat. Autres déclencheurs,

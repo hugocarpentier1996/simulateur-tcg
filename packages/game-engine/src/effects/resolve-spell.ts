@@ -81,9 +81,18 @@ export function resolveSpell(
       }
       continue;
     }
-    if (effect.type === 'damage-enemies-at-battlefield') {
-      if (!validBattlefieldTarget(state, entry.targetId)) continue;
-      const areas = getBattlefieldSides(state, entry.targetId).filter(
+    if (
+      effect.type === 'damage-enemies-at-battlefield' ||
+      effect.type === 'damage-enemies-in-combat'
+    ) {
+      const fieldId =
+        effect.type === 'damage-enemies-in-combat'
+          ? state.showdown?.kind === 'combat'
+            ? state.showdown.battlefieldId
+            : undefined
+          : entry.targetId;
+      if (!fieldId || !validBattlefieldTarget(state, fieldId)) continue;
+      const areas = getBattlefieldSides(state, fieldId).filter(
         (side) => side.playerId !== entry.casterId,
       );
       const damaged = dealAreaDamage(
