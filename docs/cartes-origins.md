@@ -36,7 +36,7 @@ Les images restent des URL de métadonnées ; les fichiers bruts ne sont pas pub
 - [ ] Singularity — ogn-105-298
 - [x] Sneaky Deckhand — ogn-176-298
 - [x] Stalwart Poro — ogn-052-298
-- [ ] Stormclaw Ursine — ogn-137-298
+- [x] Stormclaw Ursine — ogn-137-298
 - [x] Stupefy — ogn-095-298
 - [x] Traveling Merchant — ogn-185-298
 - [x] Vanguard Sergeant — ogn-219-298

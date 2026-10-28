@@ -20,6 +20,12 @@ export interface UnitDefinition {
   readonly onMoveSummonHere?: string;
   /** Après tout déplacement : défausser une carte disponible puis piocher, via la pile. */
   readonly onMoveLoot?: boolean;
+  readonly tank?: boolean;
+  /** Effet de mise en jeu, empilé avant résolution. */
+  readonly onPlayEffect?: {
+    readonly type: 'channel-exhausted';
+    readonly count: number;
+  };
   /** En attaque avec un ennemi Ready ici : bonus temporaire via la pile, condition revérifiée. */
   readonly onAttackReadyEnemyMightBonus?: number;
   readonly spellAbilityDamageBonus?: number;

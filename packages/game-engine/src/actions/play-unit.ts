@@ -1,3 +1,4 @@
+import type { PlayEffectEntry } from '../effects/play-effect.js';
 import type { GameState, GameAction, ActionResult } from '../types.js';
 import {
   recoverableSpells,
@@ -49,7 +50,14 @@ export function playUnit(
     !state.units.some((u) => u.zoneId === destinationId);
   if (!canSummonAt(state, action.playerId, destinationId) && !openField)
     return { ok: false, reason: 'INVALID_SUMMON_DESTINATION' };
-  const entries: (ReturnSpellEntry | UnitPlayEntry)[] = [];
+  const entries: (ReturnSpellEntry | UnitPlayEntry | PlayEffectEntry)[] = [];
+  if (definition.onPlayEffect)
+    entries.push({
+      kind: 'play-effect',
+      sourceId: card.id,
+      ownerId: card.ownerId,
+      effect: definition.onPlayEffect,
+    });
   if (definition.onPlayReturnSpell) {
     const choices = recoverableSpells(state, action.playerId);
     if (
@@ -111,6 +119,7 @@ export function playUnit(
           zoneId: destinationId,
           ready: definition.entersReady === true,
           might: definition.might,
+          ...(definition.tank ? { tank: true } : {}),
           damage: 0,
         },
       ],

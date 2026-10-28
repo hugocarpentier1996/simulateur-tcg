@@ -713,6 +713,13 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
 
 - Validation : pnpm check, 387 tests et build réussis.
 
+### Origins fournée 3 : Stormclaw Ursine — 28 octobre 2026
+
+- Tank transmis à l'unité ; capacité de mise en jeu empilée, puis Channel Tap partagé.
+- Tests rune disponible/vide ; aucune pioche de remplacement propre à Mobilize.
+
+- Validation : pnpm check, 389 tests et build réussis.
+
 ## Limites à conserver lors d'une reprise
 
 - Première capacité de mort implémentée pour les morts de combat et hors combat. Autres déclencheurs,

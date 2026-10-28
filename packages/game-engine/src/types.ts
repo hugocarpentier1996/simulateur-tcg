@@ -1,3 +1,4 @@
+import type { PlayEffectEntry } from './effects/play-effect.js';
 import type { AttackEntry } from './effects/attack-triggers.js';
 import type { MovementEntry } from './effects/movement-triggers.js';
 import type {
@@ -62,6 +63,7 @@ export interface GameState {
   /** Pile du bas vers le haut : sorts payés, bonus déclenchés au lancement et effets de mort. */
   stack?: {
     entries: (
+      | PlayEffectEntry
       | AttackEntry
       | MovementEntry
       | SpellEntry
@@ -134,6 +136,12 @@ export interface UnitBlueprint {
   readonly onMoveSummonHere?: string;
   /** Après tout déplacement : défausser une carte disponible puis piocher, via la pile. */
   readonly onMoveLoot?: boolean;
+  readonly tank?: boolean;
+  /** Effet de mise en jeu, empilé avant résolution. */
+  readonly onPlayEffect?: {
+    readonly type: 'channel-exhausted';
+    readonly count: number;
+  };
   /** En attaque avec un ennemi Ready ici : bonus temporaire via la pile, condition revérifiée. */
   readonly onAttackReadyEnemyMightBonus?: number;
   readonly spellAbilityDamageBonus?: number;

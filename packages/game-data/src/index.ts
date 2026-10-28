@@ -102,3 +102,5 @@ export { mindRune } from './ogn/mind-rune.js';
 export { orderRune } from './ogn/order-rune.js';
 
 export { mobilize } from './ogn/mobilize.js';
+
+export { stormclawUrsine } from './ogn/stormclaw-ursine.js';
