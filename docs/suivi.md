@@ -750,6 +750,13 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
 
 - Validation : pnpm check, 398 tests et build réussis.
 
+### Origins fournée 3 : Sai Scout — 28 octobre 2026
+
+- Réutilise Vision et la mise en jeu sur champ entièrement vide.
+- Test intégré : choix Vision avant ouverture du Showdown, aucune conquête prématurée.
+
+- Validation : pnpm check, 399 tests et build réussis.
+
 ## Limites à conserver lors d'une reprise
 
 - Première capacité de mort implémentée pour les morts de combat et hors combat. Autres déclencheurs,
