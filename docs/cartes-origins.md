@@ -14,7 +14,7 @@ Les images restent des URL de métadonnées ; les fichiers bruts ne sont pas pub
 - [ ] Disintegrate — ogn-005-298
 - [ ] Dune Drake — ogn-131-298
 - [ ] Eager Apprentice — ogn-084-298
-- [ ] En Garde — ogn-046-298
+- [x] En Garde — ogn-046-298
 - [ ] Faithful Manufactor — ogn-211-298
 - [x] Falling Comet — ogn-085-298
 - [ ] First Mate — ogn-132-298

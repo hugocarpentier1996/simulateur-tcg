@@ -172,7 +172,14 @@ export function resolveSpell(
               type: 'modify-might' as const,
               amount:
                 effect.minimum === undefined
-                  ? effect.amount
+                  ? effect.amount +
+                    (state.units.filter(
+                      (u) =>
+                        u.ownerId === target.ownerId &&
+                        u.zoneId === target.zoneId,
+                    ).length === 1
+                      ? (effect.aloneBonus ?? 0)
+                      : 0)
                   : Math.max(
                       effect.amount,
                       Math.min(

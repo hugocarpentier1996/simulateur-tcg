@@ -33,6 +33,8 @@ export type SpellEffect =
     }
   | {
       readonly type: 'modify-might';
+      /** Bonus suppl�mentaire si aucune autre unit� alli�e n'est dans cette zone � la r�solution. */
+      readonly aloneBonus?: number;
       /** Limite de cette r�duction au moment de sa r�solution, sans relever une Might d�j� inf�rieure. */
       readonly minimum?: number;
       readonly amount: number;

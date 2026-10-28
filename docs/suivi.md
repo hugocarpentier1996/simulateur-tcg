@@ -601,6 +601,13 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
 
 - Validation : pnpm check, 354 tests et build réussis.
 
+### Origins fournée 2 : En Garde — 28 octobre 2026
+
+- +1 Might et bonus supplémentaire si seule unité alliée dans sa zone à la résolution.
+- Tests avec ennemi présent et arrivée d'un allié avant résolution.
+
+- Validation : pnpm check, 356 tests et build réussis.
+
 ## Limites à conserver lors d'une reprise
 
 - Première capacité de mort implémentée pour les morts de combat et hors combat. Autres déclencheurs,
