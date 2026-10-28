@@ -742,6 +742,14 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
 
 - Validation : pnpm check, 395 tests et build réussis.
 
+### Origins fournée 3 : Mystic Poro — 28 octobre 2026
+
+- Vision après réactions : regard privé du sommet actuel, garder ou recycler au-dessous, puis reprise de pile.
+- Deck vide sans pioche ni pénalité ; actions proposées uniquement au propriétaire.
+- Tests changement du sommet par réaction, deux choix et deck vide.
+
+- Validation : pnpm check, 398 tests et build réussis.
+
 ## Limites à conserver lors d'une reprise
 
 - Première capacité de mort implémentée pour les morts de combat et hors combat. Autres déclencheurs,

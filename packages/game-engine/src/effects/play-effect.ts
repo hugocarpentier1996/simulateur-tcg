@@ -1,3 +1,4 @@
+import { startVision } from './vision.js';
 import { resolveFlash } from './flash.js';
 import { drawCardForPlayer } from '../turn/draw.js';
 import type { ActionResult, GameState, UnitBlueprint } from '../types.js';
@@ -8,6 +9,7 @@ export interface PlayEffectEntry {
   sourceId: string;
   ownerId: string;
   effect:
+    | { type: 'vision' }
     | NonNullable<UnitBlueprint['onPlayEffect']>
     | { type: 'ready-other'; targetId?: string }
     | { type: 'move-to-base'; targetId?: string };
@@ -17,6 +19,8 @@ export function resolvePlayEffect(
   state: GameState,
   entry: PlayEffectEntry,
 ): Extract<ActionResult, { ok: true }> {
+  if (entry.effect.type === 'vision')
+    return startVision(state, entry.ownerId, entry.sourceId);
   if (entry.effect.type === 'move-to-base') {
     const targetId = entry.effect.targetId;
     const unit = state.units.find(

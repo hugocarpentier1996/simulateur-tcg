@@ -110,3 +110,5 @@ export { lecturingYordle } from './ogn/lecturing-yordle.js';
 export { firstMate } from './ogn/first-mate.js';
 
 export { maddenedMarauder } from './ogn/maddened-marauder.js';
+
+export { mysticPoro } from './ogn/mystic-poro.js';

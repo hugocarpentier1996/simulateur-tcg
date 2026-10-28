@@ -23,6 +23,7 @@ export interface UnitDefinition {
   readonly tank?: boolean;
   readonly onPlayReadyOther?: boolean;
   readonly onPlayMoveToBase?: boolean;
+  readonly onPlayVision?: boolean;
   /** Effet de mise en jeu, empilé avant résolution. */
   readonly onPlayEffect?: {
     readonly type: 'channel-exhausted' | 'draw';

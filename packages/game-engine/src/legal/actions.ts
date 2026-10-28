@@ -26,6 +26,13 @@ function* candidates(
   state: GameState,
   playerId: string,
 ): Generator<GameAction> {
+  if (state.pendingVision) {
+    if (state.pendingVision.playerId === playerId) {
+      yield { type: 'choose-vision', playerId, recycle: false };
+      yield { type: 'choose-vision', playerId, recycle: true };
+    }
+    return;
+  }
   if (state.pendingDiscard) {
     if (state.pendingDiscard.playerId === playerId)
       for (const card of state.cards)

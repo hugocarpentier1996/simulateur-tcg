@@ -1,3 +1,4 @@
+import { chooseVision } from './effects/vision.js';
 import { queueAttackEffects } from './effects/attack-triggers.js';
 import { chooseDiscard } from './actions/choose-discard.js';
 import { queueMovementEffects } from './effects/movement-triggers.js';
@@ -94,6 +95,9 @@ function dispatch(state: GameState, action: GameAction): ActionResult {
   if (!state.players.some((player) => player.id === action.playerId)) {
     return { ok: false, reason: 'UNKNOWN_PLAYER' };
   }
+  if (action.type === 'choose-vision') return chooseVision(state, action);
+  if (state.pendingVision)
+    return { ok: false, reason: 'VISION_CHOICE_REQUIRED' };
   if (action.type === 'choose-discard') return chooseDiscard(state, action);
   if (state.pendingDiscard)
     return { ok: false, reason: 'DISCARD_CHOICE_REQUIRED' };

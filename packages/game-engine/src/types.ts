@@ -23,6 +23,8 @@ import type { DeathEffect, DeathEntry, DeathTrigger } from './death-types.js';
 export interface GameState {
   /** Fin de tour suspendue jusqu'à résolution des capacités, morts et Showdowns induits. */
   pendingTurnEnd?: boolean;
+  /** État serveur privé : sommet connu uniquement du joueur de Vision. */
+  pendingVision?: { playerId: string; sourceId: string; cardId: string } | null;
   /** Choix obligatoire pendant une résolution ; aucune réaction entre défausse et pioche. */
   pendingDiscard?: { playerId: string; sourceId: string } | null;
   activePlayerId: string;
@@ -139,6 +141,7 @@ export interface UnitBlueprint {
   readonly tank?: boolean;
   readonly onPlayReadyOther?: boolean;
   readonly onPlayMoveToBase?: boolean;
+  readonly onPlayVision?: boolean;
   /** Effet de mise en jeu, empilé avant résolution. */
   readonly onPlayEffect?: {
     readonly type: 'channel-exhausted' | 'draw';
@@ -267,6 +270,7 @@ export interface CardInstance {
  * `playerId` devra être fourni par le serveur à partir de l'identité authentifiée.
  */
 export type GameAction =
+  | { type: 'choose-vision'; playerId: string; recycle: boolean }
   | { type: 'choose-discard'; playerId: string; cardId: string }
   | { type: 'activate-spell-energy'; playerId: string; unitId: string }
   | {
