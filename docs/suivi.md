@@ -757,6 +757,13 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
 
 - Validation : pnpm check, 399 tests et build réussis.
 
+### Origins fournée 3 : Confront — 28 octobre 2026
+
+- Pioche puis arrivées Ready du lanceur pour le tour courant, unités et jetons joués inclus.
+- Ne redresse pas les unités déjà présentes et n'affecte pas l'adversaire ; expiration testée.
+
+- Validation : pnpm check, 400 tests et build réussis.
+
 ## Limites à conserver lors d'une reprise
 
 - Première capacité de mort implémentée pour les morts de combat et hors combat. Autres déclencheurs,

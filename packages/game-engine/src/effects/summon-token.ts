@@ -39,7 +39,9 @@ export function summonToken(
           zoneId: destinationId,
           might: definition.might,
           damage: 0,
-          ready: false,
+          ready:
+            definition.entersReady === true ||
+            !!state.readyEntryPlayers?.includes(ownerId),
           token: true,
         },
       ],

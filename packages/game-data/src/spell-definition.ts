@@ -34,6 +34,7 @@ export type SpellEffect =
       readonly count: number;
       readonly drawIfEmpty?: boolean;
     }
+  | { readonly type: 'units-enter-ready' }
   | { readonly type: 'return-unit-to-hand' }
   | { readonly type: 'kill-unit' }
   | { readonly type: 'duel' }

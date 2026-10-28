@@ -23,6 +23,8 @@ import type { DeathEffect, DeathEntry, DeathTrigger } from './death-types.js';
 export interface GameState {
   /** Fin de tour suspendue jusqu'à résolution des capacités, morts et Showdowns induits. */
   pendingTurnEnd?: boolean;
+  /** Joueurs dont les nouvelles unités entrent Ready jusqu’à la fin du tour courant. */
+  readyEntryPlayers?: readonly string[];
   /** État serveur privé : sommet connu uniquement du joueur de Vision. */
   pendingVision?: { playerId: string; sourceId: string; cardId: string } | null;
   /** Choix obligatoire pendant une résolution ; aucune réaction entre défausse et pioche. */

@@ -114,3 +114,5 @@ export { maddenedMarauder } from './ogn/maddened-marauder.js';
 export { mysticPoro } from './ogn/mystic-poro.js';
 
 export { saiScout } from './ogn/sai-scout.js';
+
+export { confront } from './ogn/confront.js';

@@ -8,7 +8,7 @@ Les images restent des URL de métadonnées ; les fichiers bruts ne sont pas pub
 
 - [x] Back to Back — ogn-206-298
 - [x] Cannon Barrage — ogn-127-298
-- [ ] Confront — ogn-129-298
+- [x] Confront — ogn-129-298
 - [ ] Crackshot Corsair — ogn-130-298
 - [x] Daring Poro — ogn-210-298
 - [ ] Disintegrate — ogn-005-298

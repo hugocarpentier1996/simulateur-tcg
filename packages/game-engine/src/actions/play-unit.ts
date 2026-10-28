@@ -151,7 +151,9 @@ export function playUnit(
           definitionId: card.definitionId,
           ownerId: card.ownerId,
           zoneId: destinationId,
-          ready: definition.entersReady === true,
+          ready:
+            definition.entersReady === true ||
+            !!state.readyEntryPlayers?.includes(card.ownerId),
           might: definition.might,
           ...(definition.tank ? { tank: true } : {}),
           damage: 0,

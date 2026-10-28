@@ -25,6 +25,7 @@ export function startNextTurn(
       : runPhase(state, 'end', (s) => clearResources(s, 'end'));
   const current: GameState = {
     ...end.state,
+    ...(state.readyEntryPlayers ? { readyEntryPlayers: [] } : {}),
     ...(state.pendingTurnEnd ? { pendingTurnEnd: false } : {}),
     units: end.state.units.map((unit) => ({
       ...unit,

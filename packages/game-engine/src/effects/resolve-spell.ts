@@ -100,6 +100,15 @@ export function resolveSpell(
       }
       continue;
     }
+    if (effect.type === 'units-enter-ready') {
+      state = {
+        ...state,
+        readyEntryPlayers: [
+          ...new Set([...(state.readyEntryPlayers ?? []), entry.casterId]),
+        ],
+      };
+      continue;
+    }
     if (effect.type === 'draw') {
       for (let i = 0; i < effect.count && !state.result; i++) {
         const drawn = drawCardForPlayer(state, entry.casterId);
