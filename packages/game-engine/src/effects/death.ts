@@ -1,3 +1,4 @@
+import { summonToken } from './summon-token.js';
 import type {
   ActionResult,
   GameState,
@@ -89,45 +90,11 @@ export function resolveDeathEffect(
   const events: Extract<ActionResult, { ok: true }>['events'] = [
     { type: 'death-effect-resolved', sourceId: entry.sourceId },
   ];
-  if (!canSummonAt(state, entry.ownerId, entry.destinationId))
-    return { ok: true, state, events };
-  const definition = state.unitDefinitions?.find(
-    (d) => d.id === entry.effect.definitionId,
+  const summoned = summonToken(
+    state,
+    entry.ownerId,
+    entry.destinationId,
+    entry.effect.definitionId,
   );
-  if (!definition) throw new Error('Définition du jeton absente du catalogue.');
-  let next = state.nextTokenId ?? 1;
-  const ids = new Set(
-    [...state.cards, ...state.units, ...(state.gears ?? [])].map((c) => c.id),
-  );
-  while (ids.has(`token:${next}`)) next++;
-  const id = `token:${next}`;
-  return {
-    ok: true,
-    state: {
-      ...state,
-      nextTokenId: next + 1,
-      units: [
-        ...state.units,
-        {
-          id,
-          definitionId: definition.id,
-          ownerId: entry.ownerId,
-          zoneId: entry.destinationId,
-          might: definition.might,
-          damage: 0,
-          ready: false,
-          token: true,
-        },
-      ],
-    },
-    events: [
-      ...events,
-      {
-        type: 'token-summoned',
-        unitId: id,
-        playerId: entry.ownerId,
-        zoneId: entry.destinationId,
-      },
-    ],
-  };
+  return { ...summoned, events: [...events, ...summoned.events] };
 }

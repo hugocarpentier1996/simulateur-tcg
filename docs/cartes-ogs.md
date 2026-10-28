@@ -60,7 +60,7 @@ Decisive Strike OGS-024 (`decisiveStrike`) terminé : 5 Énergie + un Power oran
 jaune, +2 Might aux alliés présents à la résolution jusqu'à la fin du tour. Paiement,
 timing Action, portée et expiration testés. Hors decks de démo.
 
-6 cartes restent à terminer : Annie Chaos, Recruit the Vanguard et les quatre légendes. Procéder carte par carte en TDD et commit/push après
+4 cartes restent à terminer : les quatre légendes. Procéder carte par carte en TDD et commit/push après
 chaque carte validée, en mettant ce tableau à jour. Demander les précisions propres
 à chaque mécanique lors de sa tranche, sans préconstruire tous les systèmes.
 L'arrivée Ready est une propriété statique de mise en jeu, pas un effet mis sur la pile.
@@ -97,3 +97,11 @@ Bilan courant : 18 cartes complètes, dont Annie Fury désormais raccordée aux 
 Export `annieChaos` : 4 Énergie + 1 violet, 3 Might, Tap. Récupère un sort du cimetière
 choisi avant les réactions, puis revérifié à la résolution. Main/champion et actions
 légales raccordés. Sans cible disponible : jouable, effet vide. Hors decks de démo.
+
+### Recruit the Vanguard OGS-015
+
+Export `recruitTheVanguard` : Action, 6 Énergie. Invoque quatre `recruitToken` de
+Might 1, Tap, sur les destinations légales choisies à l'empilement. Partage le système
+de jetons des effets de mort. Destinations revérifiées après les réactions : invocation
+ignorée si devenue illégale (convention de prototype). Hors decks de démonstration.
+Bilan courant : 20 cartes OGS complètes ; quatre légendes restantes.

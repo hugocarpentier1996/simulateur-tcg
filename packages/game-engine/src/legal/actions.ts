@@ -1,5 +1,6 @@
 import type { GameAction, GameState } from '../types.js';
 import { act } from '../act.js';
+import { canSummonAt } from '../actions/unit-destination.js';
 import { recoverableSpells } from '../effects/return-spell.js';
 import { findPayment } from './payment.js';
 import { resolutionChoices, setupChoices } from './choices.js';
@@ -93,7 +94,19 @@ function* candidates(
             targetId: target.id,
             payment,
           };
-          if (
+          const summons = spell.effects.find(
+            (e) => e.type === 'summon-recruits',
+          );
+          if (summons) {
+            const zones = destinations
+              .filter((z) => canSummonAt(state, playerId, z.id))
+              .map((z) => z.id);
+            for (const tokenDestinations of tokenPlacements(
+              zones,
+              summons.count,
+            ))
+              yield { ...base, tokenDestinations };
+          } else if (
             spell.effects.some(
               (e) => e.type === 'move-up-to-two-allies-to-base',
             )
@@ -135,4 +148,18 @@ function* candidates(
           payment,
         };
   }
+}
+
+/** Petite tranche de quatre jetons : énumère les destinations ordonnées, répétitions permises. */
+function* tokenPlacements(
+  zones: readonly string[],
+  remaining: number,
+  prefix: string[] = [],
+): Generator<string[]> {
+  if (!remaining) {
+    yield prefix;
+    return;
+  }
+  for (const zone of zones)
+    yield* tokenPlacements(zones, remaining - 1, [...prefix, zone]);
 }

@@ -403,6 +403,24 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
 - 19 cartes complètes. Hors decks de démonstration.
 - Validation complète : `pnpm check`, 308 tests et build réussis.
 
+### Recruit the Vanguard OGS-015 — 28 octobre 2026
+
+- Action, 6 Énergie : quatre jetons Recrue de Might 1, Tap. `tokenDestinations`
+  contient quatre destinations choisies à l'empilement, confirmation utilisateur.
+  Base propre ou champs contrôlés, répétitions autorisées ; copie de la liste en pile.
+- Actions légales : toutes les répartitions ordonnées sur les destinations autorisées.
+  Coût combinatoire limité ici à quatre jetons ; ne pas généraliser sans précaution.
+- Extraction de `summonToken` depuis les effets de mort : mêmes identifiants
+  déterministes sans collision et même disparition des jetons morts, sans cimetière.
+- TDD : cinq échecs initiaux puis six scénarios ciblés, dont Flash faisant perdre le
+  contrôle, copie des choix, défense en Showdown et absence de score prématuré.
+- Convention héritée : si une destination devient illégale, seule cette invocation est
+  ignorée, sans remboursement ni nouvelle destination. Ce n'est pas une nouvelle règle confirmée.
+- 20 cartes complètes sur 24 ; seules les quatre légendes restent à implémenter.
+  `recruitToken` est une définition de jeton supplémentaire, pas une 25e carte OGS.
+  Hors decks de démo ; pas de nouvel écran de choix de cartes/destinations.
+- Validation complète : `pnpm check`, 314 tests et build réussis.
+
 ## Limites à conserver lors d'une reprise
 
 - Première capacité de mort implémentée pour les morts de combat et hors combat. Autres déclencheurs,

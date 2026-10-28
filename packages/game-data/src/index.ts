@@ -16,6 +16,10 @@ export { blastOfPower } from './ogs/blast-of-power.js';
 export { firestorm } from './ogs/firestorm.js';
 export { decisiveStrike } from './ogs/decisive-strike.js';
 export { flash } from './ogs/flash.js';
+export {
+  recruitTheVanguard,
+  recruitToken,
+} from './ogs/recruit-the-vanguard.js';
 export { annieChaos } from './ogs/annie-chaos.js';
 export { tibbers } from './ogs/tibbers.js';
 export { luxMind } from './ogs/lux-mind.js';

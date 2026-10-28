@@ -10,6 +10,7 @@ import { resolveDuel } from './duel.js';
 import { drawCardForPlayer } from '../turn/draw.js';
 import { settleLethalUnits } from './lethal-units.js';
 import { dealSpellDamage } from './spell-damage.js';
+import { summonToken } from './summon-token.js';
 import { resolveFlash } from './flash.js';
 
 /** Sort payé -> effets dans l'ordre puis carte au cimetière. Aucune fenêtre au milieu
@@ -23,6 +24,19 @@ export function resolveSpell(
   const events: GameEvent[] = [];
   for (const effect of entry.definition.effects) {
     if (state.result) break;
+    if (effect.type === 'summon-recruits') {
+      for (const destinationId of entry.tokenDestinations ?? []) {
+        const summoned = summonToken(
+          state,
+          entry.casterId,
+          destinationId,
+          effect.definitionId,
+        );
+        state = summoned.state;
+        events.push(...summoned.events);
+      }
+      continue;
+    }
     if (effect.type === 'move-up-to-two-allies-to-base') {
       const moved = resolveFlash(
         state,

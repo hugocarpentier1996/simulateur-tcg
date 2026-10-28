@@ -1,6 +1,7 @@
 import type { ActionResult, GameAction, GameState } from '../types.js';
 import { canUseTiming } from './timing.js';
 import { expensiveSpellTriggers } from '../effects/expensive-spell.js';
+import { canSummonAt } from './unit-destination.js';
 import { payCost } from '../cost/payment.js';
 import { validFlashSelection } from '../effects/flash.js';
 import {
@@ -74,6 +75,15 @@ export function castSpell(
     )
   )
     return { ok: false, reason: 'MISSING_GRAVEYARD' };
+  const summons = definition.effects.find((e) => e.type === 'summon-recruits');
+  if (
+    summons &&
+    (action.tokenDestinations?.length !== summons.count ||
+      action.tokenDestinations.some(
+        (id) => !canSummonAt(state, action.playerId, id),
+      ))
+  )
+    return { ok: false, reason: 'INVALID_SUMMON_DESTINATIONS' };
   const paid = payCost(
     state,
     action.playerId,
@@ -96,6 +106,9 @@ export function castSpell(
         entries: [
           ...(state.stack?.entries ?? []),
           {
+            ...(action.tokenDestinations
+              ? { tokenDestinations: [...action.tokenDestinations] }
+              : {}),
             card,
             definition,
             casterId: action.playerId,

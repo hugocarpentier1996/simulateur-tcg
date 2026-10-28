@@ -16,6 +16,11 @@ export interface SpellBlueprint {
         readonly combatRole: 'any' | 'attacker';
       };
   readonly effects: readonly (
+    | {
+        readonly type: 'summon-recruits';
+        readonly definitionId: string;
+        readonly count: number;
+      }
     | { readonly type: 'move-up-to-two-allies-to-base' }
     | {
         readonly type: 'boost-allies';
@@ -52,6 +57,8 @@ export interface SpellBlueprint {
 /** Sort payé en attente : cible et destination choisies au lancement, revérifiées à la résolution.
  * targetId désigne une unité, un champ, ou le lanceur pour un effet global sans cible individuelle. */
 export interface SpellEntry {
+  /** Copie des destinations annoncées pour les Recrues. */
+  tokenDestinations?: readonly string[];
   card: CardInstance;
   definition: SpellBlueprint;
   casterId: string;
