@@ -90,3 +90,5 @@ export { bodyRune } from './ogn/body-rune.js';
 
 export { createRuneCard } from './rune-definition.js';
 export type { RuneDefinition } from './rune-definition.js';
+
+export { calmRune } from './ogn/calm-rune.js';
