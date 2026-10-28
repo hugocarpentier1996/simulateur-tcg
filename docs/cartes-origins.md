@@ -35,7 +35,7 @@ Les images restent des URL de métadonnées ; les fichiers bruts ne sont pas pub
 - [ ] Sai Scout — ogn-174-298
 - [ ] Singularity — ogn-105-298
 - [ ] Sneaky Deckhand — ogn-176-298
-- [ ] Stalwart Poro — ogn-052-298
+- [x] Stalwart Poro — ogn-052-298
 - [ ] Stormclaw Ursine — ogn-137-298
 - [ ] Stupefy — ogn-095-298
 - [ ] Traveling Merchant — ogn-185-298
