@@ -34,7 +34,7 @@ Les images restent des URL de métadonnées ; les fichiers bruts ne sont pas pub
 - [x] Ravenbloom Student — ogn-103-298
 - [ ] Sai Scout — ogn-174-298
 - [ ] Singularity — ogn-105-298
-- [ ] Sneaky Deckhand — ogn-176-298
+- [x] Sneaky Deckhand — ogn-176-298
 - [x] Stalwart Poro — ogn-052-298
 - [ ] Stormclaw Ursine — ogn-137-298
 - [x] Stupefy — ogn-095-298

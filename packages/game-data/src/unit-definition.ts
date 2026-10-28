@@ -14,6 +14,8 @@ export interface CardCost {
  * Propriétaire, zone, Ready/Tap et dégâts appartiennent à chaque instance en partie. */
 export interface UnitDefinition {
   /** Bonus continu par instance de dégâts des sorts et capacités du propriétaire. */
+  /** Exception de mise en jeu : champ enti�rement vide en plus des destinations ordinaires. */
+  readonly canPlayToOpenBattlefield?: boolean;
   readonly spellAbilityDamageBonus?: number;
   /** Capacité ADD : épuiser cette unité Ready pour produire cette énergie réservée aux sorts. */
   readonly spellEnergyAbility?: number;

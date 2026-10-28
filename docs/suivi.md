@@ -629,6 +629,13 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
 
 - Validation : pnpm check, 363 tests et build réussis.
 
+### Origins fournée 2 : Sneaky Deckhand — 28 octobre 2026
+
+- Mise en jeu Tap sur champ entièrement vide en plus des destinations ordinaires.
+- Open Showdown avant conquête ; tests de contrôle, destinations refusées et actions légales.
+
+- Validation : pnpm check, 365 tests et build réussis.
+
 ## Limites à conserver lors d'une reprise
 
 - Première capacité de mort implémentée pour les morts de combat et hors combat. Autres déclencheurs,

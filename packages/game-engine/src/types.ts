@@ -122,6 +122,8 @@ export interface GameState {
 
 /** Définition structurelle acceptée par le moteur ; compatible avec le catalogue game-data. */
 export interface UnitBlueprint {
+  /** Exception de mise en jeu : champ enti�rement vide en plus des destinations ordinaires. */
+  readonly canPlayToOpenBattlefield?: boolean;
   readonly spellAbilityDamageBonus?: number;
   /** Capacité ADD : épuiser cette unité Ready pour produire cette énergie réservée aux sorts. */
   readonly spellEnergyAbility?: number;

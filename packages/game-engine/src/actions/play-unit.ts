@@ -40,7 +40,14 @@ export function playUnit(
   );
   if (!base) return { ok: false, reason: 'MISSING_BASE' };
   const destinationId = action.destinationId ?? base.id;
-  if (!canSummonAt(state, action.playerId, destinationId))
+  const openField =
+    definition.canPlayToOpenBattlefield &&
+    state.battlefields.some((f) => f.zoneId === destinationId) &&
+    state.zones.some(
+      (z) => z.id === destinationId && z.kind === 'battlefield',
+    ) &&
+    !state.units.some((u) => u.zoneId === destinationId);
+  if (!canSummonAt(state, action.playerId, destinationId) && !openField)
     return { ok: false, reason: 'INVALID_SUMMON_DESTINATION' };
   const entries: (ReturnSpellEntry | UnitPlayEntry)[] = [];
   if (definition.onPlayReturnSpell) {
@@ -76,6 +83,14 @@ export function playUnit(
     ok: true,
     state: {
       ...payment.state,
+      ...(openField
+        ? {
+            pendingShowdowns: [
+              ...(state.pendingShowdowns ?? []),
+              { battlefieldId: destinationId, initiatorId: action.playerId },
+            ],
+          }
+        : {}),
       ...(entries.length
         ? {
             stack: {
