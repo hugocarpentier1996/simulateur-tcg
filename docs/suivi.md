@@ -594,6 +594,13 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
 
 - Validation : pnpm check, 350 tests et build réussis.
 
+### Origins fournée 2 : Stupefy — 28 octobre 2026
+
+- Réduction bornée à la résolution, sans relever une unité à 0 ; pioche indépendante.
+- TDD : cas Might 0, 1, 2 et 3.
+
+- Validation : pnpm check, 354 tests et build réussis.
+
 ## Limites à conserver lors d'une reprise
 
 - Première capacité de mort implémentée pour les morts de combat et hors combat. Autres déclencheurs,

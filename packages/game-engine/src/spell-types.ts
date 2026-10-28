@@ -44,6 +44,8 @@ export interface SpellBlueprint {
       }
     | {
         readonly type: 'modify-might';
+        /** Limite de cette r�duction au moment de sa r�solution, sans relever une Might d�j� inf�rieure. */
+        readonly minimum?: number;
         readonly amount: number;
         readonly duration: 'end-of-turn';
       }

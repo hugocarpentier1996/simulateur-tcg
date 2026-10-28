@@ -67,3 +67,5 @@ export { ravenbloomStudent } from './ogn/ravenbloom-student.js';
 export { wielderOfWater } from './ogn/wielder-of-water.js';
 
 export { gust } from './ogn/gust.js';
+
+export { stupefy } from './ogn/stupefy.js';

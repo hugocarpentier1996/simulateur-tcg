@@ -1,3 +1,4 @@
+import { effectiveMight } from './modifiers.js';
 import { leaveBoard } from './leave-board.js';
 import { getBattlefieldSides } from '../battlefield-areas.js';
 import { dealAreaDamage } from './area-damage.js';
@@ -167,7 +168,19 @@ export function resolveSpell(
     } else {
       const modifier =
         effect.type === 'modify-might'
-          ? { type: 'modify-might' as const, amount: effect.amount }
+          ? {
+              type: 'modify-might' as const,
+              amount:
+                effect.minimum === undefined
+                  ? effect.amount
+                  : Math.max(
+                      effect.amount,
+                      Math.min(
+                        0,
+                        effect.minimum - effectiveMight(target, state),
+                      ),
+                    ),
+            }
           : { type: effect.type };
       state = {
         ...state,
