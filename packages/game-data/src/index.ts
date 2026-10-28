@@ -55,3 +55,5 @@ export { stalwartPoro } from './ogn/stalwart-poro.js';
 export { megaMech } from './ogn/mega-mech.js';
 
 export { mountainDrake } from './ogn/mountain-drake.js';
+
+export { playfulPhantom } from './ogn/playful-phantom.js';

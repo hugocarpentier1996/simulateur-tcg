@@ -29,7 +29,7 @@ Les images restent des URL de métadonnées ; les fichiers bruts ne sont pas pub
 - [ ] Mystic Poro — ogn-171-298
 - [ ] Noxian Drummer — ogn-222-298
 - [x] Petty Officer — ogn-215-298
-- [ ] Playful Phantom — ogn-049-298
+- [x] Playful Phantom — ogn-049-298
 - [ ] Pouty Poro — ogn-013-298
 - [ ] Ravenbloom Student — ogn-103-298
 - [ ] Sai Scout — ogn-174-298

@@ -533,6 +533,13 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
 - Hors decks de démo ; lot suivi dans docs/cartes-origins.md.
 - Validation : pnpm check, 339 tests et build réussis.
 
+### Origins : Playful Phantom — 28 octobre 2026
+
+- 5 Énergie, 5 Might, sans capacité. Réutilise le moteur existant.
+- TDD : échec pertinent puis test de raccordement des données imprimées.
+- Hors decks de démo ; lot suivi dans docs/cartes-origins.md.
+- Validation : pnpm check, 340 tests et build réussis.
+
 ## Limites à conserver lors d'une reprise
 
 - Première capacité de mort implémentée pour les morts de combat et hors combat. Autres déclencheurs,
