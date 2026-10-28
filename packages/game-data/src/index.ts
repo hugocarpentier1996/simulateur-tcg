@@ -63,3 +63,5 @@ export { vanguardSergeant } from './ogn/vanguard-sergeant.js';
 export { fallingComet } from './ogn/falling-comet.js';
 
 export { ravenbloomStudent } from './ogn/ravenbloom-student.js';
+
+export { wielderOfWater } from './ogn/wielder-of-water.js';

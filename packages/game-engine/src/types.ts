@@ -143,6 +143,8 @@ export interface UnitBlueprint {
   readonly ganking?: boolean;
   /** Bonus de Might en attaque, uniquement sur le champ du Combat Showdown. */
   readonly assault?: number;
+  /** Bonus personnel continu quand seul allié attaquant ou défenseur sur le champ du combat. */
+  readonly aloneCombatMightBonus?: number;
   /** Bonus de Might en défense, uniquement sur le champ du Combat Showdown. */
   readonly shield?: number;
   /** Arrivée Ready lors de la mise en jeu ; absent ou false signifie Tap. */

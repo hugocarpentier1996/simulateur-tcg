@@ -560,6 +560,15 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
 - TDD : deux échecs pertinents puis tests des coûts 0/2 et de la résolution différée.
 - Hors démo. Validation : pnpm check, 344 tests et build réussis.
 
+### Origins : Wielder of Water — 28 octobre 2026
+
+- 3 Énergie, 2 Might, +2 Might seulement seul allié attaquant/défenseur au combat.
+- Extension minimale du calcul commun de bonus de combat ; cumul avec Wuju.
+- TDD : trois échecs puis tests attaque/défense, renfort, Open, coût et cumul.
+- Dix nouvelles cartes livrées pour cette fournée ; questions regroupées dans
+  docs/questions-origins.md. Stop à dix conformément à la demande utilisateur.
+- Validation : pnpm check, 347 tests et build réussis.
+
 ## Limites à conserver lors d'une reprise
 
 - Première capacité de mort implémentée pour les morts de combat et hors combat. Autres déclencheurs,

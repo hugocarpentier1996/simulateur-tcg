@@ -40,7 +40,7 @@ Les images restent des URL de métadonnées ; les fichiers bruts ne sont pas pub
 - [ ] Stupefy — ogn-095-298
 - [ ] Traveling Merchant — ogn-185-298
 - [x] Vanguard Sergeant — ogn-219-298
-- [ ] Wielder of Water — ogn-055-298
+- [x] Wielder of Water — ogn-055-298
 - [ ] Body Rune — ogn-126-298
 - [ ] Calm Rune — ogn-042-298
 - [ ] Chaos Rune — ogn-166-298
@@ -62,3 +62,11 @@ Les images restent des URL de métadonnées ; les fichiers bruts ne sont pas pub
   de carte et les interactions réellement nouvelles. Commit/push après chaque carte.
 - Cette liste entière est autorisée ; reprendre la prochaine entrée non cochée dont
   la règle est claire. Ne pas annoncer le lot terminé avant 45/45 nouvelles entrées.
+
+## Fournée 1 terminée (10 cartes)
+
+Daring Poro, Petty Officer, Stalwart Poro, Mega-Mech, Mountain Drake, Playful Phantom,
+Vanguard Sergeant, Falling Comet, Ravenbloom Student et Wielder of Water.
+Bilan : 34/69 entrées demandées raccordées (24 OGS + 10 Origins), 35 restantes.
+Les cartes restent hors decks de démonstration. Questions : [questions-origins.md](questions-origins.md).
+La demande courante s'arrête à dix cartes, puis réponse groupée aux questions.

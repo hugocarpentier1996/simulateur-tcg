@@ -37,6 +37,8 @@ export interface UnitDefinition {
   readonly ganking?: boolean;
   /** Bonus de Might uniquement en attaque sur le champ du Combat Showdown. */
   readonly assault?: number;
+  /** Bonus personnel continu quand seul allié attaquant ou défenseur sur le champ du combat. */
+  readonly aloneCombatMightBonus?: number;
   /** Bonus de Might uniquement en défense sur le champ du Combat Showdown. */
   readonly shield?: number;
   /** Exception imprimée : arrivée Ready au lieu de Tap ; false/absent garde Tap. */
@@ -79,6 +81,7 @@ export function defineUnit(input: UnitDefinition): UnitDefinition {
     might: input.might,
     shield: input.shield ?? 0,
     assault: input.assault ?? 0,
+    aloneCombatMightBonus: input.aloneCombatMightBonus ?? 0,
     otherAlliesHereMightBonus: input.otherAlliesHereMightBonus ?? 0,
     spellAbilityDamageBonus: input.spellAbilityDamageBonus ?? 0,
     spellEnergyAbility: input.spellEnergyAbility ?? 0,
