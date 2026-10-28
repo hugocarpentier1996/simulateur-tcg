@@ -227,6 +227,8 @@ export type GameAction =
       playerId: string;
       cardId: string;
       targetId: string;
+      /** Flash : liste explicite de 0 à 2 unités alliées distinctes ; targetId = lanceur. */
+      selectedUnitIds?: readonly string[];
       /** Duel : seconde unité, ennemie, choisie dès le lancement. */
       secondaryTargetId?: string;
       destinationId?: string;

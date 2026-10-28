@@ -53,11 +53,15 @@ de toutes les interactions de la carte. Hors decks de démo.
 
 ## Reprise
 
+Flash OGS-011 (`flash`) terminé : Réaction à 2 Énergie, déplacement de 0 à 2 alliés
+en base sans soin ni épuisement. Tests des sélections, équipements et de la réponse
+à Blast of Power. Hors decks de démo.
+
 Decisive Strike OGS-024 (`decisiveStrike`) terminé : 5 Énergie + un Power orange ou
 jaune, +2 Might aux alliés présents à la résolution jusqu'à la fin du tour. Paiement,
 timing Action, portée et expiration testés. Hors decks de démo.
 
-11 cartes restent à terminer (dont Annie Fury partiellement raccordée). Procéder carte par carte en TDD et commit/push après
+10 cartes restent à terminer (dont Annie Fury partiellement raccordée). Procéder carte par carte en TDD et commit/push après
 chaque carte validée, en mettant ce tableau à jour. Demander les précisions propres
 à chaque mécanique lors de sa tranche, sans préconstruire tous les systèmes.
 L'arrivée Ready est une propriété statique de mise en jeu, pas un effet mis sur la pile.

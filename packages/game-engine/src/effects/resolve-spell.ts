@@ -10,6 +10,7 @@ import { resolveDuel } from './duel.js';
 import { drawCardForPlayer } from '../turn/draw.js';
 import { settleLethalUnits } from './lethal-units.js';
 import { dealSpellDamage } from './spell-damage.js';
+import { resolveFlash } from './flash.js';
 
 /** Sort payé -> effets dans l'ordre puis carte au cimetière. Aucune fenêtre au milieu
  * des instructions d'un même sort. Cible devenue illégale : effet ciblé ignoré ;
@@ -22,6 +23,16 @@ export function resolveSpell(
   const events: GameEvent[] = [];
   for (const effect of entry.definition.effects) {
     if (state.result) break;
+    if (effect.type === 'move-up-to-two-allies-to-base') {
+      const moved = resolveFlash(
+        state,
+        entry.casterId,
+        entry.selectedUnitIds ?? [],
+      );
+      state = moved.state;
+      events.push(...moved.events);
+      continue;
+    }
     if (effect.type === 'boost-allies') {
       state = {
         ...state,

@@ -1,6 +1,7 @@
 import type { ActionResult, GameAction, GameState } from '../types.js';
 import type { SpellBlueprint } from '../spell-types.js';
 import { payCost } from '../cost/payment.js';
+import { validFlashSelection } from '../effects/flash.js';
 import {
   spellTarget,
   validDestination,
@@ -35,6 +36,13 @@ export function castSpell(
   if (!definition) return { ok: false, reason: 'UNKNOWN_SPELL_DEFINITION' };
   if (!canCast(state, action.playerId, definition))
     return { ok: false, reason: 'SPELL_WINDOW_CLOSED' };
+  if (
+    definition.effects.some(
+      (e) => e.type === 'move-up-to-two-allies-to-base',
+    ) &&
+    !validFlashSelection(state, action.playerId, action.selectedUnitIds)
+  )
+    return { ok: false, reason: 'INVALID_TARGET' };
   const target = spellTarget(
     state,
     definition,
@@ -80,6 +88,9 @@ export function castSpell(
             definition,
             casterId: action.playerId,
             targetId: action.targetId,
+            ...(action.selectedUnitIds
+              ? { selectedUnitIds: [...action.selectedUnitIds] }
+              : {}),
             ...(action.secondaryTargetId !== undefined
               ? { secondaryTargetId: action.secondaryTargetId }
               : {}),

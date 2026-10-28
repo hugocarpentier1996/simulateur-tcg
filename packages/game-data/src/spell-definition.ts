@@ -9,6 +9,7 @@ export type SpellTiming = 'normal' | 'action' | 'reaction';
  * cible choisie ; draw concerne le lanceur. Fin de tour = tour courant, pas prochain
  * tour du propriétaire. Un déplacement par effet conserve l'état Ready/Tap existant. */
 export type SpellEffect =
+  | { readonly type: 'move-up-to-two-allies-to-base' }
   | {
       readonly type: 'boost-allies';
       readonly amount: number;

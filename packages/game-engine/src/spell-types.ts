@@ -16,6 +16,7 @@ export interface SpellBlueprint {
         readonly combatRole: 'any' | 'attacker';
       };
   readonly effects: readonly (
+    | { readonly type: 'move-up-to-two-allies-to-base' }
     | {
         readonly type: 'boost-allies';
         readonly amount: number;
@@ -55,6 +56,8 @@ export interface SpellEntry {
   definition: SpellBlueprint;
   casterId: string;
   targetId: string;
+  /** Flash : sélection de 0 à 2 unités alliées, copiée au lancement. */
+  selectedUnitIds?: readonly string[];
   /** Adversaire du duel choisi au lancement ; requis pour l'effet duel. */
   secondaryTargetId?: string;
   destinationId?: string;

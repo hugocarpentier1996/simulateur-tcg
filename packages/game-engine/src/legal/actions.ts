@@ -84,7 +84,21 @@ function* candidates(
             targetId: target.id,
             payment,
           };
-          if (spell.effects.some((e) => e.type === 'duel'))
+          if (
+            spell.effects.some(
+              (e) => e.type === 'move-up-to-two-allies-to-base',
+            )
+          ) {
+            const ids = state.units
+              .filter((u) => u.ownerId === playerId)
+              .map((u) => u.id);
+            yield { ...base, selectedUnitIds: [] };
+            for (const [i, id] of ids.entries()) {
+              yield { ...base, selectedUnitIds: [id] };
+              for (const second of ids.slice(i + 1))
+                yield { ...base, selectedUnitIds: [id, second] };
+            }
+          } else if (spell.effects.some((e) => e.type === 'duel'))
             for (const enemy of state.units.filter(
               (u) => u.ownerId !== playerId,
             ))

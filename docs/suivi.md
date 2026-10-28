@@ -322,6 +322,22 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
   Fury partielle. Hors decks de démo.
 - Validation complète : `pnpm check`, 250 tests et build réussis.
 
+### Flash OGS-011 — 28 octobre 2026
+
+- Réaction, 2 Énergie sans Power : déplace 0, 1 ou 2 unités alliées distinctes en base.
+  Conserve Ready/Tap, dégâts, Stun et équipement. Pas de soin ni de score.
+- `selectedUnitIds` est une sélection explicite copiée au lancement ; `targetId`
+  reste l'ID du lanceur (ciblage technique caster). Actions légales : toutes les
+  sélections sans doublon jusqu'à deux. Revérification individuelle à la résolution.
+- Intégration réelle : Flash répond à Blast of Power ; l'unité revenue en base survit,
+  Blast reste payé et part au cimetière. Contrôle maintenu pendant le showdown actif.
+- TDD : dix échecs pertinents constatés, puis treize tests couvrent sélection, paiement,
+  Ready/Tap, dégâts, équipement, priorité/réaction, copie des choix et cibles disparues.
+- Limite de prototype héritée : une cible disparue/devenue adverse est ignorée ; une
+  cible déjà en base ne produit pas de déplacement. Hors decks de démonstration.
+- Registre : 14 cartes complètes, Annie Fury partielle ; aucune légende implémentée.
+- Validation complète : `pnpm check`, 263 tests et build réussis.
+
 ## Limites à conserver lors d'une reprise
 
 - Première capacité de mort implémentée pour les morts de combat et hors combat. Autres déclencheurs,

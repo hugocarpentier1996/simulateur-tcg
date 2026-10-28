@@ -151,7 +151,9 @@ Implémentation actuelle : morts de combat, dégâts de sort, baisse de Might et
 directe avec Blast of Power. « Kill » tue sans infliger de dégâts.
 Pour Blast of Power, la cible doit encore être sur un battlefield à la résolution.
 Si elle est revenue en base, le sort ne la tue pas ; le coût reste payé et le sort
-rejoint le cimetière. À vérifier également via une vraie réaction Flash à son ajout.
+rejoint le cimetière. Ce cas est testé avec Flash joué en réaction à Blast of Power.
+Flash déplace jusqu'à deux unités alliées en base en conservant leur état Ready/Tap,
+leurs modificateurs et leurs dégâts : ce déplacement ne soigne pas.
 
 Shield N donne +N Might uniquement à une unité qui défend sur le champ d'un Combat
 Showdown. Assault N applique le bonus uniquement à une unité attaquante dans ce même
