@@ -92,3 +92,5 @@ export { createRuneCard } from './rune-definition.js';
 export type { RuneDefinition } from './rune-definition.js';
 
 export { calmRune } from './ogn/calm-rune.js';
+
+export { chaosRune } from './ogn/chaos-rune.js';

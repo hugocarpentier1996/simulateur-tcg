@@ -43,7 +43,7 @@ Les images restent des URL de métadonnées ; les fichiers bruts ne sont pas pub
 - [x] Wielder of Water — ogn-055-298
 - [x] Body Rune — ogn-126-298
 - [x] Calm Rune — ogn-042-298
-- [ ] Chaos Rune — ogn-166-298
+- [x] Chaos Rune — ogn-166-298
 - [ ] Fury Rune — ogn-007-298
 - [ ] Mind Rune — ogn-089-298
 - [ ] Order Rune — ogn-214-298
