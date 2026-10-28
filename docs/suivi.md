@@ -577,6 +577,15 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
 - Documentation uniquement. Gust reste à implémenter et à tester ; questions 2–5
   encore ouvertes. Pas de nouvelle fournée engagée pendant les réponses.
 
+### Réponses groupées Origins 2–5 — 28 octobre 2026
+
+- Toutes les questions de docs/questions-origins.md sont résolues et reportées dans
+  docs/regles.md : here obligatoire malgré absence de contrôle, pioche sans défausse
+  si main vide, Dune Drake condition au déclenchement et à la résolution de capacité
+  avant dégâts de combat, Stupefy ne remonte pas une Might 0 et fait piocher.
+- Documentation uniquement ; ces comportements restent à implémenter et tester.
+  La fournée précédente reste à dix cartes, aucune nouvelle carte ajoutée ici.
+
 ## Limites à conserver lors d'une reprise
 
 - Première capacité de mort implémentée pour les morts de combat et hors combat. Autres déclencheurs,

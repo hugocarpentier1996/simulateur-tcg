@@ -8,18 +8,16 @@ confirmées et des tests. Aucun autre lot ne démarre avant ce compte rendu.
    à zéro : dégâts, bonus/malus et Stun supprimés, équipements détachés en base.
    Un jeton quittant le terrain disparaît. Gust revérifie la Might à la résolution :
    si elle dépasse 3, le sort fizzle (aucun retour en main). Implémentation à venir.
-2. **Noxian Drummer — jeton « ici ».** Son déplacement vers un battlefield ennemi
-   permet-il d'y invoquer sa Recrue malgré l'absence de contrôle ? Proposition : oui,
-   exception imprimée à la règle générale d'invocation en base/champ contrôlé.
-3. **Traveling Merchant — main vide.** Son effet dit « défausse 1, puis pioche 1 ».
-   Si la main est vide, pioche-t-il quand même ? Proposition : oui.
-4. **Dune Drake — condition d'un ennemi Ready.** Son attaque déclenche « +2 Might
-   pour le tour si une unité ennemie Ready est ici ». La présence Ready est-elle
-   vérifiée seulement à la résolution, ou à l'attaque ET à la résolution ?
-   Proposition : à la résolution seulement ; la capacité est toujours empilée à l'attaque.
-5. **Stupefy — Might déjà à 0.** La réduction de 1 est limitée à un minimum de 1.
-   Une unité déjà à 0 reste-t-elle à 0 et le lanceur pioche-t-il quand même ?
-   Proposition : oui, pas d'augmentation de Might ; la pioche indépendante reste exécutée.
+2. **Noxian Drummer — confirmé.** « Here » impose l'invocation de la Recrue sur
+   le battlefield d'arrivée, même ennemi/non contrôlé. Aucun choix de destination.
+3. **Traveling Merchant — confirmé.** Si la main est vide, on pioche sans défausser.
+4. **Dune Drake — confirmé.** Vérifier la présence d'un ennemi Ready à l'attaque
+   puis à la résolution de la capacité déclenchée, après les réactions et avant les
+   dégâts du combat. Il ne s'agit pas d'une vérification à la fin du combat.
+5. **Stupefy — confirmé.** Une unité déjà à 0 Might reste à 0 ; la pioche a lieu.
+
+Les cinq réponses sont enregistrées ; leur implémentation reste à réaliser dans
+les prochaines cartes. Aucune question de cette fournée ne reste ouverte.
 
 ## Déjà confirmé pour le lot
 

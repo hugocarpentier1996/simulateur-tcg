@@ -238,3 +238,13 @@ Un jeton quittant le terrain disparaît. Le passage d'un battlefield à la base 
 un déplacement sur le terrain et ne relève pas de cette remise à zéro.
 Gust revérifie ses restrictions de cible à la résolution : si la Might de la cible
 dépasse 3 après les réactions, le sort fizzle et ne renvoie pas l'unité en main.
+
+## Précisions Origins — capacités et conditions
+
+- Noxian Drummer : « here » impose l'invocation du jeton sur le battlefield d'arrivée,
+  même non contrôlé ou ennemi ; le joueur ne choisit pas une autre destination.
+- Traveling Merchant : si la main est vide, la pioche s'effectue sans défausse.
+- Dune Drake : présence d'un ennemi Ready vérifiée à l'attaque et à la résolution
+  de sa capacité déclenchée, après les réactions, avant les dégâts de combat.
+  Cette seconde vérification n'attend pas la résolution ou la fin du combat.
+- Stupefy : une cible déjà à 0 Might reste à 0 ; la pioche indépendante a lieu.
