@@ -22,6 +22,23 @@ export function resolveSpell(
   const events: GameEvent[] = [];
   for (const effect of entry.definition.effects) {
     if (state.result) break;
+    if (effect.type === 'boost-allies') {
+      state = {
+        ...state,
+        units: state.units.map((u) =>
+          u.ownerId === entry.casterId
+            ? {
+                ...u,
+                temporaryEffects: [
+                  ...(u.temporaryEffects ?? []),
+                  { type: 'modify-might' as const, amount: effect.amount },
+                ],
+              }
+            : u,
+        ),
+      };
+      continue;
+    }
     if (effect.type === 'draw') {
       for (let i = 0; i < effect.count && !state.result; i++) {
         const drawn = drawCardForPlayer(state, entry.casterId);

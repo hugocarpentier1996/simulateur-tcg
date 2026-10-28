@@ -9,6 +9,22 @@ export function findPayment(
   playerId: string,
   cost: UnitBlueprint['cost'],
 ): PaymentPlan | null {
+  if (cost.powerChoice) {
+    const floating = state.resources[playerId]?.power ?? {};
+    const colors = [...cost.powerChoice].sort(
+      (a, b) =>
+        Number((floating[b] ?? 0) > (cost.power[b] ?? 0)) -
+        Number((floating[a] ?? 0) > (cost.power[a] ?? 0)),
+    );
+    for (const color of colors) {
+      const plan = findPayment(state, playerId, {
+        energy: cost.energy,
+        power: { ...cost.power, [color]: (cost.power[color] ?? 0) + 1 },
+      });
+      if (plan) return plan;
+    }
+    return null;
+  }
   const runes = state.cards.filter(
     (c) =>
       c.ownerId === playerId &&

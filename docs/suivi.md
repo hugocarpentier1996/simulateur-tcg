@@ -309,6 +309,19 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
 - Registre : 12 cartes complètes, Annie Fury partielle ; hors decks de démo.
 - Validation complète : `pnpm check`, 243 tests et build réussis.
 
+### Decisive Strike OGS-024 — 28 octobre 2026
+
+- Action, 5 Énergie + 1 Power orange OU jaune. +2 Might pour le tour aux alliés présents
+  à la résolution, en base et sur les champs ; pas aux arrivants ultérieurs.
+- Ciblage technique `caster` : `targetId` est l'ID du lanceur. `boost-allies` applique
+  des modificateurs temporaires, pas une aura. Contrats dans les types et modules.
+- `powerChoice` traite un symbole flexible supplémentaire ; le paiement automatique
+  préfère le Power flottant. Deux symboles bicolores (Tibbers) restent à étendre.
+- TDD : cinq échecs pertinents puis sept scénarios sur coût/couleur, portée/expiration,
+  timing, arrivées tardives et plateau vide. Registre : 13 cartes complètes et Annie
+  Fury partielle. Hors decks de démo.
+- Validation complète : `pnpm check`, 250 tests et build réussis.
+
 ## Limites à conserver lors d'une reprise
 
 - Première capacité de mort implémentée pour les morts de combat et hors combat. Autres déclencheurs,

@@ -1,6 +1,8 @@
 /** Coût imprimé : énergie incolore + quantités de Power indexées par couleur.
  * Une couleur absente coûte zéro. Le paiement et les réserves appartiennent au moteur. */
 export interface CardCost {
+  /** Un Power supplémentaire payable dans l'une de ces couleurs (tranche à un symbole). */
+  readonly powerChoice?: readonly string[];
   readonly energy: number;
   readonly power: Readonly<Record<string, number>>;
 }
@@ -78,6 +80,9 @@ export function defineUnit(input: UnitDefinition): UnitDefinition {
       : {}),
     ...(input.onDeath ? { onDeath: Object.freeze({ ...input.onDeath }) } : {}),
     cost: Object.freeze({
+      ...(input.cost.powerChoice
+        ? { powerChoice: Object.freeze([...input.cost.powerChoice]) }
+        : {}),
       energy: input.cost.energy,
       power: Object.freeze({ ...input.cost.power }),
     }),

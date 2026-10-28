@@ -44,7 +44,9 @@ export function castSpell(
   if (
     definition.target.kind === 'battlefield'
       ? !validBattlefieldTarget(state, action.targetId)
-      : !target
+      : definition.target.kind === 'caster'
+        ? action.targetId !== action.playerId
+        : !target
   )
     return { ok: false, reason: 'INVALID_TARGET' };
   if (

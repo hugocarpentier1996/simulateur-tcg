@@ -33,8 +33,8 @@ Tests Shield : `packages/game-engine/src/ogs-zephyr-sage.test.ts`.
 
 - Fury rouge, Calm vert, Mind bleu, Body orange, Chaos violet, Order jaune.
 - Power bicolore : quantité totale payable avec n'importe quelle combinaison des deux
-  couleurs de la carte. À implémenter avant Tibbers ou Decisive Strike ; le modèle actuel
-  de coûts fixes par couleur ne suffit pas pour ce choix.
+  couleurs de la carte. Un symbole flexible est implémenté pour Decisive Strike ;
+  les deux symboles de Tibbers restent à prendre en charge.
 - Mort si dégâts non nuls >= Might actuelle, y compris après baisse de Might. Dégâts
   conservés jusqu'aux soins globaux de fin de combat/fin de tour. Raccordé avec Incinerate,
   y compris la perte d'une aura ou du bonus de Master Yi lors d'un paiement.
@@ -53,7 +53,11 @@ de toutes les interactions de la carte. Hors decks de démo.
 
 ## Reprise
 
-12 cartes restent à terminer (dont Annie Fury partiellement raccordée). Procéder carte par carte en TDD et commit/push après
+Decisive Strike OGS-024 (`decisiveStrike`) terminé : 5 Énergie + un Power orange ou
+jaune, +2 Might aux alliés présents à la résolution jusqu'à la fin du tour. Paiement,
+timing Action, portée et expiration testés. Hors decks de démo.
+
+11 cartes restent à terminer (dont Annie Fury partiellement raccordée). Procéder carte par carte en TDD et commit/push après
 chaque carte validée, en mettant ce tableau à jour. Demander les précisions propres
 à chaque mécanique lors de sa tranche, sans préconstruire tous les systèmes.
 L'arrivée Ready est une propriété statique de mise en jeu, pas un effet mis sur la pile.

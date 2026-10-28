@@ -74,7 +74,9 @@ function* candidates(
       if (payment)
         for (const target of spell.target.kind === 'battlefield'
           ? state.battlefields.map((f) => ({ id: f.zoneId }))
-          : state.units) {
+          : spell.target.kind === 'caster'
+            ? [{ id: playerId }]
+            : state.units) {
           const base = {
             type: 'cast-spell' as const,
             playerId,

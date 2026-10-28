@@ -113,6 +113,7 @@ export interface UnitBlueprint {
   readonly id: string;
   readonly type: 'unit';
   readonly cost: {
+    readonly powerChoice?: readonly string[];
     readonly energy: number;
     readonly power: Readonly<Record<string, number>>;
   };

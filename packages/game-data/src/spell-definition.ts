@@ -9,6 +9,11 @@ export type SpellTiming = 'normal' | 'action' | 'reaction';
  * cible choisie ; draw concerne le lanceur. Fin de tour = tour courant, pas prochain
  * tour du propriétaire. Un déplacement par effet conserve l'état Ready/Tap existant. */
 export type SpellEffect =
+  | {
+      readonly type: 'boost-allies';
+      readonly amount: number;
+      readonly duration: 'end-of-turn';
+    }
   | { readonly type: 'damage-enemies-at-battlefield'; readonly amount: number }
   | { readonly type: 'kill-unit' }
   | { readonly type: 'duel' }
@@ -40,6 +45,7 @@ export interface SpellDefinition {
   readonly timing: SpellTiming;
   readonly cost: CardCost;
   readonly target:
+    | { readonly kind: 'caster' }
     | { readonly kind: 'battlefield' }
     | {
         readonly zone?: 'battlefield';
@@ -55,6 +61,12 @@ export interface SpellDefinition {
  * RangeError pour un coût invalide, un modificateur non fini, une quantité de pioche
  * non entière/positive ou une liste d'effets vide. N'exécute aucune règle en partie. */
 export function defineSpell(input: SpellDefinition): SpellDefinition {
+  if (
+    input.cost.powerChoice &&
+    (!input.cost.powerChoice.length ||
+      input.cost.powerChoice.some((c) => !c.trim()))
+  )
+    throw new RangeError(`${input.id}: couleurs de Power invalides.`);
   for (const value of [input.cost.energy, ...Object.values(input.cost.power)]) {
     if (!Number.isFinite(value) || value < 0)
       throw new RangeError(`${input.id}: coût invalide.`);
@@ -67,7 +79,10 @@ export function defineSpell(input: SpellDefinition): SpellDefinition {
       (!Number.isFinite(effect.amount) || effect.amount < 0)
     )
       throw new RangeError(`${input.id}: dégâts invalides.`);
-    if (effect.type === 'modify-might' && !Number.isFinite(effect.amount))
+    if (
+      (effect.type === 'modify-might' || effect.type === 'boost-allies') &&
+      !Number.isFinite(effect.amount)
+    )
       throw new RangeError(`${input.id}: modificateur invalide.`);
     if (
       effect.type === 'draw' &&
@@ -78,6 +93,9 @@ export function defineSpell(input: SpellDefinition): SpellDefinition {
   return Object.freeze({
     ...input,
     cost: Object.freeze({
+      ...(input.cost.powerChoice
+        ? { powerChoice: Object.freeze([...input.cost.powerChoice]) }
+        : {}),
       energy: input.cost.energy,
       power: Object.freeze({ ...input.cost.power }),
     }),

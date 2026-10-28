@@ -7,6 +7,7 @@ export interface SpellBlueprint {
   readonly timing: 'normal' | 'action' | 'reaction';
   readonly cost: UnitBlueprint['cost'];
   readonly target:
+    | { readonly kind: 'caster' }
     | { readonly kind: 'battlefield' }
     | {
         readonly zone?: 'battlefield';
@@ -15,6 +16,11 @@ export interface SpellBlueprint {
         readonly combatRole: 'any' | 'attacker';
       };
   readonly effects: readonly (
+    | {
+        readonly type: 'boost-allies';
+        readonly amount: number;
+        readonly duration: 'end-of-turn';
+      }
     | {
         readonly type: 'damage-enemies-at-battlefield';
         readonly amount: number;
@@ -42,7 +48,8 @@ export interface SpellBlueprint {
   )[];
 }
 
-/** Sort payé en attente : cible et destination choisies au lancement, revérifiées à la résolution. */
+/** Sort payé en attente : cible et destination choisies au lancement, revérifiées à la résolution.
+ * targetId désigne une unité, un champ, ou le lanceur pour un effet global sans cible individuelle. */
 export interface SpellEntry {
   card: CardInstance;
   definition: SpellBlueprint;

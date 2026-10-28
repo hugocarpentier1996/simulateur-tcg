@@ -59,6 +59,12 @@ export function payCost(
     return { ok: false, reason: 'INSUFFICIENT_RESOURCES' };
   for (const [color, amount] of Object.entries(cost.power))
     power[color] = (power[color] ?? 0) - amount;
+  // Un symbole flexible : première couleur disponible dans l'ordre du catalogue.
+  if (cost.powerChoice) {
+    const color = cost.powerChoice.find((c) => (power[c] ?? 0) >= 1);
+    if (!color) return { ok: false, reason: 'INSUFFICIENT_RESOURCES' };
+    power[color]!--;
+  }
   const recycled = plan.powerRunes.map((id) => ({
     ...state.cards.find((c) => c.id === id)!,
     zoneId: pile!.id,
