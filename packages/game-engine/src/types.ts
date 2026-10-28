@@ -1,3 +1,4 @@
+import type { UnitPlayEntry } from './effects/unit-play.js';
 import type { SpellPlayEntry } from './effects/expensive-spell.js';
 import type { SpellBlueprint, SpellEntry } from './spell-types.js';
 import type { GearBlueprint, GearState } from './gear-types.js';
@@ -46,7 +47,7 @@ export interface GameState {
   gears?: GearState[];
   /** Pile du bas vers le haut : sorts payés, bonus déclenchés au lancement et effets de mort. */
   stack?: {
-    entries: (SpellEntry | DeathEntry | SpellPlayEntry)[];
+    entries: (SpellEntry | DeathEntry | SpellPlayEntry | UnitPlayEntry)[];
     initiatorId: string;
     priorityPlayerId: string;
     consecutivePasses: number;
@@ -106,6 +107,8 @@ export interface UnitBlueprint {
   readonly spellAbilityDamageBonus?: number;
   /** Capacité ADD : épuiser cette unité Ready pour produire cette énergie réservée aux sorts. */
   readonly spellEnergyAbility?: number;
+  /** Capacité déclenchée à la mise en jeu : dégâts à toutes les unités sur les champs. */
+  readonly onPlayBattlefieldDamage?: number;
   /** Au lancement d'un sort de coût imprimé suffisant : bonus personnel pour le tour, via la pile. */
   readonly onExpensiveSpell?: {
     readonly minimumEnergy: number;
@@ -129,6 +132,8 @@ export interface UnitBlueprint {
   readonly type: 'unit';
   readonly cost: {
     readonly powerChoice?: readonly string[];
+    /** Nombre de symboles flexibles à payer, 1 par défaut ; entier positif. */
+    readonly powerChoiceAmount?: number;
     readonly energy: number;
     readonly power: Readonly<Record<string, number>>;
   };
@@ -274,6 +279,11 @@ export type GameAction =
  * retourné et ne suffisent pas, seuls, à reconstruire toute la simulation.
  */
 export type GameEvent =
+  | { type: 'ability-damage'; sourceId: string; unitId: string; amount: number }
+  | {
+      type: 'unit-play-effect-queued' | 'unit-play-effect-resolved';
+      sourceId: string;
+    }
   | {
       type: 'spell-play-effect-queued' | 'spell-play-effect-resolved';
       sourceId: string;

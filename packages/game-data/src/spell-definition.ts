@@ -97,6 +97,9 @@ export function defineSpell(input: SpellDefinition): SpellDefinition {
       ...(input.cost.powerChoice
         ? { powerChoice: Object.freeze([...input.cost.powerChoice]) }
         : {}),
+      ...(input.cost.powerChoiceAmount !== undefined
+        ? { powerChoiceAmount: input.cost.powerChoiceAmount }
+        : {}),
       energy: input.cost.energy,
       power: Object.freeze({ ...input.cost.power }),
     }),

@@ -38,6 +38,12 @@ export function defineGear(input: GearDefinition): GearDefinition {
   }
   const freezeCost = (cost: CardCost): CardCost =>
     Object.freeze({
+      ...(cost.powerChoice
+        ? { powerChoice: Object.freeze([...cost.powerChoice]) }
+        : {}),
+      ...(cost.powerChoiceAmount !== undefined
+        ? { powerChoiceAmount: cost.powerChoiceAmount }
+        : {}),
       energy: cost.energy,
       power: Object.freeze({ ...cost.power }),
     });

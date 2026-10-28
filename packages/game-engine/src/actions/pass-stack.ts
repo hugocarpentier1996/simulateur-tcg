@@ -1,4 +1,5 @@
 import type { ActionResult, GameState } from '../types.js';
+import { resolveUnitPlay } from '../effects/unit-play.js';
 import { resolveSpell } from '../effects/resolve-spell.js';
 import { resolveSpellPlay } from '../effects/expensive-spell.js';
 import { resolveDeathEffect } from '../effects/death.js';
@@ -34,7 +35,9 @@ export function passStack(state: GameState, playerId: string): ActionResult {
       ? resolveSpell(popped, entry)
       : entry.kind === 'death'
         ? resolveDeathEffect(popped, entry)
-        : resolveSpellPlay(popped, entry);
+        : entry.kind === 'unit-play'
+          ? resolveUnitPlay(popped, entry)
+          : resolveSpellPlay(popped, entry);
   const next = resolved.state;
   if (next.pendingDeaths)
     return {

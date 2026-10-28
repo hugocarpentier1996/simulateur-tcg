@@ -370,6 +370,27 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
   Aucun branchement UI/deck de démo. 16 cartes complètes, Annie Fury partielle.
 - Validation complète : `pnpm check`, 291 tests et build réussis.
 
+### Tibbers OGS-018 et raccordement Annie Fury — 28 octobre 2026
+
+- Tibbers : 8 Énergie, 2 Power rouge/violet (mélange autorisé), 7 Might, arrivée Tap.
+  Depuis la main ou zone champion, empile une capacité de mise en jeu indépendante
+  de la source. Réactions possibles avant ses dégâts.
+- À la résolution : 3 dégâts simultanés à toutes les unités sur tous les champs,
+  alliés et Tibbers compris ; bases exclues. Cibles évaluées après les réactions.
+- Annie Fury ajoute son bonus à chaque instance de dégâts de capacité ; calcul avant
+  les morts, même si Annie meurt dans ces dégâts. Événements `ability-damage`
+  distincts des sorts, du combat et des dégâts directs d'unités (duel).
+- `powerChoiceAmount` étend le coût flexible (1 par défaut). Paiement automatique
+  et manuel, deux runes Tap, réserves flottantes et trois combinaisons testés.
+  Les catalogues unité/sort/gear conservent cette quantité.
+- TDD : huit échecs initiaux puis un échec sur la conservation des coûts ; 13 scénarios
+  couvrent aussi Flash, morts simultanées, pile des effets de mort, source disparue.
+- 18 cartes complètes (Annie Fury incluse), 6 restantes. Hors decks de démo.
+  Aucun nouveau choix de cible ou d'ordre n'est nécessaire pour cette capacité de zone.
+- Validation complète : `pnpm check`, 304 tests et build réussis.
+- Tests futurs : cibler les nouveaux comportements et leurs raccordements ; ne pas
+  dupliquer par carte les scénarios déjà couverts par les systèmes partagés.
+
 ## Limites à conserver lors d'une reprise
 
 - Première capacité de mort implémentée pour les morts de combat et hors combat. Autres déclencheurs,

@@ -3,7 +3,7 @@ import type { GameState } from '../types.js';
 /** État + propriétaire de l'effet -> bonus continu à ajouter à chaque instance
  * de dégâts de sort/capacité. Cumule les sources alliées encore en jeu, toutes zones,
  * Ready ou Tap. Ne doit jamais être appelé pour un combat ou un duel d'unités.
- * Les capacités infligeant des dégâts seront raccordées lors de leur introduction. */
+ * Utilisé par les sorts et la capacité de mise en jeu de Tibbers. */
 export function spellAbilityDamageBonus(
   state: GameState,
   playerId: string,

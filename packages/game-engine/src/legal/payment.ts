@@ -24,6 +24,12 @@ export function findPayment(
         playerId,
         {
           energy: cost.energy,
+          ...((cost.powerChoiceAmount ?? 1) > 1
+            ? {
+                powerChoice: cost.powerChoice,
+                powerChoiceAmount: (cost.powerChoiceAmount ?? 1) - 1,
+              }
+            : {}),
           power: { ...cost.power, [color]: (cost.power[color] ?? 0) + 1 },
         },
         purpose,

@@ -1,8 +1,10 @@
 /** Coût imprimé : énergie incolore + quantités de Power indexées par couleur.
  * Une couleur absente coûte zéro. Le paiement et les réserves appartiennent au moteur. */
 export interface CardCost {
-  /** Un Power supplémentaire payable dans l'une de ces couleurs (tranche à un symbole). */
+  /** Power supplémentaire payable dans ces couleurs, un symbole par défaut. */
   readonly powerChoice?: readonly string[];
+  /** Nombre de symboles flexibles à payer, 1 par défaut ; entier positif. */
+  readonly powerChoiceAmount?: number;
   readonly energy: number;
   readonly power: Readonly<Record<string, number>>;
 }
@@ -15,6 +17,8 @@ export interface UnitDefinition {
   readonly spellAbilityDamageBonus?: number;
   /** Capacité ADD : épuiser cette unité Ready pour produire cette énergie réservée aux sorts. */
   readonly spellEnergyAbility?: number;
+  /** Capacité déclenchée à la mise en jeu : dégâts à toutes les unités sur les champs. */
+  readonly onPlayBattlefieldDamage?: number;
   /** Au lancement d'un sort de coût imprimé suffisant : bonus personnel pour le tour, via la pile. */
   readonly onExpensiveSpell?: {
     readonly minimumEnergy: number;
@@ -54,6 +58,13 @@ export interface UnitDefinition {
  * Aucun effet de carte ni traitement de paiement n'est exécuté ici. */
 export function defineUnit(input: UnitDefinition): UnitDefinition {
   if (
+    input.cost.powerChoiceAmount !== undefined &&
+    (!input.cost.powerChoice?.length ||
+      !Number.isInteger(input.cost.powerChoiceAmount) ||
+      input.cost.powerChoiceAmount < 1)
+  )
+    throw new RangeError('Nombre de symboles flexibles invalide.');
+  if (
     input.runeMightBonus &&
     (!Number.isInteger(input.runeMightBonus.minimum) ||
       input.runeMightBonus.minimum < 0 ||
@@ -69,6 +80,7 @@ export function defineUnit(input: UnitDefinition): UnitDefinition {
     otherAlliesHereMightBonus: input.otherAlliesHereMightBonus ?? 0,
     spellAbilityDamageBonus: input.spellAbilityDamageBonus ?? 0,
     spellEnergyAbility: input.spellEnergyAbility ?? 0,
+    onPlayBattlefieldDamage: input.onPlayBattlefieldDamage ?? 0,
     minimumSpellEnergy: input.onExpensiveSpell?.minimumEnergy ?? 0,
     spellMightBonus: input.onExpensiveSpell?.mightBonus ?? 0,
     ...Object.fromEntries(
@@ -95,6 +107,9 @@ export function defineUnit(input: UnitDefinition): UnitDefinition {
     cost: Object.freeze({
       ...(input.cost.powerChoice
         ? { powerChoice: Object.freeze([...input.cost.powerChoice]) }
+        : {}),
+      ...(input.cost.powerChoiceAmount !== undefined
+        ? { powerChoiceAmount: input.cost.powerChoiceAmount }
         : {}),
       energy: input.cost.energy,
       power: Object.freeze({ ...input.cost.power }),

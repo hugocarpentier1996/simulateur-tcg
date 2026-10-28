@@ -34,7 +34,7 @@ Tests Shield : `packages/game-engine/src/ogs-zephyr-sage.test.ts`.
 - Fury rouge, Calm vert, Mind bleu, Body orange, Chaos violet, Order jaune.
 - Power bicolore : quantité totale payable avec n'importe quelle combinaison des deux
   couleurs de la carte. Un symbole flexible est implémenté pour Decisive Strike ;
-  les deux symboles de Tibbers restent à prendre en charge.
+  les deux symboles de Tibbers sont pris en charge par `powerChoiceAmount`.
 - Mort si dégâts non nuls >= Might actuelle, y compris après baisse de Might. Dégâts
   conservés jusqu'aux soins globaux de fin de combat/fin de tour. Raccordé avec Incinerate,
   y compris la perte d'une aura ou du bonus de Master Yi lors d'un paiement.
@@ -42,14 +42,13 @@ Tests Shield : `packages/game-engine/src/ogs-zephyr-sage.test.ts`.
 - Shield/Assault : défense/attaque uniquement dans un Combat Showdown, jamais en Open,
   jusqu'à la clôture. Shield et Assault sont implémentés.
 
-### Annie Fury OGS-001 — première tranche validée
+### Annie Fury OGS-001 — sorts et capacités raccordés
 
 5 Énergie, 1 rouge, 4 Might, arrivée Tap. Bonus continu de +1 par instance de dégâts
 de sort, cumulable, toutes zones. Tests : coût, Ready/Tap/Stun, cumul, départ de source,
 instances multiples, exclusion du combat et du duel. Export `annieFury`.
-Le calcul est partagé pour les sorts/capacités ; le raccordement à une véritable capacité
-de dégâts reste à tester avec Tibbers. Ne pas compter cette tranche comme la validation
-de toutes les interactions de la carte. Hors decks de démo.
+Le calcul partagé est raccordé et testé avec la capacité de dégâts de Tibbers,
+y compris le bonus simultané quand Annie meurt dans les mêmes dégâts. Hors decks de démo.
 
 ## Reprise
 
@@ -61,7 +60,7 @@ Decisive Strike OGS-024 (`decisiveStrike`) terminé : 5 Énergie + un Power oran
 jaune, +2 Might aux alliés présents à la résolution jusqu'à la fin du tour. Paiement,
 timing Action, portée et expiration testés. Hors decks de démo.
 
-10 cartes restent à terminer (dont Annie Fury partiellement raccordée). Procéder carte par carte en TDD et commit/push après
+6 cartes restent à terminer : Annie Chaos, Recruit the Vanguard et les quatre légendes. Procéder carte par carte en TDD et commit/push après
 chaque carte validée, en mettant ce tableau à jour. Demander les précisions propres
 à chaque mécanique lors de sa tranche, sans préconstruire tous les systèmes.
 L'arrivée Ready est une propriété statique de mise en jeu, pas un effet mis sur la pile.
@@ -84,3 +83,11 @@ Le bonus est empilé après le sort, résout avant lui et permet les Réactions.
 Cumul, plusieurs Lux, seuil, coût, disparition de la source et expiration testés.
 Export `luxMind`, hors decks de démonstration. 16 cartes complètes, Annie Fury partielle.
 Ordre provisoire des déclenchements simultanés : ordre des unités de l'état.
+
+### Tibbers OGS-018
+
+8 Énergie, 2 Power rouge/violet, 7 Might, arrivée Tap. Sa mise en jeu empile une capacité
+infligeant 3 dégâts simultanés aux unités présentes sur tous les champs à la résolution.
+Alliés et Tibbers compris, bases exclues. Réponse Flash, bonus Annie, morts simultanées,
+effets de mort et paiements bicolores testés. Export `tibbers`, hors decks de démo.
+Bilan courant : 18 cartes complètes, dont Annie Fury désormais raccordée aux capacités.

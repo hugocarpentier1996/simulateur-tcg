@@ -4,6 +4,7 @@ import { canSummonAt } from './unit-destination.js';
 
 /** Main hors Showdown + carte en main/zone champion + paiement -> unité Tap, sauf entersReady.
  * Destination : base propre par défaut, ou champ contrôlé ; refus atomique sinon.
+ * onPlayBattlefieldDamage empile la capacité après la mise en jeu, sans dégâts immédiats.
  * Le chosen champion suit le coût du catalogue et quitte sa zone comme une carte en main. */
 export function playUnit(
   state: GameState,
@@ -47,6 +48,23 @@ export function playUnit(
     ok: true,
     state: {
       ...payment.state,
+      ...(definition.onPlayBattlefieldDamage !== undefined
+        ? {
+            stack: {
+              entries: [
+                {
+                  kind: 'unit-play' as const,
+                  sourceId: card.id,
+                  ownerId: card.ownerId,
+                  amount: definition.onPlayBattlefieldDamage,
+                },
+              ],
+              initiatorId: action.playerId,
+              priorityPlayerId: state.activePlayerId,
+              consecutivePasses: 0,
+            },
+          }
+        : {}),
       cards: payment.state.cards.filter((c) => c.id !== card.id),
       units: [
         ...state.units,
@@ -76,6 +94,9 @@ export function playUnit(
         definitionId: definition.id,
         zoneId: destinationId,
       },
+      ...(definition.onPlayBattlefieldDamage !== undefined
+        ? [{ type: 'unit-play-effect-queued' as const, sourceId: card.id }]
+        : []),
     ],
   };
 }
