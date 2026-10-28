@@ -44,7 +44,7 @@ Les images restent des URL de métadonnées ; les fichiers bruts ne sont pas pub
 - [x] Body Rune — ogn-126-298
 - [x] Calm Rune — ogn-042-298
 - [x] Chaos Rune — ogn-166-298
-- [ ] Fury Rune — ogn-007-298
+- [x] Fury Rune — ogn-007-298
 - [ ] Mind Rune — ogn-089-298
 - [ ] Order Rune — ogn-214-298
 - [ ] Fortified Position — ogn-279-298

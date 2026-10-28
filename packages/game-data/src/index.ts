@@ -94,3 +94,5 @@ export type { RuneDefinition } from './rune-definition.js';
 export { calmRune } from './ogn/calm-rune.js';
 
 export { chaosRune } from './ogn/chaos-rune.js';
+
+export { furyRune } from './ogn/fury-rune.js';
