@@ -59,3 +59,5 @@ export { mountainDrake } from './ogn/mountain-drake.js';
 export { playfulPhantom } from './ogn/playful-phantom.js';
 
 export { vanguardSergeant } from './ogn/vanguard-sergeant.js';
+
+export { fallingComet } from './ogn/falling-comet.js';

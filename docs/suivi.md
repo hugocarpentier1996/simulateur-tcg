@@ -547,6 +547,12 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
 - Hors decks de démo ; lot suivi dans docs/cartes-origins.md.
 - Validation : pnpm check, 341 tests et build réussis.
 
+### Origins : Falling Comet — 28 octobre 2026
+
+- Action, 5 Énergie, 6 dégâts ciblés sur un battlefield ; réutilise les dégâts de sorts.
+- TDD : refus de définition inconnue puis test de coût, résolution et exclusion des bases.
+- Hors démo. Validation : pnpm check, 342 tests et build réussis.
+
 ## Limites à conserver lors d'une reprise
 
 - Première capacité de mort implémentée pour les morts de combat et hors combat. Autres déclencheurs,
