@@ -473,6 +473,16 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
 - TDD : échecs initiaux puis trois scénarios ciblés. 22 cartes complètes, hors démo.
 - `pnpm check` : 324 tests et build réussis.
 
+### Might of Demacia OGS-023 — 28 octobre 2026
+
+- Après conquête Open ou combat, empile pioche 2 si au moins quatre unités alliées
+  sont présentes sur ce champ. Vérifie le seuil à nouveau après les réactions.
+- Déclenchement indépendant du gain de point ; pas de déclenchement après victoire.
+  Test Flash : retirer des unités avant résolution annule la pioche.
+- TDD : deux échecs initiaux puis quatre scénarios ciblés, combat inclus.
+- 23 cartes complètes, hors démo.
+- `pnpm check` : 328 tests et build réussis.
+
 ## Limites à conserver lors d'une reprise
 
 - Première capacité de mort implémentée pour les morts de combat et hors combat. Autres déclencheurs,

@@ -1,3 +1,4 @@
+import { queueConquestLegends } from './effects/conquest-legends.js';
 import type { GameState, GameAction, ActionResult } from './types.js';
 import { activateSpellEnergy } from './actions/activate-spell-energy.js';
 import { moveUnit } from './actions/move.js';
@@ -45,8 +46,14 @@ export function act(state: GameState, action: GameAction): ActionResult {
   if (!result.ok) return result;
   const settled = settleLethalUnits(result.state);
   const attached = syncAttachments(settled.state);
-  const next = afterEffects(attached.state);
-  const events = [...result.events, ...settled.events, ...attached.events];
+  const queued = queueConquestLegends(attached.state, result.events);
+  const next = afterEffects(queued.state);
+  const events = [
+    ...result.events,
+    ...settled.events,
+    ...attached.events,
+    ...queued.events,
+  ];
   const opened = !result.state.showdown && next.showdown;
   return {
     ...result,
