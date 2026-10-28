@@ -14,12 +14,14 @@ export interface CardCost {
  * Propriétaire, zone, Ready/Tap et dégâts appartiennent à chaque instance en partie. */
 export interface UnitDefinition {
   /** Bonus continu par instance de dégâts des sorts et capacités du propriétaire. */
-  /** Exception de mise en jeu : champ enti�rement vide en plus des destinations ordinaires. */
+  /** Exception de mise en jeu : champ entièrement vide en plus des destinations ordinaires. */
   readonly canPlayToOpenBattlefield?: boolean;
-  /** D�placement vers un champ : invoquer ce jeton ici via la pile, sans condition de contr�le. */
+  /** Déplacement vers un champ : invoquer ce jeton ici via la pile, sans condition de contrôle. */
   readonly onMoveSummonHere?: string;
-  /** Apr�s tout d�placement : d�fausser une carte disponible puis piocher, via la pile. */
+  /** Après tout déplacement : défausser une carte disponible puis piocher, via la pile. */
   readonly onMoveLoot?: boolean;
+  /** En attaque avec un ennemi Ready ici : bonus temporaire via la pile, condition revérifiée. */
+  readonly onAttackReadyEnemyMightBonus?: number;
   readonly spellAbilityDamageBonus?: number;
   /** Capacité ADD : épuiser cette unité Ready pour produire cette énergie réservée aux sorts. */
   readonly spellEnergyAbility?: number;

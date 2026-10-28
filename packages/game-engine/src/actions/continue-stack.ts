@@ -1,14 +1,14 @@
 import type { GameState, GameEvent, ActionResult } from '../types.js';
 import { finishCombat } from '../combat/finish.js';
-/** Pile apr�s retrait du sommet -> pause pour choix, nouvelle fen�tre ou cl�ture.
- * Conserve les entr�es restantes ; aucun effet suppl�mentaire n'est r�solu ici. */
+/** Pile après retrait du sommet -> pause pour choix, nouvelle fenêtre ou clôture.
+ * Conserve les entrées restantes ; aucun effet supplémentaire n'est résolu ici. */
 export function continueStack(
   state: GameState,
   events: GameEvent[],
 ): Extract<ActionResult, { ok: true }> {
   const next = state;
   const stack = state.stack;
-  if (!stack) throw new Error('Pile absente � la reprise.');
+  if (!stack) throw new Error('Pile absente à la reprise.');
   const entries = stack.entries;
   if (next.pendingDeaths || next.pendingDiscard)
     return {

@@ -1,3 +1,4 @@
+import type { AttackEntry } from './effects/attack-triggers.js';
 import type { MovementEntry } from './effects/movement-triggers.js';
 import type {
   LegendBlueprint,
@@ -21,7 +22,7 @@ import type { DeathEffect, DeathEntry, DeathTrigger } from './death-types.js';
 export interface GameState {
   /** Fin de tour suspendue jusqu'à résolution des capacités, morts et Showdowns induits. */
   pendingTurnEnd?: boolean;
-  /** Choix obligatoire pendant une r�solution ; aucune r�action entre d�fausse et pioche. */
+  /** Choix obligatoire pendant une résolution ; aucune réaction entre défausse et pioche. */
   pendingDiscard?: { playerId: string; sourceId: string } | null;
   activePlayerId: string;
   phase: TurnPhase;
@@ -61,6 +62,7 @@ export interface GameState {
   /** Pile du bas vers le haut : sorts payés, bonus déclenchés au lancement et effets de mort. */
   stack?: {
     entries: (
+      | AttackEntry
       | MovementEntry
       | SpellEntry
       | DeathEntry
@@ -126,12 +128,14 @@ export interface GameState {
 
 /** Définition structurelle acceptée par le moteur ; compatible avec le catalogue game-data. */
 export interface UnitBlueprint {
-  /** Exception de mise en jeu : champ enti�rement vide en plus des destinations ordinaires. */
+  /** Exception de mise en jeu : champ entièrement vide en plus des destinations ordinaires. */
   readonly canPlayToOpenBattlefield?: boolean;
-  /** D�placement vers un champ : invoquer ce jeton ici via la pile, sans condition de contr�le. */
+  /** Déplacement vers un champ : invoquer ce jeton ici via la pile, sans condition de contrôle. */
   readonly onMoveSummonHere?: string;
-  /** Apr�s tout d�placement : d�fausser une carte disponible puis piocher, via la pile. */
+  /** Après tout déplacement : défausser une carte disponible puis piocher, via la pile. */
   readonly onMoveLoot?: boolean;
+  /** En attaque avec un ennemi Ready ici : bonus temporaire via la pile, condition revérifiée. */
+  readonly onAttackReadyEnemyMightBonus?: number;
   readonly spellAbilityDamageBonus?: number;
   /** Capacité ADD : épuiser cette unité Ready pour produire cette énergie réservée aux sorts. */
   readonly spellEnergyAbility?: number;
@@ -320,6 +324,10 @@ export type GameAction =
  * retourné et ne suffisent pas, seuls, à reconstruire toute la simulation.
  */
 export type GameEvent =
+  | {
+      type: 'attack-effect-queued' | 'attack-effect-resolved';
+      sourceId: string;
+    }
   | { type: 'card-discarded'; playerId: string; cardId: string }
   | {
       type: 'movement-effect-queued' | 'movement-effect-resolved';

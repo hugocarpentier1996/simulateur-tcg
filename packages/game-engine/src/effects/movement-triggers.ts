@@ -2,7 +2,7 @@ import { startLoot } from './loot.js';
 import type { GameEvent, GameState, ActionResult } from '../types.js';
 import { summonToken } from './summon-token.js';
 
-/** Destination figée au mouvement : la capacité existe même si sa source quitte le terrain. */
+/** Destination figée au mouvement : une sortie du terrain prive « here » de destination. */
 export interface MovementEntry {
   kind: 'movement';
   sourceId: string;
@@ -98,7 +98,7 @@ export function resolveMovementEffect(
           ],
     };
   }
-  // Sans source sur le terrain, � here � n'a plus de destination (Gust notamment).
+  // Sans source sur le terrain, « here » n'a plus de destination (Gust notamment).
   if (!state.units.some((u) => u.id === entry.sourceId))
     return {
       ok: true,

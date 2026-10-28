@@ -1,3 +1,4 @@
+import { queueAttackEffects } from './effects/attack-triggers.js';
 import { chooseDiscard } from './actions/choose-discard.js';
 import { queueMovementEffects } from './effects/movement-triggers.js';
 import { startNextTurn } from './turn/progression.js';
@@ -54,7 +55,7 @@ export function act(state: GameState, action: GameAction): ActionResult {
     ...result.events,
     ...settled.events,
   ]);
-  const next = afterEffects(moved.state);
+  const entered = afterEffects(moved.state);
   const events = [
     ...result.events,
     ...settled.events,
@@ -62,6 +63,9 @@ export function act(state: GameState, action: GameAction): ActionResult {
     ...queued.events,
     ...moved.events,
   ];
+  const attacked = queueAttackEffects(state, entered, events);
+  const next = attacked.state;
+  events.push(...attacked.events);
   if (
     next.pendingTurnEnd &&
     !next.result &&

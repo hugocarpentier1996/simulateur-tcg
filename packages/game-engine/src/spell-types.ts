@@ -53,9 +53,9 @@ export interface SpellBlueprint {
       }
     | {
         readonly type: 'modify-might';
-        /** Bonus suppl�mentaire si aucune autre unit� alli�e n'est dans cette zone � la r�solution. */
+        /** Bonus supplémentaire si aucune autre unité alliée n'est dans cette zone à la résolution. */
         readonly aloneBonus?: number;
-        /** Limite de cette r�duction au moment de sa r�solution, sans relever une Might d�j� inf�rieure. */
+        /** Limite de cette réduction au moment de sa résolution, sans relever une Might déjà inférieure. */
         readonly minimum?: number;
         readonly amount: number;
         readonly duration: 'end-of-turn';

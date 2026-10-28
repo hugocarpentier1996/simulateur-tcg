@@ -654,6 +654,16 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
 
 - Validation : pnpm check, 372 tests et build réussis.
 
+### Origins fournée 2 : Dune Drake — 28 octobre 2026
+
+- Bonus d'attaque via la pile : ennemi Ready requis au déclenchement et à la résolution, avant dégâts.
+- Tests de refus en défense/Open/ennemi Tap, réponse ADD, conversion Open vers Combat et second combat sans score intermédiaire.
+- Fournee 2 terminée : dix nouvelles cartes, 44/69 entrées demandées raccordées au moteur.
+- Questions restantes regroupées dans docs/questions-origins.md : « here » après déplacement interne de Noxian et moment du choix de défausse Merchant.
+- Nettoyage de l'encodage de commentaires ajoutés dans cette fournée.
+
+- Validation : pnpm check, 379 tests et build réussis.
+
 ## Limites à conserver lors d'une reprise
 
 - Première capacité de mort implémentée pour les morts de combat et hors combat. Autres déclencheurs,

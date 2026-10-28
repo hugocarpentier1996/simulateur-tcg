@@ -12,7 +12,7 @@ Les images restent des URL de métadonnées ; les fichiers bruts ne sont pas pub
 - [ ] Crackshot Corsair — ogn-130-298
 - [x] Daring Poro — ogn-210-298
 - [ ] Disintegrate — ogn-005-298
-- [ ] Dune Drake — ogn-131-298
+- [x] Dune Drake — ogn-131-298
 - [ ] Eager Apprentice — ogn-084-298
 - [x] En Garde — ogn-046-298
 - [ ] Faithful Manufactor — ogn-211-298

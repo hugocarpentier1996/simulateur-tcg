@@ -83,3 +83,5 @@ export { sneakyDeckhand } from './ogn/sneaky-deckhand.js';
 export { noxianDrummer } from './ogn/noxian-drummer.js';
 
 export { travelingMerchant } from './ogn/traveling-merchant.js';
+
+export { duneDrake } from './ogn/dune-drake.js';
