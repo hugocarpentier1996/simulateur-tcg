@@ -25,7 +25,7 @@ Les images restent des URL de métadonnées ; les fichiers bruts ne sont pas pub
 - [x] Mega-Mech — ogn-088-298
 - [ ] Mobilize — ogn-134-298
 - [ ] Morbid Return — ogn-170-298
-- [ ] Mountain Drake — ogn-142-298
+- [x] Mountain Drake — ogn-142-298
 - [ ] Mystic Poro — ogn-171-298
 - [ ] Noxian Drummer — ogn-222-298
 - [x] Petty Officer — ogn-215-298
