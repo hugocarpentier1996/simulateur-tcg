@@ -47,3 +47,5 @@ export { mightOfDemacia } from './ogs/might-of-demacia.js';
 export { darkChild } from './ogs/dark-child.js';
 
 export { daringPoro } from './ogn/daring-poro.js';
+
+export { pettyOfficer } from './ogn/petty-officer.js';

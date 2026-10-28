@@ -28,7 +28,7 @@ Les images restent des URL de métadonnées ; les fichiers bruts ne sont pas pub
 - [ ] Mountain Drake — ogn-142-298
 - [ ] Mystic Poro — ogn-171-298
 - [ ] Noxian Drummer — ogn-222-298
-- [ ] Petty Officer — ogn-215-298
+- [x] Petty Officer — ogn-215-298
 - [ ] Playful Phantom — ogn-049-298
 - [ ] Pouty Poro — ogn-013-298
 - [ ] Ravenbloom Student — ogn-103-298
