@@ -75,3 +75,5 @@ export { enGarde } from './ogn/en-garde.js';
 export { backToBack } from './ogn/back-to-back.js';
 
 export { cannonBarrage } from './ogn/cannon-barrage.js';
+
+export { morbidReturn } from './ogn/morbid-return.js';

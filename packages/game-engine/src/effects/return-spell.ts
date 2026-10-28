@@ -1,3 +1,4 @@
+import { graveyardCard, returnGraveyardCard } from './graveyard-card.js';
 import type { ActionResult, GameState } from '../types.js';
 
 /** Choix figé à l'empilement ; absent uniquement si aucun sort n'était récupérable. */
@@ -13,17 +14,7 @@ export function recoverableSpells(
   playerId: string,
 ): string[] {
   return state.cards
-    .filter(
-      (c) =>
-        c.ownerId === playerId &&
-        state.zones.some(
-          (z) =>
-            z.id === c.zoneId &&
-            z.kind === 'graveyard' &&
-            z.ownerId === playerId,
-        ) &&
-        state.spellDefinitions?.some((d) => d.id === c.definitionId),
-    )
+    .filter((c) => graveyardCard(state, playerId, c.id, 'spell'))
     .map((c) => c.id);
 }
 /** Effet -> carte choisie en main si encore légale. Source indépendante ; aucune pioche,
@@ -42,12 +33,7 @@ export function resolveReturnSpell(
   return {
     ok: true,
     state: valid
-      ? {
-          ...state,
-          cards: state.cards.map((c) =>
-            c.id === entry.targetId ? { ...c, zoneId: hand.id } : c,
-          ),
-        }
+      ? returnGraveyardCard(state, entry.ownerId, entry.targetId!, 'spell')
       : state,
     events: [
       { type: 'unit-play-effect-resolved', sourceId: entry.sourceId },

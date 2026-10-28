@@ -28,6 +28,7 @@ export type SpellEffect =
     }
   | { readonly type: 'damage-enemies-at-battlefield'; readonly amount: number }
   | { readonly type: 'damage-enemies-in-combat'; readonly amount: number }
+  | { readonly type: 'return-graveyard-unit' }
   | { readonly type: 'return-unit-to-hand' }
   | { readonly type: 'kill-unit' }
   | { readonly type: 'duel' }
@@ -63,6 +64,7 @@ export interface SpellDefinition {
   readonly timing: SpellTiming;
   readonly cost: CardCost;
   readonly target:
+    | { readonly kind: 'graveyard-unit' }
     | { readonly kind: 'caster' }
     | { readonly kind: 'battlefield' }
     | {

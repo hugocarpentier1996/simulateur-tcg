@@ -1,3 +1,4 @@
+import { graveyardCard } from '../effects/graveyard-card.js';
 import { activeLegends } from '../effects/legends.js';
 import type { ActionResult, GameAction, GameState } from '../types.js';
 import { canUseTiming } from './timing.js';
@@ -68,11 +69,13 @@ export function castSpell(
     action.playerId,
   );
   if (
-    definition.target.kind === 'battlefield'
-      ? !validBattlefieldTarget(state, action.targetId)
-      : definition.target.kind === 'caster'
-        ? action.targetId !== action.playerId
-        : !target
+    definition.target.kind === 'graveyard-unit'
+      ? !graveyardCard(state, action.playerId, action.targetId, 'unit')
+      : definition.target.kind === 'battlefield'
+        ? !validBattlefieldTarget(state, action.targetId)
+        : definition.target.kind === 'caster'
+          ? action.targetId !== action.playerId
+          : !target
   )
     return { ok: false, reason: 'INVALID_TARGET' };
   if (

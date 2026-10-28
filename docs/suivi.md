@@ -622,6 +622,13 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
 
 - Validation : pnpm check, 361 tests et build réussis.
 
+### Origins fournée 2 : Morbid Return — 28 octobre 2026
+
+- Récupération depuis la défausse mutualisée avec Annie Chaos ; validation du propriétaire et du type.
+- Cible choisie avant réactions, revérifiée à la résolution ; actions légales raccordées.
+
+- Validation : pnpm check, 363 tests et build réussis.
+
 ## Limites à conserver lors d'une reprise
 
 - Première capacité de mort implémentée pour les morts de combat et hors combat. Autres déclencheurs,

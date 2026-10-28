@@ -83,11 +83,13 @@ function* candidates(
     if (spell) {
       const payment = findPayment(state, playerId, spell.cost, 'spell');
       if (payment)
-        for (const target of spell.target.kind === 'battlefield'
-          ? state.battlefields.map((f) => ({ id: f.zoneId }))
-          : spell.target.kind === 'caster'
-            ? [{ id: playerId }]
-            : state.units) {
+        for (const target of spell.target.kind === 'graveyard-unit'
+          ? state.cards
+          : spell.target.kind === 'battlefield'
+            ? state.battlefields.map((f) => ({ id: f.zoneId }))
+            : spell.target.kind === 'caster'
+              ? [{ id: playerId }]
+              : state.units) {
           const base = {
             type: 'cast-spell' as const,
             playerId,

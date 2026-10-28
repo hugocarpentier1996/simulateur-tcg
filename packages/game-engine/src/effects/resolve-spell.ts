@@ -1,3 +1,4 @@
+import { returnGraveyardCard } from './graveyard-card.js';
 import { effectiveMight } from './modifiers.js';
 import { leaveBoard } from './leave-board.js';
 import { getBattlefieldSides } from '../battlefield-areas.js';
@@ -71,6 +72,15 @@ export function resolveSpell(
             : u,
         ),
       };
+      continue;
+    }
+    if (effect.type === 'return-graveyard-unit') {
+      state = returnGraveyardCard(
+        state,
+        entry.casterId,
+        entry.targetId,
+        'unit',
+      );
       continue;
     }
     if (effect.type === 'draw') {

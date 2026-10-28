@@ -7,6 +7,7 @@ export interface SpellBlueprint {
   readonly timing: 'normal' | 'action' | 'reaction';
   readonly cost: UnitBlueprint['cost'];
   readonly target:
+    | { readonly kind: 'graveyard-unit' }
     | { readonly kind: 'caster' }
     | { readonly kind: 'battlefield' }
     | {
@@ -39,6 +40,7 @@ export interface SpellBlueprint {
         readonly amount: number;
       }
     | { readonly type: 'damage-enemies-in-combat'; readonly amount: number }
+    | { readonly type: 'return-graveyard-unit' }
     | { readonly type: 'return-unit-to-hand' }
     | { readonly type: 'kill-unit' }
     | { readonly type: 'duel' }
