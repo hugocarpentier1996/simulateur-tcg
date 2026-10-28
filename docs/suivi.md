@@ -421,6 +421,19 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
   Hors decks de démo ; pas de nouvel écran de choix de cartes/destinations.
 - Validation complète : `pnpm check`, 314 tests et build réussis.
 
+### Précision de portée des zones — 28 octobre 2026
+
+- Confirmation utilisateur : chaque battlefield comprend un côté allié et un côté
+  ennemi ; un effet de zone peut désigner une ou plusieurs zones concernées.
+- Architecture souhaitée : distinguer dégâts de zone et dégâts ciblant une unité,
+  en explicitant la portée. Ne pas confondre portée et source (sort/capacité/unité).
+- Documentation uniquement : les côtés ne sont pas encore des zones explicites du
+  modèle. Préserver l'identité du battlefield pour contrôle, combat et score ; concevoir
+  la représentation des côtés lors d'une tranche fonctionnelle qui en a besoin.
+- Les cartes actuelles conservent leur comportement : Tibbers touche tous les champs,
+  Firestorm les ennemis du champ choisi. Aucun changement du moteur ni nouveau test.
+- Vérification : `pnpm check` réussi, 314 tests et build.
+
 ## Limites à conserver lors d'une reprise
 
 - Première capacité de mort implémentée pour les morts de combat et hors combat. Autres déclencheurs,

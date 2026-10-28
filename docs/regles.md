@@ -207,3 +207,11 @@ sans inscrire des règles FFA non confirmées dans le fonctionnement actuel.
 Annie Chaos : le sort récupéré est choisi à l’empilement de sa capacité, avant les réactions.
 Recruit the Vanguard : les destinations des quatre Recrues sont choisies à l’empilement
 du sort, avant les réactions. Ces choix sont revérifiés à la résolution.
+
+## Portée des dégâts de zone
+
+Un battlefield comprend deux zones en 1v1 : le côté allié et le côté ennemi du même
+battlefield. Cette distinction doit pouvoir servir à la portée des effets futurs.
+Les dégâts de zone peuvent avoir un traitement distinct des dégâts ciblant une unité,
+en indiquant la ou les zones concernées : battlefield entier ou côté concerné.
+Les règles de dégâts, bonus et mort restent celles applicables à la source de l'effet.
