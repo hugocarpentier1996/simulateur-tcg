@@ -23,7 +23,7 @@ export interface UnitDefinition {
   readonly tank?: boolean;
   /** Effet de mise en jeu, empilé avant résolution. */
   readonly onPlayEffect?: {
-    readonly type: 'channel-exhausted';
+    readonly type: 'channel-exhausted' | 'draw';
     readonly count: number;
   };
   /** En attaque avec un ennemi Ready ici : bonus temporaire via la pile, condition revérifiée. */

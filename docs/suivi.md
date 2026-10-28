@@ -720,6 +720,13 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
 
 - Validation : pnpm check, 389 tests et build réussis.
 
+### Origins fournée 3 : Lecturing Yordle — 28 octobre 2026
+
+- Tank et pioche de mise en jeu via la pile, indépendante de la survie de sa source.
+- Test de la fenêtre avant pioche et de la disparition de la source.
+
+- Validation : pnpm check, 390 tests et build réussis.
+
 ## Limites à conserver lors d'une reprise
 
 - Première capacité de mort implémentée pour les morts de combat et hors combat. Autres déclencheurs,

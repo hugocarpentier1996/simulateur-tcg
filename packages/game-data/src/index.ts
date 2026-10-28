@@ -104,3 +104,5 @@ export { orderRune } from './ogn/order-rune.js';
 export { mobilize } from './ogn/mobilize.js';
 
 export { stormclawUrsine } from './ogn/stormclaw-ursine.js';
+
+export { lecturingYordle } from './ogn/lecturing-yordle.js';
