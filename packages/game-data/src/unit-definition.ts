@@ -16,6 +16,8 @@ export interface UnitDefinition {
   /** Bonus continu par instance de dégâts des sorts et capacités du propriétaire. */
   /** Exception de mise en jeu : champ enti�rement vide en plus des destinations ordinaires. */
   readonly canPlayToOpenBattlefield?: boolean;
+  /** D�placement vers un champ : invoquer ce jeton ici via la pile, sans condition de contr�le. */
+  readonly onMoveSummonHere?: string;
   readonly spellAbilityDamageBonus?: number;
   /** Capacité ADD : épuiser cette unité Ready pour produire cette énergie réservée aux sorts. */
   readonly spellEnergyAbility?: number;

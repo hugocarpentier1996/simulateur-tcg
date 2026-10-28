@@ -1,3 +1,4 @@
+import { queueMovementEffects } from './effects/movement-triggers.js';
 import { startNextTurn } from './turn/progression.js';
 import { queueConquestLegends } from './effects/conquest-legends.js';
 import type { GameState, GameAction, ActionResult } from './types.js';
@@ -48,12 +49,17 @@ export function act(state: GameState, action: GameAction): ActionResult {
   const settled = settleLethalUnits(result.state);
   const attached = syncAttachments(settled.state);
   const queued = queueConquestLegends(attached.state, result.events);
-  const next = afterEffects(queued.state);
+  const moved = queueMovementEffects(state, queued.state, [
+    ...result.events,
+    ...settled.events,
+  ]);
+  const next = afterEffects(moved.state);
   const events = [
     ...result.events,
     ...settled.events,
     ...attached.events,
     ...queued.events,
+    ...moved.events,
   ];
   if (
     next.pendingTurnEnd &&

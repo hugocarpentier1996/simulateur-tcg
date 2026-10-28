@@ -1,3 +1,4 @@
+import type { MovementEntry } from './effects/movement-triggers.js';
 import type {
   LegendBlueprint,
   LegendEntry,
@@ -58,6 +59,7 @@ export interface GameState {
   /** Pile du bas vers le haut : sorts payés, bonus déclenchés au lancement et effets de mort. */
   stack?: {
     entries: (
+      | MovementEntry
       | SpellEntry
       | DeathEntry
       | SpellPlayEntry
@@ -124,6 +126,8 @@ export interface GameState {
 export interface UnitBlueprint {
   /** Exception de mise en jeu : champ enti�rement vide en plus des destinations ordinaires. */
   readonly canPlayToOpenBattlefield?: boolean;
+  /** D�placement vers un champ : invoquer ce jeton ici via la pile, sans condition de contr�le. */
+  readonly onMoveSummonHere?: string;
   readonly spellAbilityDamageBonus?: number;
   /** Capacité ADD : épuiser cette unité Ready pour produire cette énergie réservée aux sorts. */
   readonly spellEnergyAbility?: number;
@@ -311,6 +315,10 @@ export type GameAction =
  * retourné et ne suffisent pas, seuls, à reconstruire toute la simulation.
  */
 export type GameEvent =
+  | {
+      type: 'movement-effect-queued' | 'movement-effect-resolved';
+      sourceId: string;
+    }
   | { type: 'unit-left-board'; unitId: string; zoneId: string }
   | {
       type: 'legend-effect-queued' | 'legend-effect-resolved';

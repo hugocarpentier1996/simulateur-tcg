@@ -8,9 +8,14 @@ export function summonToken(
   ownerId: string,
   destinationId: string,
   definitionId: string,
+  placement: 'controlled' | 'here' = 'controlled',
 ): Extract<ActionResult, { ok: true }> {
   const events: Extract<ActionResult, { ok: true }>['events'] = [];
-  if (!canSummonAt(state, ownerId, destinationId))
+  if (
+    placement === 'here'
+      ? !state.battlefields.some((f) => f.zoneId === destinationId)
+      : !canSummonAt(state, ownerId, destinationId)
+  )
     return { ok: true, state, events };
   const definition = state.unitDefinitions?.find((d) => d.id === definitionId);
   if (!definition) throw new Error('Définition du jeton absente du catalogue.');

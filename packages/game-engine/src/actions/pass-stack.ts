@@ -1,3 +1,4 @@
+import { resolveMovementEffect } from '../effects/movement-triggers.js';
 import { resolveReadyRunes } from '../effects/end-runes.js';
 import { resolveLegendDraw } from '../effects/legend-draw.js';
 import type { ActionResult, GameState } from '../types.js';
@@ -36,17 +37,19 @@ export function passStack(state: GameState, playerId: string): ActionResult {
   const resolved =
     'card' in entry
       ? resolveSpell(popped, entry)
-      : entry.kind === 'death'
-        ? resolveDeathEffect(popped, entry)
-        : entry.kind === 'unit-play'
-          ? resolveUnitPlay(popped, entry)
-          : entry.kind === 'return-spell'
-            ? resolveReturnSpell(popped, entry)
-            : entry.kind === 'legend-draw'
-              ? resolveLegendDraw(popped, entry)
-              : entry.kind === 'legend-ready-runes'
-                ? resolveReadyRunes(popped, entry)
-                : resolveSpellPlay(popped, entry);
+      : entry.kind === 'movement'
+        ? resolveMovementEffect(popped, entry)
+        : entry.kind === 'death'
+          ? resolveDeathEffect(popped, entry)
+          : entry.kind === 'unit-play'
+            ? resolveUnitPlay(popped, entry)
+            : entry.kind === 'return-spell'
+              ? resolveReturnSpell(popped, entry)
+              : entry.kind === 'legend-draw'
+                ? resolveLegendDraw(popped, entry)
+                : entry.kind === 'legend-ready-runes'
+                  ? resolveReadyRunes(popped, entry)
+                  : resolveSpellPlay(popped, entry);
   const next = resolved.state;
   if (next.pendingDeaths)
     return {

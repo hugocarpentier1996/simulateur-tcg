@@ -636,6 +636,14 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
 
 - Validation : pnpm check, 365 tests et build réussis.
 
+### Origins fournée 2 : Noxian Drummer — 28 octobre 2026
+
+- Déclencheurs de mouvement mutualisés, empilés avec fenêtre de réaction ; les mises en jeu ne les déclenchent pas.
+- Invocation « here » obligatoire sur le champ annoncé, même adverse et même après Gust sur la source.
+- Réutilise le jeton Recrue et le résolveur d'invocation commun.
+
+- Validation : pnpm check, 368 tests et build réussis.
+
 ## Limites à conserver lors d'une reprise
 
 - Première capacité de mort implémentée pour les morts de combat et hors combat. Autres déclencheurs,

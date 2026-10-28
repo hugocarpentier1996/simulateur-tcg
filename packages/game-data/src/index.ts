@@ -79,3 +79,5 @@ export { cannonBarrage } from './ogn/cannon-barrage.js';
 export { morbidReturn } from './ogn/morbid-return.js';
 
 export { sneakyDeckhand } from './ogn/sneaky-deckhand.js';
+
+export { noxianDrummer } from './ogn/noxian-drummer.js';
