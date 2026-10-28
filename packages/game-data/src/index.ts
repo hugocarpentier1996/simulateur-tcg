@@ -71,3 +71,5 @@ export { gust } from './ogn/gust.js';
 export { stupefy } from './ogn/stupefy.js';
 
 export { enGarde } from './ogn/en-garde.js';
+
+export { backToBack } from './ogn/back-to-back.js';

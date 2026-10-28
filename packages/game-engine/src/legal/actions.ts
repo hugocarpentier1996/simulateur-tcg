@@ -109,7 +109,9 @@ function* candidates(
               yield { ...base, tokenDestinations };
           } else if (
             spell.effects.some(
-              (e) => e.type === 'move-up-to-two-allies-to-base',
+              (e) =>
+                e.type === 'move-up-to-two-allies-to-base' ||
+                e.type === 'boost-selected-allies',
             )
           ) {
             const ids = state.units

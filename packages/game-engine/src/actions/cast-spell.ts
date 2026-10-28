@@ -46,6 +46,21 @@ export function castSpell(
     !validFlashSelection(state, action.playerId, action.selectedUnitIds)
   )
     return { ok: false, reason: 'INVALID_TARGET' };
+  const selection = definition.effects.find(
+    (e) => e.type === 'boost-selected-allies',
+  );
+  if (
+    selection &&
+    (action.selectedUnitIds?.length !== selection.count ||
+      new Set(action.selectedUnitIds).size !== selection.count ||
+      action.selectedUnitIds.some(
+        (id) =>
+          !state.units.some(
+            (u) => u.id === id && u.ownerId === action.playerId,
+          ),
+      ))
+  )
+    return { ok: false, reason: 'INVALID_TARGET' };
   const target = spellTarget(
     state,
     definition,

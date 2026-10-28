@@ -51,11 +51,16 @@ export function resolveSpell(
       events.push(...moved.events);
       continue;
     }
-    if (effect.type === 'boost-allies') {
+    if (
+      effect.type === 'boost-allies' ||
+      effect.type === 'boost-selected-allies'
+    ) {
       state = {
         ...state,
         units: state.units.map((u) =>
-          u.ownerId === entry.casterId
+          u.ownerId === entry.casterId &&
+          (effect.type === 'boost-allies' ||
+            entry.selectedUnitIds?.includes(u.id))
             ? {
                 ...u,
                 temporaryEffects: [

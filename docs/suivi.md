@@ -608,6 +608,13 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
 
 - Validation : pnpm check, 356 tests et build réussis.
 
+### Origins fournée 2 : Back to Back — 28 octobre 2026
+
+- Sélection obligatoire de deux alliés distincts au lancement, bonus indépendants à la résolution.
+- Actions légales raccordées ; tests de sélection et de cible disparue.
+
+- Validation : pnpm check, 359 tests et build réussis.
+
 ## Limites à conserver lors d'une reprise
 
 - Première capacité de mort implémentée pour les morts de combat et hors combat. Autres déclencheurs,

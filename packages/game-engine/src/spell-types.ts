@@ -22,6 +22,12 @@ export interface SpellBlueprint {
         readonly definitionId: string;
         readonly count: number;
       }
+    | {
+        readonly type: 'boost-selected-allies';
+        readonly count: 2;
+        readonly amount: number;
+        readonly duration: 'end-of-turn';
+      }
     | { readonly type: 'move-up-to-two-allies-to-base' }
     | {
         readonly type: 'boost-allies';
