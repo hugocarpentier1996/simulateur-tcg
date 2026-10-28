@@ -21,7 +21,7 @@ Les images restent des URL de métadonnées ; les fichiers bruts ne sont pas pub
 - [x] Gust — ogn-169-298
 - [x] Lecturing Yordle — ogn-087-298
 - [x] Maddened Marauder — ogn-191-298
-- [ ] Meditation — ogn-048-298
+- [x] Meditation — ogn-048-298
 - [x] Mega-Mech — ogn-088-298
 - [x] Mobilize — ogn-134-298
 - [x] Morbid Return — ogn-170-298

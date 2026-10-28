@@ -54,7 +54,12 @@ export type SpellEffect =
       readonly amount: number;
       readonly duration: 'end-of-turn';
     }
-  | { readonly type: 'draw'; readonly count: number; readonly player: 'caster' }
+  | {
+      readonly type: 'draw';
+      readonly countIfExhausted?: number;
+      readonly count: number;
+      readonly player: 'caster';
+    }
   | { readonly type: 'stun'; readonly duration: 'end-of-turn' };
 
 /** Données imprimées du sort, sans Might. Coût payé au lancement, effets à la résolution.
@@ -67,6 +72,7 @@ export interface SpellDefinition {
   readonly id: string;
   readonly name: string;
   readonly type: 'spell';
+  readonly optionalExhaustAlly?: boolean;
   readonly timing: SpellTiming;
   readonly cost: CardCost;
   readonly target:

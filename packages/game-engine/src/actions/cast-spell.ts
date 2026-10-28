@@ -103,6 +103,17 @@ export function castSpell(
       ))
   )
     return { ok: false, reason: 'INVALID_SUMMON_DESTINATIONS' };
+  if (
+    action.exhaustUnitId &&
+    (!definition.optionalExhaustAlly ||
+      !state.units.some(
+        (u) =>
+          u.id === action.exhaustUnitId &&
+          u.ownerId === action.playerId &&
+          u.ready,
+      ))
+  )
+    return { ok: false, reason: 'INVALID_ADDITIONAL_COST' };
   const paid = payCost(
     state,
     action.playerId,
@@ -134,6 +145,13 @@ export function castSpell(
     ok: true,
     state: {
       ...paid.state,
+      ...(action.exhaustUnitId
+        ? {
+            units: paid.state.units.map((u) =>
+              u.id === action.exhaustUnitId ? { ...u, ready: false } : u,
+            ),
+          }
+        : {}),
       cards: paid.state.cards.filter((c) => c.id !== card.id),
       stack: {
         entries: [
@@ -142,6 +160,7 @@ export function castSpell(
             ...(action.tokenDestinations
               ? { tokenDestinations: [...action.tokenDestinations] }
               : {}),
+            ...(action.exhaustUnitId ? { exhaustedForCost: true } : {}),
             card,
             definition,
             casterId: action.playerId,

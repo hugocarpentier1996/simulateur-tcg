@@ -110,7 +110,10 @@ export function resolveSpell(
       continue;
     }
     if (effect.type === 'draw') {
-      for (let i = 0; i < effect.count && !state.result; i++) {
+      const count = entry.exhaustedForCost
+        ? (effect.countIfExhausted ?? effect.count)
+        : effect.count;
+      for (let i = 0; i < count && !state.result; i++) {
         const drawn = drawCardForPlayer(state, entry.casterId);
         state = drawn.state;
         events.push(...drawn.events);

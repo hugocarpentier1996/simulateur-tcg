@@ -4,6 +4,7 @@ import type { CardInstance, UnitBlueprint } from './types.js';
 export interface SpellBlueprint {
   readonly id: string;
   readonly type: 'spell';
+  readonly optionalExhaustAlly?: boolean;
   readonly timing: 'normal' | 'action' | 'reaction';
   readonly cost: UnitBlueprint['cost'];
   readonly target:
@@ -69,6 +70,7 @@ export interface SpellBlueprint {
     | { readonly type: 'stun'; readonly duration: 'end-of-turn' }
     | {
         readonly type: 'draw';
+        readonly countIfExhausted?: number;
         readonly count: number;
         readonly player: 'caster';
       }
@@ -78,6 +80,8 @@ export interface SpellBlueprint {
 /** Sort payé en attente : cible et destination choisies au lancement, revérifiées à la résolution.
  * targetId désigne une unité, un champ, ou le lanceur pour un effet global sans cible individuelle. */
 export interface SpellEntry {
+  /** Coût supplémentaire déjà payé ; reste vrai si l’unité quitte ensuite le terrain. */
+  exhaustedForCost?: boolean;
   /** Copie des destinations annoncées pour les Recrues. */
   tokenDestinations?: readonly string[];
   card: CardInstance;

@@ -298,6 +298,7 @@ export type GameAction =
   | { type: 'mulligan'; playerId: string; cardIds: readonly string[] }
   | {
       type: 'cast-spell';
+      exhaustUnitId?: string;
       /** Une destination par Recrue, choisie à l'empilement ; répétitions autorisées. */
       tokenDestinations?: readonly string[];
       playerId: string;

@@ -764,6 +764,13 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
 
 - Validation : pnpm check, 400 tests et build réussis.
 
+### Origins fournée 3 : Meditation — 28 octobre 2026
+
+- Coût facultatif : Tap un allié Ready dès le lancement pour piocher deux au lieu d'une.
+- Choix inclus aux actions légales, paiement atomique ; bonus conservé si l'unité quitte le terrain en réaction.
+
+- Validation : pnpm check, 403 tests et build réussis.
+
 ## Limites à conserver lors d'une reprise
 
 - Première capacité de mort implémentée pour les morts de combat et hors combat. Autres déclencheurs,

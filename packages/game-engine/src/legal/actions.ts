@@ -17,9 +17,9 @@ export function getLegalActions(
   playerId: string,
 ): GameAction[] {
   if (state.result || !state.players.some((p) => p.id === playerId)) return [];
-  return [...candidates(state, playerId)].filter(
-    (action) => act(state, action).ok,
-  );
+  return [...candidates(state, playerId)]
+    .flatMap((action) => optionalCosts(state, action))
+    .filter((action) => act(state, action).ok);
 }
 
 function* candidates(
@@ -197,4 +197,21 @@ function* tokenPlacements(
   }
   for (const zone of zones)
     yield* tokenPlacements(zones, remaining - 1, [...prefix, zone]);
+}
+
+/** Coût facultatif : une variante par allié Ready, puis validation atomique par act. */
+function optionalCosts(state: GameState, action: GameAction): GameAction[] {
+  if (action.type !== 'cast-spell') return [action];
+  const card = state.cards.find((c) => c.id === action.cardId);
+  if (
+    !state.spellDefinitions?.find((d) => d.id === card?.definitionId)
+      ?.optionalExhaustAlly
+  )
+    return [action];
+  return [
+    action,
+    ...state.units
+      .filter((u) => u.ownerId === action.playerId && u.ready)
+      .map((u) => ({ ...action, exhaustUnitId: u.id })),
+  ];
 }
