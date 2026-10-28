@@ -19,11 +19,7 @@ export function queueMovementEffects(
 ): Extract<ActionResult, { ok: true }> {
   const entries: MovementEntry[] = [];
   for (const event of events) {
-    if (
-      event.type !== 'unit-moved' &&
-      event.type !== 'unit-retreated' &&
-      event.type !== 'unit-recalled'
-    )
+    if (event.type !== 'unit-moved' && event.type !== 'unit-retreated')
       continue;
     if (
       events.some(

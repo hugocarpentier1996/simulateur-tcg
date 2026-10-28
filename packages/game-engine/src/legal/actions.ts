@@ -73,7 +73,12 @@ function* candidates(
       const payment = findPayment(state, playerId, unit.cost);
       if (payment)
         for (const zone of destinations)
-          for (const onPlayTargetId of playTargetChoices(state, card.id, unit))
+          for (const onPlayTargetId of playTargetChoices(
+            state,
+            card.id,
+            unit,
+            zone.id,
+          ))
             for (const returnSpellId of unit.onPlayReturnSpell
               ? recoverableSpells(state, playerId).length
                 ? recoverableSpells(state, playerId)

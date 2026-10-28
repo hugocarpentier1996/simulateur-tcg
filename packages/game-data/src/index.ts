@@ -108,3 +108,5 @@ export { stormclawUrsine } from './ogn/stormclaw-ursine.js';
 export { lecturingYordle } from './ogn/lecturing-yordle.js';
 
 export { firstMate } from './ogn/first-mate.js';
+
+export { maddenedMarauder } from './ogn/maddened-marauder.js';

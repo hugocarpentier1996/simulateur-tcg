@@ -1,3 +1,4 @@
+import { resolveFlash } from './flash.js';
 import { drawCardForPlayer } from '../turn/draw.js';
 import type { ActionResult, GameState, UnitBlueprint } from '../types.js';
 import { channelForPlayer } from '../turn/supplies.js';
@@ -8,13 +9,32 @@ export interface PlayEffectEntry {
   ownerId: string;
   effect:
     | NonNullable<UnitBlueprint['onPlayEffect']>
-    | { type: 'ready-other'; targetId?: string };
+    | { type: 'ready-other'; targetId?: string }
+    | { type: 'move-to-base'; targetId?: string };
 }
 /** Capacité de mise en jeu -> opération commune, indépendante de la survie de la source. */
 export function resolvePlayEffect(
   state: GameState,
   entry: PlayEffectEntry,
 ): Extract<ActionResult, { ok: true }> {
+  if (entry.effect.type === 'move-to-base') {
+    const targetId = entry.effect.targetId;
+    const unit = state.units.find(
+      (u) =>
+        u.id === targetId &&
+        state.battlefields.some((f) => f.zoneId === u.zoneId),
+    );
+    const moved = unit
+      ? resolveFlash(state, unit.ownerId, [unit.id])
+      : { ok: true as const, state, events: [] };
+    return {
+      ...moved,
+      events: [
+        ...moved.events,
+        { type: 'unit-play-effect-resolved', sourceId: entry.sourceId },
+      ],
+    };
+  }
   if (entry.effect.type === 'ready-other') {
     const targetId = entry.effect.targetId;
     return {

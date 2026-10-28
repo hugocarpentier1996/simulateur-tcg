@@ -53,11 +53,21 @@ export function playUnit(
     return { ok: false, reason: 'INVALID_SUMMON_DESTINATION' };
   const entries: (ReturnSpellEntry | UnitPlayEntry | PlayEffectEntry)[] = [];
   if (
-    !playTargetChoices(state, card.id, definition).includes(
+    !playTargetChoices(state, card.id, definition, destinationId).includes(
       action.onPlayTargetId,
     )
   )
     return { ok: false, reason: 'INVALID_TARGET' };
+  if (definition.onPlayMoveToBase)
+    entries.push({
+      kind: 'play-effect',
+      sourceId: card.id,
+      ownerId: card.ownerId,
+      effect: {
+        type: 'move-to-base',
+        ...(action.onPlayTargetId ? { targetId: action.onPlayTargetId } : {}),
+      },
+    });
   if (definition.onPlayReadyOther)
     entries.push({
       kind: 'play-effect',

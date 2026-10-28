@@ -20,7 +20,7 @@ Les images restent des URL de métadonnées ; les fichiers bruts ne sont pas pub
 - [x] First Mate — ogn-132-298
 - [x] Gust — ogn-169-298
 - [x] Lecturing Yordle — ogn-087-298
-- [ ] Maddened Marauder — ogn-191-298
+- [x] Maddened Marauder — ogn-191-298
 - [ ] Meditation — ogn-048-298
 - [x] Mega-Mech — ogn-088-298
 - [x] Mobilize — ogn-134-298

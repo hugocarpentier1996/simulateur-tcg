@@ -734,6 +734,14 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
 
 - Validation : pnpm check, 392 tests et build réussis.
 
+### Origins fournée 3 : Maddened Marauder — 28 octobre 2026
+
+- Tank et choix de déplacement à l'empilement, y compris lui-même s'il entre sur un champ.
+- Réutilise Flash pour conserver dégâts/Ready et libérer le contrôle ; cible revérifiée sur battlefield.
+- Correction testée : Highlander est un rappel, ne déclenche pas Merchant.
+
+- Validation : pnpm check, 395 tests et build réussis.
+
 ## Limites à conserver lors d'une reprise
 
 - Première capacité de mort implémentée pour les morts de combat et hors combat. Autres déclencheurs,
