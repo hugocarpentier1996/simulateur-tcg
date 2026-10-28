@@ -434,6 +434,26 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
   Firestorm les ennemis du champ choisi. Aucun changement du moteur ni nouveau test.
 - Vérification : `pnpm check` réussi, 314 tests et build.
 
+### Représentation des côtés et dégâts de zone — 28 octobre 2026
+
+- API publique `BattlefieldSide` (battlefieldId + playerId), `BattlefieldArea`
+  (champ entier ou côté), `getBattlefieldSides`, `getUnitLocation` et
+  `unitsInBattlefieldAreas`. Côtés présents même vides, indépendants du contrôleur.
+- Représentation dérivée de zoneId + ownerId : pas de doublon d'état persistant,
+  migration ou identifiant de côté concaténé. Le battlefield parent demeure la
+  référence des mouvements, combats, invocations, contrôle et score. En 1v1 une unité
+  occupe le côté de son propriétaire ; ni équipes ni position sur le côté adverse.
+- `dealAreaDamage` reçoit une union de champs/côtés explicites et une source typée
+  sort/capacité. Déduplique les unités, applique les bonus avant les morts ; l'appelant
+  conserve le traitement des morts. Champs disparus et côtés inconnus ignorés.
+- Firestorm utilise les côtés ennemis du champ choisi ; Tibbers les champs entiers.
+  Les dégâts individuels, de combat et de duel gardent leurs traitements distincts.
+- TDD : cinq échecs avant ajout de l'API, puis tests des côtés, changement de contrôle,
+  déplacements en combat, chevauchement de portées et extensibilité des joueurs.
+  Tests existants Firestorm/Tibbers réutilisés pour la compatibilité.
+- Limite : représentation moteur et API, pas de modification de l'affichage du plateau.
+- Validation complète : `pnpm check`, 319 tests et build réussis.
+
 ## Limites à conserver lors d'une reprise
 
 - Première capacité de mort implémentée pour les morts de combat et hors combat. Autres déclencheurs,

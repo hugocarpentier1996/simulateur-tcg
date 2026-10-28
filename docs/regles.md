@@ -215,3 +215,8 @@ battlefield. Cette distinction doit pouvoir servir à la portée des effets futu
 Les dégâts de zone peuvent avoir un traitement distinct des dégâts ciblant une unité,
 en indiquant la ou les zones concernées : battlefield entier ou côté concerné.
 Les règles de dégâts, bonus et mort restent celles applicables à la source de l'effet.
+
+Représentation moteur : un côté est référencé par le battlefield et le joueur
+(`BattlefieldSide`). La position structurée est dérivée de la zone parente et du
+propriétaire de l'unité ; le contrôle du battlefield ne change pas l'identité des côtés.
+Une union de plusieurs zones décrit la portée d'un même effet de dégâts de zone.

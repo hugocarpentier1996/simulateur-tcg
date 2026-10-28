@@ -39,6 +39,7 @@ export interface GameState {
   randomState?: number;
   /** Absent pendant la partie ; une fois fixé, bloque toute nouvelle action. */
   result?: GameResult;
+  /** Zones parentes ; les côtés des battlefields sont des BattlefieldSide dérivés (champ + joueur). */
   zones: { id: string; kind: ZoneKind; ownerId?: string }[];
   units: UnitState[];
   /** Catalogue de confiance fourni par le serveur, jamais par une intention client. */

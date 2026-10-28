@@ -1,5 +1,5 @@
 import type { ActionResult, GameState } from '../types.js';
-import { spellAbilityDamageBonus } from './damage-bonus.js';
+import { dealAreaDamage } from './area-damage.js';
 import { settleLethalUnits } from './lethal-units.js';
 
 /** Capacité de Tibbers : indépendante de sa source après déclenchement, sans cible choisie. */
@@ -17,27 +17,21 @@ export function resolveUnitPlay(
   state: GameState,
   entry: UnitPlayEntry,
 ): Extract<ActionResult, { ok: true }> {
-  const amount = entry.amount + spellAbilityDamageBonus(state, entry.ownerId);
-  const targets = state.units.filter((u) =>
-    state.zones.some((z) => z.id === u.zoneId && z.kind === 'battlefield'),
+  const damaged = dealAreaDamage(
+    state,
+    { kind: 'ability', sourceId: entry.sourceId, playerId: entry.ownerId },
+    state.battlefields.map((f) => ({
+      kind: 'battlefield',
+      battlefieldId: f.zoneId,
+    })),
+    entry.amount,
   );
-  const ids = new Set(targets.map((u) => u.id));
-  const settled = settleLethalUnits({
-    ...state,
-    units: state.units.map((u) =>
-      ids.has(u.id) ? { ...u, damage: u.damage + amount } : u,
-    ),
-  });
+  const settled = settleLethalUnits(damaged.state);
   return {
     ok: true,
     state: settled.state,
     events: [
-      ...targets.map((u) => ({
-        type: 'ability-damage' as const,
-        sourceId: entry.sourceId,
-        unitId: u.id,
-        amount,
-      })),
+      ...damaged.events,
       ...settled.events,
       { type: 'unit-play-effect-resolved', sourceId: entry.sourceId },
     ],

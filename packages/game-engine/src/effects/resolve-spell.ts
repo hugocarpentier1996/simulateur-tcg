@@ -1,3 +1,5 @@
+import { getBattlefieldSides } from '../battlefield-areas.js';
+import { dealAreaDamage } from './area-damage.js';
 import type { ActionResult, GameEvent, GameState } from '../types.js';
 import type { SpellEntry } from '../spell-types.js';
 import {
@@ -74,14 +76,13 @@ export function resolveSpell(
     }
     if (effect.type === 'damage-enemies-at-battlefield') {
       if (!validBattlefieldTarget(state, entry.targetId)) continue;
-      const targets = state.units.filter(
-        (u) => u.zoneId === entry.targetId && u.ownerId !== entry.casterId,
+      const areas = getBattlefieldSides(state, entry.targetId).filter(
+        (side) => side.playerId !== entry.casterId,
       );
-      const damaged = dealSpellDamage(
+      const damaged = dealAreaDamage(
         state,
-        entry.card.id,
-        entry.casterId,
-        targets,
+        { kind: 'spell', cardId: entry.card.id, playerId: entry.casterId },
+        areas,
         effect.amount,
       );
       state = damaged.state;

@@ -25,3 +25,16 @@ export type {
   PaymentPlan,
   DamageAllocation,
 } from './types.js';
+
+export {
+  getBattlefieldSides,
+  getUnitLocation,
+  unitsInBattlefieldAreas,
+} from './battlefield-areas.js';
+export type {
+  BattlefieldSide,
+  BattlefieldArea,
+  UnitLocation,
+} from './battlefield-areas.js';
+export { dealAreaDamage } from './effects/area-damage.js';
+export type { AreaDamageSource } from './effects/area-damage.js';
