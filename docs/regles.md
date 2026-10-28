@@ -225,3 +225,7 @@ Les légendes sont toujours présentes, sans points de vie ; leurs passifs reste
 même Tap. Les futures capacités activées pourront demander Tap et un coût supplémentaire.
 Dark Child : choix des runes avant les réactions, puis passage au tour suivant après la pile.
 Might of Demacia : seuil de quatre unités vérifié à la conquête et à la résolution.
+
+Pour les unités autorisées sur un « open battlefield », le champ doit être entièrement
+vide ; base propre et champs contrôlés restent autorisés. La réduction d’énergie
+d’Eager Apprentice ne modifie pas le coût imprimé utilisé par Lux et Lady of Luminosity.

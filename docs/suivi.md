@@ -498,6 +498,13 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
   Aucune capacité activée de légende n'a été inventée pour ces quatre passifs.
 - `pnpm check` : 334 tests et build réussis.
 
+### Origins : Daring Poro — 28 octobre 2026
+
+- Définition issue du JSON local, 2 Énergie, 2 Might, Assault 1. Réutilise le moteur existant.
+- TDD : refus UNKNOWN_UNIT_DEFINITION observé puis scénario de mise en jeu validé.
+- Suivi du lot autorisé : docs/cartes-origins.md. Hors decks de démo.
+- Validation : pnpm check, 335 tests et build réussis.
+
 ## Limites à conserver lors d'une reprise
 
 - Première capacité de mort implémentée pour les morts de combat et hors combat. Autres déclencheurs,
