@@ -1,5 +1,6 @@
+import type { PrintedMetadata } from './printed-metadata.js';
 /** Rune imprimée : couleur de Power ; le moteur gère Tap, Channel et recyclage. */
-export interface RuneDefinition {
+export interface RuneDefinition extends PrintedMetadata {
   readonly id: string;
   readonly name: string;
   readonly type: 'rune';

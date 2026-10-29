@@ -1,0 +1,369 @@
+/** Métadonnées imprimées uniquement ; aucune règle de résolution.
+ * Tags : galerie officielle du 29/10/2026. Images : imageLocale des JSON locaux.
+ * IDs inconnus (cartes de test) : métadonnées vides, sans image inventée. */
+export interface PrintedMetadata {
+  readonly displayName?: string;
+  readonly tags?: readonly string[];
+  readonly imageLocal?: string;
+}
+const entries: Record<string, PrintedMetadata> = {
+  'ogn-206-298': {
+    displayName: 'Back to Back',
+    tags: [],
+    imageLocal: '/cards/ogn-206-298.png',
+  },
+  'ogn-126-298': {
+    displayName: 'Body Rune',
+    tags: [],
+    imageLocal: '/cards/ogn-126-298.png',
+  },
+  'ogn-042-298': {
+    displayName: 'Calm Rune',
+    tags: [],
+    imageLocal: '/cards/ogn-042-298.png',
+  },
+  'ogn-127-298': {
+    displayName: 'Cannon Barrage',
+    tags: [],
+    imageLocal: '/cards/ogn-127-298.png',
+  },
+  'ogn-166-298': {
+    displayName: 'Chaos Rune',
+    tags: [],
+    imageLocal: '/cards/ogn-166-298.png',
+  },
+  'ogn-129-298': {
+    displayName: 'Confront',
+    tags: [],
+    imageLocal: '/cards/ogn-129-298.png',
+  },
+  'ogn-130-298': {
+    displayName: 'Crackshot Corsair',
+    tags: ['Pirate', 'Bilgewater'],
+    imageLocal: '/cards/ogn-130-298.png',
+  },
+  'ogn-210-298': {
+    displayName: 'Daring Poro',
+    tags: ['Poro'],
+    imageLocal: '/cards/ogn-210-298.png',
+  },
+  'ogn-005-298': {
+    displayName: 'Disintegrate',
+    tags: [],
+    imageLocal: '/cards/ogn-005-298.png',
+  },
+  'ogn-131-298': {
+    displayName: 'Dune Drake',
+    tags: ['Dragon', 'Shurima'],
+    imageLocal: '/cards/ogn-131-298.png',
+  },
+  'ogn-084-298': {
+    displayName: 'Eager Apprentice',
+    tags: ['Piltover'],
+    imageLocal: '/cards/ogn-084-298.png',
+  },
+  'ogn-046-298': {
+    displayName: 'En Garde',
+    tags: [],
+    imageLocal: '/cards/ogn-046-298.png',
+  },
+  'ogn-211-298': {
+    displayName: 'Faithful Manufactor',
+    tags: ['Piltover'],
+    imageLocal: '/cards/ogn-211-298.png',
+  },
+  'ogn-085-298': {
+    displayName: 'Falling Comet',
+    tags: [],
+    imageLocal: '/cards/ogn-085-298.png',
+  },
+  'ogn-132-298': {
+    displayName: 'First Mate',
+    tags: ['Pirate', 'Bilgewater'],
+    imageLocal: '/cards/ogn-132-298.png',
+  },
+  'ogn-279-298': {
+    displayName: 'Fortified Position',
+    tags: [],
+    imageLocal: '/cards/ogn-279-298.png',
+  },
+  'ogn-007-298': {
+    displayName: 'Fury Rune',
+    tags: [],
+    imageLocal: '/cards/ogn-007-298.png',
+  },
+  'ogn-169-298': {
+    displayName: 'Gust',
+    tags: [],
+    imageLocal: '/cards/ogn-169-298.png',
+  },
+  'ogn-087-298': {
+    displayName: 'Lecturing Yordle',
+    tags: ['Yordle', 'Bandle City'],
+    imageLocal: '/cards/ogn-087-298.png',
+  },
+  'ogn-191-298': {
+    displayName: 'Maddened Marauder',
+    tags: ['Pirate', 'Bilgewater'],
+    imageLocal: '/cards/ogn-191-298.png',
+  },
+  'ogn-048-298': {
+    displayName: 'Meditation',
+    tags: [],
+    imageLocal: '/cards/ogn-048-298.png',
+  },
+  'ogn-088-298': {
+    displayName: 'Mega-Mech',
+    tags: ['Mech', 'Bandle City'],
+    imageLocal: '/cards/ogn-088-298.png',
+  },
+  'ogn-089-298': {
+    displayName: 'Mind Rune',
+    tags: [],
+    imageLocal: '/cards/ogn-089-298.png',
+  },
+  'ogn-134-298': {
+    displayName: 'Mobilize',
+    tags: [],
+    imageLocal: '/cards/ogn-134-298.png',
+  },
+  'ogn-170-298': {
+    displayName: 'Morbid Return',
+    tags: [],
+    imageLocal: '/cards/ogn-170-298.png',
+  },
+  'ogn-142-298': {
+    displayName: 'Mountain Drake',
+    tags: ['Dragon'],
+    imageLocal: '/cards/ogn-142-298.png',
+  },
+  'ogn-171-298': {
+    displayName: 'Mystic Poro',
+    tags: ['Poro'],
+    imageLocal: '/cards/ogn-171-298.png',
+  },
+  'ogn-222-298': {
+    displayName: 'Noxian Drummer',
+    tags: ['Trifarian', 'Noxus'],
+    imageLocal: '/cards/ogn-222-298.png',
+  },
+  'ogn-214-298': {
+    displayName: 'Order Rune',
+    tags: [],
+    imageLocal: '/cards/ogn-214-298.png',
+  },
+  'ogn-215-298': {
+    displayName: 'Petty Officer',
+    tags: ['Pirate', 'Bilgewater'],
+    imageLocal: '/cards/ogn-215-298.png',
+  },
+  'ogn-049-298': {
+    displayName: 'Playful Phantom',
+    tags: ['Spirit', 'Shadow Isles'],
+    imageLocal: '/cards/ogn-049-298.png',
+  },
+  'ogn-013-298': {
+    displayName: 'Pouty Poro',
+    tags: ['Poro'],
+    imageLocal: '/cards/ogn-013-298.png',
+  },
+  'ogn-103-298': {
+    displayName: 'Ravenbloom Student',
+    tags: ['Noxus'],
+    imageLocal: '/cards/ogn-103-298.png',
+  },
+  'ogn-174-298': {
+    displayName: 'Sai Scout',
+    tags: ['Shurima'],
+    imageLocal: '/cards/ogn-174-298.png',
+  },
+  'ogn-105-298': {
+    displayName: 'Singularity',
+    tags: [],
+    imageLocal: '/cards/ogn-105-298.png',
+  },
+  'ogn-176-298': {
+    displayName: 'Sneaky Deckhand',
+    tags: ['Pirate', 'Bilgewater'],
+    imageLocal: '/cards/ogn-176-298.png',
+  },
+  'ogn-052-298': {
+    displayName: 'Stalwart Poro',
+    tags: ['Poro'],
+    imageLocal: '/cards/ogn-052-298.png',
+  },
+  'ogn-288-298': {
+    displayName: 'Startipped Peak',
+    tags: [],
+    imageLocal: '/cards/ogn-288-298.png',
+  },
+  'ogn-137-298': {
+    displayName: 'Stormclaw Ursine',
+    tags: ['Freljord'],
+    imageLocal: '/cards/ogn-137-298.png',
+  },
+  'ogn-095-298': {
+    displayName: 'Stupefy',
+    tags: [],
+    imageLocal: '/cards/ogn-095-298.png',
+  },
+  'ogn-185-298': {
+    displayName: 'Traveling Merchant',
+    tags: ['Bilgewater'],
+    imageLocal: '/cards/ogn-185-298.png',
+  },
+  'ogn-294-298': {
+    displayName: 'Trifarian War Camp',
+    tags: [],
+    imageLocal: '/cards/ogn-294-298.png',
+  },
+  'ogn-219-298': {
+    displayName: 'Vanguard Sergeant',
+    tags: ['Elite', 'Demacia'],
+    imageLocal: '/cards/ogn-219-298.png',
+  },
+  'ogn-296-298': {
+    displayName: 'Void Gate',
+    tags: [],
+    imageLocal: '/cards/ogn-296-298.png',
+  },
+  'ogn-055-298': {
+    displayName: 'Wielder of Water',
+    tags: ['Ionia'],
+    imageLocal: '/cards/ogn-055-298.png',
+  },
+  'ogs-010-024': {
+    displayName: 'Annie',
+    tags: ['Annie', 'Noxus'],
+    imageLocal: '/cards/ogs-010-024.png',
+  },
+  'ogs-001-024': {
+    displayName: 'Annie',
+    tags: ['Annie', 'Noxus'],
+    imageLocal: '/cards/ogs-001-024.png',
+  },
+  'ogs-012-024': {
+    displayName: 'Blast of Power',
+    tags: [],
+    imageLocal: '/cards/ogs-012-024.png',
+  },
+  'ogs-017-024': {
+    displayName: 'Dark Child',
+    tags: ['Annie'],
+    imageLocal: '/cards/ogs-017-024.png',
+  },
+  'ogs-024-024': {
+    displayName: 'Decisive Strike',
+    tags: ['Garen'],
+    imageLocal: '/cards/ogs-024-024.png',
+  },
+  'ogs-022-024': {
+    displayName: 'Final Spark',
+    tags: ['Lux'],
+    imageLocal: '/cards/ogs-022-024.png',
+  },
+  'ogs-002-024': {
+    displayName: 'Firestorm',
+    tags: [],
+    imageLocal: '/cards/ogs-002-024.png',
+  },
+  'ogs-011-024': {
+    displayName: 'Flash',
+    tags: [],
+    imageLocal: '/cards/ogs-011-024.png',
+  },
+  'ogs-007-024': {
+    displayName: 'Garen',
+    tags: ['Elite', 'Garen', 'Demacia'],
+    imageLocal: '/cards/ogs-007-024.png',
+  },
+  'ogs-013-024': {
+    displayName: 'Garen',
+    tags: ['Elite', 'Garen', 'Demacia'],
+    imageLocal: '/cards/ogs-013-024.png',
+  },
+  'ogs-008-024': {
+    displayName: "Gentlemen's Duel",
+    tags: [],
+    imageLocal: '/cards/ogs-008-024.png',
+  },
+  'ogs-020-024': {
+    displayName: 'Highlander',
+    tags: ['Master Yi'],
+    imageLocal: '/cards/ogs-020-024.png',
+  },
+  'ogs-003-024': {
+    displayName: 'Incinerate',
+    tags: [],
+    imageLocal: '/cards/ogs-003-024.png',
+  },
+  'ogs-021-024': {
+    displayName: 'Lady of Luminosity',
+    tags: ['Lux'],
+    imageLocal: '/cards/ogs-021-024.png',
+  },
+  'ogs-006-024': {
+    displayName: 'Lux',
+    tags: ['Lux', 'Demacia'],
+    imageLocal: '/cards/ogs-006-024.png',
+  },
+  'ogs-014-024': {
+    displayName: 'Lux',
+    tags: ['Lux', 'Demacia'],
+    imageLocal: '/cards/ogs-014-024.png',
+  },
+  'ogs-009-024': {
+    displayName: 'Master Yi',
+    tags: ['Master Yi', 'Ionia'],
+    imageLocal: '/cards/ogs-009-024.png',
+  },
+  'ogs-004-024': {
+    displayName: 'Master Yi',
+    tags: ['Master Yi', 'Ionia'],
+    imageLocal: '/cards/ogs-004-024.png',
+  },
+  'ogs-023-024': {
+    displayName: 'Might of Demacia',
+    tags: ['Garen'],
+    imageLocal: '/cards/ogs-023-024.png',
+  },
+  'ogs-recruit-token': {
+    displayName: 'Recruit',
+    tags: ['Recruit'],
+    imageLocal: '/cards/ogs-recruit-token.png',
+  },
+  'ogs-015-024': {
+    displayName: 'Recruit the Vanguard',
+    tags: [],
+    imageLocal: '/cards/ogs-015-024.png',
+  },
+  'ogs-018-024': {
+    displayName: 'Tibbers',
+    tags: ['Annie'],
+    imageLocal: '/cards/ogs-018-024.png',
+  },
+  'ogs-016-024': {
+    displayName: 'Vanguard Attendant',
+    tags: ['Elite', 'Demacia'],
+    imageLocal: '/cards/ogs-016-024.png',
+  },
+  'ogs-019-024': {
+    displayName: 'Wuju Bladesman',
+    tags: ['Master Yi'],
+    imageLocal: '/cards/ogs-019-024.png',
+  },
+  'ogs-005-024': {
+    displayName: 'Zephyr Sage',
+    tags: ['Ionia', 'Bird'],
+    imageLocal: '/cards/ogs-005-024.png',
+  },
+};
+for (const [id, value] of Object.entries(entries))
+  entries[id] = Object.freeze({
+    ...value,
+    tags: Object.freeze([...(value.tags ?? [])]),
+  });
+Object.freeze(entries);
+export function printedMetadata(id: string): PrintedMetadata {
+  return entries[id] ?? {};
+}

@@ -1,5 +1,6 @@
+import { printedMetadata, type PrintedMetadata } from './printed-metadata.js';
 /** Champ permanent : sans coût ni Might. Ses effets s'appliquent au lieu désigné par son instance. */
-export interface BattlefieldDefinition {
+export interface BattlefieldDefinition extends PrintedMetadata {
   readonly id: string;
   readonly name: string;
   readonly type: 'battlefield';
@@ -14,5 +15,5 @@ export interface BattlefieldDefinition {
 export function defineBattlefield(
   input: BattlefieldDefinition,
 ): BattlefieldDefinition {
-  return Object.freeze({ ...input });
+  return Object.freeze({ ...printedMetadata(input.id), ...input });
 }

@@ -1,5 +1,7 @@
+import { printedMetadata } from '../printed-metadata.js';
 import type { RuneDefinition } from '../rune-definition.js';
 export const calmRune: RuneDefinition = Object.freeze({
+  ...printedMetadata('ogn-042-298'),
   id: 'ogn-042-298',
   name: 'Calm Rune',
   text: '',

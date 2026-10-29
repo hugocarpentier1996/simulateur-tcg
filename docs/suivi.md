@@ -869,3 +869,10 @@ de toutes les développer. À la reprise, vérifier les modifications locales av
 - Validation finale : pnpm check, 449 tests et build réussis.
 - Bilan : 69/69 entrées demandées raccordées au moteur. Quatre commits de champs, chacun validé et poussé.
 - Limite : les nouveaux champs ne sont pas encore ajoutés aux decks de démonstration ; les nouveaux choix sont exposés par act/getLegalActions, sans panneau UI dédié.
+
+### Métadonnées et images locales — 29 octobre 2026
+
+- Tags officiels importés par ID dans les définitions ; listes immuables, consultables par unitTags.
+- 70 images locales (69 cartes + Recruit), issues des chemins JSON, incluses au build.
+- TDD : tags absents, alias mutable et images manquantes constatés avant implémentation.
+- Provenance et limites : docs/metadonnees-cartes.md. Validation pnpm check.

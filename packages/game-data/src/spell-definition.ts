@@ -1,3 +1,4 @@
+import { printedMetadata, type PrintedMetadata } from './printed-metadata.js';
 import type { CardCost } from './unit-definition.js';
 
 /** Timing du lancement : les trois ouvrent une fenêtre de Réaction.
@@ -75,7 +76,7 @@ export type SpellEffect =
  * combatRole attacker désigne une unité du camp attaquant sur le champ du combat actif,
  * jamais un défenseur ni une autre unité du joueur attaquant restée dans sa base.
  * Le déplacement demandera également une destination légale au moteur. */
-export interface SpellDefinition {
+export interface SpellDefinition extends PrintedMetadata {
   readonly text?: string;
   readonly imageUrl?: string;
   readonly id: string;
@@ -133,7 +134,9 @@ export function defineSpell(input: SpellDefinition): SpellDefinition {
       throw new RangeError(`${input.id}: quantité de pioche invalide.`);
   }
   return Object.freeze({
+    ...printedMetadata(input.id),
     ...input,
+    ...(input.tags ? { tags: Object.freeze([...input.tags]) } : {}),
     cost: Object.freeze({
       ...(input.cost.powerChoice
         ? { powerChoice: Object.freeze([...input.cost.powerChoice]) }

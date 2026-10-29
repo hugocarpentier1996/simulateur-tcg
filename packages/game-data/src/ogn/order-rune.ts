@@ -1,5 +1,7 @@
+import { printedMetadata } from '../printed-metadata.js';
 import type { RuneDefinition } from '../rune-definition.js';
 export const orderRune: RuneDefinition = Object.freeze({
+  ...printedMetadata('ogn-214-298'),
   id: 'ogn-214-298',
   name: 'Order Rune',
   text: '',

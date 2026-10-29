@@ -1,3 +1,4 @@
+import { printedMetadata, type PrintedMetadata } from './printed-metadata.js';
 /** Coût imprimé : énergie incolore + quantités de Power indexées par couleur.
  * Une couleur absente coûte zéro. Le paiement et les réserves appartiennent au moteur. */
 export interface CardCost {
@@ -12,7 +13,7 @@ export interface CardCost {
 /** Données communes à tous les exemplaires d'une carte unité.
  * `id` correspond au `definitionId` de ses instances. Might 0 est une valeur valide.
  * Propriétaire, zone, Ready/Tap et dégâts appartiennent à chaque instance en partie. */
-export interface UnitDefinition {
+export interface UnitDefinition extends PrintedMetadata {
   /** Bonus continu par instance de dégâts des sorts et capacités du propriétaire. */
   /** Exception de mise en jeu : champ entièrement vide en plus des destinations ordinaires. */
   readonly canPlayToOpenBattlefield?: boolean;
@@ -122,7 +123,9 @@ export function defineUnit(input: UnitDefinition): UnitDefinition {
       );
   }
   return Object.freeze({
+    ...printedMetadata(input.id),
     ...input,
+    ...(input.tags ? { tags: Object.freeze([...input.tags]) } : {}),
     ...(input.onExpensiveSpell
       ? { onExpensiveSpell: Object.freeze({ ...input.onExpensiveSpell }) }
       : {}),

@@ -1,5 +1,6 @@
+import { printedMetadata, type PrintedMetadata } from './printed-metadata.js';
 /** Légende constante en zone dédiée ; pas d'attributs de combat ou de coût de pose. */
-export interface LegendDefinition {
+export interface LegendDefinition extends PrintedMetadata {
   readonly id: string;
   readonly name: string;
   readonly type: 'legend';
@@ -20,7 +21,9 @@ export interface LegendDefinition {
 /** Définition de confiance -> copie figée, dont les couleurs. */
 export function defineLegend(input: LegendDefinition): LegendDefinition {
   return Object.freeze({
+    ...printedMetadata(input.id),
     ...input,
+    ...(input.tags ? { tags: Object.freeze([...input.tags]) } : {}),
     ...(input.conquestDraw
       ? { conquestDraw: Object.freeze({ ...input.conquestDraw }) }
       : {}),

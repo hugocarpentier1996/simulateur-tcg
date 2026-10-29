@@ -151,6 +151,8 @@ export interface GameState {
 
 /** Définition structurelle acceptée par le moteur ; compatible avec le catalogue game-data. */
 export interface UnitBlueprint {
+  /** Tags imprimés (région, espèce, champion), distincts des capacités comme Shield. */
+  readonly tags?: readonly string[];
   /** Exception de mise en jeu : champ entièrement vide en plus des destinations ordinaires. */
   readonly canPlayToOpenBattlefield?: boolean;
   /** Déplacement vers un champ : invoquer ce jeton ici via la pile, sans condition de contrôle. */
