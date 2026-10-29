@@ -128,3 +128,5 @@ export { singularity } from './ogn/singularity.js';
 export { faithfulManufactor } from './ogn/faithful-manufactor.js';
 
 export { poutyPoro } from './ogn/pouty-poro.js';
+
+export { crackshotCorsair } from './ogn/crackshot-corsair.js';

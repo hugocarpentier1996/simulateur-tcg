@@ -1,3 +1,4 @@
+import type { AttackDamageTrigger } from './attack-targets.js';
 import type { ActionResult, GameEvent, GameState } from '../types.js';
 /** Condition « ennemi Ready ici » attachée au champ de l'attaque, vérifiée avant et après réactions. */
 export interface AttackEntry {
@@ -30,10 +31,9 @@ export function queueAttackEffects(
     before.showdown?.kind !== 'combat' ||
     before.showdown.battlefieldId !== combat.battlefieldId ||
     events.some((e) => e.type === 'combat-restarted');
-  const entries: AttackEntry[] = state.units.flatMap((u) => {
-    const amount = state.unitDefinitions?.find(
-      (d) => d.id === u.definitionId,
-    )?.onAttackReadyEnemyMightBonus;
+  const entries: AttackEntry[] = [];
+  const targeted: AttackDamageTrigger[] = [];
+  for (const u of state.units) {
     const arrived = events.some(
       (e) =>
         e.type === 'unit-moved' &&
@@ -41,27 +41,48 @@ export function queueAttackEffects(
         e.to === combat.battlefieldId &&
         e.from !== e.to,
     );
-    return amount !== undefined &&
-      u.ownerId === combat.initiatorId &&
-      u.zoneId === combat.battlefieldId &&
-      (begins || arrived) &&
+    if (
+      u.ownerId !== combat.initiatorId ||
+      u.zoneId !== combat.battlefieldId ||
+      !(begins || arrived)
+    )
+      continue;
+    const definition = state.unitDefinitions?.find(
+      (d) => d.id === u.definitionId,
+    );
+    if (definition?.onAttackDamage !== undefined)
+      targeted.push({
+        sourceId: u.id,
+        ownerId: u.ownerId,
+        battlefieldId: combat.battlefieldId,
+        amount: definition.onAttackDamage,
+      });
+    if (
+      definition?.onAttackReadyEnemyMightBonus !== undefined &&
       hasReadyEnemy(state, u.ownerId, combat.battlefieldId)
-      ? [
-          {
-            kind: 'attack',
-            sourceId: u.id,
-            ownerId: u.ownerId,
-            battlefieldId: combat.battlefieldId,
-            amount,
-          },
-        ]
-      : [];
-  });
-  if (!entries.length) return { ok: true, state, events: [] };
+    )
+      entries.push({
+        kind: 'attack',
+        sourceId: u.id,
+        ownerId: u.ownerId,
+        battlefieldId: combat.battlefieldId,
+        amount: definition.onAttackReadyEnemyMightBonus,
+      });
+  }
+  if (!entries.length && !targeted.length)
+    return { ok: true, state, events: [] };
   return {
     ok: true,
     state: {
       ...state,
+      ...(targeted.length
+        ? {
+            pendingAttackChoices: [
+              ...(state.pendingAttackChoices ?? []),
+              ...targeted,
+            ],
+          }
+        : {}),
       stack: {
         entries: [...(state.stack?.entries ?? []), ...entries],
         initiatorId: state.stack?.initiatorId ?? combat.initiatorId,

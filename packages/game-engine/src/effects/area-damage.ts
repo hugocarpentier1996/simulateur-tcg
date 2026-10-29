@@ -3,8 +3,7 @@ import {
   unitsInBattlefieldAreas,
   type BattlefieldArea,
 } from '../battlefield-areas.js';
-import { spellAbilityDamageBonus } from './damage-bonus.js';
-import { dealSpellDamage } from './spell-damage.js';
+import { dealEffectDamage } from './effect-damage.js';
 
 /** Source conservée indépendamment de la portée ; combat et duel ne passent pas ici. */
 export type AreaDamageSource =
@@ -24,29 +23,5 @@ export function dealAreaDamage(
   if (!Number.isFinite(baseAmount) || baseAmount < 0)
     throw new RangeError('Dégâts de zone invalides.');
   const targets = unitsInBattlefieldAreas(state, areas);
-  if (source.kind === 'spell')
-    return dealSpellDamage(
-      state,
-      source.cardId,
-      source.playerId,
-      targets,
-      baseAmount,
-    );
-  const amount = baseAmount + spellAbilityDamageBonus(state, source.playerId);
-  const ids = new Set(targets.map((u) => u.id));
-  return {
-    ok: true,
-    state: {
-      ...state,
-      units: state.units.map((u) =>
-        ids.has(u.id) ? { ...u, damage: u.damage + amount } : u,
-      ),
-    },
-    events: targets.map((u) => ({
-      type: 'ability-damage',
-      sourceId: source.sourceId,
-      unitId: u.id,
-      amount,
-    })),
-  };
+  return dealEffectDamage(state, source, targets, baseAmount);
 }

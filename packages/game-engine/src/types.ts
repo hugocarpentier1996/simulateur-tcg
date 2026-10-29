@@ -1,3 +1,7 @@
+import type {
+  AttackDamageTrigger,
+  AttackDamageEntry,
+} from './effects/attack-targets.js';
 import type { PlayEffectEntry } from './effects/play-effect.js';
 import type { AttackEntry } from './effects/attack-triggers.js';
 import type { MovementEntry } from './effects/movement-triggers.js';
@@ -23,6 +27,8 @@ import type { DeathEffect, DeathEntry, DeathTrigger } from './death-types.js';
 export interface GameState {
   /** Fin de tour suspendue jusqu'à résolution des capacités, morts et Showdowns induits. */
   pendingTurnEnd?: boolean;
+  /** Cibles des capacités d’attaque à annoncer avant les réactions. */
+  pendingAttackChoices?: AttackDamageTrigger[] | null;
   /** Joueurs dont les nouvelles unités entrent Ready jusqu’à la fin du tour courant. */
   readyEntryPlayers?: readonly string[];
   /** État serveur privé : sommet connu uniquement du joueur de Vision. */
@@ -67,6 +73,7 @@ export interface GameState {
   /** Pile du bas vers le haut : sorts payés, bonus déclenchés au lancement et effets de mort. */
   stack?: {
     entries: (
+      | AttackDamageEntry
       | PlayEffectEntry
       | AttackEntry
       | MovementEntry
@@ -154,6 +161,7 @@ export interface UnitBlueprint {
   };
   /** En attaque avec un ennemi Ready ici : bonus temporaire via la pile, condition revérifiée. */
   readonly onAttackReadyEnemyMightBonus?: number;
+  readonly onAttackDamage?: number;
   readonly spellAbilityDamageBonus?: number;
   /** Capacité ADD : épuiser cette unité Ready pour produire cette énergie réservée aux sorts. */
   readonly spellEnergyAbility?: number;
@@ -277,6 +285,15 @@ export interface CardInstance {
  * `playerId` devra être fourni par le serveur à partir de l'identité authentifiée.
  */
 export type GameAction =
+  | {
+      type: 'choose-attack-targets';
+      playerId: string;
+      effects: readonly {
+        sourceId: string;
+        targetId?: string;
+        payment: PaymentPlan;
+      }[];
+    }
   | { type: 'choose-vision'; playerId: string; recycle: boolean }
   | { type: 'choose-discard'; playerId: string; cardId: string }
   | { type: 'activate-spell-energy'; playerId: string; unitId: string }

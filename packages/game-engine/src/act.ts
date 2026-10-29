@@ -1,3 +1,4 @@
+import { chooseAttackTargets } from './effects/attack-targets.js';
 import { chooseVision } from './effects/vision.js';
 import { queueAttackEffects } from './effects/attack-triggers.js';
 import { chooseDiscard } from './actions/choose-discard.js';
@@ -106,6 +107,10 @@ function dispatch(state: GameState, action: GameAction): ActionResult {
   if (state.pendingDeaths)
     return { ok: false, reason: 'DEATH_CHOICES_REQUIRED' };
 
+  if (action.type === 'choose-attack-targets')
+    return chooseAttackTargets(state, action);
+  if (state.pendingAttackChoices?.length)
+    return { ok: false, reason: 'ATTACK_CHOICES_REQUIRED' };
   if (action.type === 'choose-battlefield')
     return chooseBattlefield(state, action);
   if (action.type === 'choose-first-player')

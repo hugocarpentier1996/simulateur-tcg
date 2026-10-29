@@ -9,7 +9,7 @@ Les images restent des URL de métadonnées ; les fichiers bruts ne sont pas pub
 - [x] Back to Back — ogn-206-298
 - [x] Cannon Barrage — ogn-127-298
 - [x] Confront — ogn-129-298
-- [ ] Crackshot Corsair — ogn-130-298
+- [x] Crackshot Corsair — ogn-130-298
 - [x] Daring Poro — ogn-210-298
 - [x] Disintegrate — ogn-005-298
 - [x] Dune Drake — ogn-131-298
@@ -70,3 +70,12 @@ Vanguard Sergeant, Falling Comet, Ravenbloom Student et Wielder of Water.
 Bilan : 34/69 entrées demandées raccordées (24 OGS + 10 Origins), 35 restantes.
 Les cartes restent hors decks de démonstration. Questions : [questions-origins.md](questions-origins.md).
 La demande courante s'arrête à dix cartes, puis réponse groupée aux questions.
+
+## Fournée 3 — périmètre révisé le 29 octobre 2026
+
+L’utilisateur demande maintenant toutes les cartes restantes sauf les quatre battlefields.
+21 entrées supplémentaires implémentées : les six runes et quinze cartes de main.
+Bilan : 65/69 entrées raccordées ; seuls Fortified Position, Startipped Peak,
+Trifarian War Camp et Void Gate restent volontairement hors de cette fournée.
+Les cartes restent hors decks de démonstration. Les choix provisoires sont consignés
+dans questions-origins.md.

@@ -809,6 +809,16 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
 
 - Validation : pnpm check, 424 tests et build réussis.
 
+### Origins fournée 3 : Crackshot Corsair — 29 octobre 2026
+
+- Capacité d'attaque uniquement en combat ; choix complets et ordre des sources avant réactions, paiement Deflect atomique.
+- Dégâts de sort/capacité mutualisés, avec bonus ; aucune confusion avec combat ou duel.
+- Tests ciblage, réactions, source/cible disparue, Open/défense, Deflect et plusieurs Corsairs avec budget partagé.
+- Périmètre utilisateur révisé : toutes les cartes sauf quatre battlefields. 21 entrées livrées dans cette fournée, 65/69 au total ; quatre champs volontairement non implémentés.
+- Points de règles provisoires conservés dans docs/questions-origins.md ; aucun raccordement supplémentaire aux decks de démonstration.
+
+- Validation : pnpm check, 431 tests et build réussis.
+
 ## Limites à conserver lors d'une reprise
 
 - Première capacité de mort implémentée pour les morts de combat et hors combat. Autres déclencheurs,

@@ -1,3 +1,4 @@
+import { resolveAttackDamage } from '../effects/attack-targets.js';
 import { resolvePlayEffect } from '../effects/play-effect.js';
 import { resolveAttackEffect } from '../effects/attack-triggers.js';
 import { resolveMovementEffect } from '../effects/movement-triggers.js';
@@ -40,23 +41,25 @@ export function passStack(state: GameState, playerId: string): ActionResult {
   const resolved =
     'card' in entry
       ? resolveSpell(popped, entry)
-      : entry.kind === 'play-effect'
-        ? resolvePlayEffect(popped, entry)
-        : entry.kind === 'attack'
-          ? resolveAttackEffect(popped, entry)
-          : entry.kind === 'movement'
-            ? resolveMovementEffect(popped, entry)
-            : entry.kind === 'death'
-              ? resolveDeathEffect(popped, entry)
-              : entry.kind === 'unit-play'
-                ? resolveUnitPlay(popped, entry)
-                : entry.kind === 'return-spell'
-                  ? resolveReturnSpell(popped, entry)
-                  : entry.kind === 'legend-draw'
-                    ? resolveLegendDraw(popped, entry)
-                    : entry.kind === 'legend-ready-runes'
-                      ? resolveReadyRunes(popped, entry)
-                      : resolveSpellPlay(popped, entry);
+      : entry.kind === 'attack-damage'
+        ? resolveAttackDamage(popped, entry)
+        : entry.kind === 'play-effect'
+          ? resolvePlayEffect(popped, entry)
+          : entry.kind === 'attack'
+            ? resolveAttackEffect(popped, entry)
+            : entry.kind === 'movement'
+              ? resolveMovementEffect(popped, entry)
+              : entry.kind === 'death'
+                ? resolveDeathEffect(popped, entry)
+                : entry.kind === 'unit-play'
+                  ? resolveUnitPlay(popped, entry)
+                  : entry.kind === 'return-spell'
+                    ? resolveReturnSpell(popped, entry)
+                    : entry.kind === 'legend-draw'
+                      ? resolveLegendDraw(popped, entry)
+                      : entry.kind === 'legend-ready-runes'
+                        ? resolveReadyRunes(popped, entry)
+                        : resolveSpellPlay(popped, entry);
   const moved = queueMovementEffects(state, resolved.state, resolved.events);
   return continueStack(moved.state, [
     event,

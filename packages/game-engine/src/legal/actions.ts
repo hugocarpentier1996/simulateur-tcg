@@ -1,3 +1,4 @@
+import { attackTargetActions } from '../effects/attack-targets.js';
 import { withDeflect, spellChosenUnits } from '../cost/deflect.js';
 import { spellCost } from '../cost/spell-cost.js';
 import { playTargetChoices } from '../effects/play-targets.js';
@@ -29,6 +30,14 @@ function* candidates(
   state: GameState,
   playerId: string,
 ): Generator<GameAction> {
+  if (state.pendingDeaths) {
+    yield* resolutionChoices(state, playerId);
+    return;
+  }
+  if (state.pendingAttackChoices?.length) {
+    yield* attackTargetActions(state, playerId);
+    return;
+  }
   if (state.pendingVision) {
     if (state.pendingVision.playerId === playerId) {
       yield { type: 'choose-vision', playerId, recycle: false };

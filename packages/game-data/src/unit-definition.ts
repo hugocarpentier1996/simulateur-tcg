@@ -34,6 +34,7 @@ export interface UnitDefinition {
   };
   /** En attaque avec un ennemi Ready ici : bonus temporaire via la pile, condition revérifiée. */
   readonly onAttackReadyEnemyMightBonus?: number;
+  readonly onAttackDamage?: number;
   readonly spellAbilityDamageBonus?: number;
   /** Capacité ADD : épuiser cette unité Ready pour produire cette énergie réservée aux sorts. */
   readonly spellEnergyAbility?: number;

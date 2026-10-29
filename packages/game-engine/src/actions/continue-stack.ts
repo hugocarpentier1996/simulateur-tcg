@@ -10,7 +10,12 @@ export function continueStack(
   const stack = state.stack;
   if (!stack) throw new Error('Pile absente à la reprise.');
   const entries = stack.entries;
-  if (next.pendingDeaths || next.pendingDiscard || next.pendingVision)
+  if (
+    next.pendingDeaths ||
+    next.pendingDiscard ||
+    next.pendingVision ||
+    next.pendingAttackChoices?.length
+  )
     return {
       ok: true,
       state: {

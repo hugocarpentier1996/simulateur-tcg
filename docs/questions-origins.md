@@ -45,3 +45,5 @@ existantes ; seuls les nouveaux doutes utiles rejoindront le prochain lot de que
 
 - Deflect : si aucune cible de capacité obligatoire ne peut être payée, le prototype autorise la mise en jeu sans cible (capacité sans effet). Confirmer ce comportement.
 - Le cas « here » après déplacement interne concerne aussi Faithful Manufactor ; son lieu initial est conservé provisoirement, comme Noxian.
+
+- Crackshot Corsair : « here » conserve également le champ annoncé tant que sa source reste en jeu ; sa sortie du terrain annule les dégâts. Même question de déplacement interne que Noxian/Manufactor.

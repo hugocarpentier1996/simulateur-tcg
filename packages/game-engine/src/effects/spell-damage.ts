@@ -1,5 +1,5 @@
 import type { ActionResult, GameState, UnitState } from '../types.js';
-import { spellAbilityDamageBonus } from './damage-bonus.js';
+import { dealEffectDamage } from './effect-damage.js';
 
 /** Sort + lanceur + cibles déjà validées -> dégâts simultanés, bonus par unité touchée.
  * Les montants sont fixés avant toute mort. Pas de soin ni retrait des unités ici :
@@ -11,21 +11,10 @@ export function dealSpellDamage(
   targets: readonly UnitState[],
   baseAmount: number,
 ): Extract<ActionResult, { ok: true }> {
-  const amount = baseAmount + spellAbilityDamageBonus(state, casterId);
-  const ids = new Set(targets.map((u) => u.id));
-  return {
-    ok: true,
-    state: {
-      ...state,
-      units: state.units.map((u) =>
-        ids.has(u.id) ? { ...u, damage: u.damage + amount } : u,
-      ),
-    },
-    events: targets.map((u) => ({
-      type: 'spell-damage',
-      cardId,
-      unitId: u.id,
-      amount,
-    })),
-  };
+  return dealEffectDamage(
+    state,
+    { kind: 'spell', cardId, playerId: casterId },
+    targets,
+    baseAmount,
+  );
 }
