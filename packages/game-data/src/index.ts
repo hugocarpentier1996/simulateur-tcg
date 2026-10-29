@@ -120,3 +120,5 @@ export { confront } from './ogn/confront.js';
 export { meditation } from './ogn/meditation.js';
 
 export { eagerApprentice } from './ogn/eager-apprentice.js';
+
+export { disintegrate } from './ogn/disintegrate.js';

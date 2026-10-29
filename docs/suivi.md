@@ -778,6 +778,13 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
 
 - Validation : pnpm check, 408 tests et build réussis.
 
+### Origins fournée 3 : Disintegrate — 29 octobre 2026
+
+- Dégâts à une unité sur champ et pioche conditionnée à sa mort effective par ces dégâts.
+- Tests mort, jeton, survie, rappel Highlander et cible déplacée en base avant résolution.
+
+- Validation : pnpm check, 413 tests et build réussis.
+
 ## Limites à conserver lors d'une reprise
 
 - Première capacité de mort implémentée pour les morts de combat et hors combat. Autres déclencheurs,

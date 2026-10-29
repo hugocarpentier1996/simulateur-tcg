@@ -11,7 +11,7 @@ Les images restent des URL de métadonnées ; les fichiers bruts ne sont pas pub
 - [x] Confront — ogn-129-298
 - [ ] Crackshot Corsair — ogn-130-298
 - [x] Daring Poro — ogn-210-298
-- [ ] Disintegrate — ogn-005-298
+- [x] Disintegrate — ogn-005-298
 - [x] Dune Drake — ogn-131-298
 - [x] Eager Apprentice — ogn-084-298
 - [x] En Garde — ogn-046-298

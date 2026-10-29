@@ -51,7 +51,11 @@ export interface SpellBlueprint {
     | { readonly type: 'return-unit-to-hand' }
     | { readonly type: 'kill-unit' }
     | { readonly type: 'duel' }
-    | { readonly type: 'damage'; readonly amount: number }
+    | {
+        readonly type: 'damage';
+        readonly drawIfKilled?: number;
+        readonly amount: number;
+      }
     | { readonly type: 'recall-on-death'; readonly duration: 'end-of-turn' }
     | {
         readonly type: 'move-unit';

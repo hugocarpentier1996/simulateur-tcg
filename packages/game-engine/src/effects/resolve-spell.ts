@@ -179,6 +179,23 @@ export function resolveSpell(
       );
       state = damaged.state;
       events.push(...damaged.events);
+      if (effect.drawIfKilled) {
+        const settled = settleLethalUnits(state);
+        state = settled.state;
+        events.push(...settled.events);
+        if (
+          settled.events.some(
+            (e) =>
+              (e.type === 'unit-died' || e.type === 'token-removed') &&
+              e.unitId === target.id,
+          )
+        )
+          for (let i = 0; i < effect.drawIfKilled && !state.result; i++) {
+            const drawn = drawCardForPlayer(state, entry.casterId);
+            state = drawn.state;
+            events.push(...drawn.events);
+          }
+      }
     } else if (effect.type === 'move-unit') {
       if (!validDestination(state, target, entry.destinationId)) continue;
       const destinationId = entry.destinationId!;
