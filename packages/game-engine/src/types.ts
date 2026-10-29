@@ -25,6 +25,7 @@ import type { DeathEffect, DeathEntry, DeathTrigger } from './death-types.js';
  * Les étapes automatiques conduisent jusqu'à Main, sans effets de cartes personnalisés.
  */
 export interface GameState {
+  battlefieldDefinitions?: readonly import('./battlefield-types.js').BattlefieldBlueprint[];
   /** Fin de tour suspendue jusqu'à résolution des capacités, morts et Showdowns induits. */
   pendingTurnEnd?: boolean;
   /** Cibles des capacités d’attaque à annoncer avant les réactions. */

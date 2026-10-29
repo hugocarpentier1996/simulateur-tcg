@@ -49,7 +49,7 @@ Les images restent des URL de métadonnées ; les fichiers bruts ne sont pas pub
 - [x] Order Rune — ogn-214-298
 - [ ] Fortified Position — ogn-279-298
 - [ ] Startipped Peak — ogn-288-298
-- [ ] Trifarian War Camp — ogn-294-298
+- [x] Trifarian War Camp — ogn-294-298
 - [ ] Void Gate — ogn-296-298
 
 ## Précisions de ce lot

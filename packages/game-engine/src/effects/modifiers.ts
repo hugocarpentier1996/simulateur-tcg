@@ -1,3 +1,4 @@
+import { battlefieldDefinition } from './battlefield.js';
 import type { GameState, UnitState } from '../types.js';
 import { gearMightBonus } from './gear-bonus.js';
 import { combatMightBonus } from './combat-bonus.js';
@@ -10,6 +11,9 @@ export function effectiveMight(unit: UnitState, state?: GameState): number {
   return Math.max(
     0,
     unit.might +
+      (state
+        ? (battlefieldDefinition(state, unit.zoneId)?.unitMightBonus ?? 0)
+        : 0) +
       (state ? gearMightBonus(unit, state) : 0) +
       (state ? combatMightBonus(unit, state) : 0) +
       (state ? runeMightBonus(unit, state) : 0) +

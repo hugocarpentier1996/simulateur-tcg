@@ -130,3 +130,5 @@ export { faithfulManufactor } from './ogn/faithful-manufactor.js';
 export { poutyPoro } from './ogn/pouty-poro.js';
 
 export { crackshotCorsair } from './ogn/crackshot-corsair.js';
+
+export { trifarianWarCamp } from './ogn/trifarian-war-camp.js';

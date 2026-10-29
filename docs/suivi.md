@@ -843,3 +843,8 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
 
 L'utilisateur choisira la prochaine tranche ; ces pistes ne constituent pas une autorisation
 de toutes les développer. À la reprise, vérifier les modifications locales avant d'agir.
+
+### Trifarian War Camp — 29 octobre 2026
+
+- Catalogue de champs transmis à createGame ; +1 Might local pour tous les camps, indépendant du contrôle.
+- TDD : échec 3 au lieu de 4 constaté, puis test de portée et sortie du champ. Validation pnpm check.
