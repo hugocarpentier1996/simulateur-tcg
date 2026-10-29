@@ -1,3 +1,4 @@
+import { planMove, confirmMoves, type PlannedMove } from './move-plan.js';
 import {
   createDemo,
   tableActions,
@@ -14,16 +15,29 @@ const root = document.querySelector<HTMLDivElement>('#app')!;
 let session = createDemo(true);
 let selection: Selection | null = null;
 let suppressClick = false;
+let moves: readonly PlannedMove[] = [];
 
 function render() {
   const focusId = document.activeElement?.id;
-  root.innerHTML = renderTable(session, selection);
+  root.innerHTML = renderTable(session, selection, moves);
   if (focusId) document.getElementById(focusId)?.focus({ preventScroll: true });
 }
 
 function place(destinationId: string) {
   if (!selection) return;
-  session = playOrMove(session, selection.cardId, destinationId);
+  if (session.state.units.some((u) => u.id === selection!.cardId)) {
+    const planned = planMove(session, moves, selection.cardId, destinationId);
+    session = {
+      ...session,
+      error: planned === moves ? 'Déplacement indisponible.' : null,
+    };
+    moves = planned;
+  } else if (moves.length) {
+    session = {
+      ...session,
+      error: 'Valide ou annule les déplacements avant de jouer une carte.',
+    };
+  } else session = playOrMove(session, selection.cardId, destinationId);
   if (!session.error) selection = null;
   render();
 }
@@ -41,6 +55,29 @@ root.addEventListener('click', (event) => {
   }
   const button = target.closest<HTMLButtonElement>('button');
   if (!button) return;
+  if (button.disabled) return;
+  if (button.dataset.action === 'confirm-moves') {
+    session = confirmMoves(session, moves);
+    if (!session.error) {
+      moves = [];
+      selection = null;
+    }
+    render();
+    return;
+  }
+  if (button.dataset.action === 'cancel-moves') {
+    moves = [];
+    selection = null;
+    session = { ...session, error: null };
+    render();
+    return;
+  }
+  if (
+    moves.length &&
+    !button.dataset.card &&
+    button.dataset.action !== 'cancel'
+  )
+    return;
   if (button.dataset.choice !== undefined) {
     const action = tableActions(session)[Number(button.dataset.choice)];
     if (action) session = dispatch(session, action);

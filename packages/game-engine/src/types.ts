@@ -368,6 +368,11 @@ export type GameAction =
       playerId: string;
       allocations: readonly DamageAllocation[];
     }
+  | {
+      type: 'move-group';
+      playerId: string;
+      moves: readonly { unitId: string; destinationId: string }[];
+    }
   | { type: 'move'; playerId: string; unitId: string; destinationId: string }
   | { type: 'pass'; playerId: string }
   | {

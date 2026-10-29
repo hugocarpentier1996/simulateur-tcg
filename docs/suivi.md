@@ -898,3 +898,14 @@ de toutes les développer. À la reprise, vérifier les modifications locales av
 - Ancien test Ganking mis à jour : sa base est désormais une destination autorisée.
 - Rendu navigateur vérifié : carte couchée et badge Might, paiement puis pose via clic.
 - Validation : pnpm check, 460 tests et build réussis.
+
+### Déplacements groupés avant Showdown — 29 octobre 2026
+
+- Action moteur `move-group` : validation de chaque mouvement dans l'état initial, refus atomique (Tap, destination, doublon, liste vide), puis arrivée simultanée.
+- Les capacités d'attaque voient toutes les unités du groupe ; un seul Showdown est ouvert par champ.
+- UI : brouillon local via dépôt ou clic, récapitulatif, validation explicite et annulation sans effet. Les cartes restent à leur emplacement réel jusqu'à confirmation.
+- Les autres actions sont bloquées pendant la préparation. Une validation crée un seul niveau d'historique, annulable avec le bouton existant.
+- Compatibilité : `move` individuel reste disponible ; getLegalActions fournit les mouvements individuels, pas toutes les combinaisons possibles.
+- Limite du prototype : plusieurs destinations contestées sont mises en attente et traitées dans l'ordre des premières destinations du plan, via pendingShowdowns. Cet ordre est un choix d'interface, pas une nouvelle règle confirmée.
+- TDD : échecs constatés avant implémentation ; cinq tests couvrent attaque groupée/capacités, refus atomique, file de Showdowns, préparation/annulation et plan périmé.
+- Validation : pnpm check réussi, 465 tests et build. Navigateur : deux Poro préparés puis confirmés, présents ensemble dans un Open Showdown, un seul ajout à l'historique.

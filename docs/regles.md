@@ -252,3 +252,9 @@ dépasse 3 après les réactions, le sort fizzle et ne renvoie pas l'unité en m
   de sa capacité déclenchée, après les réactions, avant les dégâts de combat.
   Cette seconde vérification n'attend pas la résolution ou la fin du combat.
 - Stupefy : une cible déjà à 0 Might reste à 0 ; la pioche indépendante a lieu.
+
+## Validation des déplacements
+
+Le joueur peut préparer les déplacements de plusieurs unités Ready, puis les valider
+ensemble avant l'ouverture d'un Showdown. Les unités qui attaquent le même champ
+arrivent donc ensemble, avant les capacités d'attaque et les réactions.

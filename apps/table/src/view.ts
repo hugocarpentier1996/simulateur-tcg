@@ -1,3 +1,4 @@
+import type { PlannedMove } from './move-plan.js';
 import { cardInfo } from './catalogue.js';
 import {
   act,
@@ -186,11 +187,14 @@ function handFan(hand: CardInstance[], selected: Selection | null): string {
 export function renderTable(
   session: Session,
   selected: Selection | null,
+  moves: readonly PlannedMove[] = [],
 ): string {
   const state = session.state;
-  const destinations = selected
-    ? boardOptions(state, selected.cardId).map((a) => a.destinationId!)
-    : [];
+  const destinations =
+    selected &&
+    (!moves.length || state.units.some((u) => u.id === selected.cardId))
+      ? boardOptions(state, selected.cardId).map((a) => a.destinationId!)
+      : [];
   const active = state.activePlayerId;
   const priority =
     state.stack?.priorityPlayerId ??
@@ -202,8 +206,9 @@ export function renderTable(
       (z) => z.id === c.zoneId && z.ownerId === active && z.kind === 'hand',
     ),
   );
-  const canEnd = act(state, { type: 'end-turn', playerId: active }).ok;
-  return `<header class="topbar"><div class="brand"><span class="brand-icon" aria-hidden="true">◇</span><div><h1>Simulateur TCG</h1><p>La table d’essai</p></div></div><div class="local-tag"><span></span> Local · 2 joueurs</div><button id="undo-action" class="quiet" data-action="undo" title="Annuler la dernière action réussie (10 maximum)" ${session.history.length === 0 ? 'disabled' : ''}>↶ Annuler l’action (${session.history.length}/10)</button><button class="quiet" data-action="reset">Nouvelle partie BO1</button><button class="quiet" data-action="bo3">Choix BO3 · manche d’essai</button></header>
+  const canEnd =
+    !moves.length && act(state, { type: 'end-turn', playerId: active }).ok;
+  return `<header class="topbar"><div class="brand"><span class="brand-icon" aria-hidden="true">◇</span><div><h1>Simulateur TCG</h1><p>La table d’essai</p></div></div><div class="local-tag"><span></span> Local · 2 joueurs</div><button id="undo-action" class="quiet" data-action="undo" title="Annuler la dernière action réussie (10 maximum)" ${moves.length || session.history.length === 0 ? 'disabled' : ''}>↶ Annuler l’action (${session.history.length}/10)</button><button class="quiet" data-action="reset" ${moves.length ? 'disabled' : ''}>Nouvelle partie BO1</button><button class="quiet" data-action="bo3" ${moves.length ? 'disabled' : ''}>Choix BO3 · manche d’essai</button></header>
     <main><section class="play-area"><div class="scoreboard">${state.players.map((p) => `<div class="player ${p.id === active ? 'active' : ''}"><span>${escape(playerName(p.id))}<small>${p.id === active ? 'Tour actif' : 'En attente'}</small></span><strong>${p.score}<small> / ${p.victoryTarget ?? 8}</small></strong></div>`).join('')}</div>
     <div class="turnbar"><div><span class="eyebrow">${state.result ? 'Partie terminée' : state.showdown ? 'Main · Showdown en cours' : escape(state.phase === 'main' ? 'Phase principale · Main' : state.phase)}</span><h2>${state.result ? `${escape(playerName(state.result.winnerId))} gagne` : `À ${escape(playerName(active))} de jouer`}</h2></div><span class="priority">Priorité : ${escape(playerName(priority))}</span><button class="primary" data-action="end" ${!canEnd ? 'disabled' : ''}>Terminer le tour →</button></div>
     <div class="board">
@@ -220,7 +225,7 @@ export function renderTable(
     </div>
     <div class="reserve"><span>${escape(playerName(active))} · Réserve flottante</span><span><b>${state.resources[active]?.energy ?? 0}</b> énergie · <b>${escape(powerText(state.resources[active]?.power ?? {}))}</b> Power</span></div>
     <section class="hand-section"><header><h2>Main de ${escape(playerName(active))}</h2><span>${hand.length} cartes · sélectionner pour jouer</span></header>${handFan(hand, selected)}</section></section>
-    <aside><section class="action-panel">${session.error ? `<p role="alert" class="error">${escape(session.error)}</p>` : ''}${paymentPanel(session, selected)}</section><section class="journal"><header><h2>Journal de partie</h2><span>${session.log.length}</span></header><ol>${session.log
+    <aside><section class="action-panel">${session.error ? `<p role="alert" class="error">${escape(session.error)}</p>` : ''}${moves.length ? movementPanel(session, moves) : paymentPanel(session, selected)}</section><section class="journal"><header><h2>Journal de partie</h2><span>${session.log.length}</span></header><ol>${session.log
       .slice()
       .reverse()
       .map((line) => `<li>${escape(line)}</li>`)
@@ -272,4 +277,22 @@ function actionLabel(
     default:
       return prefix + action.type;
   }
+}
+
+/** Brouillon local -> récapitulatif explicite ; les cartes restent à leur position réelle jusqu'à validation. */
+function movementPanel(
+  session: Session,
+  moves: readonly PlannedMove[],
+): string {
+  return `<div class="eyebrow">Déplacements préparés</div><h3>${moves.length} unité(s)</h3><p class="help">Ajoute d’autres unités en les glissant vers leur destination. Aucun déplacement ni combat n’a encore commencé.</p><ul>${moves
+    .map((m) => {
+      const unit = session.state.units.find((u) => u.id === m.unitId);
+      const field = session.state.battlefields.findIndex(
+        (f) => f.zoneId === m.destinationId,
+      );
+      return `<li>${escape(unit ? cardName(unit.definitionId) : m.unitId)} → ${field >= 0 ? `Champ de bataille ${field + 1}` : 'Base'}</li>`;
+    })
+    .join(
+      '',
+    )}</ul><button class="primary" data-action="confirm-moves">Valider les déplacements (${moves.length})</button><button class="quiet" data-action="cancel-moves">Annuler les déplacements</button>`;
 }

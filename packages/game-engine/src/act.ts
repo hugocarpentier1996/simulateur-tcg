@@ -13,6 +13,7 @@ import { startNextTurn } from './turn/progression.js';
 import { queueConquestLegends } from './effects/conquest-legends.js';
 import type { GameState, GameAction, ActionResult } from './types.js';
 import { activateSpellEnergy } from './actions/activate-spell-energy.js';
+import { moveGroup } from './actions/move-group.js';
 import { moveUnit } from './actions/move.js';
 import { passPriority } from './actions/pass.js';
 import { endTurn } from './actions/end-turn.js';
@@ -169,6 +170,8 @@ function dispatch(state: GameState, action: GameAction): ActionResult {
       return playUnit(state, action);
     case 'assign-damage':
       return assignDamage(state, action);
+    case 'move-group':
+      return moveGroup(state, action);
     case 'move':
       return moveUnit(state, action);
     case 'pass':
