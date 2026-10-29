@@ -1,3 +1,4 @@
+import { createStarterSession } from './starter-session.js';
 import { planMove, confirmMoves, type PlannedMove } from './move-plan.js';
 import {
   createDemo,
@@ -12,7 +13,10 @@ import { renderTable, type Selection } from './view.js';
 import './style.css';
 
 const root = document.querySelector<HTMLDivElement>('#app')!;
-let session = createDemo(true);
+// L'entropie appartient au navigateur ; la simulation reçoit une graine explicite.
+const newStarterGame = () =>
+  createStarterSession(crypto.getRandomValues(new Uint32Array(1))[0]!);
+let session = newStarterGame();
 let selection: Selection | null = null;
 let suppressClick = false;
 let moves: readonly PlannedMove[] = [];
@@ -108,7 +112,10 @@ root.addEventListener('click', (event) => {
       )
     )
       return;
-    session = createDemo(true, button.dataset.action === 'bo3' ? 'bo3' : 'bo1');
+    session =
+      button.dataset.action === 'bo3'
+        ? createDemo(true, 'bo3')
+        : newStarterGame();
     selection = null;
   } else return;
   render();

@@ -258,3 +258,11 @@ dépasse 3 après les réactions, le sort fizzle et ne renvoie pas l'unité en m
 Le joueur peut préparer les déplacements de plusieurs unités Ready, puis les valider
 ensemble avant l'ouverture d'un Showdown. Les unités qui attaquent le même champ
 arrivent donc ensemble, avant les capacités d'attaque et les réactions.
+
+## Préparation de la démonstration Proving Grounds
+
+À chaque nouvelle partie BO1 de cette démo, chaque joueur reçoit au hasard l'une des
+quatre listes fournies. Le chosen champion est choisi parmi les champions appropriés
+présents dans sa liste ; son exemplaire est retiré des 40 cartes avant le mélange
+et la pioche. La démo utilise directement le battlefield unique indiqué par la liste,
+exception confirmée au choix normal parmi trois. Les runes sont également mélangées.

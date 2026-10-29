@@ -1177,3 +1177,454 @@ aside {
   background: #263a44;
   font-size: 12px;
 }
+
+/* Le plateau occupe la hauteur disponible ; seuls les contenus longs défilent. */
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
+#app {
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.topbar {
+  flex: 0 0 auto;
+  width: 100%;
+  padding: 6px 14px;
+  gap: 10px;
+}
+.topbar .quiet {
+  padding: 5px 8px;
+  font-size: 11px;
+}
+.brand-icon {
+  font-size: 25px;
+}
+.brand p,
+.local-tag,
+footer {
+  display: none;
+}
+h1 {
+  font-size: 17px;
+}
+main {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 6px 12px;
+  gap: 12px;
+  grid-template-columns: minmax(0, 1fr) clamp(220px, 23vw, 310px);
+}
+.play-area {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+}
+.scoreboard {
+  display: none;
+}
+.turnbar {
+  flex: 0 0 auto;
+  padding: 4px 0 7px;
+  gap: 6px;
+}
+.turnbar h2 {
+  font-size: 15px;
+}
+.turnbar .eyebrow {
+  font-size: 9px;
+}
+.turnbar .primary {
+  font-size: 11px;
+  padding: 7px 9px;
+}
+.priority {
+  font-size: 11px;
+}
+.board {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-rows:
+    18px minmax(0, 0.65fr) minmax(0, 1fr) minmax(0, 1.5fr)
+    minmax(0, 1fr) minmax(0, 0.65fr);
+  gap: 5px;
+  padding: 5px 38px;
+  overflow: hidden;
+}
+.opponent-hand {
+  padding: 0;
+  height: 18px;
+}
+.card-back {
+  height: 16px;
+  width: 18px;
+}
+.resource-row {
+  min-height: 0;
+  grid-template-columns: 38px minmax(0, 1fr) 38px 38px;
+  gap: 9px;
+}
+.rune-cards {
+  min-height: 0;
+  height: 100%;
+  flex-wrap: nowrap;
+  gap: 3px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  justify-content: safe center;
+}
+.rune-card {
+  flex: 0 0 30px;
+  height: 100%;
+  min-height: 0;
+  padding: 0;
+}
+.rune-card > span {
+  min-height: 0;
+  flex: 1;
+  overflow: hidden;
+}
+.rune-card .rune-art {
+  height: 100%;
+  max-height: 32px;
+  width: auto;
+}
+.rune-card small {
+  margin: 0;
+  font-size: 7px;
+}
+.rune-card strong {
+  font-size: 8px;
+}
+.pile {
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.pile-face {
+  min-height: 0;
+  flex: 1;
+  height: auto;
+}
+.pile-face > span {
+  font-size: 17px;
+}
+.pile-face b {
+  font-size: 9px;
+  min-width: 17px;
+  padding: 1px;
+  bottom: 0;
+  right: -2px;
+}
+.pile small {
+  font-size: 8px;
+  margin: 1px 0 0;
+}
+.base-row {
+  min-height: 0;
+  grid-template-columns: minmax(0, 1fr) 48px 60px;
+  gap: 5px;
+}
+.opponent-base {
+  grid-template-columns: 60px 48px minmax(0, 1fr);
+}
+.zone,
+.base-row .base,
+.battlefield {
+  min-height: 0;
+  padding: 3px 5px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.zone header {
+  flex: 0 0 auto;
+  gap: 3px;
+  padding: 0;
+}
+.zone header h3 {
+  font-size: 10px;
+}
+.zone header span {
+  font-size: 8px;
+}
+.battlefields {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(var(--fields), minmax(0, 1fr));
+  gap: 6px;
+}
+.units {
+  min-height: 0;
+  flex: 1;
+  flex-wrap: nowrap;
+  gap: 3px;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+.unit-slot {
+  flex: 0 0 auto;
+  width: clamp(48px, 10vh, 100px);
+  height: 100%;
+  max-height: 110px;
+  aspect-ratio: 1;
+}
+.unit-card {
+  width: 65%;
+  height: 85%;
+  max-height: 95px;
+}
+.unit-might,
+.unit-card .unit-might {
+  min-width: 19px;
+  height: 19px;
+  font-size: 12px;
+  right: -4px;
+  bottom: 0;
+}
+.move-preview {
+  opacity: 0.4;
+  pointer-events: none;
+}
+[data-preview] {
+  pointer-events: none;
+}
+.identity-zone,
+.chosen-zone {
+  min-height: 0;
+  overflow: hidden;
+}
+.identity-zone .legend-art,
+.champion-back .champion-art {
+  max-height: 65%;
+  max-width: 100%;
+  width: auto;
+  object-fit: contain;
+}
+.identity-zone {
+  font-size: 8px;
+}
+.identity-zone small {
+  display: none;
+}
+.chosen-zone .card,
+.champion-back {
+  min-height: 0;
+  height: 100%;
+  width: 100%;
+  padding: 0;
+}
+.champion-back strong,
+.champion-back > span {
+  font-size: 7px;
+}
+.empty {
+  font-size: 10px;
+  padding: 3px;
+}
+.place-here {
+  position: absolute;
+  right: 3px;
+  bottom: 3px;
+  margin: 0;
+  font-size: 8px;
+  padding: 2px;
+}
+.zone {
+  position: relative;
+}
+.reserve {
+  flex: 0 0 auto;
+  margin: 2px 0;
+  padding: 2px 8px;
+  font-size: 9px;
+}
+.hand-section {
+  flex: 0 0 clamp(100px, 20vh, 180px);
+  min-height: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+.hand-section header {
+  margin: 0;
+  flex: 0 0 17px;
+}
+.hand-section header h2 {
+  font-size: 11px;
+}
+.hand-section header span {
+  font-size: 9px;
+}
+.hand-scroll {
+  flex: 1;
+  min-height: 0;
+  padding: 8px 8px 12px;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+.hand.fan {
+  height: 100%;
+  min-width: 0;
+  padding: 0;
+  align-items: flex-start;
+}
+.fan-slot {
+  width: clamp(28px, calc((100% - 80px) / var(--cards)), 85px);
+  height: 85%;
+}
+.fan-slot:last-child {
+  width: 80px;
+}
+.fan-slot .card {
+  width: auto;
+  height: 100%;
+  min-height: 0;
+  aspect-ratio: 744/1039;
+  transform: translateY(calc(var(--lift) * 0.35)) rotate(var(--angle));
+}
+.fan-slot:hover .card,
+.fan-slot .card.selected {
+  transform: translateY(-3px) rotate(0);
+}
+aside {
+  min-height: 0;
+  height: 100%;
+  position: static;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow: hidden;
+}
+.action-panel {
+  max-height: 65%;
+  flex: 0 1 auto;
+  min-height: 0;
+  overflow: auto;
+  padding: 12px;
+}
+.action-panel .card-preview {
+  max-height: 130px;
+  width: auto;
+}
+.action-panel p,
+.action-panel li {
+  font-size: 12px;
+}
+.action-panel .primary,
+.action-panel .quiet {
+  padding: 8px;
+  font-size: 12px;
+}
+.showdown-panel {
+  display: grid;
+  gap: 10px;
+}
+.choice-list {
+  max-height: none;
+}
+.journal {
+  min-height: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.journal ol {
+  min-height: 0;
+  overflow: auto;
+  max-height: none;
+}
+.victory-track {
+  position: absolute;
+  width: 25px;
+  height: 44%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  z-index: 2;
+}
+.victory-track.active {
+  left: 4px;
+  bottom: 4px;
+  flex-direction: column-reverse;
+}
+.victory-track.opponent {
+  right: 4px;
+  top: 4px;
+}
+.victory-crystal {
+  width: 22px;
+  height: 24px;
+  flex: 0 1 24px;
+  min-height: 12px;
+  display: grid;
+  place-items: center;
+  clip-path: polygon(50% 0, 90% 25%, 100% 65%, 50% 100%, 0 65%, 10% 25%);
+  background: linear-gradient(135deg, #4a5a67, #172936);
+  color: #9eafb9;
+  font-size: 10px;
+}
+.victory-crystal.earned {
+  background: linear-gradient(135deg, #d4fbff, #45cee0 50%, #16819c);
+  color: #082731;
+  filter: drop-shadow(0 0 4px #56e6ff);
+}
+@media (max-width: 800px) {
+  main {
+    grid-template-columns: minmax(0, 1fr) 190px;
+    gap: 5px;
+    padding: 4px;
+  }
+  .topbar .brand {
+    margin-right: 0;
+  }
+  .topbar {
+    gap: 5px;
+  }
+  .board {
+    padding-inline: 28px;
+  }
+  .base-row {
+    grid-template-columns: minmax(0, 1fr) 30px 38px;
+  }
+  .opponent-base {
+    grid-template-columns: 38px 30px minmax(0, 1fr);
+  }
+  .priority {
+    display: none;
+  }
+  aside {
+    width: auto;
+  }
+  .victory-track {
+    width: 20px;
+  }
+}
+
+.battlefield .field-art {
+  position: absolute;
+  inset: 18px 0 0;
+  width: 100%;
+  height: calc(100% - 18px);
+  object-fit: cover;
+  opacity: 0.17;
+  pointer-events: none;
+}
+.battlefield .units,
+.battlefield header {
+  position: relative;
+  z-index: 1;
+}

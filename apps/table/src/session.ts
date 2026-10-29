@@ -309,7 +309,7 @@ export function passShowdown(session: Session): Session {
 }
 
 /** Dés et mulligans fixes de la démonstration, après sélection des champs. */
-function prepareDemo(state: GameState): GameState {
+export function prepareDemo(state: GameState): GameState {
   state = requireState(recordOpeningRoll(state, { a: 19, b: 8 }));
   state = requireState(
     act(state, {
@@ -330,13 +330,15 @@ function prepareDemo(state: GameState): GameState {
 export function tableActions(session: Session): GameAction[] {
   return session.state.players
     .flatMap((p) => getLegalActions(session.state, p.id))
-    .filter((a) =>
-      [
-        'choose-battlefield',
-        'choose-defense-shield',
-        'choose-hold-channel',
-        'assign-damage',
-        'pass',
-      ].includes(a.type),
+    .filter(
+      (a) =>
+        (a.type === 'end-turn' && a.readyRuneIds !== undefined) ||
+        [
+          'choose-battlefield',
+          'choose-defense-shield',
+          'choose-hold-channel',
+          'assign-damage',
+          'pass',
+        ].includes(a.type),
     );
 }

@@ -27,6 +27,8 @@ export interface GameConfig {
     | { format: 'bo1' }
     | { format: 'bo3'; gameNumber: 1 }
     | { format: 'bo3'; gameNumber: 2 | 3; previousLoserId: string };
+  /** Démo BO1 uniquement : un champ fourni par joueur, sans tirage parmi trois. */
+  battlefieldSelection?: 'provided';
   randomState?: number;
   battlefieldDefinitions?: GameState['battlefieldDefinitions'];
   legendDefinitions?: GameState['legendDefinitions'];

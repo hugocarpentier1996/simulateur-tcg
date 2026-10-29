@@ -909,3 +909,18 @@ de toutes les développer. À la reprise, vérifier les modifications locales av
 - Limite du prototype : plusieurs destinations contestées sont mises en attente et traitées dans l'ordre des premières destinations du plan, via pendingShowdowns. Cet ordre est un choix d'interface, pas une nouvelle règle confirmée.
 - TDD : échecs constatés avant implémentation ; cinq tests couvrent attaque groupée/capacités, refus atomique, file de Showdowns, préparation/annulation et plan périmé.
 - Validation : pnpm check réussi, 465 tests et build. Navigateur : deux Poro préparés puis confirmés, présents ensemble dans un Open Showdown, un seul ajout à l'historique.
+
+### Plateau compact et decks Proving Grounds — 29 octobre 2026
+
+- Aperçu des mouvements : copie transparente Tap à destination, Might passive calculée dans la projection. Les vrais états/contrôles restent inchangés ; aucune capacité ni réaction simulée par l'aperçu.
+- Open et Combat Showdown partagent le même panneau (champ, priorité, passes, actions légales) ; étape dégâts et réactions conservent leurs indications propres.
+- Noms des domaines Fury, Calm, Mind, Body, Chaos, Order dans les runes et coûts. Cristaux numérotés de 1 à 8, allumés selon le score, à gauche du joueur du bas et à droite de celui du haut.
+- Mise en page à hauteur de fenêtre : plateau/main visibles sans défilement de page, défilement interne pour journal, choix et rangées débordantes. Images des champs en arrière-plan pour ne pas masquer les unités.
+- Quatre listes TXT utilisateur importées dans starter-deck-lists.ts ; sélection indépendante pour chaque joueur. Les miroirs sont possibles. Chaque liste contient 40 cartes, une copie de champion est retirée avant le mélange des 39 restantes et des 12 runes.
+- Les huit versions de champions appropriées sont explicitement référencées, avec partage d'un tag de légende ; les métadonnées actuelles n'ont pas de tag générique Champion.
+- Nouvelle graine issue de crypto.getRandomValues dans main.ts à chaque nouvelle BO1/rechargement ; préparation pure et reproductible avec graine explicite dans starter-session.ts. Dés 19/8 et absence de mulligan restent des simplifications de la démo.
+- Battlefield unique fourni par chaque fichier, conformément à la réponse utilisateur. Option moteur battlefieldSelection=provided réservée au BO1 ; les configurations normales conservent trois candidats. Le bouton BO3 conserve sa démonstration fixe antérieure.
+- Dark Child : choix des runes de fin de tour désormais exposé pour éviter le blocage du deck Annie, puis fenêtre normale de réactions.
+- TDD : échecs pertinents constatés pour aperçu, cristaux/domaines, panneau commun, préparation des decks et fin de tour Annie avant correction. Validation pnpm check : 471 tests, lint/types/format et build réussis.
+- Navigateur : absence de débordement de page mesurée en 1280×720 et 1024×600 ; pose, fin de tour Annie, redressement et aperçu Tap observés. Capture locale work/table-apercu-cristaux.png.
+- Limites préexistantes : l'interface de dépôt joue encore uniquement les unités ; lancement/ciblage des sorts et certains choix de capacités restent à raccorder, même si les cartes et leurs règles sont présentes dans le moteur. Les listes complètes sont maintenant distribuées, pas seulement les unités. Suite : sélecteurs de cibles et actions de cartes depuis la main.

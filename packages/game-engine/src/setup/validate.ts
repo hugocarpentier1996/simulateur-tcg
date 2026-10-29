@@ -26,6 +26,11 @@ export function validGameConfig(config: GameConfig): boolean {
       config.randomState > 0xffffffff)
   )
     return false;
+  if (
+    config.battlefieldSelection === 'provided' &&
+    config.match?.format === 'bo3'
+  )
+    return false;
   const match = config.match;
   if (
     match?.format === 'bo3' &&
@@ -37,7 +42,8 @@ export function validGameConfig(config: GameConfig): boolean {
     (p) =>
       p.deck.length === 39 &&
       p.runes.length === 12 &&
-      p.battlefields.length === 3 &&
+      p.battlefields.length ===
+        (config.battlefieldSelection === 'provided' ? 1 : 3) &&
       p.legend.colors.length >= 1 &&
       p.legend.colors.length <= 2 &&
       new Set(p.legend.colors).size === p.legend.colors.length &&

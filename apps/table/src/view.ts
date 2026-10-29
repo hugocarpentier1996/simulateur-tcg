@@ -34,9 +34,18 @@ const count = (state: GameState, ownerId: string, kind: string) =>
       (z) => z.id === c.zoneId && z.ownerId === ownerId && z.kind === kind,
     ),
   ).length;
+const domainName = (color: string) =>
+  ({
+    rouge: 'Fury',
+    vert: 'Calm',
+    bleu: 'Mind',
+    orange: 'Body',
+    violet: 'Chaos',
+    jaune: 'Order',
+  })[color] ?? color;
 const powerText = (power: Readonly<Record<string, number>>) =>
   Object.entries(power)
-    .map(([color, n]) => `${n} ${color}`)
+    .map(([color, n]) => `${n} ${domainName(color)}`)
     .join(' + ') || '0';
 
 function art(id: string, className: string): string {
@@ -75,6 +84,7 @@ function zone(
   subtitle: string,
   battlefield = false,
   destinations: readonly string[] = [],
+  moves: readonly PlannedMove[] = [],
 ): string {
   const units = state.units.filter((u) => u.zoneId === zoneId);
   return `<section data-zone="${escape(zoneId)}" class="zone ${destinations.includes(zoneId) ? 'drop-target' : ''} ${battlefield ? 'battlefield' : 'base'}"><header><h3>${escape(title)}</h3><span>${escape(subtitle)}</span></header>
@@ -87,19 +97,22 @@ function zone(
               return `<div class="unit-slot"><button type="button" id="unit-${escape(u.id)}" data-card="${escape(u.id)}" class="unit-card ${u.ready ? 'ready' : 'tapped'}" aria-label="${escape(label)}" title="${escape(label)}"><span class="unit-face">${art(u.definitionId, 'unit-art') || `<span class="unit-fallback">${escape(cardName(u.definitionId))}</span>`}</span><span class="unit-might">${effectiveMight(u, state)}</span></button></div>`;
             })
             .join('')
-        : `<p class="empty">${battlefield ? 'Aucune unité sur ce champ' : 'Aucune unité en base'}</p>`
-    }</div>${destinations.includes(zoneId) ? '<button type="button" class="place-here">Choisir cette destination</button>' : ''}</section>`;
+        : moves.some((m) => m.destinationId === zoneId)
+          ? ''
+          : `<p class="empty">${battlefield ? 'Aucune unité sur ce champ' : 'Aucune unité en base'}</p>`
+    }${movePreviews(state, zoneId, moves)}</div>${destinations.includes(zoneId) ? '<button type="button" class="place-here">Choisir cette destination</button>' : ''}</section>`;
 }
 
 function paymentPanel(session: Session, selection: Selection | null): string {
   const choices = tableActions(session);
   const state = session.state;
   if (
+    (!selection && choices.some((a) => a.type === 'end-turn')) ||
     state.setup ||
     state.stack ||
     state.pendingDefenseShield ||
     state.pendingHoldChannel ||
-    state.showdown?.kind === 'combat'
+    state.showdown
   ) {
     const heading = state.pendingDefenseShield
       ? 'Choisir une unité · Shield 2'
@@ -112,12 +125,16 @@ function paymentPanel(session: Session, selection: Selection | null): string {
             : state.showdown?.kind === 'combat' &&
                 state.showdown.stage === 'damage'
               ? 'Répartir les dégâts'
-              : 'Combat Showdown';
+              : state.showdown
+                ? 'Combat Showdown'
+                : 'Fin de tour · Dark Child';
+    if (state.showdown) {
+      const show = state.showdown;
+      const priority = state.stack?.priorityPlayerId ?? show.priorityPlayerId;
+      return `<section class="showdown-panel"><div class="eyebrow">${show.kind === 'combat' ? 'Combat Showdown' : 'Open Showdown'}</div><h3>Champ de bataille ${state.battlefields.findIndex((b) => b.zoneId === show.battlefieldId) + 1}</h3><p>Priorité : ${escape(playerName(priority))}</p><p class="help">${state.stack ? 'Réactions' : show.kind === 'combat' && show.stage === 'damage' ? 'Répartir les dégâts' : show.kind === 'combat' ? 'Les passes ouvrent la répartition des dégâts.' : 'Les passes clôturent la fenêtre de conquête.'}</p><p>${show.consecutivePasses} / ${show.participants.length} passes</p><div class="choice-list">${choices.map((a, i) => `<button class="${a.type === 'pass' ? 'primary' : 'quiet'}" data-choice="${i}">${escape(actionLabel(session, a))}</button>`).join('')}</div></section>`;
+    }
     return `<div class="eyebrow">Choix du moteur</div><h3>${heading}</h3><p class="help">Les boutons proposent uniquement les actions actuellement autorisées.</p><div class="choice-list">${choices.map((a, i) => `<button class="quiet" data-choice="${i}">${escape(actionLabel(session, a))}</button>`).join('')}</div>`;
   }
-  const showdown = session.state.showdown;
-  if (showdown?.kind === 'open')
-    return `<div class="eyebrow">Open Showdown</div><h3>Champ de bataille ${session.state.battlefields.findIndex((b) => b.zoneId === showdown.battlefieldId) + 1}</h3><p class="help">Priorité à ${escape(playerName(showdown.priorityPlayerId))}. Le contrôle et le point de conquête seront attribués après les passes des deux joueurs.</p><p>${showdown.consecutivePasses} / ${showdown.participants.length} passes</p><button class="primary" data-action="pass">Passer · ${escape(playerName(showdown.priorityPlayerId))}</button>`;
   const unit = session.state.units.find((u) => u.id === selection?.cardId);
   if (unit) {
     const canMove = boardOptions(session.state, unit.id).length > 0;
@@ -148,7 +165,7 @@ function resourceRow(
     `<div class="pile ${kind}" aria-label="${escape(label)} de ${escape(playerName(ownerId))}"><div class="pile-face"><span aria-hidden="true">${symbol}</span><b>${count(state, ownerId, kind)}</b></div><small>${label}</small></div>`;
   return `<div class="resource-row ${opponent ? 'opponent-resources' : ''}" aria-label="Ressources de ${escape(playerName(ownerId))}">
     ${pile('rune-pile', 'Deck de runes', '◇')}
-    <div class="rune-cards">${runes.length ? runes.map((r) => `<article class="rune-card ${escape(r.color ?? '')} ${r.ready ? '' : 'tapped'}"><span aria-hidden="true">${art(r.definitionId, 'rune-art') || (r.color === 'rouge' ? '◆' : '◈')}</span><strong>${escape(r.color ?? '')}</strong><small>${r.ready ? 'Ready' : 'Tap'}</small></article>`).join('') : '<span class="empty">Aucune rune en jeu</span>'}</div>
+    <div class="rune-cards">${runes.length ? runes.map((r) => `<article class="rune-card ${escape(r.color ?? '')} ${r.ready ? '' : 'tapped'}"><span aria-hidden="true">${art(r.definitionId, 'rune-art') || (r.color === 'rouge' ? '◆' : '◈')}</span><strong>${escape(domainName(r.color ?? ''))}</strong><small>${r.ready ? 'Ready' : 'Tap'}</small></article>`).join('') : '<span class="empty">Aucune rune en jeu</span>'}</div>
     ${pile('deck', 'Deck', '♜')}${pile('graveyard', 'Défausse', '✧')}
   </div>`;
 }
@@ -159,6 +176,7 @@ function playerBase(
   selected: Selection | null,
   opponent = false,
   destinations: readonly string[] = [],
+  moves: readonly PlannedMove[] = [],
 ): string {
   const champion = state.cards.find((c) =>
     state.zones.some(
@@ -174,7 +192,7 @@ function playerBase(
   const base = state.zones.find(
     (z) => z.kind === 'base' && z.ownerId === ownerId,
   )!;
-  return `<div class="base-row ${opponent ? 'opponent-base' : ''}">${zone(state, base.id, `Base · ${playerName(ownerId)}`, 'Unités en jeu', false, destinations)}<div class="identity-zone">${legend ? art(legend.definitionId, 'legend-art') : ''}<span>Légende<small>${escape(legend ? cardName(legend.definitionId) : '')}</small></span></div><div class="chosen-zone">${champion ? (opponent ? `<div class="champion-back"><span>Chosen champion</span><strong>${escape(cardName(champion.definitionId))}</strong>${art(champion.definitionId, 'champion-art')}</div>` : card(champion, selected, true)) : '<p class="empty">Zone champion vide</p>'}</div></div>`;
+  return `<div class="base-row ${opponent ? 'opponent-base' : ''}">${zone(state, base.id, `Base · ${playerName(ownerId)}`, 'Unités en jeu', false, destinations, moves)}<div class="identity-zone">${legend ? art(legend.definitionId, 'legend-art') : ''}<span>Légende<small>${escape(legend ? cardName(legend.definitionId) : '')}</small></span></div><div class="chosen-zone">${champion ? (opponent ? `<div class="champion-back"><span>Chosen champion</span><strong>${escape(cardName(champion.definitionId))}</strong>${art(champion.definitionId, 'champion-art')}</div>` : card(champion, selected, true)) : '<p class="empty">Zone champion vide</p>'}</div></div>`;
 }
 
 function handFan(hand: CardInstance[], selected: Selection | null): string {
@@ -211,16 +229,16 @@ export function renderTable(
   return `<header class="topbar"><div class="brand"><span class="brand-icon" aria-hidden="true">◇</span><div><h1>Simulateur TCG</h1><p>La table d’essai</p></div></div><div class="local-tag"><span></span> Local · 2 joueurs</div><button id="undo-action" class="quiet" data-action="undo" title="Annuler la dernière action réussie (10 maximum)" ${moves.length || session.history.length === 0 ? 'disabled' : ''}>↶ Annuler l’action (${session.history.length}/10)</button><button class="quiet" data-action="reset" ${moves.length ? 'disabled' : ''}>Nouvelle partie BO1</button><button class="quiet" data-action="bo3" ${moves.length ? 'disabled' : ''}>Choix BO3 · manche d’essai</button></header>
     <main><section class="play-area"><div class="scoreboard">${state.players.map((p) => `<div class="player ${p.id === active ? 'active' : ''}"><span>${escape(playerName(p.id))}<small>${p.id === active ? 'Tour actif' : 'En attente'}</small></span><strong>${p.score}<small> / ${p.victoryTarget ?? 8}</small></strong></div>`).join('')}</div>
     <div class="turnbar"><div><span class="eyebrow">${state.result ? 'Partie terminée' : state.showdown ? 'Main · Showdown en cours' : escape(state.phase === 'main' ? 'Phase principale · Main' : state.phase)}</span><h2>${state.result ? `${escape(playerName(state.result.winnerId))} gagne` : `À ${escape(playerName(active))} de jouer`}</h2></div><span class="priority">Priorité : ${escape(playerName(priority))}</span><button class="primary" data-action="end" ${!canEnd ? 'disabled' : ''}>Terminer le tour →</button></div>
-    <div class="board">
+    <div class="board">${state.players.map((p) => victoryTrack(p.id, p.score, p.id !== active)).join('')}
       ${state.players
         .filter((p) => p.id !== active)
         .map(
           (p) =>
-            `<div class="opponent-hand" aria-label="Main adverse : ${count(state, p.id, 'hand')} cartes">${Array.from({ length: Math.min(count(state, p.id, 'hand'), 12) }, () => '<span class="card-back" aria-hidden="true">◇</span>').join('')}<small>${count(state, p.id, 'hand')} cartes en main</small></div>${resourceRow(state, p.id, true)}${playerBase(state, p.id, selected, true)}`,
+            `<div class="opponent-hand" aria-label="Main adverse : ${count(state, p.id, 'hand')} cartes">${Array.from({ length: Math.min(count(state, p.id, 'hand'), 12) }, () => '<span class="card-back" aria-hidden="true">◇</span>').join('')}<small>${count(state, p.id, 'hand')} cartes en main</small></div>${resourceRow(state, p.id, true)}${playerBase(state, p.id, selected, true, [], moves)}`,
         )
         .join('')}
-      <div class="battlefields" style="--fields:${Math.max(1, state.battlefields.length)}">${state.battlefields.map((b, i) => zone(state, b.zoneId, b.definitionId && cardInfo(b.definitionId) ? cardName(b.definitionId) : `Champ de bataille ${i + 1}`, b.controllerId ? `Contrôlé par ${playerName(b.controllerId)}` : 'Neutre', true, destinations)).join('')}</div>
-      ${playerBase(state, active, selected, false, destinations)}
+      <div class="battlefields" style="--fields:${Math.max(1, state.battlefields.length)}">${state.battlefields.map((b, i) => zone(state, b.zoneId, b.definitionId && cardInfo(b.definitionId) ? cardName(b.definitionId) : `Champ de bataille ${i + 1}`, b.controllerId ? `Contrôlé par ${playerName(b.controllerId)}` : 'Neutre', true, destinations, moves)).join('')}</div>
+      ${playerBase(state, active, selected, false, destinations, moves)}
       ${resourceRow(state, active)}
     </div>
     <div class="reserve"><span>${escape(playerName(active))} · Réserve flottante</span><span><b>${state.resources[active]?.energy ?? 0}</b> énergie · <b>${escape(powerText(state.resources[active]?.power ?? {}))}</b> Power</span></div>
@@ -272,6 +290,18 @@ function actionLabel(
           .map((a) => a.amount + ' → ' + unit(a.targetId))
           .join(' ; ')
       );
+    case 'end-turn':
+      return (
+        prefix +
+        'Redresser ' +
+        (action.readyRuneIds ?? [])
+          .map((id) => {
+            const r = state.cards.find((c) => c.id === id);
+            return domainName(r?.color ?? '') + ' (' + id.slice(-1) + ')';
+          })
+          .join(' + ') +
+        ' puis terminer le tour'
+      );
     case 'pass':
       return prefix + 'Passer la priorité';
     default:
@@ -295,4 +325,34 @@ function movementPanel(
     .join(
       '',
     )}</ul><button class="primary" data-action="confirm-moves">Valider les déplacements (${moves.length})</button><button class="quiet" data-action="cancel-moves">Annuler les déplacements</button>`;
+}
+
+/** Projection visuelle seulement : position/Tap et Might passive, sans déclencher d'effets. */
+function movePreviews(
+  state: GameState,
+  zoneId: string,
+  moves: readonly PlannedMove[],
+): string {
+  const projected = {
+    ...state,
+    units: state.units.map((u) => {
+      const move = moves.find((m) => m.unitId === u.id);
+      return move ? { ...u, zoneId: move.destinationId, ready: false } : u;
+    }),
+  };
+  return moves
+    .filter((m) => m.destinationId === zoneId)
+    .map((m) => {
+      const u = projected.units.find((u) => u.id === m.unitId);
+      if (!u) return '';
+      return `<div class="unit-slot" data-preview="${escape(u.id)}" aria-label="Aperçu : ${escape(cardName(u.definitionId))} Tap"><div class="unit-card tapped move-preview"><span class="unit-face">${art(u.definitionId, 'unit-art') || `<span class="unit-fallback">${escape(cardName(u.definitionId))}</span>`}</span><span class="unit-might">${effectiveMight(u, projected)}</span></div></div>`;
+    })
+    .join('');
+}
+function victoryTrack(
+  playerId: string,
+  score: number,
+  opponent: boolean,
+): string {
+  return `<div class="victory-track ${opponent ? 'opponent' : 'active'}" aria-label="${escape(playerName(playerId))} : ${score} points sur 8">${Array.from({ length: 8 }, (_, i) => `<span class="victory-crystal ${score > i ? 'earned' : ''}" title="${i + 1} point(s)"><b>${i + 1}</b></span>`).join('')}</div>`;
 }

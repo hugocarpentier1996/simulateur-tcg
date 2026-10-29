@@ -47,7 +47,7 @@ export function prepareBattlefields(
       type: 'battlefield-selected',
       playerId: c.playerId,
       battlefieldId: c.card.id,
-      method: 'random',
+      method: config.battlefieldSelection === 'provided' ? 'choice' : 'random',
     })),
   };
 }
