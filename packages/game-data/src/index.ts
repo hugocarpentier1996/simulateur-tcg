@@ -134,3 +134,5 @@ export { crackshotCorsair } from './ogn/crackshot-corsair.js';
 export { trifarianWarCamp } from './ogn/trifarian-war-camp.js';
 
 export { voidGate } from './ogn/void-gate.js';
+
+export { fortifiedPosition } from './ogn/fortified-position.js';

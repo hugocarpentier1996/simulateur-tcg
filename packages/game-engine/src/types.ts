@@ -25,6 +25,8 @@ import type { DeathEffect, DeathEntry, DeathTrigger } from './death-types.js';
  * Les étapes automatiques conduisent jusqu'à Main, sans effets de cartes personnalisés.
  */
 export interface GameState {
+  pendingDefenseShield?:
+    import('./effects/defense-shield.js').DefenseShieldTrigger | null;
   battlefieldDefinitions?: readonly import('./battlefield-types.js').BattlefieldBlueprint[];
   /** Fin de tour suspendue jusqu'à résolution des capacités, morts et Showdowns induits. */
   pendingTurnEnd?: boolean;
@@ -74,6 +76,7 @@ export interface GameState {
   /** Pile du bas vers le haut : sorts payés, bonus déclenchés au lancement et effets de mort. */
   stack?: {
     entries: (
+      | import('./effects/defense-shield.js').DefenseShieldEntry
       | AttackDamageEntry
       | PlayEffectEntry
       | AttackEntry
@@ -132,6 +135,7 @@ export interface GameState {
         | { kind: 'open' }
         | {
             kind: 'combat';
+            shieldBonuses?: Record<string, number>;
             defenderId: string;
             stage: 'priority' | 'damage' | 'effects';
             assignments: Record<string, readonly DamageAllocation[]>;
@@ -287,6 +291,12 @@ export interface CardInstance {
  */
 export type GameAction =
   | {
+      type: 'choose-defense-shield';
+      playerId: string;
+      targetId: string;
+      payment: PaymentPlan;
+    }
+  | {
       type: 'choose-attack-targets';
       playerId: string;
       effects: readonly {
@@ -366,6 +376,11 @@ export type GameAction =
  * retourné et ne suffisent pas, seuls, à reconstruire toute la simulation.
  */
 export type GameEvent =
+  | {
+      type: 'battlefield-effect-queued' | 'battlefield-effect-resolved';
+      battlefieldId: string;
+      playerId: string;
+    }
   | {
       type: 'attack-effect-queued' | 'attack-effect-resolved';
       sourceId: string;

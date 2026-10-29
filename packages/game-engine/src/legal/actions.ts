@@ -1,3 +1,4 @@
+import { defenseShieldActions } from '../effects/defense-shield.js';
 import { attackTargetActions } from '../effects/attack-targets.js';
 import { withDeflect, spellChosenUnits } from '../cost/deflect.js';
 import { spellCost } from '../cost/spell-cost.js';
@@ -36,6 +37,10 @@ function* candidates(
   }
   if (state.pendingAttackChoices?.length) {
     yield* attackTargetActions(state, playerId);
+    return;
+  }
+  if (state.pendingDefenseShield) {
+    yield* defenseShieldActions(state, playerId);
     return;
   }
   if (state.pendingVision) {

@@ -853,3 +853,8 @@ de toutes les développer. À la reprise, vérifier les modifications locales av
 
 - +1 dégât de sort/capacité par unité affectée ici, quelle que soit son allégeance ; portée calculée à la résolution. Aucun raccordement aux dégâts de combat/duel.
 - TDD : deux échecs pertinents avant implémentation ; vérification des dégâts et événements par cible. Validation pnpm check.
+
+### Fortified Position — 29 octobre 2026
+
+- Choix du défenseur avant réactions, après les choix de l’attaquant ; cible quelconque selon le texte et Deflect payable. Shield 2 uniquement en défense, pendant ce combat.
+- Tests Open, résolution différée, Gust/Flash, cible en base, expiration et nouveau combat après réinvocation. Validation pnpm check.

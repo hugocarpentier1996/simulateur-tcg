@@ -20,6 +20,7 @@ export function combatMightBonus(unit: UnitState, state: GameState): number {
   if (unit.ownerId === combat.defenderId) {
     return (
       (definition?.shield ?? 0) +
+      (combat.shieldBonuses?.[unit.id] ?? 0) +
       personal +
       (alone
         ? activeLegends(state, unit.ownerId).reduce(

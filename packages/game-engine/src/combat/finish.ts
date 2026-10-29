@@ -32,6 +32,7 @@ export function finishCombat(
         ...next,
         showdown: {
           ...combat,
+          shieldBonuses: {},
           stage: 'priority',
           assignments: {},
           consecutivePasses: 0,

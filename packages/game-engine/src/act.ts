@@ -1,3 +1,7 @@
+import {
+  chooseDefenseShield,
+  queueDefenseShield,
+} from './effects/defense-shield.js';
 import { chooseAttackTargets } from './effects/attack-targets.js';
 import { chooseVision } from './effects/vision.js';
 import { queueAttackEffects } from './effects/attack-triggers.js';
@@ -66,7 +70,7 @@ export function act(state: GameState, action: GameAction): ActionResult {
     ...moved.events,
   ];
   const attacked = queueAttackEffects(state, entered, events);
-  const next = attacked.state;
+  const next = queueDefenseShield(state, attacked.state, events);
   events.push(...attacked.events);
   if (
     next.pendingTurnEnd &&
@@ -111,6 +115,10 @@ function dispatch(state: GameState, action: GameAction): ActionResult {
     return chooseAttackTargets(state, action);
   if (state.pendingAttackChoices?.length)
     return { ok: false, reason: 'ATTACK_CHOICES_REQUIRED' };
+  if (action.type === 'choose-defense-shield')
+    return chooseDefenseShield(state, action);
+  if (state.pendingDefenseShield)
+    return { ok: false, reason: 'DEFENSE_CHOICE_REQUIRED' };
   if (action.type === 'choose-battlefield')
     return chooseBattlefield(state, action);
   if (action.type === 'choose-first-player')

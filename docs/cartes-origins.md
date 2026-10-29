@@ -47,7 +47,7 @@ Les images restent des URL de métadonnées ; les fichiers bruts ne sont pas pub
 - [x] Fury Rune — ogn-007-298
 - [x] Mind Rune — ogn-089-298
 - [x] Order Rune — ogn-214-298
-- [ ] Fortified Position — ogn-279-298
+- [x] Fortified Position — ogn-279-298
 - [ ] Startipped Peak — ogn-288-298
 - [x] Trifarian War Camp — ogn-294-298
 - [x] Void Gate — ogn-296-298
