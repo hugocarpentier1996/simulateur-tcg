@@ -37,3 +37,8 @@ it('chaque carte réelle implémentée possède une image locale présente, jeto
     expect(existsSync('apps/table/public' + d.imageLocal), d.id).toBe(true);
   }
 });
+
+it('distingue les versions de champion par leur sous-titre imprimé', () => {
+  expect(catalogue.garenBody.displayName).toBe('Garen, Rugged');
+  expect(catalogue.annieFury.displayName).toBe('Annie, Fiery');
+});

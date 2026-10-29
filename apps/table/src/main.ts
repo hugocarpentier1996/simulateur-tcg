@@ -1,5 +1,6 @@
 import {
   createDemo,
+  tableActions,
   dispatch,
   boardOptions,
   playOrMove,
@@ -10,7 +11,7 @@ import { renderTable, type Selection } from './view.js';
 import './style.css';
 
 const root = document.querySelector<HTMLDivElement>('#app')!;
-let session = createDemo();
+let session = createDemo(true);
 let selection: Selection | null = null;
 let suppressClick = false;
 
@@ -40,7 +41,11 @@ root.addEventListener('click', (event) => {
   }
   const button = target.closest<HTMLButtonElement>('button');
   if (!button) return;
-  if (button.dataset.card) {
+  if (button.dataset.choice !== undefined) {
+    const action = tableActions(session)[Number(button.dataset.choice)];
+    if (action) session = dispatch(session, action);
+    selection = null;
+  } else if (button.dataset.card) {
     selection = { cardId: button.dataset.card };
     session = { ...session, error: null };
   } else if (button.dataset.action === 'pass') {
@@ -56,14 +61,17 @@ root.addEventListener('click', (event) => {
       playerId: session.state.activePlayerId,
     });
     if (!session.error) selection = null;
-  } else if (button.dataset.action === 'reset') {
+  } else if (
+    button.dataset.action === 'reset' ||
+    button.dataset.action === 'bo3'
+  ) {
     if (
       !window.confirm(
         'Recommencer la partie de test ? La partie actuelle sera effacée.',
       )
     )
       return;
-    session = createDemo();
+    session = createDemo(true, button.dataset.action === 'bo3' ? 'bo3' : 'bo1');
     selection = null;
   } else return;
   render();

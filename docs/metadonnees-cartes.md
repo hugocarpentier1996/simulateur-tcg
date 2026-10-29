@@ -12,7 +12,7 @@ par identifiant ; les cartes fictives de test n'ont pas d'image inventée.
   `VEN - Vendetta/images/VEN-T04.png` et garde son identifiant moteur existant.
 - `imageUrl` conserve la provenance distante ; `imageLocal` est le chemin HTTP
   local utilisable par la démo, inclus dans le build Vite.
-- `displayName` conserve le nom complet du JSON, y compris les sous-titres de champions.
+- `displayName` conserve le nom complet et le sous-titre de la galerie officielle.
 - `tags` est une liste immuable de métadonnées, distincte de Shield, Assault, Tank, etc.
   Le moteur expose `unitTags(state, unitId)` pour consulter la définition d'une unité
   en jeu, sans dupliquer ces données à chaque déplacement.

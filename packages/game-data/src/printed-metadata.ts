@@ -233,12 +233,12 @@ const entries: Record<string, PrintedMetadata> = {
     imageLocal: '/cards/ogn-055-298.png',
   },
   'ogs-010-024': {
-    displayName: 'Annie',
+    displayName: 'Annie, Stubborn',
     tags: ['Annie', 'Noxus'],
     imageLocal: '/cards/ogs-010-024.png',
   },
   'ogs-001-024': {
-    displayName: 'Annie',
+    displayName: 'Annie, Fiery',
     tags: ['Annie', 'Noxus'],
     imageLocal: '/cards/ogs-001-024.png',
   },
@@ -248,17 +248,17 @@ const entries: Record<string, PrintedMetadata> = {
     imageLocal: '/cards/ogs-012-024.png',
   },
   'ogs-017-024': {
-    displayName: 'Dark Child',
+    displayName: 'Dark Child, Starter',
     tags: ['Annie'],
     imageLocal: '/cards/ogs-017-024.png',
   },
   'ogs-024-024': {
-    displayName: 'Decisive Strike',
+    displayName: 'Decisive Strike, Garen',
     tags: ['Garen'],
     imageLocal: '/cards/ogs-024-024.png',
   },
   'ogs-022-024': {
-    displayName: 'Final Spark',
+    displayName: 'Final Spark, Lux',
     tags: ['Lux'],
     imageLocal: '/cards/ogs-022-024.png',
   },
@@ -273,12 +273,12 @@ const entries: Record<string, PrintedMetadata> = {
     imageLocal: '/cards/ogs-011-024.png',
   },
   'ogs-007-024': {
-    displayName: 'Garen',
+    displayName: 'Garen, Rugged',
     tags: ['Elite', 'Garen', 'Demacia'],
     imageLocal: '/cards/ogs-007-024.png',
   },
   'ogs-013-024': {
-    displayName: 'Garen',
+    displayName: 'Garen, Commander',
     tags: ['Elite', 'Garen', 'Demacia'],
     imageLocal: '/cards/ogs-013-024.png',
   },
@@ -288,7 +288,7 @@ const entries: Record<string, PrintedMetadata> = {
     imageLocal: '/cards/ogs-008-024.png',
   },
   'ogs-020-024': {
-    displayName: 'Highlander',
+    displayName: 'Highlander, Yi',
     tags: ['Master Yi'],
     imageLocal: '/cards/ogs-020-024.png',
   },
@@ -298,32 +298,32 @@ const entries: Record<string, PrintedMetadata> = {
     imageLocal: '/cards/ogs-003-024.png',
   },
   'ogs-021-024': {
-    displayName: 'Lady of Luminosity',
+    displayName: 'Lady of Luminosity, Starter',
     tags: ['Lux'],
     imageLocal: '/cards/ogs-021-024.png',
   },
   'ogs-006-024': {
-    displayName: 'Lux',
+    displayName: 'Lux, Illuminated',
     tags: ['Lux', 'Demacia'],
     imageLocal: '/cards/ogs-006-024.png',
   },
   'ogs-014-024': {
-    displayName: 'Lux',
+    displayName: 'Lux, Crownguard',
     tags: ['Lux', 'Demacia'],
     imageLocal: '/cards/ogs-014-024.png',
   },
   'ogs-009-024': {
-    displayName: 'Master Yi',
+    displayName: 'Master Yi, Honed',
     tags: ['Master Yi', 'Ionia'],
     imageLocal: '/cards/ogs-009-024.png',
   },
   'ogs-004-024': {
-    displayName: 'Master Yi',
+    displayName: 'Master Yi, Meditative',
     tags: ['Master Yi', 'Ionia'],
     imageLocal: '/cards/ogs-004-024.png',
   },
   'ogs-023-024': {
-    displayName: 'Might of Demacia',
+    displayName: 'Might of Demacia, Starter',
     tags: ['Garen'],
     imageLocal: '/cards/ogs-023-024.png',
   },
@@ -338,7 +338,7 @@ const entries: Record<string, PrintedMetadata> = {
     imageLocal: '/cards/ogs-015-024.png',
   },
   'ogs-018-024': {
-    displayName: 'Tibbers',
+    displayName: 'Tibbers, Annie',
     tags: ['Annie'],
     imageLocal: '/cards/ogs-018-024.png',
   },
@@ -348,7 +348,7 @@ const entries: Record<string, PrintedMetadata> = {
     imageLocal: '/cards/ogs-016-024.png',
   },
   'ogs-019-024': {
-    displayName: 'Wuju Bladesman',
+    displayName: 'Wuju Bladesman, Starter',
     tags: ['Master Yi'],
     imageLocal: '/cards/ogs-019-024.png',
   },

@@ -1,3 +1,9 @@
+import { cardInfo, illustratedUnits, demoBattlefields } from './catalogue.js';
+import {
+  mightOfDemacia,
+  bodyRune,
+  orderRune,
+} from '../../../packages/game-data/src/index.js';
 import {
   act,
   getLegalActions,
@@ -40,7 +46,7 @@ export interface Session {
 export const playerName = (id: string) =>
   id === 'a' ? 'Joueur 1' : id === 'b' ? 'Joueur 2' : id;
 export const cardName = (id: string) =>
-  demoUnits.find((d) => d.id === id)?.name ?? id;
+  cardInfo(id)?.displayName ?? cardInfo(id)?.name ?? id;
 
 function requireState(result: ActionResult): GameState {
   if (!result.ok) throw new Error(`Préparation de la démo : ${result.reason}`);
@@ -49,55 +55,76 @@ function requireState(result: ActionResult): GameState {
 
 /** Sans entrée -> partie locale reproductible en première Main.
  * Decks fixes de 39 cartes, 12 runes, dés 19/8 et aucun mulligan.
+ * illustrated active les cartes réelles et champs ; bo3 propose les choix de la première manche.
  * Utilise exclusivement les API du moteur ; aucune sauvegarde ni hasard navigateur. */
-export function createDemo(): Session {
+export function createDemo(
+  illustrated = false,
+  format: 'bo1' | 'bo3' = 'bo1',
+): Session {
+  const units = illustrated ? illustratedUnits : demoUnits;
   let state = requireState(
     createGame({
       randomState: 73,
-      unitDefinitions: demoUnits,
+      unitDefinitions: units,
+      ...(illustrated
+        ? {
+            battlefieldDefinitions: demoBattlefields,
+            legendDefinitions: [mightOfDemacia],
+          }
+        : {}),
+      match:
+        format === 'bo3' ? { format: 'bo3', gameNumber: 1 } : { format: 'bo1' },
       players: ['a', 'b'].map((id) => ({
         id,
         deck: Array.from({ length: 39 }, (_, i) => ({
           id: `${id}-card-${i}`,
-          definitionId: demoUnits[i % demoUnits.length]!.id,
+          definitionId: units[i % units.length]!.id,
         })),
         runes: Array.from({ length: 12 }, (_, i) => ({
           id: `${id}-rune-${i}`,
-          definitionId: 'rune',
-          color: i % 2 === 0 ? 'rouge' : 'bleu',
+          definitionId: illustrated
+            ? i % 2 === 0
+              ? bodyRune.id
+              : orderRune.id
+            : 'rune',
+          color: illustrated
+            ? i % 2 === 0
+              ? 'orange'
+              : 'jaune'
+            : i % 2 === 0
+              ? 'rouge'
+              : 'bleu',
         })),
         legend: {
           id: `${id}-legend`,
-          definitionId: 'legend',
-          colors: ['rouge', 'bleu'],
+          definitionId: illustrated ? mightOfDemacia.id : 'legend',
+          colors: illustrated ? ['orange', 'jaune'] : ['rouge', 'bleu'],
         },
-        champion: { id: `${id}-chosen`, definitionId: 'test-guard' },
+        champion: {
+          id: `${id}-chosen`,
+          definitionId: illustrated ? illustratedUnits[3]!.id : 'test-guard',
+        },
         battlefields: [0, 1, 2].map((i) => ({
           id: `${id}-field-${i}`,
-          definitionId: `field-${i}`,
+          definitionId: illustrated
+            ? demoBattlefields[(i + (id === 'a' ? 0 : 1)) % 4]!.id
+            : `field-${i}`,
         })),
       })),
     }),
   );
-  state = requireState(recordOpeningRoll(state, { a: 19, b: 8 }));
-  state = requireState(
-    act(state, {
-      type: 'choose-first-player',
-      playerId: 'a',
-      firstPlayerId: 'a',
-    }),
-  );
-  for (const playerId of ['a', 'b'])
-    state = requireState(
-      act(state, { type: 'mulligan', playerId, cardIds: [] }),
-    );
+  if (state.setup?.stage === 'roll') state = prepareDemo(state);
   return {
     state,
     history: [],
-    log: [
-      'Partie de test préparée : dés 19 / 8, aucune carte remplacée.',
-      'Joueur 1 commence : 2 runes et 5 cartes en main.',
-    ],
+    log: state.setup
+      ? [
+          'Chaque joueur choisit un champ parmi ses trois candidats avant les dés.',
+        ]
+      : [
+          'Partie de test préparée : dés 19 / 8, aucune carte remplacée.',
+          'Joueur 1 commence : 2 runes et 5 cartes en main.',
+        ],
     error: null,
   };
 }
@@ -115,6 +142,13 @@ const refusals: Record<string, string> = {
 
 function describe(event: GameEvent): string | null {
   switch (event.type) {
+    case 'battlefield-effect-queued':
+      return `${playerName(event.playerId)} prépare la capacité du champ.`;
+    case 'battlefield-effect-resolved':
+      return `Capacité du champ résolue pour ${playerName(event.playerId)}.`;
+    case 'battlefield-selected':
+      return `${playerName(event.playerId)} sélectionne son champ (${event.method === 'random' ? 'tirage BO1' : 'choix BO3'}).`;
+
     case 'unit-moved':
       return 'Une unité se déplace sur un champ de bataille et devient Tap.';
     case 'showdown-opened':
@@ -171,7 +205,10 @@ export function dispatch(session: Session, action: GameAction): Session {
       error: refusals[result.reason] ?? `Action refusée : ${result.reason}`,
     };
   return {
-    state: result.state,
+    state:
+      result.state.setup?.stage === 'roll'
+        ? prepareDemo(result.state)
+        : result.state,
     history: [
       ...session.history,
       { state: session.state, log: session.log },
@@ -225,18 +262,19 @@ export function placeUnit(
 }
 
 /** Carte ou unité -> placements/déplacements autorisés par le moteur.
- * Limite UI temporaire : masque les attaques de champs occupés par un adversaire,
- * car la résolution du combat n'est pas encore accessible depuis cette table. */
+ * Démo illustrée : attaques accessibles via le panneau de combat.
+ * Les anciennes fixtures sans catalogue de champs gardent leur parcours sans combat. */
 export function boardOptions(state: GameState, id: string) {
   if (!state.units.some((u) => u.id === id)) return placementOptions(state, id);
   return getLegalActions(state, state.activePlayerId).filter(
     (a): a is Extract<GameAction, { type: 'move' }> =>
       a.type === 'move' &&
       a.unitId === id &&
-      !state.units.some(
-        (u) =>
-          u.zoneId === a.destinationId && u.ownerId !== state.activePlayerId,
-      ),
+      (!!state.battlefieldDefinitions?.length ||
+        !state.units.some(
+          (u) =>
+            u.zoneId === a.destinationId && u.ownerId !== state.activePlayerId,
+        )),
   );
 }
 
@@ -268,4 +306,37 @@ export function passShowdown(session: Session): Session {
     type: 'pass',
     playerId: showdown.priorityPlayerId,
   });
+}
+
+/** Dés et mulligans fixes de la démonstration, après sélection des champs. */
+function prepareDemo(state: GameState): GameState {
+  state = requireState(recordOpeningRoll(state, { a: 19, b: 8 }));
+  state = requireState(
+    act(state, {
+      type: 'choose-first-player',
+      playerId: 'a',
+      firstPlayerId: 'a',
+    }),
+  );
+  for (const playerId of ['a', 'b'])
+    state = requireState(
+      act(state, { type: 'mulligan', playerId, cardIds: [] }),
+    );
+  return state;
+}
+
+/** Choix de progression et combat déjà validés par le moteur, pour les deux joueurs locaux.
+ * Le clic doit recalculer cette liste ; aucun état de jeu n'est modifié pendant l'affichage. */
+export function tableActions(session: Session): GameAction[] {
+  return session.state.players
+    .flatMap((p) => getLegalActions(session.state, p.id))
+    .filter((a) =>
+      [
+        'choose-battlefield',
+        'choose-defense-shield',
+        'choose-hold-channel',
+        'assign-damage',
+        'pass',
+      ].includes(a.type),
+    );
 }

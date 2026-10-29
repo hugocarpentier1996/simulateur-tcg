@@ -1013,3 +1013,91 @@ aside {
   opacity: 0.9;
   transform: rotate(-4deg);
 }
+
+/* Les images restent locales, les statistiques dynamiques restent au-dessus du plateau. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.illustrated-card {
+  padding: 0;
+  overflow: hidden;
+}
+.card-art {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  background: #101a25;
+}
+.unit-art {
+  width: 40px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+.field-art {
+  width: 130px;
+  height: 92px;
+  object-fit: contain;
+  float: right;
+  margin: 0 0 8px 12px;
+  border-radius: 6px;
+}
+.battlefield::after {
+  content: '';
+  display: block;
+  clear: both;
+}
+.legend-art,
+.champion-art {
+  max-width: 80px;
+  max-height: 112px;
+  object-fit: contain;
+  border-radius: 5px;
+}
+.rune-art {
+  width: 35px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+.card-preview {
+  display: block;
+  width: 100%;
+  max-width: 210px;
+  margin: 12px auto;
+  border-radius: 8px;
+}
+.tags {
+  color: #bdc6d4;
+  font-size: 11px;
+}
+.choice-list {
+  display: grid;
+  gap: 8px;
+  max-height: 60vh;
+  overflow: auto;
+}
+.choice-list button {
+  white-space: normal;
+  text-align: left;
+}
+.topbar {
+  flex-wrap: wrap;
+}
+
+.champion-back .champion-art {
+  max-height: 65px;
+  width: auto;
+}
+.identity-zone .legend-art {
+  max-height: 80px;
+  width: auto;
+}

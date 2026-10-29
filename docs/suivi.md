@@ -876,3 +876,15 @@ de toutes les développer. À la reprise, vérifier les modifications locales av
 - 70 images locales (69 cartes + Recruit), issues des chemins JSON, incluses au build.
 - TDD : tags absents, alias mutable et images manquantes constatés avant implémentation.
 - Provenance et limites : docs/metadonnees-cartes.md. Validation pnpm check.
+
+### Champs et cartes illustrées dans la démonstration — 29 octobre 2026
+
+- Démo navigateur passée aux unités réelles orange/jaune, légende et runes illustrées.
+- Catalogue de quatre champs, tirage BO1 parmi trois par joueur ; choix des champs pour une première manche d’essai BO3.
+- Panneau piloté par getLegalActions : choix Shield, rune facultative, passes de pile et répartition des dégâts. Attaques désormais accessibles dans la démo illustrée.
+- Images locales sur main, unités, champion, légende, runes et champs ; agrandissement de la carte sélectionnée et affichage des tags.
+- Sous-titres des champions récupérés de la source officielle pour distinguer les versions.
+- TDD : quatre nouveaux parcours UI/moteur échouaient avant raccordement ; ajout d’un test des sous-titres.
+- Vérification navigateur : rendu des images observé ; vérification des clics limitée par un dialogue natif bloquant l’outil. Parcours BO3/Shield/Peak/combat validés en tests d’intégration.
+- Validation : pnpm check, 457 tests et build réussis.
+- Limites : petits decks de démonstration, pas encore d’éditeur de deck ni de pilotage UI de toute une série BO3 ; aucune nouvelle règle de légalité des tags ajoutée.
