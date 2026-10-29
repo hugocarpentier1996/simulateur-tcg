@@ -771,6 +771,13 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
 
 - Validation : pnpm check, 403 tests et build réussis.
 
+### Origins fournée 3 : Eager Apprentice — 29 octobre 2026
+
+- Réduction cumulable des sorts uniquement depuis les champs, plancher 1 sans augmenter 0 ; paiement automatique raccordé.
+- Lux et Lady conservent le coût imprimé pour leur seuil. Tests coût réel, coût imprimé, base/champ et cumul.
+
+- Validation : pnpm check, 408 tests et build réussis.
+
 ## Limites à conserver lors d'une reprise
 
 - Première capacité de mort implémentée pour les morts de combat et hors combat. Autres déclencheurs,

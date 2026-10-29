@@ -1,3 +1,4 @@
+import { spellCost } from '../cost/spell-cost.js';
 import { playTargetChoices } from '../effects/play-targets.js';
 import { endTurnChoices } from '../effects/end-runes.js';
 import type { GameAction, GameState } from '../types.js';
@@ -111,7 +112,12 @@ function* candidates(
       (d) => d.id === card.definitionId,
     );
     if (spell) {
-      const payment = findPayment(state, playerId, spell.cost, 'spell');
+      const payment = findPayment(
+        state,
+        playerId,
+        spellCost(state, playerId, spell.cost),
+        'spell',
+      );
       if (payment)
         for (const target of spell.target.kind === 'graveyard-unit'
           ? state.cards

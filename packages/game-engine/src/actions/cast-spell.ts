@@ -1,3 +1,4 @@
+import { spellCost } from '../cost/spell-cost.js';
 import { graveyardCard } from '../effects/graveyard-card.js';
 import { activeLegends } from '../effects/legends.js';
 import type { ActionResult, GameAction, GameState } from '../types.js';
@@ -114,13 +115,8 @@ export function castSpell(
       ))
   )
     return { ok: false, reason: 'INVALID_ADDITIONAL_COST' };
-  const paid = payCost(
-    state,
-    action.playerId,
-    definition.cost,
-    action.payment,
-    'spell',
-  );
+  const cost = spellCost(state, action.playerId, definition.cost);
+  const paid = payCost(state, action.playerId, cost, action.payment, 'spell');
   if (!paid.ok) return paid;
   const triggers = expensiveSpellTriggers(
     paid.state,
@@ -188,7 +184,7 @@ export function castSpell(
         type: 'cost-paid',
         playerId: action.playerId,
         cardId: card.id,
-        ...definition.cost,
+        ...cost,
       },
       {
         type: 'spell-cast',
