@@ -785,6 +785,13 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
 
 - Validation : pnpm check, 413 tests et build réussis.
 
+### Origins fournée 3 : Singularity — 29 octobre 2026
+
+- Six dégâts simultanés à zéro, une ou deux unités distinctes choisies au lancement.
+- Actions légales raccordées, alliés autorisés ; bonus calculés avant toute mort, test avec Annie parmi les cibles.
+
+- Validation : pnpm check, 417 tests et build réussis.
+
 ## Limites à conserver lors d'une reprise
 
 - Première capacité de mort implémentée pour les morts de combat et hors combat. Autres déclencheurs,

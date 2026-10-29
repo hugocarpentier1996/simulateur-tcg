@@ -48,6 +48,11 @@ export interface SpellBlueprint {
         readonly drawIfEmpty?: boolean;
       }
     | { readonly type: 'units-enter-ready' }
+    | {
+        readonly type: 'damage-selected-units';
+        readonly maximum: 2;
+        readonly amount: number;
+      }
     | { readonly type: 'return-unit-to-hand' }
     | { readonly type: 'kill-unit' }
     | { readonly type: 'duel' }

@@ -109,6 +109,18 @@ export function resolveSpell(
       };
       continue;
     }
+    if (effect.type === 'damage-selected-units') {
+      const damaged = dealSpellDamage(
+        state,
+        entry.card.id,
+        entry.casterId,
+        state.units.filter((u) => entry.selectedUnitIds?.includes(u.id)),
+        effect.amount,
+      );
+      state = damaged.state;
+      events.push(...damaged.events);
+      continue;
+    }
     if (effect.type === 'draw') {
       const count = entry.exhaustedForCost
         ? (effect.countIfExhausted ?? effect.count)

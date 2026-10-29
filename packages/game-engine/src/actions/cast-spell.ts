@@ -63,6 +63,19 @@ export function castSpell(
       ))
   )
     return { ok: false, reason: 'INVALID_TARGET' };
+  const selectedDamage = definition.effects.find(
+    (e) => e.type === 'damage-selected-units',
+  );
+  if (
+    selectedDamage &&
+    (!action.selectedUnitIds ||
+      action.selectedUnitIds.length > selectedDamage.maximum ||
+      new Set(action.selectedUnitIds).size !== action.selectedUnitIds.length ||
+      action.selectedUnitIds.some(
+        (id) => !state.units.some((u) => u.id === id),
+      ))
+  )
+    return { ok: false, reason: 'INVALID_TARGET' };
   const target = spellTarget(
     state,
     definition,

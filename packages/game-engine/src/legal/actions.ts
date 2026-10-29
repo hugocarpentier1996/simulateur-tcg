@@ -149,11 +149,16 @@ function* candidates(
             spell.effects.some(
               (e) =>
                 e.type === 'move-up-to-two-allies-to-base' ||
-                e.type === 'boost-selected-allies',
+                e.type === 'boost-selected-allies' ||
+                e.type === 'damage-selected-units',
             )
           ) {
             const ids = state.units
-              .filter((u) => u.ownerId === playerId)
+              .filter(
+                (u) =>
+                  u.ownerId === playerId ||
+                  spell.effects.some((e) => e.type === 'damage-selected-units'),
+              )
               .map((u) => u.id);
             yield { ...base, selectedUnitIds: [] };
             for (const [i, id] of ids.entries()) {
