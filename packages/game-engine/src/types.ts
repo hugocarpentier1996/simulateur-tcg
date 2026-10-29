@@ -25,6 +25,10 @@ import type { DeathEffect, DeathEntry, DeathTrigger } from './death-types.js';
  * Les étapes automatiques conduisent jusqu'à Main, sans effets de cartes personnalisés.
  */
 export interface GameState {
+  /** Beginning suspendu : reprendre Channel/Draw une seule fois après la pile et les choix. */
+  pendingTurnStart?: boolean;
+  pendingHoldChannel?:
+    import('./effects/hold-channel.js').HoldChannelEntry | null;
   pendingDefenseShield?:
     import('./effects/defense-shield.js').DefenseShieldTrigger | null;
   battlefieldDefinitions?: readonly import('./battlefield-types.js').BattlefieldBlueprint[];
@@ -76,6 +80,7 @@ export interface GameState {
   /** Pile du bas vers le haut : sorts payés, bonus déclenchés au lancement et effets de mort. */
   stack?: {
     entries: (
+      | import('./effects/hold-channel.js').HoldChannelEntry
       | import('./effects/defense-shield.js').DefenseShieldEntry
       | AttackDamageEntry
       | PlayEffectEntry
@@ -290,6 +295,7 @@ export interface CardInstance {
  * `playerId` devra être fourni par le serveur à partir de l'identité authentifiée.
  */
 export type GameAction =
+  | { type: 'choose-hold-channel'; playerId: string; accept: boolean }
   | {
       type: 'choose-defense-shield';
       playerId: string;

@@ -31,6 +31,13 @@ function* candidates(
   state: GameState,
   playerId: string,
 ): Generator<GameAction> {
+  if (state.pendingHoldChannel) {
+    if (state.pendingHoldChannel.ownerId === playerId) {
+      yield { type: 'choose-hold-channel', playerId, accept: true };
+      yield { type: 'choose-hold-channel', playerId, accept: false };
+    }
+    return;
+  }
   if (state.pendingDeaths) {
     yield* resolutionChoices(state, playerId);
     return;

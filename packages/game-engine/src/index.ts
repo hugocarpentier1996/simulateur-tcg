@@ -40,3 +40,5 @@ export { dealAreaDamage } from './effects/area-damage.js';
 export type { AreaDamageSource } from './effects/area-damage.js';
 
 export type { LegendBlueprint } from './legend-types.js';
+
+export type { BattlefieldBlueprint } from './battlefield-types.js';

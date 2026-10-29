@@ -1,3 +1,4 @@
+import { resolveDuel } from './effects/duel.js';
 import { expect, it } from 'vitest';
 import { voidGate, gust } from '../../game-data/src/index.js';
 import { spellScenario } from './origins-test-fixtures.js';
@@ -31,3 +32,12 @@ it.each(['spell', 'ability'] as const)(
     ).toEqual([1, 1]);
   },
 );
+
+it('Void Gate ne renforce pas les dégâts directs entre unités du duel', () => {
+  const s = spellScenario(gust);
+  s.battlefieldDefinitions = [voidGate];
+  s.battlefields[0]!.definitionId = voidGate.id;
+  s.units[1]!.zoneId = 'f';
+  const r = resolveDuel(s, s.units[0]!, s.units[1]!);
+  expect(r.state.units.map((u) => u.damage)).toEqual([3, 3]);
+});

@@ -824,7 +824,7 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
 - Première capacité de mort implémentée pour les morts de combat et hors combat. Autres déclencheurs,
   nouvelles sources de dégâts et cartes accordant des points restent à ajouter.
   Destination d'invocation devenue illégale : effet ignoré, choix provisoire documenté.
-- Effets propres aux battlefields, tags légende/champion et limites de copies à compléter.
+- Autres effets propres aux battlefields, tags légende/champion et limites de copies à compléter.
 - Les cartes de test utilisent encore `color-1`/`color-2` ; les nouvelles configurations
   utilisent rouge, vert, bleu, orange, violet, jaune. Harmoniser coûts et runes ensemble.
 - Le moteur reçoit un état serveur de confiance, sans validation générale de JSON client.
@@ -858,3 +858,14 @@ de toutes les développer. À la reprise, vérifier les modifications locales av
 
 - Choix du défenseur avant réactions, après les choix de l’attaquant ; cible quelconque selon le texte et Deflect payable. Shield 2 uniquement en défense, pendant ce combat.
 - Tests Open, résolution différée, Gust/Flash, cible en base, expiration et nouveau combat après réinvocation. Validation pnpm check.
+
+### Startipped Peak et clôture des champs Origins — 29 octobre 2026
+
+- Capacité de tenue sur la pile, puis choix facultatif de Channel une rune Tap à la résolution.
+- Beginning suspendu pendant réactions/choix ; reprise unique Channel puis Draw, sans répéter Awaken ni les points de tenue.
+- Tests accepter/refuser, pile vide, conquête sans déclenchement, victoire immédiate, perte du contrôle en réaction et deux Peaks tenus.
+- Intégration des catalogues testée en BO1 (hasard reproductible parmi trois par joueur) et BO3 (choix avant dés) ; règles existantes de non-réutilisation conservées.
+- Vérification complémentaire : Void Gate n’augmente pas les dégâts directs du duel.
+- Validation finale : pnpm check, 449 tests et build réussis.
+- Bilan : 69/69 entrées demandées raccordées au moteur. Quatre commits de champs, chacun validé et poussé.
+- Limite : les nouveaux champs ne sont pas encore ajoutés aux decks de démonstration ; les nouveaux choix sont exposés par act/getLegalActions, sans panneau UI dédié.

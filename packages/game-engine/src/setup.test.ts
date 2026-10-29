@@ -8,6 +8,12 @@ import {
 } from './index.js';
 import { withDrawSupplies } from './test-fixtures.js';
 import { startTurn } from './turn/progression.js';
+import {
+  trifarianWarCamp,
+  voidGate,
+  fortifiedPosition,
+  startippedPeak,
+} from '../../game-data/src/index.js';
 import { darkChild } from '../../game-data/src/index.js';
 
 it('conserve le catalogue des légendes et pose leur instance Ready hors des unités', () => {
@@ -426,3 +432,62 @@ describe('bonus de Channel initial', () => {
     expect(result.state.initialChannelBonusPlayerId).toBeNull();
   });
 });
+
+it.each(['bo1', 'bo3'] as const)(
+  'les champs Origins sélectionnés en %s gardent leurs définitions et effets',
+  (format) => {
+    const input = config();
+    const catalogue = [
+      trifarianWarCamp,
+      voidGate,
+      fortifiedPosition,
+      startippedPeak,
+    ];
+    input.players.forEach((p, i) =>
+      p.battlefields.forEach(
+        (b, j) => (b.definitionId = catalogue[(j + i) % catalogue.length]!.id),
+      ),
+    );
+    const request = {
+      ...input,
+      battlefieldDefinitions: catalogue,
+      match:
+        format === 'bo1'
+          ? ({ format } as const)
+          : ({ format, gameNumber: 1 } as const),
+    };
+    let s = accepted(createGame(request));
+    expect(createGame(request)).toEqual(createGame(request));
+    expect(s.battlefieldDefinitions).toEqual(catalogue);
+    if (format === 'bo3') {
+      expect(s.battlefields).toEqual([]);
+      for (const p of input.players)
+        s = accepted(
+          act(s, {
+            type: 'choose-battlefield',
+            playerId: p.id,
+            battlefieldId: p.battlefields[2]!.id,
+          }),
+        );
+      expect(s.battlefields.map((f) => f.definitionId)).toEqual(
+        input.players.map((p) => p.battlefields[2]!.definitionId),
+      );
+    } else {
+      expect(s.battlefields).toHaveLength(2);
+      input.players.forEach((p, i) =>
+        expect(
+          p.battlefields.some(
+            (b) =>
+              b.id === s.battlefields[i]!.zoneId &&
+              b.definitionId === s.battlefields[i]!.definitionId,
+          ),
+        ).toBe(true),
+      );
+    }
+    expect(
+      s.battlefields.every((f) =>
+        catalogue.some((d) => d.id === f.definitionId),
+      ),
+    ).toBe(true);
+  },
+);

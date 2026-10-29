@@ -48,7 +48,7 @@ Les images restent des URL de métadonnées ; les fichiers bruts ne sont pas pub
 - [x] Mind Rune — ogn-089-298
 - [x] Order Rune — ogn-214-298
 - [x] Fortified Position — ogn-279-298
-- [ ] Startipped Peak — ogn-288-298
+- [x] Startipped Peak — ogn-288-298
 - [x] Trifarian War Camp — ogn-294-298
 - [x] Void Gate — ogn-296-298
 
@@ -79,3 +79,16 @@ Bilan : 65/69 entrées raccordées ; seuls Fortified Position, Startipped Peak,
 Trifarian War Camp et Void Gate restent volontairement hors de cette fournée.
 Les cartes restent hors decks de démonstration. Les choix provisoires sont consignés
 dans questions-origins.md.
+
+## Champs intégrés — 29 octobre 2026
+
+Demande étendue aux quatre champs : Fortified Position, Startipped Peak, Trifarian
+War Camp et Void Gate sont maintenant raccordés. Bilan final : **69/69 entrées**,
+dont les 45 nouvelles définitions Origins. Les configurations fournissent le catalogue
+dans `battlefieldDefinitions` ; les trois candidats de chaque joueur restent dans
+`players[].battlefields`. BO1 et BO3 conservent leurs règles de sélection existantes.
+
+Les deux bonus continus se calculent sur la position actuelle. Fortified Position
+déclenche un choix avant réactions ; le Shield expire avec le combat. Startipped Peak
+ouvre les réactions en Beginning puis propose son Channel facultatif à la résolution,
+avant le Channel normal. Les nouveaux choix sont disponibles dans `getLegalActions`.

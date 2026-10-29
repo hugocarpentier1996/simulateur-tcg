@@ -11,6 +11,7 @@ export function continueStack(
   if (!stack) throw new Error('Pile absente à la reprise.');
   const entries = stack.entries;
   if (
+    next.pendingHoldChannel ||
     next.pendingDefenseShield ||
     next.pendingDeaths ||
     next.pendingDiscard ||

@@ -12,8 +12,8 @@ import { clearResources } from './resources.js';
 /**
  * Entrée : état cohérent dont la fin de tour a été autorisée, joueurs en ordre de jeu.
  * Sortie : suivant actif en Main après toutes les étapes automatiques, avec journal
- * ordonné des phases et de leurs conséquences. Aucun choix ni effet de carte n'est
- * encore pris en charge pendant ces étapes. L'entrée n'est jamais modifiée.
+ * ordonné des phases et de leurs conséquences. Beginning peut être suspendu par une capacité de champ ;
+ * Channel/Draw reprennent après ses choix et réactions. L'entrée n'est jamais modifiée.
  */
 export function startNextTurn(
   state: GameState,
@@ -68,10 +68,34 @@ export function startTurn(
   const steps = [
     ['awaken', awaken],
     ['beginning', scoreHolding],
-    ['channel', channelRunes],
-    ['draw', drawCard],
   ] as const;
   for (const [phase, effect] of steps) {
+    const result = runPhase(current, phase, effect);
+    current = result.state;
+    events.push(...result.events);
+    if (current.result) return { ok: true, state: current, events };
+  }
+  if (current.stack)
+    return { ok: true, state: { ...current, pendingTurnStart: true }, events };
+  const resumed = resumeTurn(current);
+  return { ...resumed, events: [...events, ...resumed.events] };
+}
+
+/** Après Beginning et toutes ses réactions -> Channel, Draw puis Main, sans rescoring.
+ * Appel interne uniquement lorsque pile, choix et Showdowns ont terminé. */
+export function resumeTurn(
+  state: GameState,
+): Extract<ActionResult, { ok: true }> {
+  let current = {
+    ...state,
+    ...(state.pendingTurnStart ? { pendingTurnStart: false } : {}),
+  };
+  const nextPlayerId = state.activePlayerId;
+  const events: GameEvent[] = [];
+  for (const [phase, effect] of [
+    ['channel', channelRunes],
+    ['draw', drawCard],
+  ] as const) {
     const result = runPhase(current, phase, effect);
     current = result.state;
     events.push(...result.events);
@@ -83,7 +107,11 @@ export function startTurn(
     playerId: nextPlayerId,
     phase: 'main',
   });
-  return { ok: true, state: { ...cleared.state, phase: 'main' }, events };
+  return {
+    ok: true,
+    state: { ...cleared.state, phase: 'main', priorityPlayerId: nextPlayerId },
+    events,
+  };
 }
 
 /** État + étape + traitement -> état de sortie et événement d'entrée suivi des effets. */

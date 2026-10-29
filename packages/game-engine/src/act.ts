@@ -2,6 +2,8 @@ import {
   chooseDefenseShield,
   queueDefenseShield,
 } from './effects/defense-shield.js';
+import { chooseHoldChannel } from './effects/hold-channel.js';
+import { resumeTurn } from './turn/progression.js';
 import { chooseAttackTargets } from './effects/attack-targets.js';
 import { chooseVision } from './effects/vision.js';
 import { queueAttackEffects } from './effects/attack-triggers.js';
@@ -82,6 +84,16 @@ export function act(state: GameState, action: GameAction): ActionResult {
     const started = startNextTurn(next);
     return { ...started, events: [...events, ...started.events] };
   }
+  if (
+    next.pendingTurnStart &&
+    !next.result &&
+    !next.stack &&
+    !next.pendingDeaths &&
+    !next.showdown
+  ) {
+    const resumed = resumeTurn(next);
+    return { ...resumed, events: [...events, ...resumed.events] };
+  }
   const opened = !result.state.showdown && next.showdown;
   return {
     ...result,
@@ -100,6 +112,10 @@ function dispatch(state: GameState, action: GameAction): ActionResult {
   if (!state.players.some((player) => player.id === action.playerId)) {
     return { ok: false, reason: 'UNKNOWN_PLAYER' };
   }
+  if (action.type === 'choose-hold-channel')
+    return chooseHoldChannel(state, action);
+  if (state.pendingHoldChannel)
+    return { ok: false, reason: 'HOLD_CHANNEL_CHOICE_REQUIRED' };
   if (action.type === 'choose-vision') return chooseVision(state, action);
   if (state.pendingVision)
     return { ok: false, reason: 'VISION_CHOICE_REQUIRED' };

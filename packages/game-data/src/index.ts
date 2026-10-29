@@ -136,3 +136,8 @@ export { trifarianWarCamp } from './ogn/trifarian-war-camp.js';
 export { voidGate } from './ogn/void-gate.js';
 
 export { fortifiedPosition } from './ogn/fortified-position.js';
+
+export { startippedPeak } from './ogn/startipped-peak.js';
+
+export { defineBattlefield } from './battlefield-definition.js';
+export type { BattlefieldDefinition } from './battlefield-definition.js';
