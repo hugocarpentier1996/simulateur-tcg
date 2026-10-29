@@ -848,3 +848,8 @@ de toutes les développer. À la reprise, vérifier les modifications locales av
 
 - Catalogue de champs transmis à createGame ; +1 Might local pour tous les camps, indépendant du contrôle.
 - TDD : échec 3 au lieu de 4 constaté, puis test de portée et sortie du champ. Validation pnpm check.
+
+### Void Gate — 29 octobre 2026
+
+- +1 dégât de sort/capacité par unité affectée ici, quelle que soit son allégeance ; portée calculée à la résolution. Aucun raccordement aux dégâts de combat/duel.
+- TDD : deux échecs pertinents avant implémentation ; vérification des dégâts et événements par cible. Validation pnpm check.
