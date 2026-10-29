@@ -15,7 +15,7 @@ Les images restent des URL de métadonnées ; les fichiers bruts ne sont pas pub
 - [x] Dune Drake — ogn-131-298
 - [x] Eager Apprentice — ogn-084-298
 - [x] En Garde — ogn-046-298
-- [ ] Faithful Manufactor — ogn-211-298
+- [x] Faithful Manufactor — ogn-211-298
 - [x] Falling Comet — ogn-085-298
 - [x] First Mate — ogn-132-298
 - [x] Gust — ogn-169-298

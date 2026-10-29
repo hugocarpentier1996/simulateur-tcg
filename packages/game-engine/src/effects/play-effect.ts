@@ -1,3 +1,4 @@
+import { summonHere } from './summon-here.js';
 import { startVision } from './vision.js';
 import { resolveFlash } from './flash.js';
 import { drawCardForPlayer } from '../turn/draw.js';
@@ -9,6 +10,7 @@ export interface PlayEffectEntry {
   sourceId: string;
   ownerId: string;
   effect:
+    | { type: 'summon-here'; destinationId: string; definitionId: string }
     | { type: 'vision' }
     | NonNullable<UnitBlueprint['onPlayEffect']>
     | { type: 'ready-other'; targetId?: string }
@@ -19,6 +21,22 @@ export function resolvePlayEffect(
   state: GameState,
   entry: PlayEffectEntry,
 ): Extract<ActionResult, { ok: true }> {
+  if (entry.effect.type === 'summon-here') {
+    const summoned = summonHere(
+      state,
+      entry.sourceId,
+      entry.ownerId,
+      entry.effect.destinationId,
+      entry.effect.definitionId,
+    );
+    return {
+      ...summoned,
+      events: [
+        ...summoned.events,
+        { type: 'unit-play-effect-resolved', sourceId: entry.sourceId },
+      ],
+    };
+  }
   if (entry.effect.type === 'vision')
     return startVision(state, entry.ownerId, entry.sourceId);
   if (entry.effect.type === 'move-to-base') {

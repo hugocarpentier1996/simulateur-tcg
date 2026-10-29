@@ -24,6 +24,7 @@ export interface UnitDefinition {
   readonly onPlayReadyOther?: boolean;
   readonly onPlayMoveToBase?: boolean;
   readonly onPlayVision?: boolean;
+  readonly onPlaySummonHere?: string;
   readonly spellEnergyReductionAtBattlefield?: number;
   /** Effet de mise en jeu, empilé avant résolution. */
   readonly onPlayEffect?: {

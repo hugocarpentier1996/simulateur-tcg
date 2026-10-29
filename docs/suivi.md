@@ -792,6 +792,14 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
 
 - Validation : pnpm check, 417 tests et build réussis.
 
+### Origins fournée 3 : Faithful Manufactor — 29 octobre 2026
+
+- Recrue invoquée au lieu de mise en jeu, base ou champ, après réactions.
+- Invocation « here » mutualisée avec Noxian : aucun jeton si Gust retire la source ; déplacement interne reste provisoire/documenté.
+- Tests base, champ et Gust.
+
+- Validation : pnpm check, 420 tests et build réussis.
+
 ## Limites à conserver lors d'une reprise
 
 - Première capacité de mort implémentée pour les morts de combat et hors combat. Autres déclencheurs,

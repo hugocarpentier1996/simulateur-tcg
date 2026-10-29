@@ -1,6 +1,6 @@
 import { startLoot } from './loot.js';
 import type { GameEvent, GameState, ActionResult } from '../types.js';
-import { summonToken } from './summon-token.js';
+import { summonHere } from './summon-here.js';
 
 /** Destination figée au mouvement : une sortie du terrain prive « here » de destination. */
 export interface MovementEntry {
@@ -94,34 +94,15 @@ export function resolveMovementEffect(
           ],
     };
   }
-  // Sans source sur le terrain, « here » n'a plus de destination (Gust notamment).
-  if (!state.units.some((u) => u.id === entry.sourceId))
-    return {
-      ok: true,
-      state,
-      events: [{ type: 'movement-effect-resolved', sourceId: entry.sourceId }],
-    };
-  const summoned = summonToken(
+  const summoned = summonHere(
     state,
+    entry.sourceId,
     entry.ownerId,
     entry.destinationId,
     entry.effect.definitionId,
-    'here',
   );
-  const next =
-    summoned.events.length &&
-    state.showdown?.battlefieldId !== entry.destinationId
-      ? {
-          ...summoned.state,
-          pendingShowdowns: [
-            ...(summoned.state.pendingShowdowns ?? []),
-            { battlefieldId: entry.destinationId, initiatorId: entry.ownerId },
-          ],
-        }
-      : summoned.state;
   return {
     ...summoned,
-    state: next,
     events: [
       ...summoned.events,
       { type: 'movement-effect-resolved', sourceId: entry.sourceId },

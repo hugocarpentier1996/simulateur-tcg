@@ -124,3 +124,5 @@ export { eagerApprentice } from './ogn/eager-apprentice.js';
 export { disintegrate } from './ogn/disintegrate.js';
 
 export { singularity } from './ogn/singularity.js';
+
+export { faithfulManufactor } from './ogn/faithful-manufactor.js';

@@ -13,7 +13,12 @@ export function summonToken(
   const events: Extract<ActionResult, { ok: true }>['events'] = [];
   if (
     placement === 'here'
-      ? !state.battlefields.some((f) => f.zoneId === destinationId)
+      ? !state.zones.some(
+          (z) =>
+            z.id === destinationId &&
+            (z.kind === 'battlefield' ||
+              (z.kind === 'base' && z.ownerId === ownerId)),
+        )
       : !canSummonAt(state, ownerId, destinationId)
   )
     return { ok: true, state, events };
