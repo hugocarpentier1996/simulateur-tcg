@@ -1,3 +1,4 @@
+import { withDeflect, spellChosenUnits } from '../cost/deflect.js';
 import { spellCost } from '../cost/spell-cost.js';
 import { playTargetChoices } from '../effects/play-targets.js';
 import { endTurnChoices } from '../effects/end-runes.js';
@@ -20,6 +21,7 @@ export function getLegalActions(
   if (state.result || !state.players.some((p) => p.id === playerId)) return [];
   return [...candidates(state, playerId)]
     .flatMap((action) => optionalCosts(state, action))
+    .flatMap((action) => targetPayment(state, action))
     .filter((action) => act(state, action).ok);
 }
 
@@ -225,4 +227,39 @@ function optionalCosts(state: GameState, action: GameAction): GameAction[] {
       .filter((u) => u.ownerId === action.playerId && u.ready)
       .map((u) => ({ ...action, exhaustUnitId: u.id })),
   ];
+}
+
+/** Paiement dépendant du choix : chaque candidat conserve sa cible et reçoit un plan valide. */
+function targetPayment(state: GameState, action: GameAction): GameAction[] {
+  if (action.type !== 'cast-spell' && action.type !== 'play-unit')
+    return [action];
+  const card = state.cards.find((c) => c.id === action.cardId);
+  const definition =
+    action.type === 'cast-spell'
+      ? state.spellDefinitions?.find((d) => d.id === card?.definitionId)
+      : state.unitDefinitions?.find((d) => d.id === card?.definitionId);
+  if (!definition) return [];
+  const cost =
+    action.type === 'cast-spell' && definition.type === 'spell'
+      ? withDeflect(
+          state,
+          action.playerId,
+          spellCost(state, action.playerId, definition.cost),
+          spellChosenUnits(definition, action),
+        )
+      : withDeflect(
+          state,
+          action.playerId,
+          definition.cost,
+          action.type === 'play-unit' && action.onPlayTargetId
+            ? [action.onPlayTargetId]
+            : [],
+        );
+  const payment = findPayment(
+    state,
+    action.playerId,
+    cost,
+    action.type === 'cast-spell' ? 'spell' : 'ordinary',
+  );
+  return payment ? [{ ...action, payment }] : [];
 }

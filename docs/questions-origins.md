@@ -40,3 +40,8 @@ Ces deux choix provisoires ne sont pas ajoutés aux règles confirmées.
 
 Les mécaniques non listées seront traitées à partir du texte imprimé et des règles
 existantes ; seuls les nouveaux doutes utiles rejoindront le prochain lot de questions.
+
+## Questions ajoutées pendant la troisième fournée
+
+- Deflect : si aucune cible de capacité obligatoire ne peut être payée, le prototype autorise la mise en jeu sans cible (capacité sans effet). Confirmer ce comportement.
+- Le cas « here » après déplacement interne concerne aussi Faithful Manufactor ; son lieu initial est conservé provisoirement, comme Noxian.

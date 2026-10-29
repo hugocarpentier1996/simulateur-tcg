@@ -126,3 +126,5 @@ export { disintegrate } from './ogn/disintegrate.js';
 export { singularity } from './ogn/singularity.js';
 
 export { faithfulManufactor } from './ogn/faithful-manufactor.js';
+
+export { poutyPoro } from './ogn/pouty-poro.js';

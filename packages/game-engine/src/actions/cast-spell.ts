@@ -1,3 +1,4 @@
+import { withDeflect, spellChosenUnits } from '../cost/deflect.js';
 import { spellCost } from '../cost/spell-cost.js';
 import { graveyardCard } from '../effects/graveyard-card.js';
 import { activeLegends } from '../effects/legends.js';
@@ -128,7 +129,12 @@ export function castSpell(
       ))
   )
     return { ok: false, reason: 'INVALID_ADDITIONAL_COST' };
-  const cost = spellCost(state, action.playerId, definition.cost);
+  const cost = withDeflect(
+    state,
+    action.playerId,
+    spellCost(state, action.playerId, definition.cost),
+    spellChosenUnits(definition, action),
+  );
   const paid = payCost(state, action.playerId, cost, action.payment, 'spell');
   if (!paid.ok) return paid;
   const triggers = expensiveSpellTriggers(

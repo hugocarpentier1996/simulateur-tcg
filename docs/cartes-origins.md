@@ -30,7 +30,7 @@ Les images restent des URL de métadonnées ; les fichiers bruts ne sont pas pub
 - [x] Noxian Drummer — ogn-222-298
 - [x] Petty Officer — ogn-215-298
 - [x] Playful Phantom — ogn-049-298
-- [ ] Pouty Poro — ogn-013-298
+- [x] Pouty Poro — ogn-013-298
 - [x] Ravenbloom Student — ogn-103-298
 - [x] Sai Scout — ogn-174-298
 - [x] Singularity — ogn-105-298

@@ -24,6 +24,7 @@ export function findPayment(
         playerId,
         {
           energy: cost.energy,
+          ...(cost.genericPower ? { genericPower: cost.genericPower } : {}),
           ...((cost.powerChoiceAmount ?? 1) > 1
             ? {
                 powerChoice: cost.powerChoice,
@@ -60,6 +61,23 @@ export function findPayment(
     if (candidates.length < required) return null;
     powerRunes.push(...candidates.slice(0, required).map((r) => r.id));
   }
+  const produced = { ...floating.power };
+  for (const id of powerRunes) {
+    const color = runes.find((r) => r.id === id)!.color!;
+    produced[color] = (produced[color] ?? 0) + 1;
+  }
+  for (const [color, n] of Object.entries(cost.power))
+    produced[color] = (produced[color] ?? 0) - n;
+  const needed = Math.max(
+    0,
+    (cost.genericPower ?? 0) -
+      Object.values(produced).reduce((a, b) => a + b, 0),
+  );
+  const genericRunes = runes
+    .filter((r) => !powerRunes.includes(r.id))
+    .sort((a, b) => Number(a.ready === true) - Number(b.ready === true));
+  if (genericRunes.length < needed) return null;
+  powerRunes.push(...genericRunes.slice(0, needed).map((r) => r.id));
   const count = Math.max(
     0,
     Math.ceil(

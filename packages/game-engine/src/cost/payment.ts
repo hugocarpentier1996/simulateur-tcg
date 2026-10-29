@@ -69,6 +69,13 @@ export function payCost(
     if (!color) return { ok: false, reason: 'INSUFFICIENT_RESOURCES' };
     power[color]!--;
   }
+  for (let i = 0; i < (cost.genericPower ?? 0); i++) {
+    const color = Object.keys(power)
+      .sort()
+      .find((c) => (power[c] ?? 0) >= 1);
+    if (!color) return { ok: false, reason: 'INSUFFICIENT_RESOURCES' };
+    power[color]!--;
+  }
   const recycled = plan.powerRunes.map((id) => ({
     ...state.cards.find((c) => c.id === id)!,
     zoneId: pile!.id,

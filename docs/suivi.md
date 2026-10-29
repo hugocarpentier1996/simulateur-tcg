@@ -800,6 +800,15 @@ Les identifiants des commits ultérieurs se retrouvent avec `git log --oneline`.
 
 - Validation : pnpm check, 420 tests et build réussis.
 
+### Origins fournée 3 : Pouty Poro — 29 octobre 2026
+
+- Deflect : Power quelconque en supplément par cible adverse, sorts simples/multiples et capacités de mise en jeu ; aucun coût de zone.
+- Paiement commun étendu au Power générique et calcul automatique dépendant des cibles, runes Tap acceptées.
+- Tests ciblage allié, adverse, deux Poro, coût imprimé conservé, First Mate et dégâts de zone.
+- Hypothèse documentée : aucune cible payable pour une capacité obligatoire = capacité sans effet, sans empêcher la mise en jeu.
+
+- Validation : pnpm check, 424 tests et build réussis.
+
 ## Limites à conserver lors d'une reprise
 
 - Première capacité de mort implémentée pour les morts de combat et hors combat. Autres déclencheurs,

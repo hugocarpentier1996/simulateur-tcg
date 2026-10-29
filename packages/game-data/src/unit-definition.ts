@@ -21,6 +21,7 @@ export interface UnitDefinition {
   /** Après tout déplacement : défausser une carte disponible puis piocher, via la pile. */
   readonly onMoveLoot?: boolean;
   readonly tank?: boolean;
+  readonly deflect?: boolean;
   readonly onPlayReadyOther?: boolean;
   readonly onPlayMoveToBase?: boolean;
   readonly onPlayVision?: boolean;

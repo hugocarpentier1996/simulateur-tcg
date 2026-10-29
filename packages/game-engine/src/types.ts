@@ -141,6 +141,7 @@ export interface UnitBlueprint {
   /** Après tout déplacement : défausser une carte disponible puis piocher, via la pile. */
   readonly onMoveLoot?: boolean;
   readonly tank?: boolean;
+  readonly deflect?: boolean;
   readonly onPlayReadyOther?: boolean;
   readonly onPlayMoveToBase?: boolean;
   readonly onPlayVision?: boolean;
@@ -184,6 +185,8 @@ export interface UnitBlueprint {
   readonly id: string;
   readonly type: 'unit';
   readonly cost: {
+    /** Supplément de Power payable dans toute couleur, après coûts imprimés. */
+    readonly genericPower?: number;
     readonly powerChoice?: readonly string[];
     /** Nombre de symboles flexibles à payer, 1 par défaut ; entier positif. */
     readonly powerChoiceAmount?: number;

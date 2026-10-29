@@ -1,3 +1,4 @@
+import { withDeflect } from '../cost/deflect.js';
 import { playTargetChoices } from '../effects/play-targets.js';
 import type { PlayEffectEntry } from '../effects/play-effect.js';
 import type { GameState, GameAction, ActionResult } from '../types.js';
@@ -125,12 +126,13 @@ export function playUnit(
       ownerId: card.ownerId,
       amount: definition.onPlayBattlefieldDamage,
     });
-  const payment = payCost(
+  const cost = withDeflect(
     state,
     action.playerId,
     definition.cost,
-    action.payment,
+    action.onPlayTargetId ? [action.onPlayTargetId] : [],
   );
+  const payment = payCost(state, action.playerId, cost, action.payment);
   if (!payment.ok) return payment;
   return {
     ok: true,
@@ -176,8 +178,9 @@ export function playUnit(
         type: 'cost-paid',
         playerId: action.playerId,
         cardId: card.id,
-        energy: definition.cost.energy,
-        power: { ...definition.cost.power },
+        energy: cost.energy,
+        power: { ...cost.power },
+        ...(cost.genericPower ? { genericPower: cost.genericPower } : {}),
       },
       {
         type: 'unit-played',
