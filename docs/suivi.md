@@ -888,3 +888,13 @@ de toutes les développer. À la reprise, vérifier les modifications locales av
 - Vérification navigateur : rendu des images observé ; vérification des clics limitée par un dialogue natif bloquant l’outil. Parcours BO3/Shield/Peak/combat validés en tests d’intégration.
 - Validation : pnpm check, 457 tests et build réussis.
 - Limites : petits decks de démonstration, pas encore d’éditeur de deck ni de pilotage UI de toute une série BO3 ; aucune nouvelle règle de légalité des tags ajoutée.
+
+### Retour en base et cartes Tap sur le plateau — 29 octobre 2026
+
+- Déplacement basique Ready champ → base propre autorisé, Tap à l’arrivée, sans coût ni soin. Contrôle libéré seulement si dernier occupant, registre de score conservé.
+- Actions légales et dépôt UI proposent aussi la base ; Ganking existant reste obligatoire entre deux champs.
+- Unités rendues comme cartes, tournées à 90° quand Tap. Seule la Might effective est en badge ; détails conservés en infobulle et libellé accessible.
+- TDD : trois échecs pertinents constatés avant implémentation, puis tests retour/refus/contrôle et rendu de Might après déplacement.
+- Ancien test Ganking mis à jour : sa base est désormais une destination autorisée.
+- Rendu navigateur vérifié : carte couchée et badge Might, paiement puis pose via clic.
+- Validation : pnpm check, 460 tests et build réussis.

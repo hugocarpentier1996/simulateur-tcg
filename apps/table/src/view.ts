@@ -78,7 +78,16 @@ function zone(
   const units = state.units.filter((u) => u.zoneId === zoneId);
   return `<section data-zone="${escape(zoneId)}" class="zone ${destinations.includes(zoneId) ? 'drop-target' : ''} ${battlefield ? 'battlefield' : 'base'}"><header><h3>${escape(title)}</h3><span>${escape(subtitle)}</span></header>
     ${battlefield ? art(state.battlefields.find((b) => b.zoneId === zoneId)?.definitionId ?? '', 'field-art') : ''}
-    <div class="units">${units.length ? units.map((u) => `<button type="button" id="unit-${escape(u.id)}" data-card="${escape(u.id)}" class="unit ${u.ready ? 'ready' : 'tapped'}">${art(u.definitionId, 'unit-art')}<span class="unit-might">${effectiveMight(u, state)}</span><div><strong>${escape(cardName(u.definitionId).replace(' de test', ''))}</strong><small>${escape(playerName(u.ownerId))} · ${u.ready ? 'Ready' : 'Tap'} · ${u.damage} dégât(s)</small><small class="tags">${escape(cardInfo(u.definitionId)?.tags?.join(' · ') ?? '')}</small></div></button>`).join('') : `<p class="empty">${battlefield ? 'Aucune unité sur ce champ' : 'Aucune unité en base'}</p>`}</div>${destinations.includes(zoneId) ? '<button type="button" class="place-here">Choisir cette destination</button>' : ''}</section>`;
+    <div class="units">${
+      units.length
+        ? units
+            .map((u) => {
+              const label = `${cardName(u.definitionId)} · ${playerName(u.ownerId)} · ${u.ready ? 'Ready' : 'Tap'} · Might ${effectiveMight(u, state)} · ${u.damage} dégât(s)`;
+              return `<div class="unit-slot"><button type="button" id="unit-${escape(u.id)}" data-card="${escape(u.id)}" class="unit-card ${u.ready ? 'ready' : 'tapped'}" aria-label="${escape(label)}" title="${escape(label)}"><span class="unit-face">${art(u.definitionId, 'unit-art') || `<span class="unit-fallback">${escape(cardName(u.definitionId))}</span>`}</span><span class="unit-might">${effectiveMight(u, state)}</span></button></div>`;
+            })
+            .join('')
+        : `<p class="empty">${battlefield ? 'Aucune unité sur ce champ' : 'Aucune unité en base'}</p>`
+    }</div>${destinations.includes(zoneId) ? '<button type="button" class="place-here">Choisir cette destination</button>' : ''}</section>`;
 }
 
 function paymentPanel(session: Session, selection: Selection | null): string {
@@ -111,7 +120,7 @@ function paymentPanel(session: Session, selection: Selection | null): string {
   const unit = session.state.units.find((u) => u.id === selection?.cardId);
   if (unit) {
     const canMove = boardOptions(session.state, unit.id).length > 0;
-    return `<div class="eyebrow">Déplacement</div><h3>${escape(cardName(unit.definitionId))}</h3><p class="help">${canMove ? 'Glisse cette unité Ready vers un champ éclairé, ou clique sa destination. Elle deviendra Tap, sans payer de coût.' : 'Déplacement indisponible. Une unité doit être Ready dans ta base pendant ta Main. Les champs adverses ouvrent un combat.'}</p><button class="quiet" data-action="cancel">Annuler la sélection</button>`;
+    return `<div class="eyebrow">Déplacement</div><h3>${escape(cardName(unit.definitionId))}</h3><p class="help">${canMove ? 'Glisse cette unité Ready vers une zone éclairée, ou clique sa destination. Elle deviendra Tap, sans payer de coût.' : 'Déplacement indisponible. Une unité doit être Ready pendant ta Main. Base ↔ champ ; entre champs, Ganking est requis. Les champs adverses ouvrent un combat.'}</p><button class="quiet" data-action="cancel">Annuler la sélection</button>`;
   }
   if (!selection)
     return '<div class="selection-empty"><span aria-hidden="true">↙</span><h3>Pose une carte pour jouer</h3><p>Glisse une unité sur une zone éclairée. Son coût est payé automatiquement.</p><p>Tu peux aussi cliquer la carte, puis sa destination. Une unité Ready en base peut rejoindre un champ de bataille ; une présence adverse déclenche un combat.</p></div>';
@@ -217,7 +226,7 @@ export function renderTable(
       .map((line) => `<li>${escape(line)}</li>`)
       .join(
         '',
-      )}</ol></section></aside></main><footer>Prototype local · Préparation fixe, sans sauvegarde · Déplacements base → champ · Choix et combats pilotés par le moteur</footer>`;
+      )}</ol></section></aside></main><footer>Prototype local · Préparation fixe, sans sauvegarde · Déplacements base ↔ champ · Choix et combats pilotés par le moteur</footer>`;
 }
 
 function actionLabel(

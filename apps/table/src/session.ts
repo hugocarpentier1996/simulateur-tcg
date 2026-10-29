@@ -150,7 +150,7 @@ function describe(event: GameEvent): string | null {
       return `${playerName(event.playerId)} sélectionne son champ (${event.method === 'random' ? 'tirage BO1' : 'choix BO3'}).`;
 
     case 'unit-moved':
-      return 'Une unité se déplace sur un champ de bataille et devient Tap.';
+      return 'Une unité se déplace et devient Tap.';
     case 'showdown-opened':
       return 'Showdown ouvert : chaque joueur doit passer la priorité.';
     case 'priority-passed':

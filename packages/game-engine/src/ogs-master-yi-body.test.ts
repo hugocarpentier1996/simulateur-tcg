@@ -122,7 +122,8 @@ it('ne contourne pas Ready, la propriété Ganking, le tour ni la destination', 
     expect(act(s, move).ok).toBe(false);
     expect(s).toEqual(before);
   }
-  for (const destinationId of ['origin', 'base-a', 'base-b'])
+  expect(act(scenario(), { ...move, destinationId: 'base-a' }).ok).toBe(true);
+  for (const destinationId of ['origin', 'base-b'])
     expect(act(scenario(), { ...move, destinationId }).ok).toBe(false);
 });
 

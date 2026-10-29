@@ -9,7 +9,7 @@ type MoveValidation =
  * Entrée : état cohérent et intention de mouvement d'un joueur connu.
  * Sortie : refus ou unité déplacée/Tap. Un champ adverse ouvre un combat, un champ
  * neutre un Open Showdown ; renforcer son propre champ n'en ouvre pas.
- * Base vers champ, ou champ vers champ avec Ganking ; l'entrée est préservée.
+ * Base ↔ champ, ou champ vers champ avec Ganking ; l'entrée est préservée.
  * Quitter seul un champ libère son contrôle sans effacer le registre des points du tour.
  */
 export function moveUnit(state: GameState, action: MoveAction): ActionResult {
@@ -38,16 +38,18 @@ function validateMove(state: GameState, action: MoveAction): MoveValidation {
   const ganking =
     state.unitDefinitions?.find((d) => d.id === unit.definitionId)?.ganking ===
     true;
-  const validOrigin =
-    origin &&
-    ((origin.kind === 'base' && origin.ownerId === action.playerId) ||
-      (origin.kind === 'battlefield' && ganking));
+  const destination = state.zones.find((z) => z.id === action.destinationId);
+  const toField = !!battlefield && destination?.kind === 'battlefield';
+  const toOwnBase =
+    destination?.kind === 'base' && destination.ownerId === action.playerId;
+  const fromOwnBase =
+    origin?.kind === 'base' && origin.ownerId === action.playerId;
+  const fromField = origin?.kind === 'battlefield';
   if (
-    !validOrigin ||
     unit.zoneId === action.destinationId ||
-    !battlefield ||
-    !state.zones.some(
-      (zone) => zone.id === action.destinationId && zone.kind === 'battlefield',
+    !(
+      (fromOwnBase && toField) ||
+      (fromField && (toOwnBase || (ganking && toField)))
     )
   ) {
     return { ok: false, reason: 'UNSUPPORTED_DESTINATION' };
@@ -76,9 +78,10 @@ function applyMove(
   )?.ownerId;
   const battlefield = state.battlefields.find(
     (field) => field.zoneId === action.destinationId,
-  )!;
+  );
   const opensShowdown =
-    !!defender || battlefield.controllerId !== action.playerId;
+    !!battlefield &&
+    (!!defender || battlefield.controllerId !== action.playerId);
   const common = {
     battlefieldId: action.destinationId,
     initiatorId: action.playerId,

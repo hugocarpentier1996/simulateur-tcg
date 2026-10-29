@@ -91,12 +91,12 @@ function* candidates(
   for (const unit of state.units)
     yield { type: 'activate-spell-energy', playerId, unitId: unit.id };
   for (const unit of state.units)
-    for (const field of state.battlefields)
+    for (const destination of destinations)
       yield {
         type: 'move',
         playerId,
         unitId: unit.id,
-        destinationId: field.zoneId,
+        destinationId: destination.id,
       };
   for (const card of state.cards.filter((c) => c.ownerId === playerId)) {
     const unit = state.unitDefinitions?.find((d) => d.id === card.definitionId);
