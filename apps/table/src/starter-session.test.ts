@@ -1,4 +1,4 @@
-import { tableActions, dispatch } from './session.js';
+import { tableActions, endTurn, autoEndRunes } from './session.js';
 import { renderTable } from './view.js';
 import { expect, it } from 'vitest';
 import {
@@ -57,7 +57,7 @@ it('mélange avant la distribution, avec une graine explicite reproductible', ()
   );
 });
 
-it('propose le choix des runes de Dark Child au lieu de bloquer la fin du tour', () => {
+it('ne bloque pas la fin du tour avec Dark Child : runes choisies au bouton de fin de tour', () => {
   const s = Array.from({ length: 32 }, (_, i) =>
     createStarterSession((i + 1) * 1234567),
   ).find((s) =>
@@ -65,10 +65,9 @@ it('propose le choix des runes de Dark Child au lieu de bloquer la fin du tour',
       (c) => c.ownerId === 'a' && c.definitionId === 'ogs-017-024',
     ),
   )!;
-  const actions = tableActions(s).filter((a) => a.type === 'end-turn');
-  expect(actions.length).toBeGreaterThan(0);
-  expect(renderTable(s, null)).toContain('Redresser');
-  const ended = dispatch(s, actions[0]!);
+  expect(tableActions(s).some((a) => a.type === 'end-turn')).toBe(false);
+  expect(renderTable(s, null)).toContain('Auto');
+  const ended = endTurn(s, autoEndRunes(s.state, 'a'));
   expect(ended.state.stack).toBeTruthy();
   expect(ended.state.phase).toBe('end');
 });

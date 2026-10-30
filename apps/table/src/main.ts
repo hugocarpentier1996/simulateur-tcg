@@ -12,8 +12,16 @@ import {
   passShowdown,
   pickTarget,
   targetOptions,
+  endTurn,
+  endTurnRuneChoice,
+  autoEndRunes,
 } from './session.js';
-import { renderTable, type PendingReset, type Selection } from './view.js';
+import {
+  renderTable,
+  type PendingReset,
+  type Selection,
+  type TableUi,
+} from './view.js';
 import './style.css';
 
 const root = document.querySelector<HTMLDivElement>('#app')!;
@@ -26,13 +34,17 @@ let suppressClick = false;
 let moves: readonly PlannedMove[] = [];
 let displayedCardActions: ReturnType<typeof cardActions> = [];
 let pendingReset: PendingReset = null;
+// Runes cliquées pour l'effet de fin de tour (null hors sélection) et réglage « Auto » par joueur.
+let endRunes: string[] | null = null;
+const autoRunes: Record<string, boolean> = {};
 
 function render() {
   displayedCardActions = selection
     ? cardActions(session, selection.cardId)
     : [];
   const focusId = document.activeElement?.id;
-  root.innerHTML = renderTable(session, selection, moves, pendingReset);
+  const ui: TableUi = { endRunes, autoRunes };
+  root.innerHTML = renderTable(session, selection, moves, pendingReset, ui);
   if (focusId) document.getElementById(focusId)?.focus({ preventScroll: true });
 }
 
@@ -54,6 +66,39 @@ function chooseTarget(id: string) {
   const picked = pickTarget(session, selection, id);
   session = picked.session;
   selection = picked.selection;
+  render();
+}
+
+/** Fin de tour : directe sans effet de légende ; sinon runes automatiques (« Auto »)
+ * ou sélection sur le plateau, validée par un second clic une fois complète. */
+function endTurnClicked() {
+  const playerId = session.state.activePlayerId;
+  const choice = endTurnRuneChoice(session.state, playerId);
+  if (choice && !autoRunes[playerId] && !endRunes) {
+    endRunes = [];
+    selection = null;
+    return;
+  }
+  session = endTurn(
+    session,
+    choice && autoRunes[playerId]
+      ? autoEndRunes(session.state, playerId)
+      : (endRunes ?? []),
+  );
+  if (!session.error) {
+    selection = null;
+    endRunes = null;
+  }
+}
+
+function toggleEndRune(runeId: string) {
+  const choice = endTurnRuneChoice(session.state, session.state.activePlayerId);
+  if (!choice || !endRunes || !choice.runeIds.includes(runeId)) return;
+  endRunes = endRunes.includes(runeId)
+    ? endRunes.filter((id) => id !== runeId)
+    : endRunes.length < choice.count
+      ? [...endRunes, runeId]
+      : endRunes;
   render();
 }
 
@@ -104,6 +149,11 @@ root.addEventListener('click', (event) => {
     resetAction !== 'cancel-reset'
   )
     return;
+  const rune = target.closest<HTMLElement>('[data-rune]');
+  if (rune && endRunes) {
+    toggleEndRune(rune.dataset.rune!);
+    return;
+  }
   const zone = target.closest<HTMLElement>('[data-zone]');
   if (zone && selection && !target.closest('[data-card]')) {
     place(zone.dataset.zone!);
@@ -155,12 +205,11 @@ root.addEventListener('click', (event) => {
     session = undo(session);
     selection = null;
   } else if (button.dataset.action === 'cancel') selection = null;
-  else if (button.dataset.action === 'end') {
-    session = dispatch(session, {
-      type: 'end-turn',
-      playerId: session.state.activePlayerId,
-    });
-    if (!session.error) selection = null;
+  else if (button.dataset.action === 'end') endTurnClicked();
+  else if (button.dataset.action === 'cancel-end') endRunes = null;
+  else if (button.dataset.action === 'toggle-auto-runes') {
+    const playerId = session.state.activePlayerId;
+    autoRunes[playerId] = !autoRunes[playerId];
   } else if (
     button.dataset.action === 'reset' ||
     button.dataset.action === 'bo3'

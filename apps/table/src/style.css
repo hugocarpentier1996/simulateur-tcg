@@ -332,6 +332,31 @@ main {
   justify-content: center;
   box-shadow: 0 3px 6px #0003;
 }
+.rune-card[data-rune] {
+  cursor: pointer;
+}
+.rune-card.choosable {
+  outline: 1px dashed #e6c481aa;
+  outline-offset: 2px;
+}
+.rune-card.chosen {
+  outline: 2px solid #e6c481;
+  box-shadow: 0 0 12px #e6c48199;
+}
+.auto-toggle {
+  margin: 4px auto 0;
+  padding: 2px 8px;
+  font-size: 10px;
+  border: 1px solid #8e967d88;
+  border-radius: 10px;
+  color: #d8c99f;
+  background: transparent;
+}
+.auto-toggle.on {
+  border-color: #e6c481;
+  color: #101a21;
+  background: #e6c481;
+}
 .rune-card.rouge {
   background: linear-gradient(145deg, #8a3e36, #3d2828);
   color: #ffd6c3;

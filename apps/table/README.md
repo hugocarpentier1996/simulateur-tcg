@@ -68,3 +68,12 @@ Les cartes affichent leur illustration locale, les unités leurs tags, et la
 sélection montre une image plus grande. Les 70 images de cartes implémentées sont
 incluses dans `public/cards`, même si le deck de démo n'utilise qu'un sous-ensemble.
 Provenance : [métadonnées](../../docs/metadonnees-cartes.md).
+
+## Fin de tour, ciblage et choix locaux
+
+`endTurn(session, runeIds)` termine le tour du joueur actif ; avec une légende de fin de
+tour (Dark Child), `endTurnRuneChoice` donne le nombre de runes et les candidates, et
+`autoEndRunes` le choix automatique (Tap d'abord). Le bouton « Auto » est un réglage local.
+`targetOptions` et `pickTarget` transforment un clic sur une unité ou une zone en cible ;
+le sort est lancé dès que le choix est unique. `renderTable` reçoit l'état local
+d'interface (`TableUi`) sans qu'il influe sur la partie.

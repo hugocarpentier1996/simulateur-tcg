@@ -366,20 +366,18 @@ export function prepareDemo(state: GameState): GameState {
 export function tableActions(session: Session): GameAction[] {
   return session.state.players
     .flatMap((p) => getLegalActions(session.state, p.id))
-    .filter(
-      (a) =>
-        (a.type === 'end-turn' && a.readyRuneIds !== undefined) ||
-        [
-          'choose-vision',
-          'choose-discard',
-          'choose-attack-targets',
-          'queue-death-effects',
-          'choose-battlefield',
-          'choose-defense-shield',
-          'choose-hold-channel',
-          'assign-damage',
-          'pass',
-        ].includes(a.type),
+    .filter((a) =>
+      [
+        'choose-vision',
+        'choose-discard',
+        'choose-attack-targets',
+        'queue-death-effects',
+        'choose-battlefield',
+        'choose-defense-shield',
+        'choose-hold-channel',
+        'assign-damage',
+        'pass',
+      ].includes(a.type),
     );
 }
 
@@ -507,4 +505,59 @@ export function pickTarget(
     session: session.error ? { ...session, error: null } : session,
     selection: { ...selection, picks },
   };
+}
+
+/** Joueur + état -> runes à redresser en fin de tour (Dark Child) : nombre exigé et runes
+ * proposées par le moteur. null si sa légende n'a pas cet effet ou si la fin est impossible. */
+export function endTurnRuneChoice(
+  state: GameState,
+  playerId: string,
+): { count: number; runeIds: string[] } | null {
+  const ends = getLegalActions(state, playerId).filter(
+    (a): a is Extract<GameAction, { type: 'end-turn' }> =>
+      a.type === 'end-turn' && a.readyRuneIds !== undefined,
+  );
+  if (!ends.length) return null;
+  return {
+    count: ends[0]!.readyRuneIds!.length,
+    runeIds: [...new Set(ends.flatMap((a) => a.readyRuneIds!))],
+  };
+}
+
+/** Choix automatique de fin de tour : runes Tap d'abord, puis Ready, dans l'ordre du plateau.
+ * Déterministe ; [] si aucun choix de runes n'est demandé. */
+export function autoEndRunes(state: GameState, playerId: string): string[] {
+  const choice = endTurnRuneChoice(state, playerId);
+  if (!choice) return [];
+  const ready = (id: string) =>
+    state.cards.find((c) => c.id === id)?.ready !== false;
+  return [
+    ...choice.runeIds.filter((id) => !ready(id)),
+    ...choice.runeIds.filter(ready),
+  ].slice(0, choice.count);
+}
+
+/** Bouton « Terminer le tour » -> fin de tour du joueur actif, avec les runes choisies si sa
+ * légende en demande. Ordre des runes indifférent ; choix incomplet ou illégal refusé sans
+ * modifier la partie. */
+export function endTurn(
+  session: Session,
+  runeIds: readonly string[] = [],
+): Session {
+  const playerId = session.state.activePlayerId;
+  const choice = endTurnRuneChoice(session.state, playerId);
+  if (!choice) return dispatch(session, { type: 'end-turn', playerId });
+  const key = (ids: readonly string[]) => [...ids].sort().join('|');
+  const action = getLegalActions(session.state, playerId).find(
+    (a) =>
+      a.type === 'end-turn' &&
+      a.readyRuneIds !== undefined &&
+      key(a.readyRuneIds) === key(runeIds),
+  );
+  return action
+    ? dispatch(session, action)
+    : {
+        ...session,
+        error: `Choisis ${choice.count} rune(s) à redresser avant de terminer le tour.`,
+      };
 }

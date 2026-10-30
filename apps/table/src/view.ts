@@ -11,6 +11,7 @@ import {
   cardActions,
   handPlayer,
   targetOptions,
+  endTurnRuneChoice,
   tableActions,
   playerName,
   boardOptions,
@@ -188,6 +189,7 @@ function resourceRow(
   state: GameState,
   ownerId: string,
   opponent = false,
+  endRunes: readonly string[] | null = null,
 ): string {
   const runes = state.cards.filter((c) =>
     state.zones.some(
@@ -198,7 +200,7 @@ function resourceRow(
     `<div class="pile ${kind}" aria-label="${escape(label)} de ${escape(playerName(ownerId))}"><div class="pile-face"><span aria-hidden="true">${symbol}</span><b>${count(state, ownerId, kind)}</b></div><small>${label}</small></div>`;
   return `<div class="resource-row ${opponent ? 'opponent-resources' : ''}" aria-label="Ressources de ${escape(playerName(ownerId))}">
     ${pile('rune-pile', 'Deck de runes', '◇')}
-    <div class="rune-cards">${runes.length ? runes.map((r) => `<article class="rune-card ${escape(r.color ?? '')} ${r.ready ? '' : 'tapped'}"><span aria-hidden="true">${art(r.definitionId, 'rune-art') || (r.color === 'rouge' ? '◆' : '◈')}</span><strong>${escape(domainName(r.color ?? ''))}</strong><small>${r.ready ? 'Ready' : 'Tap'}</small></article>`).join('') : '<span class="empty">Aucune rune en jeu</span>'}</div>
+    <div class="rune-cards">${runes.length ? runes.map((r) => `<article class="rune-card ${escape(r.color ?? '')} ${r.ready ? '' : 'tapped'}${endRunes ? ' choosable' : ''}${endRunes?.includes(r.id) ? ' chosen' : ''}"${opponent ? '' : ` data-rune="${escape(r.id)}" role="button" tabindex="0"`}><span aria-hidden="true">${art(r.definitionId, 'rune-art') || (r.color === 'rouge' ? '◆' : '◈')}</span><strong>${escape(domainName(r.color ?? ''))}</strong><small>${r.ready ? 'Ready' : 'Tap'}</small></article>`).join('') : '<span class="empty">Aucune rune en jeu</span>'}</div>
     ${pile('deck', 'Deck', '♜')}${pile('graveyard', 'Défausse', '✧')}
   </div>`;
 }
@@ -210,6 +212,7 @@ function playerBase(
   opponent = false,
   destinations: readonly string[] = [],
   moves: readonly PlannedMove[] = [],
+  ui: TableUi = {},
 ): string {
   const champion = state.cards.find((c) =>
     state.zones.some(
@@ -225,7 +228,7 @@ function playerBase(
   const base = state.zones.find(
     (z) => z.kind === 'base' && z.ownerId === ownerId,
   )!;
-  return `<div class="base-row ${opponent ? 'opponent-base' : ''}">${zone(state, base.id, `Base · ${playerName(ownerId)}`, 'Unités en jeu', false, destinations, moves)}<div class="identity-zone">${legend ? art(legend.definitionId, 'legend-art') : ''}<span>Légende<small>${escape(legend ? cardName(legend.definitionId) : '')}</small></span></div><div class="chosen-zone">${champion ? (opponent ? `<div class="champion-back"><span>Chosen champion</span><strong>${escape(cardName(champion.definitionId))}</strong>${art(champion.definitionId, 'champion-art')}</div>` : card(champion, selected, true)) : '<p class="empty">Zone champion vide</p>'}</div></div>`;
+  return `<div class="base-row ${opponent ? 'opponent-base' : ''}">${zone(state, base.id, `Base · ${playerName(ownerId)}`, 'Unités en jeu', false, destinations, moves)}<div class="identity-zone">${legend ? art(legend.definitionId, 'legend-art') : ''}<span>Légende<small>${escape(legend ? cardName(legend.definitionId) : '')}</small></span>${!opponent && legend && state.legendDefinitions?.some((d) => d.id === legend.definitionId && d.readyRunesAtEnd) ? `<button type="button" class="auto-toggle ${ui.autoRunes?.[ownerId] ? 'on' : ''}" data-action="toggle-auto-runes" aria-pressed="${!!ui.autoRunes?.[ownerId]}" title="Redresser automatiquement les runes en fin de tour (runes Tap d’abord)">Auto</button>` : ''}</div><div class="chosen-zone">${champion ? (opponent ? `<div class="champion-back"><span>Chosen champion</span><strong>${escape(cardName(champion.definitionId))}</strong>${art(champion.definitionId, 'champion-art')}</div>` : card(champion, selected, true)) : '<p class="empty">Zone champion vide</p>'}</div></div>`;
 }
 
 function handFan(hand: CardInstance[], selected: Selection | null): string {
@@ -238,11 +241,20 @@ function handFan(hand: CardInstance[], selected: Selection | null): string {
 /** Remise à zéro demandée, en attente de confirmation dans la page (aucun dialogue natif). */
 export type PendingReset = 'reset' | 'bo3' | null;
 
+/** État local d'interface, sans effet sur la partie avant validation.
+ * endRunes : runes cliquées pour Dark Child (null hors sélection) ;
+ * autoRunes : joueurs dont les runes de fin de tour sont choisies automatiquement. */
+export interface TableUi {
+  endRunes?: readonly string[] | null;
+  autoRunes?: Readonly<Record<string, boolean>>;
+}
+
 export function renderTable(
   session: Session,
   selected: Selection | null,
   moves: readonly PlannedMove[] = [],
   pendingReset: PendingReset = null,
+  ui: TableUi = {},
 ): string {
   const state = session.state;
   // Zones de dépôt et cibles cliquables partagent la surbrillance ; le moteur les fournit.
@@ -271,11 +283,20 @@ export function renderTable(
       (z) => z.id === c.zoneId && z.ownerId === handOwner && z.kind === 'hand',
     ),
   );
+  const runeChoice = endTurnRuneChoice(state, active);
+  const endRunes = runeChoice ? (ui.endRunes ?? null) : null;
   const canEnd =
-    !moves.length && act(state, { type: 'end-turn', playerId: active }).ok;
+    !moves.length &&
+    (runeChoice
+      ? !endRunes || endRunes.length === runeChoice.count
+      : act(state, { type: 'end-turn', playerId: active }).ok);
+  const endLabel =
+    endRunes && runeChoice
+      ? `Valider · ${endRunes.length} / ${runeChoice.count} runes`
+      : 'Terminer le tour →';
   return `<header class="topbar"><div class="brand"><span class="brand-icon" aria-hidden="true">◇</span><div><h1>Simulateur TCG</h1><p>La table d’essai</p></div></div><div class="local-tag"><span></span> Local · 2 joueurs</div><button id="undo-action" class="quiet" data-action="undo" title="Annuler la dernière action réussie (10 maximum)" ${moves.length || session.history.length === 0 ? 'disabled' : ''}>↶ Annuler l’action (${session.history.length}/10)</button><button class="quiet" data-action="reset" ${moves.length ? 'disabled' : ''}>Nouvelle partie BO1</button><button class="quiet" data-action="bo3" ${moves.length ? 'disabled' : ''}>Choix BO3 · manche d’essai</button></header>
     <main><section class="play-area"><div class="scoreboard">${state.players.map((p) => `<div class="player ${p.id === active ? 'active' : ''}"><span>${escape(playerName(p.id))}<small>${p.id === active ? 'Tour actif' : 'En attente'}</small></span><strong>${p.score}<small> / ${p.victoryTarget ?? 8}</small></strong></div>`).join('')}</div>
-    <div class="turnbar"><div><span class="eyebrow">${state.result ? 'Partie terminée' : state.showdown ? 'Main · Showdown en cours' : escape(state.phase === 'main' ? 'Phase principale · Main' : state.phase)}</span><h2>${state.result ? `${escape(playerName(state.result.winnerId))} gagne` : `À ${escape(playerName(active))} de jouer`}</h2></div><span class="priority">Priorité : ${escape(playerName(priority))}</span><button class="primary" data-action="end" ${!canEnd ? 'disabled' : ''}>Terminer le tour →</button></div>
+    <div class="turnbar"><div><span class="eyebrow">${state.result ? 'Partie terminée' : state.showdown ? 'Main · Showdown en cours' : escape(state.phase === 'main' ? 'Phase principale · Main' : state.phase)}</span><h2>${state.result ? `${escape(playerName(state.result.winnerId))} gagne` : `À ${escape(playerName(active))} de jouer`}</h2></div><span class="priority">Priorité : ${escape(playerName(priority))}</span><button class="primary" data-action="end" ${!canEnd ? 'disabled' : ''}>${escape(endLabel)}</button></div>
     <div class="board">${state.players.map((p) => victoryTrack(p.id, p.score, p.id !== active)).join('')}
       ${state.players
         .filter((p) => p.id !== active)
@@ -285,12 +306,12 @@ export function renderTable(
         )
         .join('')}
       <div class="battlefields" style="--fields:${Math.max(1, state.battlefields.length)}">${state.battlefields.map((b, i) => zone(state, b.zoneId, b.definitionId && cardInfo(b.definitionId) ? cardName(b.definitionId) : `Champ de bataille ${i + 1}`, b.controllerId ? `Contrôlé par ${playerName(b.controllerId)}` : 'Neutre', true, destinations, moves)).join('')}</div>
-      ${playerBase(state, active, selected, false, destinations, moves)}
-      ${resourceRow(state, active)}
+      ${playerBase(state, active, selected, false, destinations, moves, ui)}
+      ${resourceRow(state, active, false, endRunes)}
     </div>
     <div class="reserve"><span>${escape(playerName(active))} · Réserve flottante</span><span><b>${state.resources[active]?.energy ?? 0}</b> énergie · <b>${escape(powerText(state.resources[active]?.power ?? {}))}</b> Power</span></div>
     <section class="hand-section"><header><h2>Main de ${escape(playerName(handOwner))}</h2><span>${hand.length} cartes · sélectionner pour jouer</span></header>${handFan(hand, selected)}</section></section>
-    <aside><section class="action-panel">${session.error ? `<p role="alert" class="error">${escape(session.error)}</p>` : ''}${pendingReset ? resetPanel(pendingReset) : moves.length ? movementPanel(session, moves) : paymentPanel(session, selected)}</section><section class="journal"><header><h2>Journal de partie</h2><span>${session.log.length}</span></header><ol>${session.log
+    <aside><section class="action-panel">${session.error ? `<p role="alert" class="error">${escape(session.error)}</p>` : ''}${pendingReset ? resetPanel(pendingReset) : endRunes && runeChoice ? endRunesPanel(endRunes.length, runeChoice.count) : moves.length ? movementPanel(session, moves) : paymentPanel(session, selected)}</section><section class="journal"><header><h2>Journal de partie</h2><span>${session.log.length}</span></header><ol>${session.log
       .slice()
       .reverse()
       .map((line) => `<li>${escape(line)}</li>`)
@@ -526,4 +547,9 @@ function resetPanel(kind: Exclude<PendingReset, null>): string {
   const label =
     kind === 'bo3' ? 'Choix BO3 · manche d’essai BO3' : 'Nouvelle partie BO1';
   return `<section class="reset-confirm" role="alertdialog" aria-labelledby="reset-title"><div class="eyebrow">${escape(label)}</div><h3 id="reset-title">Recommencer la partie de test ?</h3><p class="help">La partie actuelle sera effacée, ainsi que l’historique d’annulation.</p><div class="choice-list"><button class="primary" data-action="confirm-reset">Recommencer</button><button class="quiet" data-action="cancel-reset">Continuer la partie</button></div></section>`;
+}
+
+/** Sélection des runes de fin de tour : les runes se cliquent sur le plateau. */
+function endRunesPanel(chosen: number, count: number): string {
+  return `<div class="eyebrow">Fin de tour · Dark Child</div><h3>Redresser ${count} rune(s)</h3><p class="help">Clique les runes à redresser sur ta rangée (${chosen} / ${count}), puis valide avec le bouton de fin de tour.</p><div class="choice-list"><button class="primary" data-action="end" ${chosen === count ? '' : 'disabled'}>Valider la fin de tour</button><button class="quiet" data-action="cancel-end">Annuler</button></div>`;
 }

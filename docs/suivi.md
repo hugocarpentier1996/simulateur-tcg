@@ -960,3 +960,10 @@ de toutes les développer. À la reprise, vérifier les modifications locales av
 - `targetOptions` et `pickTarget` (session) dérivent les cibles des actions légales du moteur ; aucune règle n'est dupliquée. Cible illégale : message, partie et sélection inchangées.
 - Restent au panneau : cibles joueur, listes d'unités (Flash) et destinations des Recrues.
 - TDD : `click-target.test.ts` échouait (API absente) avant l'implémentation. Banc hors ligne : 487 tests, typage sans erreur.
+
+### Dark Child depuis le bouton de fin de tour — 30 octobre 2026
+
+- Le panneau annexe de fin de tour est retiré. « Terminer le tour » reste actif : avec Dark Child, un premier clic ouvre la sélection, les runes se cliquent sur la rangée du joueur, puis le bouton (« Valider · n / 2 runes ») termine le tour. « Annuler » quitte la sélection.
+- Bouton « Auto » sous la légende (par joueur, état local de l'interface) : redresse automatiquement 2 runes, Tap d'abord puis Ready, dans l'ordre du plateau.
+- API de session : `endTurnRuneChoice`, `autoEndRunes`, `endTurn` (refus sans modification si le choix est incomplet). Le moteur n'a pas changé ; la fenêtre de réactions de l'effet est conservée.
+- TDD : `annie-end-turn.test.ts` échouait (API absente) ; l'ancien test du panneau Dark Child a été adapté à la nouvelle demande. Banc hors ligne : 491 tests, typage sans erreur. Navigateur : sélection de deux runes et validation, sans erreur ni dialogue.
