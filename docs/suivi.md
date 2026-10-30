@@ -985,7 +985,7 @@ de toutes les développer. À la reprise, vérifier les modifications locales av
 
 ### Outillage de vérification hors Docker — 30 octobre 2026
 
-- Le registre npm reste inaccessible depuis l'environnement de Claude. Prettier, ESLint et TypeScript sont récupérés depuis le magasin pnpm local (paquets JavaScript purs) pour vérifier format, lint et types avant chaque push ; vitest et Vite exigent le binaire natif rolldown et ne tournent que dans la CI GitHub (ou Docker), qui reste la référence.
+- Cause identifiée : dans l'environnement cloud de Claude, `registry.npmjs.org` était exclu du proxy (liste NO_PROXY) alors que la résolution DNS directe y est impossible. En forçant le passage par le proxy, l'installation fonctionne : Node 24.22.1 et pnpm 11.25.0 comme le Dockerfile, puis `pnpm install --frozen-lockfile` et `pnpm check` complet (format, lint, types, vitest, build Vite) avant chaque commit.
 - Historique réécrit à la demande de l'utilisateur : chaque commit de la série du 30 octobre a été rejoué avec son format corrigé et vérifié (format, lint, types, tests du banc) ; les commits de correction et le lien `node_modules` commité par erreur ont disparu. Règle de travail : toutes les vérifications passent avant le commit, la CI n'est qu'un contrôle de sécurité.
 
 ### Priorité hors Showdown après une chaîne — 30 octobre 2026
