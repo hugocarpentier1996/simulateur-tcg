@@ -12,6 +12,7 @@ import {
   handPlayer,
   targetOptions,
   endTurnRuneChoice,
+  domainName,
   tableActions,
   playerName,
   boardOptions,
@@ -41,15 +42,6 @@ const count = (state: GameState, ownerId: string, kind: string) =>
       (z) => z.id === c.zoneId && z.ownerId === ownerId && z.kind === kind,
     ),
   ).length;
-const domainName = (color: string) =>
-  ({
-    rouge: 'Fury',
-    vert: 'Calm',
-    bleu: 'Mind',
-    orange: 'Body',
-    violet: 'Chaos',
-    jaune: 'Order',
-  })[color] ?? color;
 const powerText = (power: Readonly<Record<string, number>>) =>
   Object.entries(power)
     .map(([color, n]) => `${n} ${domainName(color)}`)
@@ -200,7 +192,7 @@ function resourceRow(
     `<div class="pile ${kind}" aria-label="${escape(label)} de ${escape(playerName(ownerId))}"><div class="pile-face"><span aria-hidden="true">${symbol}</span><b>${count(state, ownerId, kind)}</b></div><small>${label}</small></div>`;
   return `<div class="resource-row ${opponent ? 'opponent-resources' : ''}" aria-label="Ressources de ${escape(playerName(ownerId))}">
     ${pile('rune-pile', 'Deck de runes', '◇')}
-    <div class="rune-cards">${runes.length ? runes.map((r) => `<article class="rune-card ${escape(r.color ?? '')} ${r.ready ? '' : 'tapped'}${endRunes ? ' choosable' : ''}${endRunes?.includes(r.id) ? ' chosen' : ''}"${opponent ? '' : ` data-rune="${escape(r.id)}" role="button" tabindex="0"`}><span aria-hidden="true">${art(r.definitionId, 'rune-art') || (r.color === 'rouge' ? '◆' : '◈')}</span><strong>${escape(domainName(r.color ?? ''))}</strong><small>${r.ready ? 'Ready' : 'Tap'}</small></article>`).join('') : '<span class="empty">Aucune rune en jeu</span>'}</div>
+    <div class="rune-cards">${runes.length ? runes.map((r) => `<article class="rune-card ${escape(r.color ?? '')} ${r.ready ? '' : 'tapped'}${endRunes ? ' choosable' : ''}${endRunes?.includes(r.id) ? ' chosen' : ''}" data-rune="${escape(r.id)}" role="button" tabindex="0" title="Clic : Tap pour 1 énergie · Clic droit : recycler sous le deck de runes pour 1 Power${r.ready ? ' (+1 énergie)' : ''}"><span aria-hidden="true">${art(r.definitionId, 'rune-art') || (r.color === 'rouge' ? '◆' : '◈')}</span><strong>${escape(domainName(r.color ?? ''))}</strong><small>${r.ready ? 'Ready' : 'Tap'}</small></article>`).join('') : '<span class="empty">Aucune rune en jeu</span>'}</div>
     ${pile('deck', 'Deck', '♜')}${pile('graveyard', 'Défausse', '✧')}
   </div>`;
 }

@@ -316,6 +316,10 @@ export type GameAction =
   | { type: 'choose-vision'; playerId: string; recycle: boolean }
   | { type: 'choose-discard'; playerId: string; cardId: string }
   | { type: 'activate-spell-energy'; playerId: string; unitId: string }
+  /** Ressource manuelle : Tap d'une rune Ready pour 1 énergie dans la réserve. */
+  | { type: 'tap-rune'; playerId: string; runeId: string }
+  /** Ressource manuelle : rune sous son deck pour 1 Power (+1 énergie si elle était Ready). */
+  | { type: 'recycle-rune'; playerId: string; runeId: string }
   | {
       type: 'queue-death-effects';
       playerId: string;
@@ -409,6 +413,14 @@ export type GameEvent =
       sourceId: string;
     }
   | { type: 'spell-returned'; playerId: string; cardId: string }
+  /** Rune utilisée manuellement ; power = couleur gagnée, ou null pour un simple Tap. */
+  | {
+      type: 'rune-used';
+      playerId: string;
+      runeId: string;
+      energy: number;
+      power: string | null;
+    }
   | { type: 'ability-damage'; sourceId: string; unitId: string; amount: number }
   | {
       type: 'unit-play-effect-queued' | 'unit-play-effect-resolved';

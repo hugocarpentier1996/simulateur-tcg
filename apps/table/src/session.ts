@@ -46,6 +46,16 @@ export interface Session {
 
 export const playerName = (id: string) =>
   id === 'a' ? 'Joueur 1' : id === 'b' ? 'Joueur 2' : id;
+/** Couleur de rune du moteur -> nom de domaine imprimé (Fury, Calm, Mind, Body, Chaos, Order). */
+export const domainName = (color: string) =>
+  ({
+    rouge: 'Fury',
+    vert: 'Calm',
+    bleu: 'Mind',
+    orange: 'Body',
+    violet: 'Chaos',
+    jaune: 'Order',
+  })[color] ?? color;
 export const cardName = (id: string) =>
   cardInfo(id)?.displayName ?? cardInfo(id)?.name ?? id;
 
@@ -139,6 +149,9 @@ const refusals: Record<string, string> = {
     'Une rune Tap ne peut pas produire d’énergie. Elle peut fournir du Power.',
   PLAY_WINDOW_CLOSED: 'Cette unité ne peut pas être jouée à cet instant.',
   GAME_OVER: 'La partie est terminée.',
+  ABILITY_WINDOW_CLOSED:
+    'Tu ne peux pas utiliser cette rune maintenant : attends ta priorité.',
+  INVALID_RUNE: 'Cette rune ne t’appartient pas ou n’est pas en jeu.',
 };
 
 /** Identifiant de carte ou d'unité -> nom affiché, cherché après puis avant l'action
@@ -161,6 +174,10 @@ function describe(
 ): string | null {
   const name = (id: string) => entityName(id, states);
   switch (event.type) {
+    case 'rune-used':
+      return event.power
+        ? `${playerName(event.playerId)} recycle une rune : ${event.energy ? '+1 énergie, ' : ''}+1 Power ${domainName(event.power)}.`
+        : `${playerName(event.playerId)} Tap une rune : +1 énergie.`;
     case 'spell-cast':
       return `${playerName(event.playerId)} lance ${name(event.cardId)}.`;
     case 'spell-resolved':
@@ -560,4 +577,20 @@ export function endTurn(
         ...session,
         error: `Choisis ${choice.count} rune(s) à redresser avant de terminer le tour.`,
       };
+}
+
+/** Clic (tap) ou clic droit (recycle) sur une rune -> ressource dans la réserve flottante du
+ * propriétaire de la rune. Le moteur vérifie la fenêtre ; un refus ne change pas la partie. */
+export function useRune(
+  session: Session,
+  runeId: string,
+  mode: 'tap' | 'recycle',
+): Session {
+  const rune = session.state.cards.find((c) => c.id === runeId);
+  if (!rune) return { ...session, error: refusals.INVALID_RUNE! };
+  return dispatch(session, {
+    type: mode === 'tap' ? 'tap-rune' : 'recycle-rune',
+    playerId: rune.ownerId,
+    runeId,
+  });
 }

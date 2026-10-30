@@ -62,6 +62,11 @@ Six couleurs de runes. Tap une rune produit 1 énergie incolore ; renvoyer une r
 sa pile produit 1 Power de sa couleur. Les coûts peuvent demander les deux ressources.
 Une rune déjà Tap peut être recyclée pour son Power. Une rune Ready peut donc produire
 de l'Énergie puis être recyclée pour du Power dans le même paiement.
+Le joueur peut aussi utiliser ses runes manuellement (confirmé par l'utilisateur) : l'énergie
+et le Power produits vont dans la réserve flottante (rune pool), vidée en fin de Draw et en fin
+de tour. Recycler une rune Ready donne 1 énergie et 1 Power de sa couleur. Comme les autres
+capacités ADD, cette production n'ouvre aucune fenêtre de Réaction ; elle est possible
+lorsque le joueur pourrait jouer une Réaction (sa Main ou une priorité de pile/Showdown).
 La légende a deux couleurs qui déterminent les couleurs autorisées ; elle peut Tap/Ready
 et ne peut normalement pas être détruite. Le champion initial doit avoir le tag Champion
 et partager au moins un tag avec la légende.

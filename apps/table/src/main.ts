@@ -15,6 +15,7 @@ import {
   endTurn,
   endTurnRuneChoice,
   autoEndRunes,
+  useRune,
 } from './session.js';
 import {
   renderTable,
@@ -154,6 +155,11 @@ root.addEventListener('click', (event) => {
     toggleEndRune(rune.dataset.rune!);
     return;
   }
+  if (rune && !moves.length) {
+    session = useRune(session, rune.dataset.rune!, 'tap');
+    render();
+    return;
+  }
   const zone = target.closest<HTMLElement>('[data-zone]');
   if (zone && selection && !target.closest('[data-card]')) {
     place(zone.dataset.zone!);
@@ -222,6 +228,17 @@ root.addEventListener('click', (event) => {
     selection = null;
   } else if (button.dataset.action === 'cancel-reset') pendingReset = null;
   else return;
+  render();
+});
+
+// Clic droit sur une rune : recyclage sous le deck de runes (Power, + énergie si Ready).
+root.addEventListener('contextmenu', (event) => {
+  const rune = (event.target as HTMLElement).closest<HTMLElement>(
+    '[data-rune]',
+  );
+  if (!rune || pendingReset || endRunes || moves.length) return;
+  event.preventDefault();
+  session = useRune(session, rune.dataset.rune!, 'recycle');
   render();
 });
 

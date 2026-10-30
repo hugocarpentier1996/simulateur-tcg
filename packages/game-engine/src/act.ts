@@ -13,6 +13,7 @@ import { startNextTurn } from './turn/progression.js';
 import { queueConquestLegends } from './effects/conquest-legends.js';
 import type { GameState, GameAction, ActionResult } from './types.js';
 import { activateSpellEnergy } from './actions/activate-spell-energy.js';
+import { tapRune, recycleRune } from './actions/manual-runes.js';
 import { moveGroup } from './actions/move-group.js';
 import { moveUnit } from './actions/move.js';
 import { passPriority } from './actions/pass.js';
@@ -147,7 +148,9 @@ function dispatch(state: GameState, action: GameAction): ActionResult {
     state.stack &&
     action.type !== 'cast-spell' &&
     action.type !== 'pass' &&
-    action.type !== 'activate-spell-energy'
+    action.type !== 'activate-spell-energy' &&
+    action.type !== 'tap-rune' &&
+    action.type !== 'recycle-rune'
   )
     return { ok: false, reason: 'STACK_IN_PROGRESS' };
   if (
@@ -160,6 +163,10 @@ function dispatch(state: GameState, action: GameAction): ActionResult {
   switch (action.type) {
     case 'activate-spell-energy':
       return activateSpellEnergy(state, action);
+    case 'tap-rune':
+      return tapRune(state, action);
+    case 'recycle-rune':
+      return recycleRune(state, action);
     case 'play-gear':
       return playGear(state, action);
     case 'equip-gear':

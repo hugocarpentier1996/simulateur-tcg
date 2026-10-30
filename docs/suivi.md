@@ -967,3 +967,12 @@ de toutes les développer. À la reprise, vérifier les modifications locales av
 - Bouton « Auto » sous la légende (par joueur, état local de l'interface) : redresse automatiquement 2 runes, Tap d'abord puis Ready, dans l'ordre du plateau.
 - API de session : `endTurnRuneChoice`, `autoEndRunes`, `endTurn` (refus sans modification si le choix est incomplet). Le moteur n'a pas changé ; la fenêtre de réactions de l'effet est conservée.
 - TDD : `annie-end-turn.test.ts` échouait (API absente) ; l'ancien test du panneau Dark Child a été adapté à la nouvelle demande. Banc hors ligne : 491 tests, typage sans erreur. Navigateur : sélection de deux runes et validation, sans erreur ni dialogue.
+
+### Utilisation manuelle des runes — 30 octobre 2026
+
+- Moteur : actions `tap-rune` (rune Ready -> Tap, +1 énergie) et `recycle-rune` (rune en jeu -> sous le deck de runes, +1 Power de sa couleur, +1 énergie si elle était Ready), avec l'événement `rune-used`. Production ADD : aucune pile, fenêtre d'une Réaction (`canUseTiming`). Autorisées pendant une pile, comme l'énergie de sort. Non énumérées par `getLegalActions`, pour ne pas multiplier les candidats ; `act` les valide.
+- Le paiement automatique consomme déjà la réserve flottante : une rune tapée à la main évite d'en mobiliser une autre.
+- Table : clic sur une rune = Tap ; clic droit = recyclage. Info-bulle explicative, journal (« Tap une rune », « recycle une rune : +1 Power Order »), annulation possible. En mode de sélection Dark Child, le clic sert au choix des runes.
+- `domainName` déplacé dans la session pour nommer les domaines aussi dans le journal.
+- TDD : `manual-runes.test.ts` (moteur, 4 échecs constatés avant le raccordement à `act`) et `apps/table/src/manual-runes.test.ts` (API absente). Banc hors ligne : 499 tests, typage sans erreur. Navigateur : Tap puis recyclage, réserve « 2 énergie · 1 Order Power », aucune erreur.
+- Règle de production manuelle ajoutée à `regles.md`, confirmée par l'utilisateur.
