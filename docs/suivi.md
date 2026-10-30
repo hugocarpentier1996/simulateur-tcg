@@ -1028,3 +1028,9 @@ de toutes les développer. À la reprise, vérifier les modifications locales av
 - Traveling Merchant : pendant la défausse imposée, les cartes de la main sont surlignées et un clic défausse la carte.
 - API : `startTargeting`, `toggleTarget`, `confirmTargets`, `discardFromHand` ; `pickTarget` (lancement automatique au premier clic) est remplacé.
 - TDD : `click-target.test.ts` réécrit (5 échecs avant implémentation), `discard-click.test.ts` (3 échecs). Navigateur sur une table de test : Singularity (deux cibles, retrait, validation), Duel (refus de l'ennemie en premier, puis validation), défausse au clic. `pnpm check` complet avant commit.
+
+### Extension Origins complète — à partir du 31 octobre 2026
+
+Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Origins/cartes.json`, une par commit. Chaque carte reçoit définition, métadonnées officielles (nom, tags), image locale, test moteur ; `pnpm check` complet passe avant chaque commit. Liste tenue dans `cartes-origins.md`.
+
+- Shipyard Skulker (ogn-175) : unité sans capacité.

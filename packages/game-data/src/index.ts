@@ -141,3 +141,4 @@ export { startippedPeak } from './ogn/startipped-peak.js';
 
 export { defineBattlefield } from './battlefield-definition.js';
 export type { BattlefieldDefinition } from './battlefield-definition.js';
+export { shipyardSkulker } from './ogn/shipyard-skulker.js';

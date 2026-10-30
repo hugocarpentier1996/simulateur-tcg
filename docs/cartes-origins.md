@@ -92,3 +92,9 @@ Les deux bonus continus se calculent sur la position actuelle. Fortified Positio
 déclenche un choix avant réactions ; le Shield expire avec le combat. Startipped Peak
 ouvre les réactions en Beginning puis propose son Channel facultatif à la résolution,
 avant le Channel normal. Les nouveaux choix sont disponibles dans `getLegalActions`.
+
+## Extension Origins complète
+
+Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commitée.
+
+- [x] Shipyard Skulker — ogn-175-298
