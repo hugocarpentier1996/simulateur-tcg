@@ -148,3 +148,4 @@ export { primalStrength } from './ogn/primal-strength.js';
 export { runePrison } from './ogn/rune-prison.js';
 export { discipline } from './ogn/discipline.js';
 export { smokeScreen } from './ogn/smoke-screen.js';
+export { progressDay } from './ogn/progress-day.js';

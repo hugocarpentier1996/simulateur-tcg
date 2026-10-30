@@ -104,3 +104,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Rune Prison — ogn-050-298
 - [x] Discipline — ogn-058-298
 - [x] Smoke Screen — ogn-093-298
+- [x] Progress Day — ogn-114-298
