@@ -1037,3 +1037,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Hextech Ray (ogn-009) : 3 dégâts à une unité sur un champ (effet de dégâts existant).
 - Void Seeker (ogn-024) : 4 dégâts à une unité sur un champ puis pioche 1, même si la cible meurt.
 - Primal Strength (ogn-154) : +7 Might à une unité quelconque jusqu'à la fin du tour.
+- Rune Prison (ogn-050) : Stun d'une unité quelconque jusqu'à la fin du tour.
