@@ -140,8 +140,43 @@ const refusals: Record<string, string> = {
   GAME_OVER: 'La partie est terminée.',
 };
 
-function describe(event: GameEvent): string | null {
+/** Identifiant de carte ou d'unité -> nom affiché, cherché après puis avant l'action
+ * (une unité détruite ou un sort résolu peut avoir quitté sa zone d'origine). */
+function entityName(id: string, states: readonly GameState[]): string {
+  for (const state of states) {
+    const entity =
+      state.units.find((u) => u.id === id) ??
+      state.cards.find((c) => c.id === id);
+    if (entity) return cardName(entity.definitionId);
+  }
+  return id;
+}
+
+/** Événement du moteur -> ligne de journal française, ou null si sans intérêt pour le joueur.
+ * `states` sert uniquement à nommer les cartes ; aucune règle n'est recalculée ici. */
+function describe(
+  event: GameEvent,
+  states: readonly GameState[],
+): string | null {
+  const name = (id: string) => entityName(id, states);
   switch (event.type) {
+    case 'spell-cast':
+      return `${playerName(event.playerId)} lance ${name(event.cardId)}.`;
+    case 'spell-resolved':
+      return `${name(event.cardId)} se résout.`;
+    case 'spell-damage':
+      return `${name(event.cardId)} inflige ${event.amount} dégât(s) à ${name(event.unitId)}.`;
+    case 'ability-damage':
+    case 'unit-damage':
+      return `${name(event.sourceId)} inflige ${event.amount} dégât(s) à ${name(event.unitId)}.`;
+    case 'unit-died':
+      return `${name(event.unitId)} est détruite.`;
+    case 'card-discarded':
+      return `${playerName(event.playerId)} défausse ${name(event.cardId)}.`;
+    case 'token-summoned':
+      return `${playerName(event.playerId)} invoque ${name(event.unitId)}.`;
+    case 'spell-returned':
+      return `${playerName(event.playerId)} récupère ${name(event.cardId)} en main.`;
     case 'battlefield-effect-queued':
       return `${playerName(event.playerId)} prépare la capacité du champ.`;
     case 'battlefield-effect-resolved':
@@ -217,7 +252,7 @@ export function dispatch(session: Session, action: GameAction): Session {
     log: [
       ...session.log,
       ...result.events
-        .map(describe)
+        .map((event) => describe(event, [result.state, session.state]))
         .filter((line): line is string => line !== null),
     ].slice(-200),
   };

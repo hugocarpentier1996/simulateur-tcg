@@ -932,3 +932,10 @@ de toutes les développer. À la reprise, vérifier les modifications locales av
 - Plusieurs mises en jeu possibles vers une même destination (cibles de capacité) : choix explicite dans le panneau au lieu d'un placement implicite.
 - Tests `spell-ui.test.ts` : ciblage/paiement/empilement, refus d'un choix périmé, réaction à une réaction, Duel, Recrues, Vision, défausse, priorité après résolution.
 - Vérification : registre npm inaccessible depuis l'environnement de reprise. Tests exécutés hors ligne avec TypeScript 6.0.3/tsx et un équivalent minimal de l'API vitest : 477 tests réussis ; typage du code de production sans erreur. Prettier, ESLint et build Vite non exécutés : `pnpm check` (Docker ou CI) reste à confirmer.
+
+### Journal des sorts et des dégâts — 30 octobre 2026
+
+- Le journal nomme désormais le lancement et la résolution des sorts, les dégâts de sort, de capacité et de duel, les destructions, défausses, invocations de jetons et sorts récupérés en main.
+- Les noms sont cherchés dans l'état après puis avant l'action, pour nommer une unité détruite ou un sort parti au cimetière. Aucune règle n'est recalculée par la table.
+- TDD : `spell-journal.test.ts` échouait (seule la ligne de paiement apparaissait) avant l'implémentation.
+- Vérification hors ligne (même banc que l'étape précédente) : 479 tests réussis, typage sans erreur. `pnpm check` complet reste à confirmer par Docker ou la CI.
