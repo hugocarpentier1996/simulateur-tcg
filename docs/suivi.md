@@ -994,3 +994,10 @@ de toutes les développer. À la reprise, vérifier les modifications locales av
 - Le cas particulier ajouté plus tôt pour Vision est retiré : la règle générale le couvre. La « question ouverte » de l'étape Vision est ainsi tranchée. `regles.md` mis à jour.
 - Tests adaptés à la règle précisée (sorts de test, Lux Mind, Confront, Recruit the Vanguard, table) : ils supposaient une passe du Joueur 2 après chaque chaîne hors Showdown.
 - Vérifié avant commit : Prettier, ESLint, tsc et 502 tests du banc ; vitest et build par la CI.
+
+### « Jouer un sort » = sort résolu — 30 octobre 2026
+
+- Précision utilisateur : un sort est joué une fois validé et non contré. Lady of Luminosity, Lux OGS-006 et Ravenbloom Student (choix confirmé pour les trois) se déclenchent à la résolution du sort, plus au lancement. `spellPlayedTriggers` calcule ces déclenchements dans `passStack` après `resolveSpell`, sur le coût imprimé ; la légende est empilée en dernier et se résout donc en premier. Chaque déclenchement ouvre sa fenêtre de Réaction.
+- Conséquence : la pioche de Lady a lieu alors que le sort est déjà en défausse. Sur deck vide, la défausse (sort compris) est recyclée avec la pénalité habituelle ; la défaite n'intervient que si deck et défausse sont vides.
+- Hypothèse conservée : un sort résolu sans effet (cible disparue) reste « joué » ; aucune carte ne contre encore un sort.
+- Tests Lady, Lux, Ravenbloom et Eager Apprentice réécrits selon la règle ; Lady échouait d'abord sur la nouvelle attente. `pnpm check` complet passé avant commit.

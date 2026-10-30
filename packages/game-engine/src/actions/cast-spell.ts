@@ -1,10 +1,8 @@
 import { withDeflect, spellChosenUnits } from '../cost/deflect.js';
 import { spellCost } from '../cost/spell-cost.js';
 import { graveyardCard } from '../effects/graveyard-card.js';
-import { activeLegends } from '../effects/legends.js';
 import type { ActionResult, GameAction, GameState } from '../types.js';
 import { canUseTiming } from './timing.js';
-import { expensiveSpellTriggers } from '../effects/expensive-spell.js';
 import { canSummonAt } from './unit-destination.js';
 import { payCost } from '../cost/payment.js';
 import { validFlashSelection } from '../effects/flash.js';
@@ -137,25 +135,6 @@ export function castSpell(
   );
   const paid = payCost(state, action.playerId, cost, action.payment, 'spell');
   if (!paid.ok) return paid;
-  const triggers = expensiveSpellTriggers(
-    paid.state,
-    action.playerId,
-    definition.cost.energy,
-  );
-  const legendTriggers = activeLegends(paid.state, action.playerId).flatMap(
-    ({ card, definition: legend }) =>
-      legend.spellDraw &&
-      definition.cost.energy >= legend.spellDraw.minimumEnergy
-        ? [
-            {
-              kind: 'legend-draw' as const,
-              sourceId: card.id,
-              ownerId: action.playerId,
-              count: legend.spellDraw.count,
-            },
-          ]
-        : [],
-  );
   return {
     ok: true,
     state: {
@@ -190,8 +169,6 @@ export function castSpell(
               ? { destinationId: action.destinationId }
               : {}),
           },
-          ...triggers,
-          ...legendTriggers,
         ],
         initiatorId: state.stack?.initiatorId ?? action.playerId,
         priorityPlayerId: state.showdown?.initiatorId ?? state.activePlayerId,
@@ -211,14 +188,6 @@ export function castSpell(
         cardId: card.id,
         targetId: action.targetId,
       },
-      ...legendTriggers.map((t) => ({
-        type: 'legend-effect-queued' as const,
-        sourceId: t.sourceId,
-      })),
-      ...triggers.map((t) => ({
-        type: 'spell-play-effect-queued' as const,
-        sourceId: t.sourceId,
-      })),
     ],
   };
 }

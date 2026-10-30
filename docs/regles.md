@@ -142,6 +142,12 @@ fenêtres et en réponse en closed state. Une Réaction peut répondre à une R�
 Tout sort, même Normal, et toute capacité déclenchée ouvrent une fenêtre de Réaction.
 Exception : les capacités de type ADD produisant des ressources ne permettent aucune
 Réaction (notamment Lux OGS-014). Ce n'est pas une fenêtre de pile ordinaire.
+
+Jouer un sort (confirmé par l'utilisateur) : un sort est « joué » une fois validé et non
+contré, c'est-à-dire à sa résolution. Les capacités « When you play a spell » (Lady of
+Luminosity, Lux OGS-006, Ravenbloom Student) se déclenchent donc après la résolution du
+sort, sont empilées à ce moment et ouvrent leur propre fenêtre de Réaction. Un sort retiré
+de la pile sans être résolu ne les déclenche pas.
 Open/closed state est distinct du type Open/Combat Showdown.
 
 Pour les quatre sorts de test, bonus et malus de Might ainsi que Stun durent jusqu'à

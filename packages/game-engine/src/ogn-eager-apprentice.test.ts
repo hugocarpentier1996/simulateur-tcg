@@ -1,5 +1,10 @@
 import { expect, it } from 'vitest';
-import { spellScenario, step, noRunes } from './origins-test-fixtures.js';
+import {
+  spellScenario,
+  step,
+  noRunes,
+  resolveTop,
+} from './origins-test-fixtures.js';
 import {
   confront,
   luxMind,
@@ -39,7 +44,9 @@ it('Eager réduit le paiement, mais Lux et Lady voient le coût imprimé', () =>
   expect(getLegalActions(s, 'a')).toContainEqual(cast);
   s = step(s, cast);
   expect(s.resources.a!.energy).toBe(0);
-  expect(s.stack?.entries).toHaveLength(3);
+  expect(s.stack?.entries).toHaveLength(1);
+  s = resolveTop(s);
+  expect(s.stack?.entries).toHaveLength(2);
 });
 it.each([
   [0, 'f', 0],

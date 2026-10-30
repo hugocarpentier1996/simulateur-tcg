@@ -62,10 +62,9 @@ function resolve(s: GameState) {
   s = step(s, { type: 'pass', playerId: s.stack!.priorityPlayerId });
   return step(s, { type: 'pass', playerId: s.stack!.priorityPlayerId });
 }
-it('empile la pioche avant le sort, permet une réaction, et ne repioche pas à la résolution du sort', () => {
+it('ne pioche qu’une fois le sort résolu, via un déclenchement qui ouvre sa fenêtre', () => {
   let s = step(fixture(), cast);
-  expect(s.stack!.entries).toHaveLength(2);
-  expect(s.cards.find((c) => c.id === 'drawn')!.zoneId).toBe('deck-a');
+  expect(s.stack!.entries).toHaveLength(1);
   s = step(s, {
     type: 'cast-spell',
     playerId: 'a',
@@ -74,12 +73,22 @@ it('empile la pioche avant le sort, permet une réaction, et ne repioche pas à 
     selectedUnitIds: [],
     payment,
   });
+  expect(s.stack!.entries).toHaveLength(2);
   s = resolve(s);
+  expect(s.stack!.entries).toHaveLength(1);
+  expect(s.cards.find((c) => c.id === 'drawn')!.zoneId).toBe('deck-a');
+  s = resolve(s);
+  expect(s.stack!.entries).toHaveLength(1);
+  expect(s.stack!.entries[0]).toMatchObject({ kind: 'legend-draw' });
   expect(s.cards.find((c) => c.id === 'drawn')!.zoneId).toBe('deck-a');
   s = resolve(s);
   expect(s.cards.find((c) => c.id === 'drawn')!.zoneId).toBe('hand-a');
-  s = resolve(s);
+  expect(s.stack).toBeNull();
   expect(s.result).toBeUndefined();
+});
+it('ne pioche pas tant que le sort reste sur la pile', () => {
+  const s = step(fixture(), cast);
+  expect(s.stack!.entries.some((e) => 'kind' in e)).toBe(false);
 });
 it('ignore les sorts de coût inférieur à 5 et les sorts adverses', () => {
   const s = fixture();
@@ -97,13 +106,23 @@ it('ignore les sorts de coût inférieur à 5 et les sorts adverses', () => {
   s.cards[0]!.zoneId = 'legend-b';
   expect(step(s, cast).stack!.entries).toHaveLength(1);
 });
-it('une pioche de légende applique la défaite par épuisement sans résoudre le sort restant', () => {
+it('pioche sur deck vide après le sort : recycle la défausse, sort compris, et pénalise', () => {
   const s = fixture();
   s.cards = s.cards.filter((c) => c.id !== 'drawn');
-  const next = resolve(step(s, cast));
-  expect(next.result).toMatchObject({
+  const played = resolve(step(s, cast));
+  expect(played.result).toBeUndefined();
+  const next = resolve(played);
+  expect(next.result).toBeUndefined();
+  expect(next.players.find((p) => p.id === 'b')!.score).toBe(1);
+  expect(next.cards.find((c) => c.id === 'spell')!.zoneId).toBe('hand-a');
+});
+it('pioche sur deck et défausse vides : défaite par épuisement', () => {
+  const s = fixture();
+  s.cards = s.cards.filter((c) => c.id !== 'drawn');
+  const played = resolve(step(s, cast));
+  played.cards = played.cards.filter((c) => c.zoneId !== 'graveyard-a');
+  expect(resolve(played).result).toMatchObject({
     winnerId: 'b',
     reason: 'DECK_EXHAUSTION',
   });
-  expect(next.stack!.entries).toHaveLength(1);
 });

@@ -71,18 +71,21 @@ function resolve(s: GameState) {
   s = step(s, { type: 'pass', playerId: s.stack!.priorityPlayerId });
   return step(s, { type: 'pass', playerId: s.stack!.priorityPlayerId });
 }
-it('empile le bonus au-dessus du sort, sans modifier la Might avant résolution', () => {
+it('empile le bonus seulement après la résolution du sort, avec sa propre fenêtre', () => {
   const s = fixture();
   const next = step(s, cast);
-  expect(next.stack!.entries).toHaveLength(2);
+  expect(next.stack!.entries).toHaveLength(1);
   expect(effectiveMight(next.units[0]!)).toBe(5);
-  const boosted = resolve(next);
-  expect(effectiveMight(boosted.units[0]!)).toBe(8);
-  expect(boosted.stack!.entries).toHaveLength(1);
-  expect(effectiveMight(resolve(boosted).units[0]!)).toBe(10);
+  const played = resolve(next);
+  expect(effectiveMight(played.units[0]!)).toBe(7);
+  expect(played.stack!.entries).toHaveLength(1);
+  expect(played.stack!.priorityPlayerId).toBe('a');
+  const boosted = resolve(played);
+  expect(effectiveMight(boosted.units[0]!)).toBe(10);
+  expect(boosted.stack).toBeNull();
   expect(s.units[0]!.temporaryEffects).toBeUndefined();
 });
-it('permet une réaction au bonus puis une nouvelle fenêtre avant le sort', () => {
+it('une réaction se résout avant le sort ; le bonus n’arrive qu’après le sort', () => {
   let s = step(fixture(), cast);
   s = step(s, {
     type: 'cast-spell',
@@ -92,12 +95,15 @@ it('permet une réaction au bonus puis une nouvelle fenêtre avant le sort', () 
     selectedUnitIds: [],
     payment,
   });
-  expect(s.stack!.entries).toHaveLength(3);
+  expect(s.stack!.entries).toHaveLength(2);
   s = resolve(s);
   expect(effectiveMight(s.units[0]!)).toBe(5);
+  expect(s.stack!.entries).toHaveLength(1);
   s = resolve(s);
-  expect(effectiveMight(s.units[0]!)).toBe(8);
-  expect(s.stack!.priorityPlayerId).toBe('a');
+  expect(effectiveMight(s.units[0]!)).toBe(7);
+  expect(s.stack!.entries).toHaveLength(1);
+  s = resolve(s);
+  expect(effectiveMight(s.units[0]!)).toBe(10);
 });
 it('déclenche chaque Lux alliée, jamais la Lux adverse', () => {
   const s = fixture();
@@ -105,23 +111,22 @@ it('déclenche chaque Lux alliée, jamais la Lux adverse', () => {
     { ...s.units[0]!, id: 'second' },
     { ...s.units[0]!, id: 'enemy', ownerId: 'b', zoneId: 'base-b' },
   );
-  let next = step(s, cast);
-  expect(next.stack!.entries).toHaveLength(3);
+  let next = resolve(step(s, cast));
+  expect(next.stack!.entries).toHaveLength(2);
   next = resolve(resolve(next));
-  expect(next.units.map((u) => effectiveMight(u))).toEqual([8, 8, 5]);
+  expect(next.units.map((u) => effectiveMight(u))).toEqual([10, 10, 5]);
 });
 it('ne déclenche ni pour un sort moins cher ni pour un lancement refusé', () => {
   const s = fixture();
-  expect(
-    step(s, {
-      type: 'cast-spell',
-      playerId: 'a',
-      cardId: 'flash',
-      targetId: 'a',
-      selectedUnitIds: [],
-      payment,
-    }).stack!.entries,
-  ).toHaveLength(1);
+  const cheap = step(s, {
+    type: 'cast-spell',
+    playerId: 'a',
+    cardId: 'flash',
+    targetId: 'a',
+    selectedUnitIds: [],
+    payment,
+  });
+  expect(resolve(cheap).stack).toBeNull();
   s.resources.a!.energy = 4;
   expect(act(s, cast)).toEqual({ ok: false, reason: 'INSUFFICIENT_RESOURCES' });
   expect(s.stack).toBeUndefined();
@@ -129,14 +134,19 @@ it('ne déclenche ni pour un sort moins cher ni pour un lancement refusé', () =
 it('utilise le coût imprimé même si une réserve réservée paie tout le sort', () => {
   const s = fixture();
   s.resources.a = { energy: 0, spellEnergy: 5, power: { jaune: 1 } };
-  expect(step(s, cast).stack!.entries).toHaveLength(2);
+  expect(resolve(step(s, cast)).stack!.entries).toHaveLength(1);
 });
-it('ignore la source disparue avant résolution du bonus', () => {
+it('ne déclenche pas si Lux a quitté le jeu avant la résolution du sort', () => {
   const s = step(fixture(), cast);
+  s.units = [];
+  expect(resolve(s).stack).toBeNull();
+});
+it('ignore la source disparue entre le déclenchement et sa résolution', () => {
+  const s = resolve(step(fixture(), cast));
   s.units = [];
   const next = resolve(s);
   expect(next.units).toEqual([]);
-  expect(next.stack!.entries).toHaveLength(1);
+  expect(next.stack).toBeNull();
 });
 it('le bonus expire à la fin du tour', () => {
   let s = resolve(resolve(step(fixture(), cast)));
@@ -163,7 +173,8 @@ it.each([4, 5, 6])(
   (energy) => {
     const s = fixture();
     s.spellDefinitions = [{ ...decisiveStrike, cost: { energy, power: {} } }];
-    expect(step(s, cast).stack!.entries).toHaveLength(energy >= 5 ? 2 : 1);
+    const played = resolve(step(s, cast));
+    expect(played.stack?.entries ?? []).toHaveLength(energy >= 5 ? 1 : 0);
   },
 );
 
@@ -173,8 +184,8 @@ it('ne déclenche pas pour un sort joué par l’adversaire', () => {
   s.cards = s.cards.map((c) =>
     c.id === 'strike' ? { ...c, ownerId: 'b', zoneId: 'hand-b' } : c,
   );
-  const next = step(s, { ...cast, playerId: 'b', targetId: 'b' });
-  expect(next.stack!.entries).toHaveLength(1);
+  const next = resolve(step(s, { ...cast, playerId: 'b', targetId: 'b' }));
+  expect(next.stack).toBeNull();
 });
 
 it('joue Lux depuis la main pour 6 énergie et 1 bleu, Tap avec 5 Might', () => {

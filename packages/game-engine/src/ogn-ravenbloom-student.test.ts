@@ -66,11 +66,14 @@ it.each([0, 2])(
       selectedUnitIds: [],
       payment,
     });
-    expect(s.stack!.entries).toHaveLength(2);
+    expect(s.stack!.entries).toHaveLength(1);
+    for (let i = 0; i < 2; i++)
+      s = step(s, { type: 'pass', playerId: s.stack!.priorityPlayerId });
+    expect(s.stack!.entries).toHaveLength(1);
     expect(effectiveMight(s.units[0]!)).toBe(2);
     for (let i = 0; i < 2; i++)
       s = step(s, { type: 'pass', playerId: s.stack!.priorityPlayerId });
     expect(effectiveMight(s.units[0]!)).toBe(3);
-    expect(s.stack!.entries).toHaveLength(1);
+    expect(s.stack).toBeNull();
   },
 );

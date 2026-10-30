@@ -13,6 +13,7 @@ import { resolveSpell } from '../effects/resolve-spell.js';
 import { resolveSpellPlay } from '../effects/expensive-spell.js';
 import { resolveDeathEffect } from '../effects/death.js';
 import { continueStack } from './continue-stack.js';
+import { spellPlayedTriggers } from '../effects/spell-played.js';
 import { queueMovementEffects } from '../effects/movement-triggers.js';
 
 /** Passe en closed state -> priorité suivante ou résolution du sommet après deux passes.
@@ -66,10 +67,37 @@ export function passStack(state: GameState, playerId: string): ActionResult {
                           : entry.kind === 'legend-ready-runes'
                             ? resolveReadyRunes(popped, entry)
                             : resolveSpellPlay(popped, entry);
-  const moved = queueMovementEffects(state, resolved.state, resolved.events);
+  // Le sort est « joué » une fois résolu : ses déclenchements s'empilent alors.
+  const triggers =
+    'card' in entry && !resolved.state.result && resolved.state.stack
+      ? spellPlayedTriggers(
+          resolved.state,
+          entry.casterId,
+          entry.definition.cost.energy,
+        )
+      : [];
+  const played =
+    triggers.length && resolved.state.stack
+      ? {
+          ...resolved.state,
+          stack: {
+            ...resolved.state.stack,
+            entries: [...resolved.state.stack.entries, ...triggers],
+          },
+        }
+      : resolved.state;
+  const queued = triggers.map((t) => ({
+    type:
+      t.kind === 'legend-draw'
+        ? ('legend-effect-queued' as const)
+        : ('spell-play-effect-queued' as const),
+    sourceId: t.sourceId,
+  }));
+  const moved = queueMovementEffects(state, played, resolved.events);
   return continueStack(moved.state, [
     event,
     ...resolved.events,
+    ...queued,
     ...moved.events,
   ]);
 }
