@@ -102,3 +102,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Void Seeker — ogn-024-298
 - [x] Primal Strength — ogn-154-298
 - [x] Rune Prison — ogn-050-298
+- [x] Discipline — ogn-058-298
