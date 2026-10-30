@@ -1041,3 +1041,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Discipline (ogn-058) : Réaction, +2 Might jusqu'à la fin du tour puis pioche 1.
 - Smoke Screen (ogn-093) : Réaction, -4 Might jusqu'à la fin du tour, minimum 1.
 - Progress Day (ogn-114) : sort normal, pioche 4.
+- Sunlit Guardian (ogn-054) : Shield et Tank.
