@@ -1001,3 +1001,9 @@ de toutes les développer. À la reprise, vérifier les modifications locales av
 - Conséquence : la pioche de Lady a lieu alors que le sort est déjà en défausse. Sur deck vide, la défausse (sort compris) est recyclée avec la pénalité habituelle ; la défaite n'intervient que si deck et défausse sont vides.
 - Hypothèse conservée : un sort résolu sans effet (cible disparue) reste « joué » ; aucune carte ne contre encore un sort.
 - Tests Lady, Lux, Ravenbloom et Eager Apprentice réécrits selon la règle ; Lady échouait d'abord sur la nouvelle attente. `pnpm check` complet passé avant commit.
+
+### Défausse consultable dans tous les contextes — 30 octobre 2026
+
+- Retour de test : avec la défausse ouverte puis un déplacement préparé, « Fermer » était ignoré (filtre des boutons pendant la préparation des déplacements). L'ouverture et la fermeture de la défausse sont maintenant traitées avant ces filtres : elles fonctionnent pendant un déplacement, une sélection de runes ou un ciblage, sans toucher à la partie.
+- Correctif voisin : activer « Auto » pendant une sélection manuelle des runes de Dark Child quitte cette sélection, ce qui réactive le bouton de fin de tour.
+- Vérifié dans le navigateur (Chromium) : défausse ouverte avant et après la préparation d'un déplacement, puis fermée ; « Auto » activé en cours de sélection puis fin de tour. `pnpm check` complet avant commit.

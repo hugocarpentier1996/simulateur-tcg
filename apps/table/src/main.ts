@@ -151,6 +151,17 @@ root.addEventListener('click', (event) => {
     resetAction !== 'cancel-reset'
   )
     return;
+  // La défausse est une consultation : elle s'ouvre et se ferme dans tous les contextes
+  // (déplacements préparés, choix de runes, ciblage), sans toucher à la partie.
+  const pile = target.closest<HTMLElement>('[data-graveyard]');
+  if (pile || resetAction === 'close-graveyard') {
+    graveyard =
+      pile && graveyard !== pile.dataset.graveyard
+        ? pile.dataset.graveyard!
+        : null;
+    render();
+    return;
+  }
   const rune = target.closest<HTMLElement>('[data-rune]');
   if (rune && endRunes) {
     toggleEndRune(rune.dataset.rune!);
@@ -214,13 +225,11 @@ root.addEventListener('click', (event) => {
   } else if (button.dataset.action === 'cancel') selection = null;
   else if (button.dataset.action === 'end') endTurnClicked();
   else if (button.dataset.action === 'cancel-end') endRunes = null;
-  else if (button.dataset.graveyard)
-    graveyard =
-      graveyard === button.dataset.graveyard ? null : button.dataset.graveyard;
-  else if (button.dataset.action === 'close-graveyard') graveyard = null;
   else if (button.dataset.action === 'toggle-auto-runes') {
     const playerId = session.state.activePlayerId;
     autoRunes[playerId] = !autoRunes[playerId];
+    // Le mode automatique remplace une sélection manuelle en cours.
+    if (autoRunes[playerId]) endRunes = null;
   } else if (
     button.dataset.action === 'reset' ||
     button.dataset.action === 'bo3'
