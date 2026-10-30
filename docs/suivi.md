@@ -1039,3 +1039,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Primal Strength (ogn-154) : +7 Might à une unité quelconque jusqu'à la fin du tour.
 - Rune Prison (ogn-050) : Stun d'une unité quelconque jusqu'à la fin du tour.
 - Discipline (ogn-058) : Réaction, +2 Might jusqu'à la fin du tour puis pioche 1.
+- Smoke Screen (ogn-093) : Réaction, -4 Might jusqu'à la fin du tour, minimum 1.
