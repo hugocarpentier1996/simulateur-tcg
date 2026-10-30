@@ -1046,3 +1046,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Vengeance (ogn-229) : sort normal, tue une unité quelconque (base comprise).
 - Rebuke (ogn-172) : renvoie en main une unité sur un champ, sans limite de Might.
 - Grand Strategem (ogn-233) : +5 Might à toutes les unités alliées jusqu'à la fin du tour.
+- Challenge (ogn-128) : duel entre une unité alliée et une ennemie choisies au lancement, sans bonus.

@@ -110,3 +110,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Vengeance — ogn-229-298
 - [x] Rebuke — ogn-172-298
 - [x] Grand Strategem — ogn-233-298
+- [x] Challenge — ogn-128-298
