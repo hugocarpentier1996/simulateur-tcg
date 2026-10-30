@@ -88,12 +88,12 @@ export function resolveSpell(
       const channeled = channelForPlayer(state, entry.casterId, effect.count);
       state = channeled.state;
       events.push(...channeled.events);
-      if (
-        effect.drawIfEmpty &&
-        !channeled.events.some(
-          (e) => e.type === 'runes-channeled' && e.cardIds.length,
-        )
-      ) {
+      // Pioche de compensation si moins de runes que demandé ont pu être canalisées.
+      const count = channeled.events.reduce(
+        (n, e) => (e.type === 'runes-channeled' ? n + e.cardIds.length : n),
+        0,
+      );
+      if (effect.drawIfShort && count < effect.count) {
         const drawn = drawCardForPlayer(state, entry.casterId);
         state = drawn.state;
         events.push(...drawn.events);

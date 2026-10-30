@@ -150,3 +150,4 @@ export { discipline } from './ogn/discipline.js';
 export { smokeScreen } from './ogn/smoke-screen.js';
 export { progressDay } from './ogn/progress-day.js';
 export { sunlitGuardian } from './ogn/sunlit-guardian.js';
+export { catalystOfAeons } from './ogn/catalyst-of-aeons.js';

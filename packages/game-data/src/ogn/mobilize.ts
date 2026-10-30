@@ -9,5 +9,5 @@ export const mobilize = defineSpell({
   timing: 'normal',
   cost: { energy: 2, power: {} },
   target: { kind: 'caster' },
-  effects: [{ type: 'channel-exhausted', count: 1, drawIfEmpty: true }],
+  effects: [{ type: 'channel-exhausted', count: 1, drawIfShort: true }],
 });

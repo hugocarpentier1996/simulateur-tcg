@@ -33,7 +33,8 @@ export type SpellEffect =
   | {
       readonly type: 'channel-exhausted';
       readonly count: number;
-      readonly drawIfEmpty?: boolean;
+      /** Pioche 1 si moins de `count` runes ont pu être canalisées. */
+      readonly drawIfShort?: boolean;
     }
   | { readonly type: 'units-enter-ready' }
   | {
