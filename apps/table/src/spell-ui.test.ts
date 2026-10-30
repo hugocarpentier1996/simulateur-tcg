@@ -128,7 +128,7 @@ it('révèle la carte examinée par Vision avant le choix', () => {
   ).toHaveLength(2);
 });
 
-it('permet de rendre la priorité après résolution hors Showdown', () => {
+it('rend directement la Main au joueur actif après résolution hors Showdown', () => {
   let s = session(spellScenario(incinerate));
   s = submitCardAction(
     s,
@@ -140,8 +140,7 @@ it('permet de rendre la priorité après résolution hors Showdown', () => {
   s = dispatch(s, { type: 'pass', playerId: 'a' });
   s = dispatch(s, { type: 'pass', playerId: 'b' });
   expect(s.state.stack).toBeNull();
-  expect(handPlayer(s.state)).toBe('b');
-  expect(renderTable(s, null)).toContain('data-choice="0"');
-  s = dispatch(s, tableActions(s)[0]!);
   expect(handPlayer(s.state)).toBe('a');
+  expect(tableActions(s)).toEqual([]);
+  expect(renderTable(s, null)).not.toContain('Rendre la priorité');
 });

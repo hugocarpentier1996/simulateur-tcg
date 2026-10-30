@@ -30,7 +30,6 @@ it('Confront rend les nouvelles unités et Recrues Ready pour ce tour seulement,
   );
   expect(s.cards.find((c) => c.id === 'draw-a-0')?.zoneId).toBe('hand-a');
   expect(s.units[0]!.ready).toBe(false);
-  s = step(s, { type: 'pass', playerId: 'b' });
   s = step(s, {
     type: 'play-unit',
     playerId: 'a',

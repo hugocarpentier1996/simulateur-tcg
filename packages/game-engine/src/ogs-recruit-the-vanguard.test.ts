@@ -153,7 +153,13 @@ it('copie les destinations ; les identifiants évitent les collisions ; les jeto
     'token:5',
   ]);
   next.units.find((u) => u.id === 'token:2')!.damage = 1;
-  next = step(next, { type: 'pass', playerId: 'b' });
+  // Toute action réussie du joueur actif vérifie les unités létales.
+  next = step(next, {
+    type: 'move',
+    playerId: 'a',
+    unitId: 'guard',
+    destinationId: 'base-a',
+  });
   expect(next.units.some((u) => u.id === 'token:2')).toBe(false);
   expect(next.cards.some((c) => c.id === 'token:2')).toBe(false);
 });

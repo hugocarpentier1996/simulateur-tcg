@@ -124,14 +124,17 @@ d'Action et lancent les dégâts. Les cartes normales sont jouables pendant son 
 Showdown ; les Actions sont aussi jouables en Showdown avec la priorité ; les Réactions
 permettent de répondre avant résolution.
 
-Après une chaîne complète, la priorité normale revient au joueur qui n'a pas joué sa
-première carte. Entre les effets de la pile, une nouvelle fenêtre de Réaction s'ouvre.
+Après une chaîne complète en Showdown, la priorité revient au joueur qui n'a pas joué sa
+première carte. Hors Showdown (Main du joueur actif), elle revient directement au joueur
+actif : son adversaire n'y a jamais la priorité pour jouer des Actions, seulement des
+Réactions pendant une pile (confirmé par l'utilisateur). Entre les effets de la pile, une
+nouvelle fenêtre de Réaction s'ouvre.
 Sa première priorité revient à l'attaquant (premier arrivé en Open), ou au joueur actif
 hors Showdown. Deux passes autorisent la résolution de l'effet au sommet.
 
-Vision (confirmé par l'utilisateur) : le choix de garder ou recycler la carte regardée fait
-partie de la résolution. Une fois la carte placée, si la pile est vide hors Showdown, aucune
-nouvelle fenêtre de priorité ne s'ouvre : le joueur actif reprend directement sa Main.
+Vision (confirmé par l'utilisateur) : seule la mise sur la pile de la capacité ouvre une
+fenêtre de Réaction. Le choix de garder ou recycler la carte regardée fait partie de la
+résolution et n'ouvre aucune nouvelle fenêtre.
 
 Timings des sorts : Normal seulement pendant sa Main hors Showdown ; Action également
 avec priorité en open state de Showdown (aucun effet en attente) ; Réaction dans ces

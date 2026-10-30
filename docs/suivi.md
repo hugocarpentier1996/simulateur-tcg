@@ -986,4 +986,11 @@ de toutes les développer. À la reprise, vérifier les modifications locales av
 ### Outillage de vérification hors Docker — 30 octobre 2026
 
 - Le registre npm reste inaccessible depuis l'environnement de Claude. Prettier, ESLint et TypeScript sont récupérés depuis le magasin pnpm local (paquets JavaScript purs) pour vérifier format, lint et types avant chaque push ; vitest et Vite exigent le binaire natif rolldown et ne tournent que dans la CI GitHub (ou Docker), qui reste la référence.
-- Validation CI de la série du 30 octobre : 502 tests attendus, CI verte à chaque étape poussée après correction des écarts de format.
+- Historique réécrit à la demande de l'utilisateur : chaque commit de la série du 30 octobre a été rejoué avec son format corrigé et vérifié (format, lint, types, tests du banc) ; les commits de correction et le lien `node_modules` commité par erreur ont disparu. Règle de travail : toutes les vérifications passent avant le commit, la CI n'est qu'un contrôle de sécurité.
+
+### Priorité hors Showdown après une chaîne — 30 octobre 2026
+
+- Précision utilisateur : en Main, l'adversaire n'a jamais la priorité pour jouer des Actions, seulement des Réactions pendant une pile. Une chaîne résolue hors Showdown rend donc la priorité au joueur actif (`continueStack`) ; en Showdown, l'adversaire de l'initiateur la reçoit comme avant. La résolution de Vision n'ouvre pas de fenêtre ; seule sa mise sur la pile en ouvre une.
+- Le cas particulier ajouté plus tôt pour Vision est retiré : la règle générale le couvre. La « question ouverte » de l'étape Vision est ainsi tranchée. `regles.md` mis à jour.
+- Tests adaptés à la règle précisée (sorts de test, Lux Mind, Confront, Recruit the Vanguard, table) : ils supposaient une passe du Joueur 2 après chaque chaîne hors Showdown.
+- Vérifié avant commit : Prettier, ESLint, tsc et 502 tests du banc ; vitest et build par la CI.

@@ -140,7 +140,6 @@ it('ignore la source disparue avant résolution du bonus', () => {
 });
 it('le bonus expire à la fin du tour', () => {
   let s = resolve(resolve(step(fixture(), cast)));
-  s = step(s, { type: 'pass', playerId: 'b' });
   s = step(s, { type: 'end-turn', playerId: 'a' });
   expect(effectiveMight(s.units[0]!)).toBe(5);
 });
@@ -155,7 +154,6 @@ it('cumule deux déclenchements même quand Lux est Tap et Stun', () => {
     zoneId: 'hand-a',
   });
   let next = resolve(resolve(step(s, cast)));
-  next = step(next, { type: 'pass', playerId: 'b' });
   next = resolve(resolve(step(next, { ...cast, cardId: 'second-strike' })));
   expect(effectiveMight(next.units[0]!)).toBe(15);
 });

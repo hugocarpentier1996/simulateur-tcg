@@ -145,10 +145,10 @@ describe('sorts et fenêtres de Réaction', () => {
     expect(state.units.map((u) => u.id)).toEqual(['ub']);
     expect(state.battlefields[0]?.controllerId).toBe('b');
   });
-  it('rend la priorité de Main par une passe et retire le malus à la fin du tour', () => {
+  it('rend la Main au joueur actif après la chaîne et retire le malus à la fin du tour', () => {
     let state = passes(apply(scenario(), cast('a', 'weaken-draw', 'ub')));
-    expect(act(state, { type: 'end-turn', playerId: 'a' }).ok).toBe(false);
-    state = apply(state, { type: 'pass', playerId: 'b' });
+    expect(state.priorityPlayerId).toBe('a');
+    expect(act(state, { type: 'pass', playerId: 'b' }).ok).toBe(false);
     state = apply(state, { type: 'end-turn', playerId: 'a' });
     expect(effectiveMight(state.units[1]!)).toBe(2);
     expect(state.priorityPlayerId).toBe('b');
@@ -208,7 +208,7 @@ describe('sorts et fenêtres de Réaction', () => {
     expect(effectiveMight(state.units[1]!)).toBe(6);
     state = passes(state);
     expect(effectiveMight(state.units[1]!)).toBe(5);
-    expect(state.priorityPlayerId).toBe('b');
+    expect(state.priorityPlayerId).toBe('a');
   });
   it('refuse timing, mauvaise priorité et paiement insuffisant sans mutation', () => {
     const input = scenario();

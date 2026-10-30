@@ -81,7 +81,7 @@ it('Vision placée hors Showdown : aucune nouvelle fenêtre, le joueur actif rep
   s = resolveTop(s);
   s = step(s, { type: 'choose-vision', playerId: 'a', recycle: true });
   expect(s.stack).toBeNull();
-  expect(s.priorityPlayerId ?? null).toBeNull();
+  expect(s.priorityPlayerId).toBe('a');
   expect(getLegalActions(s, 'b')).toEqual([]);
   const actions = getLegalActions(s, 'a').map((a) => a.type);
   expect(actions).toContain('end-turn');

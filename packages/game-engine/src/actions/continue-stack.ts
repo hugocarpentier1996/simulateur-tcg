@@ -1,7 +1,9 @@
 import type { GameState, GameEvent, ActionResult } from '../types.js';
 import { finishCombat } from '../combat/finish.js';
 /** Pile après retrait du sommet -> pause pour choix, nouvelle fenêtre ou clôture.
- * Conserve les entrées restantes ; aucun effet supplémentaire n'est résolu ici. */
+ * Conserve les entrées restantes ; aucun effet supplémentaire n'est résolu ici.
+ * Pile vide : en Showdown, la priorité passe à l'adversaire de l'initiateur de la chaîne ;
+ * hors Showdown, elle revient au joueur actif (l'adversaire n'a que des Réactions). */
 export function continueStack(
   state: GameState,
   events: GameEvent[],
@@ -62,7 +64,7 @@ export function continueStack(
                 consecutivePasses: 0,
               },
             }
-          : { priorityPlayerId }
+          : { priorityPlayerId: next.activePlayerId }
         : {}),
     },
     events: events,
