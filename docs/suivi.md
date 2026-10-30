@@ -946,3 +946,10 @@ de toutes les développer. À la reprise, vérifier les modifications locales av
 - Pendant la confirmation, la table est figée (clics et glisser-déposer ignorés) jusqu'à « Recommencer » ou « Continuer la partie ». `renderTable` reçoit l'état `PendingReset`.
 - TDD : `reset-confirm.test.ts` (rendu BO1/BO3, absence sans demande, plus de `window.confirm`) échouait avant l'implémentation.
 - Vérification hors ligne : 483 tests réussis, typage sans erreur. Navigateur (bundle esbuild + Chromium, 1280×720) : panneau affiché, clic sur une carte ignoré, abandon puis confirmation BO3 fonctionnels, aucune erreur de page ni dialogue. `pnpm check` reste à confirmer.
+
+### Vision sans fenêtre de priorité superflue — 30 octobre 2026
+
+- Retour de test manuel : après le placement de la carte vue, le Joueur 2 recevait la priorité et devait « Rendre la priorité ». Le placement termine désormais la résolution : pile vide hors Showdown, aucune priorité rouverte. Dans une pile non vide ou un Showdown, le comportement existant est conservé (Sai Scout ouvre toujours son Showdown).
+- Règle ajoutée à `regles.md` comme confirmée par l'utilisateur.
+- TDD : nouveau test Mystic Poro observé en échec (priorité « b ») avant la correction de `chooseVision`.
+- Question ouverte : après la résolution d'un sort hors Showdown, la priorité revient encore à l'adversaire, conformément à la règle de chaîne actuelle. À aligner si l'utilisateur le souhaite.

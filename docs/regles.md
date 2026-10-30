@@ -124,6 +124,10 @@ première carte. Entre les effets de la pile, une nouvelle fenêtre de Réaction
 Sa première priorité revient à l'attaquant (premier arrivé en Open), ou au joueur actif
 hors Showdown. Deux passes autorisent la résolution de l'effet au sommet.
 
+Vision (confirmé par l'utilisateur) : le choix de garder ou recycler la carte regardée fait
+partie de la résolution. Une fois la carte placée, si la pile est vide hors Showdown, aucune
+nouvelle fenêtre de priorité ne s'ouvre : le joueur actif reprend directement sa Main.
+
 Timings des sorts : Normal seulement pendant sa Main hors Showdown ; Action également
 avec priorité en open state de Showdown (aucun effet en attente) ; Réaction dans ces
 fenêtres et en réponse en closed state. Une Réaction peut répondre à une Réaction.

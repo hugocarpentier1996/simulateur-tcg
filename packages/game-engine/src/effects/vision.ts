@@ -25,7 +25,9 @@ export function startVision(
   };
 }
 /** Choix privé obligatoire -> garder au sommet ou recycler au-dessous, puis reprendre la pile.
- * Refuse mauvais joueur/fenêtre/sommet modifié. Ne diffuse pas l'identité regardée dans le journal. */
+ * Refuse mauvais joueur/fenêtre/sommet modifié. Ne diffuse pas l'identité regardée dans le journal.
+ * Le placement termine la résolution : si la pile est vide hors Showdown, aucune fenêtre de
+ * priorité n'est rouverte et le joueur actif reprend directement sa Main (règle utilisateur). */
 export function chooseVision(
   state: GameState,
   action: Extract<GameAction, { type: 'choose-vision' }>,
@@ -37,7 +39,7 @@ export function chooseVision(
   const card = topCard(state, action.playerId);
   if (card?.id !== pending.cardId)
     return { ok: false, reason: 'INVALID_TARGET' };
-  return continueStack(
+  const resumed = continueStack(
     {
       ...state,
       pendingVision: null,
@@ -47,4 +49,8 @@ export function chooseVision(
     },
     [{ type: 'unit-play-effect-resolved', sourceId: pending.sourceId }],
   );
+  if (resumed.state.stack || resumed.state.showdown) return resumed;
+  const closed: GameState = { ...resumed.state };
+  delete closed.priorityPlayerId;
+  return { ...resumed, state: closed };
 }

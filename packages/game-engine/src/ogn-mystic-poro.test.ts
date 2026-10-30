@@ -68,3 +68,21 @@ it('Vision avec deck vide ne pioche pas et ne donne aucun point', () => {
   expect(s.result).toBeUndefined();
   expect(s.players[1]!.score).toBe(0);
 });
+it('Vision placée hors Showdown : aucune nouvelle fenêtre, le joueur actif reprend sa Main', () => {
+  let s = spellScenario(stupefy);
+  s.unitDefinitions = [mysticPoro];
+  s.cards[0]!.definitionId = mysticPoro.id;
+  s = step(s, {
+    type: 'play-unit',
+    playerId: 'a',
+    cardId: 'spell',
+    payment: noRunes,
+  });
+  s = resolveTop(s);
+  s = step(s, { type: 'choose-vision', playerId: 'a', recycle: true });
+  expect(s.stack).toBeNull();
+  expect(s.priorityPlayerId ?? null).toBeNull();
+  expect(getLegalActions(s, 'b')).toEqual([]);
+  const actions = getLegalActions(s, 'a').map((a) => a.type);
+  expect(actions).toContain('end-turn');
+});
