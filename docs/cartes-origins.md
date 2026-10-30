@@ -109,3 +109,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Catalyst of Aeons — ogn-138-298
 - [x] Vengeance — ogn-229-298
 - [x] Rebuke — ogn-172-298
+- [x] Grand Strategem — ogn-233-298
