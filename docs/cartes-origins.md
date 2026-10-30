@@ -107,3 +107,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Progress Day — ogn-114-298
 - [x] Sunlit Guardian — ogn-054-298
 - [x] Catalyst of Aeons — ogn-138-298
+- [x] Vengeance — ogn-229-298

@@ -1043,3 +1043,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Progress Day (ogn-114) : sort normal, pioche 4.
 - Sunlit Guardian (ogn-054) : Shield et Tank.
 - Catalyst of Aeons (ogn-138) : canalise 2 runes Tap, pioche 1 si moins de 2 ont pu l'être. L'option `drawIfEmpty` devient `drawIfShort` (pioche si moins de runes que demandé), sans changement pour Mobilize.
+- Vengeance (ogn-229) : sort normal, tue une unité quelconque (base comprise).
