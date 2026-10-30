@@ -1034,3 +1034,4 @@ de toutes les développer. À la reprise, vérifier les modifications locales av
 Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Origins/cartes.json`, une par commit. Chaque carte reçoit définition, métadonnées officielles (nom, tags), image locale, test moteur ; `pnpm check` complet passe avant chaque commit. Liste tenue dans `cartes-origins.md`.
 
 - Shipyard Skulker (ogn-175) : unité sans capacité.
+- Hextech Ray (ogn-009) : 3 dégâts à une unité sur un champ (effet de dégâts existant).

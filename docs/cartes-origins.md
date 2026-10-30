@@ -98,3 +98,4 @@ avant le Channel normal. Les nouveaux choix sont disponibles dans `getLegalActio
 Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commitée.
 
 - [x] Shipyard Skulker — ogn-175-298
+- [x] Hextech Ray — ogn-009-298
