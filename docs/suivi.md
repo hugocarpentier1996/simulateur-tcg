@@ -1007,3 +1007,9 @@ de toutes les développer. À la reprise, vérifier les modifications locales av
 - Retour de test : avec la défausse ouverte puis un déplacement préparé, « Fermer » était ignoré (filtre des boutons pendant la préparation des déplacements). L'ouverture et la fermeture de la défausse sont maintenant traitées avant ces filtres : elles fonctionnent pendant un déplacement, une sélection de runes ou un ciblage, sans toucher à la partie.
 - Correctif voisin : activer « Auto » pendant une sélection manuelle des runes de Dark Child quitte cette sélection, ce qui réactive le bouton de fin de tour.
 - Vérifié dans le navigateur (Chromium) : défausse ouverte avant et après la préparation d'un déplacement, puis fermée ; « Auto » activé en cours de sélection puis fin de tour. `pnpm check` complet avant commit.
+
+### Runes affichées comme des cartes — 31 octobre 2026
+
+- Demande utilisateur : runes reconnaissables à leur apparence. Chaque rune est maintenant sa seule illustration, entourée d'une bordure à la couleur de son domaine (Fury rouge, Calm vert, Mind bleu, Body orange, Chaos violet, Order jaune), sans texte. Une rune Tap pivote de 90° comme les unités, dans un emplacement carré qui évite les chevauchements.
+- Le nom du domaine et l'état restent dans le libellé accessible et l'info-bulle (« Rune Body · Ready »). Le test des domaines vérifie ce libellé au lieu du texte visible demandé auparavant.
+- TDD : `rune-display.test.ts` (2 échecs avant implémentation). Navigateur : 1280×720 et 1024×600 sans débordement, rune Ready et rune Tap visibles. `pnpm check` complet avant commit.

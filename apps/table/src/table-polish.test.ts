@@ -26,8 +26,8 @@ it('affiche les domaines et deux pistes de huit cristaux, en miroir', () => {
   const s = createDemo(true);
   s.state.players[0]!.score = 3;
   const html = renderTable(s, null);
-  expect(html).toContain('<strong>Body</strong>');
-  expect(html).toContain('<strong>Order</strong>');
+  expect(html).toContain('aria-label="Rune Body · Ready"');
+  expect(html).toContain('aria-label="Rune Order · Ready"');
   expect(html.match(/class="victory-crystal/g)).toHaveLength(16);
   expect(html.match(/victory-crystal earned/g)).toHaveLength(3);
   expect(html).toContain('victory-track opponent');

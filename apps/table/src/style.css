@@ -1693,3 +1693,86 @@ button.pile.graveyard:hover .pile-face {
   width: 72px;
   border-radius: 4px;
 }
+
+/* Runes : petites cartes reconnaissables à leur illustration et à la bordure de leur
+   domaine. L'emplacement est carré pour qu'une rune Tap, tournée à 90° comme une
+   unité, ne chevauche pas ses voisines. */
+.rune-cards {
+  gap: 4px;
+  align-items: center;
+}
+.rune-card {
+  --rune-slot: 50px;
+  --domain: #9cacae;
+  position: relative;
+  flex: 0 0 var(--rune-slot);
+  width: var(--rune-slot);
+  height: var(--rune-slot);
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  display: grid;
+  place-items: center;
+  background: transparent;
+  box-shadow: none;
+  filter: none;
+  opacity: 1;
+  transform: none;
+}
+.rune-card.rouge {
+  --domain: #e0574c;
+}
+.rune-card.vert {
+  --domain: #62b46f;
+}
+.rune-card.bleu {
+  --domain: #4ea4d8;
+}
+.rune-card.orange {
+  --domain: #e8913f;
+}
+.rune-card.violet {
+  --domain: #a46bd4;
+}
+.rune-card.jaune {
+  --domain: #ecd05a;
+}
+.rune-face {
+  display: block;
+  width: calc(var(--rune-slot) * 0.7);
+  height: var(--rune-slot);
+  border: 2px solid var(--domain);
+  border-radius: 4px;
+  overflow: hidden;
+  background: #142331;
+  box-shadow:
+    0 2px 5px #0008,
+    0 0 6px color-mix(in srgb, var(--domain) 45%, transparent);
+  transition: transform 0.15s;
+}
+.rune-card .rune-art {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-height: none;
+  object-fit: cover;
+  border-radius: 0;
+}
+.rune-fallback {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  font-size: 8px;
+  font-weight: 700;
+  color: #101a21;
+  background: var(--domain);
+}
+.rune-card.tapped .rune-face {
+  transform: rotate(90deg);
+}
+.rune-card:hover .rune-face {
+  box-shadow:
+    0 2px 5px #0008,
+    0 0 10px var(--domain);
+}

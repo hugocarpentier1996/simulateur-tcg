@@ -196,7 +196,7 @@ function resourceRow(
   };
   return `<div class="resource-row ${opponent ? 'opponent-resources' : ''}" aria-label="Ressources de ${escape(playerName(ownerId))}">
     ${pile('rune-pile', 'Deck de runes', '◇')}
-    <div class="rune-cards">${runes.length ? runes.map((r) => `<article class="rune-card ${escape(r.color ?? '')} ${r.ready ? '' : 'tapped'}${endRunes ? ' choosable' : ''}${endRunes?.includes(r.id) ? ' chosen' : ''}" data-rune="${escape(r.id)}" role="button" tabindex="0" title="Clic : Tap pour 1 énergie · Clic droit : recycler sous le deck de runes pour 1 Power${r.ready ? ' (+1 énergie)' : ''}"><span aria-hidden="true">${art(r.definitionId, 'rune-art') || (r.color === 'rouge' ? '◆' : '◈')}</span><strong>${escape(domainName(r.color ?? ''))}</strong><small>${r.ready ? 'Ready' : 'Tap'}</small></article>`).join('') : '<span class="empty">Aucune rune en jeu</span>'}</div>
+    <div class="rune-cards">${runes.length ? runes.map((r) => `<article class="rune-card ${escape(r.color ?? '')} ${r.ready ? 'ready' : 'tapped'}${endRunes ? ' choosable' : ''}${endRunes?.includes(r.id) ? ' chosen' : ''}" data-rune="${escape(r.id)}" role="button" tabindex="0" aria-label="Rune ${escape(domainName(r.color ?? ''))} · ${r.ready ? 'Ready' : 'Tap'}" title="${escape(domainName(r.color ?? ''))} · ${r.ready ? 'Ready' : 'Tap'} — clic : Tap pour 1 énergie · clic droit : recycler sous le deck de runes pour 1 Power${r.ready ? ' (+1 énergie)' : ''}"><span class="rune-face" aria-hidden="true">${art(r.definitionId, 'rune-art') || `<span class="rune-fallback">${escape(domainName(r.color ?? ''))}</span>`}</span></article>`).join('') : '<span class="empty">Aucune rune en jeu</span>'}</div>
     ${pile('deck', 'Deck', '♜')}${pile('graveyard', 'Défausse', '✧')}
   </div>`;
 }
