@@ -1795,3 +1795,31 @@ button.pile.graveyard:hover .pile-face {
   color: #ffd6c3;
   text-shadow: 0 1px 3px #000;
 }
+
+/* Défausse imposée : les cartes de la main sont cliquables pour être défaussées. */
+.fan-slot .card.discard-choice {
+  outline: 2px dashed #e0574c;
+  outline-offset: 3px;
+  cursor: pointer;
+}
+.fan-slot .card.discard-choice:hover {
+  outline-style: solid;
+}
+
+/* Ciblage : cibles déjà choisies. */
+.unit-card.picked {
+  outline: 3px solid #e6c481;
+  outline-offset: 2px;
+  box-shadow: 0 0 16px #e6c481aa;
+}
+.zone.picked {
+  border: 2px solid #e6c481;
+}
+.all-options {
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.all-options summary {
+  cursor: pointer;
+}

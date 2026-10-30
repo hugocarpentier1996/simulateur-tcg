@@ -4,6 +4,7 @@ import {
   act,
   effectiveMight,
   type CardInstance,
+  type GameAction,
   type GameState,
 } from '../../../packages/game-engine/src/index.js';
 import {
@@ -25,6 +26,8 @@ import { fanLayout } from './fan.js';
 export interface Selection {
   cardId: string;
   destinationId?: string;
+  /** Mode ciblage ouvert par « Lancer » (ou après le dépôt d'une unité à cible). */
+  targeting?: boolean;
   /** Cibles déjà cliquées sur le plateau, dans l'ordre du choix (ex. Duel : alliée puis ennemie). */
   picks?: readonly string[];
 }
@@ -59,7 +62,7 @@ function card(
   card: CardInstance,
   selected: Selection | null,
   champion = false,
-  marked = false,
+  extraClass = '',
 ): string {
   const def = {
     name: card.definitionId,
@@ -68,8 +71,8 @@ function card(
     ...cardInfo(card.definitionId),
   };
   if (def.imageLocal)
-    return `<button type="button" class="card illustrated-card ${selected?.cardId === card.id ? 'selected' : ''}${marked ? ' mulligan-marked' : ''}" id="card-${escape(card.id)}" data-card="${escape(card.id)}" aria-pressed="${selected?.cardId === card.id}" title="${escape(cardName(card.definitionId))} · ${escape(def.tags?.join(' · ') ?? '')}">${art(card.definitionId, 'card-art')}<span class="sr-only">${champion ? 'Chosen champion · ' : ''}${escape(cardName(card.definitionId))}</span></button>`;
-  return `<button type="button" class="card ${selected?.cardId === card.id ? 'selected' : ''}${marked ? ' mulligan-marked' : ''}" id="card-${escape(card.id)}" draggable="false" data-card="${escape(card.id)}" aria-pressed="${selected?.cardId === card.id}">
+    return `<button type="button" class="card illustrated-card ${selected?.cardId === card.id ? 'selected' : ''}${extraClass ? ` ${extraClass}` : ''}" id="card-${escape(card.id)}" data-card="${escape(card.id)}" aria-pressed="${selected?.cardId === card.id}" title="${escape(cardName(card.definitionId))} · ${escape(def.tags?.join(' · ') ?? '')}">${art(card.definitionId, 'card-art')}<span class="sr-only">${champion ? 'Chosen champion · ' : ''}${escape(cardName(card.definitionId))}</span></button>`;
+  return `<button type="button" class="card ${selected?.cardId === card.id ? 'selected' : ''}${extraClass ? ` ${extraClass}` : ''}" id="card-${escape(card.id)}" draggable="false" data-card="${escape(card.id)}" aria-pressed="${selected?.cardId === card.id}">
     <span class="card-type">${champion ? 'Chosen champion' : 'Unité'}</span>
     <span class="sigil" aria-hidden="true">${def.might === 0 ? '◇' : '♜'}</span>
     <strong>${escape(def.name.replace(' de test', ''))}</strong>
@@ -86,16 +89,17 @@ function zone(
   battlefield = false,
   destinations: readonly string[] = [],
   moves: readonly PlannedMove[] = [],
+  picked: readonly string[] = [],
 ): string {
   const units = state.units.filter((u) => u.zoneId === zoneId);
-  return `<section data-zone="${escape(zoneId)}" class="zone ${destinations.includes(zoneId) ? 'drop-target' : ''} ${battlefield ? 'battlefield' : 'base'}"><header><h3>${escape(title)}</h3><span>${escape(subtitle)}</span></header>
+  return `<section data-zone="${escape(zoneId)}" class="zone ${destinations.includes(zoneId) ? 'drop-target' : ''}${picked.includes(zoneId) ? ' picked' : ''} ${battlefield ? 'battlefield' : 'base'}"><header><h3>${escape(title)}</h3><span>${escape(subtitle)}</span></header>
     ${battlefield ? art(state.battlefields.find((b) => b.zoneId === zoneId)?.definitionId ?? '', 'field-art') : ''}
     <div class="units">${
       units.length
         ? units
             .map((u) => {
               const label = `${cardName(u.definitionId)} · ${playerName(u.ownerId)} · ${u.ready ? 'Ready' : 'Tap'} · Might ${effectiveMight(u, state)} · ${u.damage} dégât(s)`;
-              return `<div class="unit-slot"><button type="button" id="unit-${escape(u.id)}" data-card="${escape(u.id)}" class="unit-card ${u.ready ? 'ready' : 'tapped'}${destinations.includes(u.id) ? ' targetable' : ''}" aria-label="${escape(label)}" title="${escape(label)}"><span class="unit-face">${art(u.definitionId, 'unit-art') || `<span class="unit-fallback">${escape(cardName(u.definitionId))}</span>`}</span><span class="unit-might">${effectiveMight(u, state)}</span></button></div>`;
+              return `<div class="unit-slot"><button type="button" id="unit-${escape(u.id)}" data-card="${escape(u.id)}" class="unit-card ${u.ready ? 'ready' : 'tapped'}${destinations.includes(u.id) ? ' targetable' : ''}${picked.includes(u.id) ? ' picked' : ''}" aria-label="${escape(label)}" title="${escape(label)}"><span class="unit-face">${art(u.definitionId, 'unit-art') || `<span class="unit-fallback">${escape(cardName(u.definitionId))}</span>`}</span><span class="unit-might">${effectiveMight(u, state)}</span></button></div>`;
             })
             .join('')
         : moves.some((m) => m.destinationId === zoneId)
@@ -161,7 +165,7 @@ function paymentPanel(session: Session, selection: Selection | null): string {
       const priority = state.stack?.priorityPlayerId ?? show.priorityPlayerId;
       return `<section class="showdown-panel">${vision}<div class="eyebrow">${show.kind === 'combat' ? 'Combat Showdown' : 'Open Showdown'}</div><h3>Champ de bataille ${state.battlefields.findIndex((b) => b.zoneId === show.battlefieldId) + 1}</h3><p>Priorité : ${escape(playerName(priority))}</p><p class="help">${state.stack ? 'Réactions' : show.kind === 'combat' && show.stage === 'damage' ? 'Répartir les dégâts' : show.kind === 'combat' ? 'Les passes ouvrent la répartition des dégâts.' : 'Les passes clôturent la fenêtre de conquête.'}</p><p>${show.consecutivePasses} / ${show.participants.length} passes</p><div class="choice-list">${choices.map((a, i) => `<button class="${a.type === 'pass' ? 'primary' : 'quiet'}" data-choice="${i}">${escape(actionLabel(session, a))}</button>`).join('')}</div></section>`;
     }
-    return `<div class="eyebrow">Choix du moteur</div><h3>${heading}</h3>${vision}<p class="help">Les boutons proposent uniquement les actions actuellement autorisées.</p><div class="choice-list">${choices.map((a, i) => `<button class="quiet" data-choice="${i}">${escape(actionLabel(session, a))}</button>`).join('')}</div>`;
+    return `<div class="eyebrow">Choix du moteur</div><h3>${heading}</h3>${vision}<p class="help">${state.pendingDiscard ? 'Clique la carte de ta main à défausser, ou choisis-la ci-dessous.' : 'Les boutons proposent uniquement les actions actuellement autorisées.'}</p><div class="choice-list">${choices.map((a, i) => `<button class="quiet" data-choice="${i}">${escape(actionLabel(session, a))}</button>`).join('')}</div>`;
   }
   const unit = session.state.units.find((u) => u.id === selection?.cardId);
   if (unit) {
@@ -211,6 +215,7 @@ function playerBase(
   destinations: readonly string[] = [],
   moves: readonly PlannedMove[] = [],
   ui: TableUi = {},
+  picked: readonly string[] = [],
 ): string {
   const champion = state.cards.find((c) =>
     state.zones.some(
@@ -226,16 +231,16 @@ function playerBase(
   const base = state.zones.find(
     (z) => z.kind === 'base' && z.ownerId === ownerId,
   )!;
-  return `<div class="base-row ${opponent ? 'opponent-base' : ''}">${zone(state, base.id, `Base · ${playerName(ownerId)}`, 'Unités en jeu', false, destinations, moves)}<div class="identity-zone">${legend ? art(legend.definitionId, 'legend-art') : ''}<span>Légende<small>${escape(legend ? cardName(legend.definitionId) : '')}</small></span>${!opponent && legend && state.legendDefinitions?.some((d) => d.id === legend.definitionId && d.readyRunesAtEnd) ? `<button type="button" class="auto-toggle ${ui.autoRunes?.[ownerId] ? 'on' : ''}" data-action="toggle-auto-runes" aria-pressed="${!!ui.autoRunes?.[ownerId]}" title="Redresser automatiquement les runes en fin de tour (runes Tap d’abord)">Auto</button>` : ''}</div><div class="chosen-zone">${champion ? (opponent ? `<div class="champion-back"><span>Chosen champion</span><strong>${escape(cardName(champion.definitionId))}</strong>${art(champion.definitionId, 'champion-art')}</div>` : card(champion, selected, true)) : '<p class="empty">Zone champion vide</p>'}</div></div>`;
+  return `<div class="base-row ${opponent ? 'opponent-base' : ''}">${zone(state, base.id, `Base · ${playerName(ownerId)}`, 'Unités en jeu', false, destinations, moves, picked)}<div class="identity-zone">${legend ? art(legend.definitionId, 'legend-art') : ''}<span>Légende<small>${escape(legend ? cardName(legend.definitionId) : '')}</small></span>${!opponent && legend && state.legendDefinitions?.some((d) => d.id === legend.definitionId && d.readyRunesAtEnd) ? `<button type="button" class="auto-toggle ${ui.autoRunes?.[ownerId] ? 'on' : ''}" data-action="toggle-auto-runes" aria-pressed="${!!ui.autoRunes?.[ownerId]}" title="Redresser automatiquement les runes en fin de tour (runes Tap d’abord)">Auto</button>` : ''}</div><div class="chosen-zone">${champion ? (opponent ? `<div class="champion-back"><span>Chosen champion</span><strong>${escape(cardName(champion.definitionId))}</strong>${art(champion.definitionId, 'champion-art')}</div>` : card(champion, selected, true)) : '<p class="empty">Zone champion vide</p>'}</div></div>`;
 }
 
 function handFan(
   hand: CardInstance[],
   selected: Selection | null,
-  marked: readonly string[] = [],
+  classFor: (c: CardInstance) => string = () => '',
 ): string {
   const layout = fanLayout(hand.length);
-  return `<div class="hand-scroll"><div class="hand fan" style="--cards:${Math.max(1, hand.length)}">${hand.map((c, i) => `<div class="fan-slot" style="--angle:${layout[i]!.angle}deg;--lift:${layout[i]!.lift}px;--card-index:${i}">${card(c, selected, false, marked.includes(c.id))}</div>`).join('')}</div></div>`;
+  return `<div class="hand-scroll"><div class="hand fan" style="--cards:${Math.max(1, hand.length)}">${hand.map((c, i) => `<div class="fan-slot" style="--angle:${layout[i]!.angle}deg;--lift:${layout[i]!.lift}px;--card-index:${i}">${card(c, selected, false, classFor(c))}</div>`).join('')}</div></div>`;
 }
 
 /** Session de démo et sélection -> HTML échappé. Affiche la main du joueur actif.
@@ -263,18 +268,21 @@ export function renderTable(
   ui: TableUi = {},
 ): string {
   const state = session.state;
+  const picked = selected?.targeting ? (selected.picks ?? []) : [];
   // Zones de dépôt et cibles cliquables partagent la surbrillance ; le moteur les fournit.
   const destinations =
     selected &&
     (!moves.length || state.units.some((u) => u.id === selected.cardId))
       ? [
           ...boardOptions(state, selected.cardId).map((a) => a.destinationId!),
-          ...targetOptions(
-            session,
-            selected.cardId,
-            selected.picks ?? [],
-            selected.destinationId,
-          ).next,
+          ...(selected.targeting
+            ? targetOptions(
+                session,
+                selected.cardId,
+                selected.picks ?? [],
+                selected.destinationId,
+              ).next
+            : []),
         ]
       : [];
   const active = state.activePlayerId;
@@ -309,15 +317,15 @@ export function renderTable(
         .filter((p) => p.id !== active)
         .map(
           (p) =>
-            `<div class="opponent-hand" aria-label="Main adverse : ${count(state, p.id, 'hand')} cartes">${Array.from({ length: Math.min(count(state, p.id, 'hand'), 12) }, () => '<span class="card-back" aria-hidden="true">◇</span>').join('')}<small>${count(state, p.id, 'hand')} cartes en main</small></div>${resourceRow(state, p.id, true)}${playerBase(state, p.id, selected, true, [], moves)}`,
+            `<div class="opponent-hand" aria-label="Main adverse : ${count(state, p.id, 'hand')} cartes">${Array.from({ length: Math.min(count(state, p.id, 'hand'), 12) }, () => '<span class="card-back" aria-hidden="true">◇</span>').join('')}<small>${count(state, p.id, 'hand')} cartes en main</small></div>${resourceRow(state, p.id, true)}${playerBase(state, p.id, selected, true, destinations, moves, {}, picked)}`,
         )
         .join('')}
-      <div class="battlefields" style="--fields:${Math.max(1, state.battlefields.length)}">${state.battlefields.map((b, i) => zone(state, b.zoneId, b.definitionId && cardInfo(b.definitionId) ? cardName(b.definitionId) : `Champ de bataille ${i + 1}`, b.controllerId ? `Contrôlé par ${playerName(b.controllerId)}` : 'Neutre', true, destinations, moves)).join('')}</div>
-      ${playerBase(state, active, selected, false, destinations, moves, ui)}
+      <div class="battlefields" style="--fields:${Math.max(1, state.battlefields.length)}">${state.battlefields.map((b, i) => zone(state, b.zoneId, b.definitionId && cardInfo(b.definitionId) ? cardName(b.definitionId) : `Champ de bataille ${i + 1}`, b.controllerId ? `Contrôlé par ${playerName(b.controllerId)}` : 'Neutre', true, destinations, moves, picked)).join('')}</div>
+      ${playerBase(state, active, selected, false, destinations, moves, ui, picked)}
       ${resourceRow(state, active, false, endRunes)}
     </div>
     <div class="reserve"><span>${escape(playerName(active))} · Réserve flottante</span><span><b>${state.resources[active]?.energy ?? 0}</b> énergie · <b>${escape(powerText(state.resources[active]?.power ?? {}))}</b> Power</span></div>
-    <section class="hand-section"><header><h2>Main de ${escape(playerName(handOwner))}</h2><span>${hand.length} cartes · sélectionner pour jouer</span></header>${handFan(hand, selected, mulliganTurn ? (ui.mulligan ?? []) : [])}</section></section>
+    <section class="hand-section"><header><h2>Main de ${escape(playerName(handOwner))}</h2><span>${hand.length} cartes · sélectionner pour jouer</span></header>${handFan(hand, selected, (c) => (mulliganTurn && ui.mulligan?.includes(c.id) ? 'mulligan-marked' : state.pendingDiscard?.playerId === handOwner ? 'discard-choice' : ''))}</section></section>
     <aside><section class="action-panel">${session.error ? `<p role="alert" class="error">${escape(session.error)}</p>` : ''}${pendingReset ? resetPanel(pendingReset) : ui.graveyard ? graveyardPanel(state, ui.graveyard) : mulliganTurn ? mulliganPanel(mulliganTurn, ui.mulligan ?? []) : endRunes && runeChoice ? endRunesPanel(endRunes.length, runeChoice.count) : moves.length ? movementPanel(session, moves) : paymentPanel(session, selected)}</section><section class="journal"><header><h2>Journal de partie</h2><span>${session.log.length}</span></header><ol>${session.log
       .slice()
       .reverse()
@@ -527,26 +535,49 @@ function selectedCardPanel(session: Session, selection: Selection): string {
     state.units.find((c) => c.id === selection.cardId);
   if (!card)
     return '<p>Carte indisponible.</p><button data-action="cancel">Retour</button>';
-  const compatible = new Set(
-    targetOptions(
-      session,
-      card.id,
-      selection.picks ?? [],
-      selection.destinationId,
-    ).actions.map((action) => JSON.stringify(action)),
+  const all = cardActions(session, card.id).map((action, index) => ({
+    action,
+    index,
+  }));
+  const options = targetOptions(
+    session,
+    card.id,
+    selection.picks ?? [],
+    selection.destinationId,
   );
-  const choices = cardActions(session, card.id)
-    .map((action, index) => ({ action, index }))
-    .filter(
-      ({ action }) =>
-        compatible.has(JSON.stringify(action)) &&
-        (!selection.destinationId ||
-          (action.type === 'play-unit' &&
-            action.destinationId === selection.destinationId)),
-    );
+  const keys = (list: readonly GameAction[]) =>
+    new Set(list.map((action) => JSON.stringify(action)));
+  const compatible = keys(options.actions);
+  const complete = keys(options.complete);
+  const button = ({ action, index }: { action: GameAction; index: number }) =>
+    `<button class="quiet" data-card-action="${index}">${escape(actionLabel(session, action))}</button>`;
   const info = cardInfo(card.definitionId);
   const spell = state.spellDefinitions?.find((d) => d.id === card.definitionId);
-  return `<div class="eyebrow">${spell ? { normal: 'Sort normal', action: 'Sort Action', reaction: 'Sort Réaction' }[spell.timing] : 'Carte sélectionnée'}</div><h3>${escape(cardName(card.definitionId))}</h3>${art(card.definitionId, 'card-preview')}${info?.cost ? `<p class="cost-summary">Coût imprimé : ${info.cost.energy} énergie · ${escape(powerText(info.cost.power))} Power${info.cost.powerChoice ? ` + ${info.cost.powerChoiceAmount ?? 1} ${escape(info.cost.powerChoice.map(domainName).join(' / '))}` : ''}</p>` : ''}<p class="help">${escape(info?.text ?? '')}</p><p class="help">${choices.length ? (spell ? 'Clique une cible en surbrillance sur le plateau, ou choisis ci-dessous. Le paiement est automatique ; la résolution attend les réactions.' : 'Choisis la mise en jeu ou la capacité ci-dessous. Le paiement est automatique.') : 'Aucun choix légal : vérifie les cibles, les ressources et la priorité.'}</p>${selection.picks?.length ? `<p class="help">Cibles choisies : ${escape(selection.picks.map((id) => cardName(state.units.find((u) => u.id === id)?.definitionId ?? id)).join(' → '))}</p>` : ''}<div class="choice-list">${choices.map(({ action, index }) => `<button class="quiet" data-card-action="${index}">${escape(actionLabel(session, action))}</button>`).join('')}</div><button class="quiet" data-action="cancel">Retour</button>`;
+  const header = `<div class="eyebrow">${spell ? { normal: 'Sort normal', action: 'Sort Action', reaction: 'Sort Réaction' }[spell.timing] : 'Carte sélectionnée'}</div><h3>${escape(cardName(card.definitionId))}</h3>${art(card.definitionId, 'card-preview')}${info?.cost ? `<p class="cost-summary">Coût imprimé : ${info.cost.energy} énergie · ${escape(powerText(info.cost.power))} Power${info.cost.powerChoice ? ` + ${info.cost.powerChoiceAmount ?? 1} ${escape(info.cost.powerChoice.map(domainName).join(' / '))}` : ''}</p>` : ''}<p class="help">${escape(info?.text ?? '')}</p>`;
+  if (!all.length)
+    return `${header}<p class="help">Aucun choix légal : vérifie les cibles, les ressources et la priorité.</p><button class="quiet" data-action="cancel">Retour</button>`;
+  if (selection.targeting) {
+    const names = (selection.picks ?? []).map((id) => {
+      const unit = state.units.find((u) => u.id === id);
+      if (unit) return cardName(unit.definitionId);
+      const field = state.battlefields.findIndex((b) => b.zoneId === id);
+      return field >= 0 ? `Champ ${field + 1}` : id;
+    });
+    const ready = all.filter(({ action }) =>
+      complete.has(JSON.stringify(action)),
+    );
+    const validate =
+      ready.length > 1
+        ? `<p class="help">Plusieurs options pour ces cibles :</p><div class="choice-list">${ready.map(button).join('')}</div>`
+        : `<button class="primary" data-action="confirm-targets" ${ready.length ? '' : 'disabled'}>Valider</button>`;
+    return `${header}<div class="eyebrow">Ciblage</div><p class="help">Clique les cibles en surbrillance ; un second clic retire une cible. Le paiement se fait à la validation.</p><p class="help">Cibles : ${names.length ? escape(names.join(' → ')) : 'aucune'}</p><div class="choice-list">${validate}<button class="quiet" data-action="cancel">Annuler</button></div>`;
+  }
+  const choices = all.filter(({ action }) =>
+    compatible.has(JSON.stringify(action)),
+  );
+  if (spell)
+    return `${header}<div class="choice-list"><button class="primary" data-action="start-targeting">Lancer</button><button class="quiet" data-action="cancel">Retour</button></div><details class="all-options"><summary>Toutes les options (${choices.length})</summary><div class="choice-list">${choices.map(button).join('')}</div></details>`;
+  return `${header}<p class="help">Choisis la mise en jeu ou la capacité ci-dessous. Le paiement est automatique.</p><div class="choice-list">${choices.map(button).join('')}</div><button class="quiet" data-action="cancel">Retour</button>`;
 }
 
 /** Confirmation de remise à zéro ; la partie n'est effacée qu'après « Recommencer ». */

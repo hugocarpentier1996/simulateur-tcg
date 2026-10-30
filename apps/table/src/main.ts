@@ -10,7 +10,10 @@ import {
   playOrMove,
   undo,
   passShowdown,
-  pickTarget,
+  toggleTarget,
+  startTargeting,
+  confirmTargets,
+  discardFromHand,
   targetOptions,
   endTurn,
   endTurnRuneChoice,
@@ -61,22 +64,23 @@ function render() {
   if (focusId) document.getElementById(focusId)?.focus({ preventScroll: true });
 }
 
-/** Cible cliquable de la carte sélectionnée ? (unité ou zone fournie par le moteur) */
+/** En mode ciblage, unité ou zone cliquable : cible proposée par le moteur ou déjà choisie. */
 function isTarget(id: string): boolean {
   return (
-    !!selection &&
-    targetOptions(
-      session,
-      selection.cardId,
-      selection.picks ?? [],
-      selection.destinationId,
-    ).next.includes(id)
+    !!selection?.targeting &&
+    ((selection.picks ?? []).includes(id) ||
+      targetOptions(
+        session,
+        selection.cardId,
+        selection.picks ?? [],
+        selection.destinationId,
+      ).next.includes(id))
   );
 }
 
 function chooseTarget(id: string) {
   if (!selection) return;
-  const picked = pickTarget(session, selection, id);
+  const picked = toggleTarget(session, selection, id);
   session = picked.session;
   selection = picked.selection;
   render();
@@ -138,7 +142,7 @@ function place(destinationId: string) {
       (a) => a.type === 'play-unit' && a.destinationId === destinationId,
     );
     if (options.length > 1) {
-      selection = { ...selection, destinationId };
+      selection = { ...selection, destinationId, targeting: true, picks: [] };
       render();
       return;
     }
@@ -201,6 +205,28 @@ root.addEventListener('click', (event) => {
       return;
     }
   }
+  // Défausse imposée (Traveling Merchant) : un clic sur une carte de la main la défausse.
+  const discarding = session.state.pendingDiscard;
+  const handCard = target.closest<HTMLElement>('[data-card]')?.dataset.card;
+  if (
+    discarding &&
+    handCard &&
+    session.state.cards.some(
+      (c) =>
+        c.id === handCard &&
+        session.state.zones.some(
+          (z) =>
+            z.id === c.zoneId &&
+            z.kind === 'hand' &&
+            z.ownerId === discarding.playerId,
+        ),
+    )
+  ) {
+    session = discardFromHand(session, handCard);
+    selection = null;
+    render();
+    return;
+  }
   const rune = target.closest<HTMLElement>('[data-rune]');
   if (rune && endRunes) {
     toggleEndRune(rune.dataset.rune!);
@@ -249,7 +275,13 @@ root.addEventListener('click', (event) => {
     const action = tableActions(session)[Number(button.dataset.choice)];
     if (action) session = dispatch(session, action);
     selection = null;
-  } else if (button.dataset.card && isTarget(button.dataset.card)) {
+  } else if (
+    button.dataset.card &&
+    (isTarget(button.dataset.card) ||
+      (selection?.targeting &&
+        session.state.units.some((u) => u.id === button.dataset.card)))
+  ) {
+    // En ciblage, une unité du plateau est une cible (ou un refus expliqué), jamais une sélection.
     chooseTarget(button.dataset.card);
     return;
   } else if (button.dataset.card) {
@@ -265,7 +297,15 @@ root.addEventListener('click', (event) => {
   } else if (button.dataset.action === 'cancel') selection = null;
   else if (button.dataset.action === 'end') endTurnClicked();
   else if (button.dataset.action === 'cancel-end') endRunes = null;
-  else if (button.dataset.action === 'toggle-auto-runes') {
+  else if (button.dataset.action === 'start-targeting' && selection) {
+    const started = startTargeting(session, selection);
+    session = started.session;
+    selection = started.selection;
+  } else if (button.dataset.action === 'confirm-targets' && selection) {
+    const cast = confirmTargets(session, selection);
+    session = cast.session;
+    selection = cast.selection;
+  } else if (button.dataset.action === 'toggle-auto-runes') {
     const playerId = session.state.activePlayerId;
     autoRunes[playerId] = !autoRunes[playerId];
     // Le mode automatique remplace une sélection manuelle en cours.

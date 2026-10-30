@@ -74,8 +74,11 @@ Provenance : [métadonnées](../../docs/metadonnees-cartes.md).
 `endTurn(session, runeIds)` termine le tour du joueur actif ; avec une légende de fin de
 tour (Dark Child), `endTurnRuneChoice` donne le nombre de runes et les candidates, et
 `autoEndRunes` le choix automatique (Tap d'abord). Le bouton « Auto » est un réglage local.
-`targetOptions` et `pickTarget` transforment un clic sur une unité ou une zone en cible ;
-le sort est lancé dès que le choix est unique. `renderTable` reçoit l'état local
+Ciblage : « Lancer » (`startTargeting`) ouvre le mode ciblage sans rien payer ; chaque clic
+sur une unité ou une zone surlignée ajoute ou retire une cible (`toggleTarget`), puis
+« Valider » (`confirmTargets`) paie et empile l'unique action complète. `targetOptions`
+dérive cibles, suivantes et actions complètes des actions légales du moteur. Défausse
+imposée : `discardFromHand` défausse la carte cliquée dans la main. `renderTable` reçoit l'état local
 d'interface (`TableUi`) sans qu'il influe sur la partie.
 
 ## Mulligan

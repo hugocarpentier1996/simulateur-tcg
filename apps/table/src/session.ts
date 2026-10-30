@@ -456,64 +456,111 @@ export function submitCardAction(
       };
 }
 
-/** Action complète -> cibles cliquables dans l'ordre du choix (unité, seconde unité, zone).
- * Les cibles joueur, listes d'unités et destinations de jetons restent choisies au panneau. */
-function targetChain(state: GameState, action: GameAction): string[] {
+/** Action complète -> cibles cliquables : séquence ordonnée (unité, seconde unité, zone) ou
+ * ensemble non ordonné (listes d'unités : Flash, Singularity). Cibles joueur et destinations
+ * de jetons ne se cliquent pas : elles restent proposées au panneau. */
+function targetPlan(
+  state: GameState,
+  action: GameAction,
+): { ordered: boolean; ids: string[] } {
   if (action.type === 'play-unit')
-    return action.onPlayTargetId ? [action.onPlayTargetId] : [];
-  if (action.type !== 'cast-spell') return [];
-  const chain: string[] = [];
-  if (
-    !action.selectedUnitIds &&
-    !state.players.some((p) => p.id === action.targetId)
-  )
-    chain.push(action.targetId);
-  if (action.secondaryTargetId) chain.push(action.secondaryTargetId);
-  if (action.destinationId) chain.push(action.destinationId);
-  return chain;
+    return {
+      ordered: true,
+      ids: action.onPlayTargetId ? [action.onPlayTargetId] : [],
+    };
+  if (action.type !== 'cast-spell') return { ordered: true, ids: [] };
+  if (action.selectedUnitIds)
+    return { ordered: false, ids: [...action.selectedUnitIds] };
+  const ids: string[] = [];
+  if (!state.players.some((p) => p.id === action.targetId))
+    ids.push(action.targetId);
+  if (action.secondaryTargetId) ids.push(action.secondaryTargetId);
+  if (action.destinationId) ids.push(action.destinationId);
+  return { ordered: true, ids };
 }
 
-/** Carte sélectionnée + cibles déjà cliquées -> actions encore compatibles et prochaines
- * cibles cliquables (unités ou zones), sans doublon. Ne modifie pas la partie. */
+function fits(
+  plan: { ordered: boolean; ids: string[] },
+  picks: readonly string[],
+): boolean {
+  return plan.ordered
+    ? picks.every((id, i) => plan.ids[i] === id)
+    : picks.every((id) => plan.ids.includes(id));
+}
+
+/** Carte + cibles cliquées -> actions encore compatibles, prochaines cibles cliquables
+ * (unités ou zones, sans doublon) et actions complètes prêtes à valider. Lecture seule. */
 export function targetOptions(
   session: Session,
   cardId: string,
   picks: readonly string[],
   destinationId?: string,
-): { actions: GameAction[]; next: string[] } {
+): { actions: GameAction[]; next: string[]; complete: GameAction[] } {
   const state = session.state;
-  const actions = cardActions(session, cardId).filter((action) => {
-    if (
-      destinationId &&
-      action.type === 'play-unit' &&
-      action.destinationId !== destinationId
-    )
-      return false;
-    const chain = targetChain(state, action);
-    return picks.every((id, i) => chain[i] === id);
+  const actions = cardActions(session, cardId).filter(
+    (action) =>
+      !(
+        destinationId &&
+        action.type === 'play-unit' &&
+        action.destinationId !== destinationId
+      ) && fits(targetPlan(state, action), picks),
+  );
+  const next = actions.flatMap((action) => {
+    const plan = targetPlan(state, action);
+    return plan.ordered
+      ? plan.ids.slice(picks.length, picks.length + 1)
+      : plan.ids.filter((id) => !picks.includes(id));
   });
-  const next = actions
-    .map((action) => targetChain(state, action)[picks.length])
-    .filter((id): id is string => id !== undefined);
-  return { actions, next: [...new Set(next)] };
+  const complete = actions.filter(
+    (action) => targetPlan(state, action).ids.length === picks.length,
+  );
+  return { actions, next: [...new Set(next)], complete };
 }
 
-/** Clic sur une unité ou zone pendant un ciblage -> lancement si le choix devient unique,
- * sinon sélection affinée (cible suivante ou options au panneau). Une cible illégale
- * est refusée avec un message, sans modifier la partie ni la sélection. */
-export function pickTarget(
+/** Bouton « Lancer » -> mode ciblage, sans rien payer. Une carte sans aucune cible à cliquer
+ * et une seule option est lancée directement. */
+export function startTargeting(
+  session: Session,
+  selection: Selection,
+): { session: Session; selection: Selection | null } {
+  const options = targetOptions(session, selection.cardId, []);
+  const [only] = options.actions;
+  if (options.actions.length === 1 && only && options.complete.length === 1) {
+    const next = submitCardAction(session, selection.cardId, only);
+    return { session: next, selection: next.error ? selection : null };
+  }
+  return {
+    session: session.error ? { ...session, error: null } : session,
+    selection: { ...selection, targeting: true, picks: [] },
+  };
+}
+
+/** Clic sur une unité ou zone en mode ciblage -> ajoute la cible, ou la retire si elle était
+ * déjà choisie (dans une séquence ordonnée, les cibles suivantes sont retirées aussi).
+ * Cible illégale : message, partie et sélection inchangées. Ne lance jamais le sort. */
+export function toggleTarget(
   session: Session,
   selection: Selection,
   id: string,
-): { session: Session; selection: Selection | null } {
-  const picks = [...(selection.picks ?? []), id];
-  const { actions } = targetOptions(
-    session,
-    selection.cardId,
-    picks,
-    selection.destinationId,
+): { session: Session; selection: Selection } {
+  const picks = selection.picks ?? [];
+  const index = picks.indexOf(id);
+  const unordered = cardActions(session, selection.cardId).some(
+    (a) => a.type === 'cast-spell' && a.selectedUnitIds !== undefined,
   );
-  if (!actions.length)
+  const nextPicks =
+    index >= 0
+      ? [...picks.slice(0, index), ...(unordered ? picks.slice(index + 1) : [])]
+      : [...picks, id];
+  if (
+    index < 0 &&
+    !targetOptions(
+      session,
+      selection.cardId,
+      nextPicks,
+      selection.destinationId,
+    ).actions.length
+  )
     return {
       session: {
         ...session,
@@ -521,19 +568,37 @@ export function pickTarget(
       },
       selection,
     };
-  const [only] = actions;
-  if (
-    actions.length === 1 &&
-    only &&
-    targetChain(session.state, only).length === picks.length
-  ) {
-    const next = submitCardAction(session, selection.cardId, only);
-    return { session: next, selection: next.error ? selection : null };
-  }
   return {
     session: session.error ? { ...session, error: null } : session,
-    selection: { ...selection, picks },
+    selection: { ...selection, picks: nextPicks },
   };
+}
+
+/** Bouton « Valider » -> paiement et empilement de l'unique action complète. Aucune action
+ * complète ou plusieurs (à départager au panneau) : refus sans modifier la partie. */
+export function confirmTargets(
+  session: Session,
+  selection: Selection,
+): { session: Session; selection: Selection | null } {
+  const { complete } = targetOptions(
+    session,
+    selection.cardId,
+    selection.picks ?? [],
+    selection.destinationId,
+  );
+  const [only] = complete;
+  if (complete.length !== 1 || !only)
+    return {
+      session: {
+        ...session,
+        error: complete.length
+          ? 'Plusieurs options correspondent : choisis-la dans le panneau.'
+          : 'Choisis d’abord les cibles en surbrillance.',
+      },
+      selection,
+    };
+  const next = submitCardAction(session, selection.cardId, only);
+  return { session: next, selection: next.error ? selection : null };
 }
 
 /** Joueur + état -> runes à redresser en fin de tour (Dark Child) : nombre exigé et runes
@@ -630,4 +695,17 @@ export function confirmMulligan(
   if (cardIds.length > 2)
     return { ...session, error: refusals.INVALID_MULLIGAN! };
   return dispatch(session, { type: 'mulligan', playerId, cardIds });
+}
+
+/** Clic sur une carte de la main pendant une défausse imposée (Traveling Merchant) ->
+ * défausse de cette carte et reprise de la résolution. Refus sans modifier la partie. */
+export function discardFromHand(session: Session, cardId: string): Session {
+  const pending = session.state.pendingDiscard;
+  if (!pending)
+    return { ...session, error: 'Aucune défausse n’est en attente.' };
+  return dispatch(session, {
+    type: 'choose-discard',
+    playerId: pending.playerId,
+    cardId,
+  });
 }

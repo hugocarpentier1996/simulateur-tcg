@@ -1020,3 +1020,11 @@ de toutes les développer. À la reprise, vérifier les modifications locales av
 - Un clic marque ou démarque une carte (2 au plus, carte abaissée et grisée avec un repère ↺). Le bouton indique « Garder ma main » ou « Remplacer n cartes ». Journal : « remplace n carte(s) sous son deck » / « garde sa main ». Annulation possible.
 - API de session : `mulliganPlayer`, `confirmMulligan` ; `prepareDemo(state, stopAtMulligan)` et `createStarterSession(seed, { mulligan })`. Les fixtures de test et la manche d'essai BO3 gardent leurs mains, comme avant.
 - TDD : `mulligan.test.ts` (4 échecs avant implémentation). Navigateur : marquage limité à 2, remplacement, passage au Joueur 2, début du tour avec 5 cartes, aucune erreur. `pnpm check` complet avant commit.
+
+### Ciblage « Lancer, cibles, Valider » et défausse au clic — 31 octobre 2026
+
+- Retours de test : Singularity trop complexe (toutes les combinaisons listées), préférence pour un bouton « Lancer », une sélection des cibles à la souris puis une validation. Le sort sélectionné propose « Lancer » ; les cibles légales ne sont surlignées qu'ensuite. Chaque clic ajoute ou retire une cible (Duel : alliée puis ennemie ; Singularity, Flash : jusqu'au maximum, dans n'importe quel ordre), puis « Valider » paie et empile. Un clic sur une unité non ciblable affiche un message sans quitter le ciblage. Les options restantes (cibles joueur, destinations des Recrues, coûts optionnels) restent dans « Toutes les options » ou s'affichent à la validation.
+- Le dépôt d'une unité dont la mise en jeu cible ouvre ce même mode ciblage. Les unités de la base adverse sont désormais ciblables à la souris.
+- Traveling Merchant : pendant la défausse imposée, les cartes de la main sont surlignées et un clic défausse la carte.
+- API : `startTargeting`, `toggleTarget`, `confirmTargets`, `discardFromHand` ; `pickTarget` (lancement automatique au premier clic) est remplacé.
+- TDD : `click-target.test.ts` réécrit (5 échecs avant implémentation), `discard-click.test.ts` (3 échecs). Navigateur sur une table de test : Singularity (deux cibles, retrait, validation), Duel (refus de l'ennemie en premier, puis validation), défausse au clic. `pnpm check` complet avant commit.
