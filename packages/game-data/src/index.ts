@@ -152,3 +152,4 @@ export { progressDay } from './ogn/progress-day.js';
 export { sunlitGuardian } from './ogn/sunlit-guardian.js';
 export { catalystOfAeons } from './ogn/catalyst-of-aeons.js';
 export { vengeance } from './ogn/vengeance.js';
+export { rebuke } from './ogn/rebuke.js';
