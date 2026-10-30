@@ -16,6 +16,8 @@ import {
   endTurnRuneChoice,
   autoEndRunes,
   useRune,
+  mulliganPlayer,
+  confirmMulligan,
 } from './session.js';
 import {
   renderTable,
@@ -28,7 +30,9 @@ import './style.css';
 const root = document.querySelector<HTMLDivElement>('#app')!;
 // L'entropie appartient au navigateur ; la simulation reçoit une graine explicite.
 const newStarterGame = () =>
-  createStarterSession(crypto.getRandomValues(new Uint32Array(1))[0]!);
+  createStarterSession(crypto.getRandomValues(new Uint32Array(1))[0]!, {
+    mulligan: true,
+  });
 let session = newStarterGame();
 let selection: Selection | null = null;
 let suppressClick = false;
@@ -38,6 +42,8 @@ let pendingReset: PendingReset = null;
 // Runes cliquées pour l'effet de fin de tour (null hors sélection) et réglage « Auto » par joueur.
 let endRunes: string[] | null = null;
 let graveyard: string | null = null;
+// Cartes marquées pour le mulligan du joueur en cours (remises à zéro à chaque validation).
+let mulliganPick: string[] = [];
 const autoRunes: Record<string, boolean> = {};
 
 function render() {
@@ -45,7 +51,12 @@ function render() {
     ? cardActions(session, selection.cardId)
     : [];
   const focusId = document.activeElement?.id;
-  const ui: TableUi = { endRunes, autoRunes, graveyard };
+  const ui: TableUi = {
+    endRunes,
+    autoRunes,
+    graveyard,
+    mulligan: mulliganPick,
+  };
   root.innerHTML = renderTable(session, selection, moves, pendingReset, ui);
   if (focusId) document.getElementById(focusId)?.focus({ preventScroll: true });
 }
@@ -162,6 +173,34 @@ root.addEventListener('click', (event) => {
     render();
     return;
   }
+  // Mulligan : la main sert à marquer jusqu'à 2 cartes, le bouton valide le choix.
+  const mulliganBy = mulliganPlayer(session.state);
+  if (mulliganBy) {
+    const picked = target.closest<HTMLElement>('[data-card]')?.dataset.card;
+    const inHand = session.state.cards.some(
+      (c) =>
+        c.id === picked &&
+        session.state.zones.some(
+          (z) =>
+            z.id === c.zoneId && z.kind === 'hand' && z.ownerId === mulliganBy,
+        ),
+    );
+    if (picked && inHand) {
+      mulliganPick = mulliganPick.includes(picked)
+        ? mulliganPick.filter((id) => id !== picked)
+        : mulliganPick.length < 2
+          ? [...mulliganPick, picked]
+          : mulliganPick;
+      render();
+      return;
+    }
+    if (resetAction === 'confirm-mulligan') {
+      session = confirmMulligan(session, mulliganPick);
+      if (!session.error) mulliganPick = [];
+      render();
+      return;
+    }
+  }
   const rune = target.closest<HTMLElement>('[data-rune]');
   if (rune && endRunes) {
     toggleEndRune(rune.dataset.rune!);
@@ -222,6 +261,7 @@ root.addEventListener('click', (event) => {
   } else if (button.dataset.action === 'undo') {
     session = undo(session);
     selection = null;
+    mulliganPick = [];
   } else if (button.dataset.action === 'cancel') selection = null;
   else if (button.dataset.action === 'end') endTurnClicked();
   else if (button.dataset.action === 'cancel-end') endRunes = null;
@@ -240,6 +280,7 @@ root.addEventListener('click', (event) => {
       pendingReset === 'bo3' ? createDemo(true, 'bo3') : newStarterGame();
     pendingReset = null;
     selection = null;
+    mulliganPick = [];
   } else if (button.dataset.action === 'cancel-reset') pendingReset = null;
   else return;
   render();

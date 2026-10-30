@@ -1013,3 +1013,10 @@ de toutes les développer. À la reprise, vérifier les modifications locales av
 - Demande utilisateur : runes reconnaissables à leur apparence. Chaque rune est maintenant sa seule illustration, entourée d'une bordure à la couleur de son domaine (Fury rouge, Calm vert, Mind bleu, Body orange, Chaos violet, Order jaune), sans texte. Une rune Tap pivote de 90° comme les unités, dans un emplacement carré qui évite les chevauchements.
 - Le nom du domaine et l'état restent dans le libellé accessible et l'info-bulle (« Rune Body · Ready »). Le test des domaines vérifie ce libellé au lieu du texte visible demandé auparavant.
 - TDD : `rune-display.test.ts` (2 échecs avant implémentation). Navigateur : 1280×720 et 1024×600 sans débordement, rune Ready et rune Tap visibles. `pnpm check` complet avant commit.
+
+### Mulligan dans la table — 31 octobre 2026
+
+- La partie BO1 de la table s'ouvre sur le mulligan (règle existante du moteur : 0 à 2 cartes sous le deck sans mélange, puis autant de pioches ; le premier tour démarre après le dernier choix). Le premier joueur choisit d'abord, puis le second ; la main affichée est celle du joueur qui choisit.
+- Un clic marque ou démarque une carte (2 au plus, carte abaissée et grisée avec un repère ↺). Le bouton indique « Garder ma main » ou « Remplacer n cartes ». Journal : « remplace n carte(s) sous son deck » / « garde sa main ». Annulation possible.
+- API de session : `mulliganPlayer`, `confirmMulligan` ; `prepareDemo(state, stopAtMulligan)` et `createStarterSession(seed, { mulligan })`. Les fixtures de test et la manche d'essai BO3 gardent leurs mains, comme avant.
+- TDD : `mulligan.test.ts` (4 échecs avant implémentation). Navigateur : marquage limité à 2, remplacement, passage au Joueur 2, début du tour avec 5 cartes, aucune erreur. `pnpm check` complet avant commit.

@@ -13,6 +13,7 @@ import {
   targetOptions,
   endTurnRuneChoice,
   domainName,
+  mulliganPlayer,
   tableActions,
   playerName,
   boardOptions,
@@ -58,6 +59,7 @@ function card(
   card: CardInstance,
   selected: Selection | null,
   champion = false,
+  marked = false,
 ): string {
   const def = {
     name: card.definitionId,
@@ -66,8 +68,8 @@ function card(
     ...cardInfo(card.definitionId),
   };
   if (def.imageLocal)
-    return `<button type="button" class="card illustrated-card ${selected?.cardId === card.id ? 'selected' : ''}" id="card-${escape(card.id)}" data-card="${escape(card.id)}" aria-pressed="${selected?.cardId === card.id}" title="${escape(cardName(card.definitionId))} · ${escape(def.tags?.join(' · ') ?? '')}">${art(card.definitionId, 'card-art')}<span class="sr-only">${champion ? 'Chosen champion · ' : ''}${escape(cardName(card.definitionId))}</span></button>`;
-  return `<button type="button" class="card ${selected?.cardId === card.id ? 'selected' : ''}" id="card-${escape(card.id)}" draggable="false" data-card="${escape(card.id)}" aria-pressed="${selected?.cardId === card.id}">
+    return `<button type="button" class="card illustrated-card ${selected?.cardId === card.id ? 'selected' : ''}${marked ? ' mulligan-marked' : ''}" id="card-${escape(card.id)}" data-card="${escape(card.id)}" aria-pressed="${selected?.cardId === card.id}" title="${escape(cardName(card.definitionId))} · ${escape(def.tags?.join(' · ') ?? '')}">${art(card.definitionId, 'card-art')}<span class="sr-only">${champion ? 'Chosen champion · ' : ''}${escape(cardName(card.definitionId))}</span></button>`;
+  return `<button type="button" class="card ${selected?.cardId === card.id ? 'selected' : ''}${marked ? ' mulligan-marked' : ''}" id="card-${escape(card.id)}" draggable="false" data-card="${escape(card.id)}" aria-pressed="${selected?.cardId === card.id}">
     <span class="card-type">${champion ? 'Chosen champion' : 'Unité'}</span>
     <span class="sigil" aria-hidden="true">${def.might === 0 ? '◇' : '♜'}</span>
     <strong>${escape(def.name.replace(' de test', ''))}</strong>
@@ -227,9 +229,13 @@ function playerBase(
   return `<div class="base-row ${opponent ? 'opponent-base' : ''}">${zone(state, base.id, `Base · ${playerName(ownerId)}`, 'Unités en jeu', false, destinations, moves)}<div class="identity-zone">${legend ? art(legend.definitionId, 'legend-art') : ''}<span>Légende<small>${escape(legend ? cardName(legend.definitionId) : '')}</small></span>${!opponent && legend && state.legendDefinitions?.some((d) => d.id === legend.definitionId && d.readyRunesAtEnd) ? `<button type="button" class="auto-toggle ${ui.autoRunes?.[ownerId] ? 'on' : ''}" data-action="toggle-auto-runes" aria-pressed="${!!ui.autoRunes?.[ownerId]}" title="Redresser automatiquement les runes en fin de tour (runes Tap d’abord)">Auto</button>` : ''}</div><div class="chosen-zone">${champion ? (opponent ? `<div class="champion-back"><span>Chosen champion</span><strong>${escape(cardName(champion.definitionId))}</strong>${art(champion.definitionId, 'champion-art')}</div>` : card(champion, selected, true)) : '<p class="empty">Zone champion vide</p>'}</div></div>`;
 }
 
-function handFan(hand: CardInstance[], selected: Selection | null): string {
+function handFan(
+  hand: CardInstance[],
+  selected: Selection | null,
+  marked: readonly string[] = [],
+): string {
   const layout = fanLayout(hand.length);
-  return `<div class="hand-scroll"><div class="hand fan" style="--cards:${Math.max(1, hand.length)}">${hand.map((c, i) => `<div class="fan-slot" style="--angle:${layout[i]!.angle}deg;--lift:${layout[i]!.lift}px;--card-index:${i}">${card(c, selected)}</div>`).join('')}</div></div>`;
+  return `<div class="hand-scroll"><div class="hand fan" style="--cards:${Math.max(1, hand.length)}">${hand.map((c, i) => `<div class="fan-slot" style="--angle:${layout[i]!.angle}deg;--lift:${layout[i]!.lift}px;--card-index:${i}">${card(c, selected, false, marked.includes(c.id))}</div>`).join('')}</div></div>`;
 }
 
 /** Session de démo et sélection -> HTML échappé. Affiche la main du joueur actif.
@@ -241,6 +247,8 @@ export type PendingReset = 'reset' | 'bo3' | null;
  * endRunes : runes cliquées pour Dark Child (null hors sélection) ;
  * autoRunes : joueurs dont les runes de fin de tour sont choisies automatiquement. */
 export interface TableUi {
+  /** Cartes marquées pour le mulligan du joueur en cours (0 à 2). */
+  mulligan?: readonly string[];
   /** Joueur dont la défausse (publique) est ouverte dans le panneau. */
   graveyard?: string | null;
   endRunes?: readonly string[] | null;
@@ -276,6 +284,7 @@ export function renderTable(
     state.priorityPlayerId ??
     active;
   const handOwner = handPlayer(state);
+  const mulliganTurn = mulliganPlayer(state);
   const hand = state.cards.filter((c) =>
     state.zones.some(
       (z) => z.id === c.zoneId && z.ownerId === handOwner && z.kind === 'hand',
@@ -294,7 +303,7 @@ export function renderTable(
       : 'Terminer le tour →';
   return `<header class="topbar"><div class="brand"><span class="brand-icon" aria-hidden="true">◇</span><div><h1>Simulateur TCG</h1><p>La table d’essai</p></div></div><div class="local-tag"><span></span> Local · 2 joueurs</div><button id="undo-action" class="quiet" data-action="undo" title="Annuler la dernière action réussie (10 maximum)" ${moves.length || session.history.length === 0 ? 'disabled' : ''}>↶ Annuler l’action (${session.history.length}/10)</button><button class="quiet" data-action="reset" ${moves.length ? 'disabled' : ''}>Nouvelle partie BO1</button><button class="quiet" data-action="bo3" ${moves.length ? 'disabled' : ''}>Choix BO3 · manche d’essai</button></header>
     <main><section class="play-area"><div class="scoreboard">${state.players.map((p) => `<div class="player ${p.id === active ? 'active' : ''}"><span>${escape(playerName(p.id))}<small>${p.id === active ? 'Tour actif' : 'En attente'}</small></span><strong>${p.score}<small> / ${p.victoryTarget ?? 8}</small></strong></div>`).join('')}</div>
-    <div class="turnbar"><div><span class="eyebrow">${state.result ? 'Partie terminée' : state.showdown ? 'Main · Showdown en cours' : escape(state.phase === 'main' ? 'Phase principale · Main' : state.phase)}</span><h2>${state.result ? `${escape(playerName(state.result.winnerId))} gagne` : `À ${escape(playerName(active))} de jouer`}</h2></div><span class="priority">Priorité : ${escape(playerName(priority))}</span><button class="primary" data-action="end" ${!canEnd ? 'disabled' : ''}>${escape(endLabel)}</button></div>
+    <div class="turnbar"><div><span class="eyebrow">${state.result ? 'Partie terminée' : mulliganTurn ? 'Préparation · Mulligan' : state.showdown ? 'Main · Showdown en cours' : escape(state.phase === 'main' ? 'Phase principale · Main' : state.phase)}</span><h2>${state.result ? `${escape(playerName(state.result.winnerId))} gagne` : `À ${escape(playerName(active))} de jouer`}</h2></div><span class="priority">Priorité : ${escape(playerName(priority))}</span><button class="primary" data-action="end" ${!canEnd ? 'disabled' : ''}>${escape(endLabel)}</button></div>
     <div class="board">${state.players.map((p) => victoryTrack(p.id, p.score, p.id !== active)).join('')}
       ${state.players
         .filter((p) => p.id !== active)
@@ -308,8 +317,8 @@ export function renderTable(
       ${resourceRow(state, active, false, endRunes)}
     </div>
     <div class="reserve"><span>${escape(playerName(active))} · Réserve flottante</span><span><b>${state.resources[active]?.energy ?? 0}</b> énergie · <b>${escape(powerText(state.resources[active]?.power ?? {}))}</b> Power</span></div>
-    <section class="hand-section"><header><h2>Main de ${escape(playerName(handOwner))}</h2><span>${hand.length} cartes · sélectionner pour jouer</span></header>${handFan(hand, selected)}</section></section>
-    <aside><section class="action-panel">${session.error ? `<p role="alert" class="error">${escape(session.error)}</p>` : ''}${pendingReset ? resetPanel(pendingReset) : ui.graveyard ? graveyardPanel(state, ui.graveyard) : endRunes && runeChoice ? endRunesPanel(endRunes.length, runeChoice.count) : moves.length ? movementPanel(session, moves) : paymentPanel(session, selected)}</section><section class="journal"><header><h2>Journal de partie</h2><span>${session.log.length}</span></header><ol>${session.log
+    <section class="hand-section"><header><h2>Main de ${escape(playerName(handOwner))}</h2><span>${hand.length} cartes · sélectionner pour jouer</span></header>${handFan(hand, selected, mulliganTurn ? (ui.mulligan ?? []) : [])}</section></section>
+    <aside><section class="action-panel">${session.error ? `<p role="alert" class="error">${escape(session.error)}</p>` : ''}${pendingReset ? resetPanel(pendingReset) : ui.graveyard ? graveyardPanel(state, ui.graveyard) : mulliganTurn ? mulliganPanel(mulliganTurn, ui.mulligan ?? []) : endRunes && runeChoice ? endRunesPanel(endRunes.length, runeChoice.count) : moves.length ? movementPanel(session, moves) : paymentPanel(session, selected)}</section><section class="journal"><header><h2>Journal de partie</h2><span>${session.log.length}</span></header><ol>${session.log
       .slice()
       .reverse()
       .map((line) => `<li>${escape(line)}</li>`)
@@ -563,4 +572,12 @@ function graveyardPanel(state: GameState, ownerId: string): string {
     )
     .reverse();
   return `<div class="eyebrow">Défausse</div><h3>Défausse de ${escape(playerName(ownerId))} · ${cards.length} carte${cards.length > 1 ? 's' : ''}</h3>${cards.length ? `<ol class="graveyard-list">${cards.map((c) => `<li title="${escape(cardInfo(c.definitionId)?.text ?? '')}">${art(c.definitionId, 'graveyard-art')}<span>${escape(cardName(c.definitionId))}</span></li>`).join('')}</ol>` : '<p class="help">Aucune carte dans cette défausse.</p>'}<button class="quiet" data-action="close-graveyard">Fermer</button>`;
+}
+
+/** Mulligan du joueur en cours : les cartes se marquent dans la main (2 au plus). */
+function mulliganPanel(playerId: string, marked: readonly string[]): string {
+  const label = marked.length
+    ? `Remplacer ${marked.length} carte${marked.length > 1 ? 's' : ''}`
+    : 'Garder ma main';
+  return `<div class="eyebrow">Préparation</div><h3>Mulligan · ${escape(playerName(playerId))}</h3><p class="help">Clique jusqu’à 2 cartes de ta main à remplacer (${marked.length} / 2). Elles vont sous ton deck sans mélange, puis tu en pioches autant.</p><div class="choice-list"><button class="primary" data-action="confirm-mulligan">${label}</button></div>`;
 }

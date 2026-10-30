@@ -77,3 +77,9 @@ tour (Dark Child), `endTurnRuneChoice` donne le nombre de runes et les candidate
 `targetOptions` et `pickTarget` transforment un clic sur une unité ou une zone en cible ;
 le sort est lancé dès que le choix est unique. `renderTable` reçoit l'état local
 d'interface (`TableUi`) sans qu'il influe sur la partie.
+
+## Mulligan
+
+`createStarterSession(seed, { mulligan: true })` (utilisé par la page) ouvre la fenêtre de
+mulligan du moteur. `mulliganPlayer(state)` donne le joueur qui choisit, `confirmMulligan`
+envoie ses 0 à 2 cartes ; le marquage dans la main est un état local (`TableUi.mulligan`).

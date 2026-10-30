@@ -120,14 +120,18 @@ export function starterConfig(seed: number): GameConfig {
     battlefieldDefinitions: fields,
   };
 }
-/** Graine fournie par l'appelant -> session BO1 mélangée, quatre cartes puis pioche du tour.
- * Dés de démonstration 19/8 et aucun mulligan ; aucun hasard global dans cette fonction. */
-export function createStarterSession(seed: number): Session {
+/** Graine fournie par l'appelant -> session BO1 mélangée, quatre cartes en main.
+ * Dés de démonstration 19/8. mulligan=true ouvre le choix des joueurs (partie réelle) ;
+ * sinon les mains sont gardées et le premier tour démarre. Aucun hasard global ici. */
+export function createStarterSession(
+  seed: number,
+  { mulligan = false }: { mulligan?: boolean } = {},
+): Session {
   const config = starterConfig(seed);
   const result = createGame(config);
   if (!result.ok) throw new Error(result.reason);
   return {
-    state: prepareDemo(result.state),
+    state: prepareDemo(result.state, mulligan),
     history: [],
     error: null,
     log: [
@@ -136,7 +140,9 @@ export function createStarterSession(seed: number): Session {
         (p) =>
           `${p.id === 'a' ? 'Joueur 1' : 'Joueur 2'} : ${legends.find((l) => l.id === p.legend.definitionId)!.name}`,
       ),
-      'Dés de démonstration 19 / 8, aucun mulligan.',
+      mulligan
+        ? 'Dés de démonstration 19 / 8. Mulligan : chaque joueur peut remplacer jusqu’à 2 cartes.'
+        : 'Dés de démonstration 19 / 8, aucun mulligan.',
     ],
   };
 }

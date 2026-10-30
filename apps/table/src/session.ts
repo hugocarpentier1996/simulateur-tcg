@@ -152,6 +152,7 @@ const refusals: Record<string, string> = {
   ABILITY_WINDOW_CLOSED:
     'Tu ne peux pas utiliser cette rune maintenant : attends ta priorité.',
   INVALID_RUNE: 'Cette rune ne t’appartient pas ou n’est pas en jeu.',
+  INVALID_MULLIGAN: 'Choisis au plus 2 cartes de ta main à remplacer.',
 };
 
 /** Identifiant de carte ou d'unité -> nom affiché, cherché après puis avant l'action
@@ -174,6 +175,10 @@ function describe(
 ): string | null {
   const name = (id: string) => entityName(id, states);
   switch (event.type) {
+    case 'mulligan-completed':
+      return event.cardIds.length
+        ? `${playerName(event.playerId)} remplace ${event.cardIds.length} carte(s) sous son deck.`
+        : `${playerName(event.playerId)} garde sa main.`;
     case 'rune-used':
       return event.power
         ? `${playerName(event.playerId)} recycle une rune : ${event.energy ? '+1 énergie, ' : ''}+1 Power ${domainName(event.power)}.`
@@ -361,8 +366,13 @@ export function passShowdown(session: Session): Session {
   });
 }
 
-/** Dés et mulligans fixes de la démonstration, après sélection des champs. */
-export function prepareDemo(state: GameState): GameState {
+/** Dés fixes de la démonstration après sélection des champs, puis mulligans.
+ * stopAtMulligan=true laisse les joueurs choisir (fenêtre de mulligan ouverte) ;
+ * sinon chacun garde sa main et la partie démarre en Main. */
+export function prepareDemo(
+  state: GameState,
+  stopAtMulligan = false,
+): GameState {
   state = requireState(recordOpeningRoll(state, { a: 19, b: 8 }));
   state = requireState(
     act(state, {
@@ -371,6 +381,7 @@ export function prepareDemo(state: GameState): GameState {
       firstPlayerId: 'a',
     }),
   );
+  if (stopAtMulligan) return state;
   for (const playerId of ['a', 'b'])
     state = requireState(
       act(state, { type: 'mulligan', playerId, cardIds: [] }),
@@ -401,6 +412,7 @@ export function tableActions(session: Session): GameAction[] {
 /** Joueur dont les choix/main doivent être présentés ; les fenêtres obligatoires priment. */
 export function handPlayer(state: GameState): string {
   return (
+    mulliganPlayer(state) ??
     state.pendingDiscard?.playerId ??
     state.pendingVision?.playerId ??
     state.pendingDeaths?.playerOrder[0] ??
@@ -593,4 +605,29 @@ export function useRune(
     playerId: rune.ownerId,
     runeId,
   });
+}
+
+/** Joueur qui doit choisir son mulligan : le premier joueur, puis les suivants dans l'ordre
+ * de la table. null hors de la fenêtre de mulligan ou une fois tous les choix faits. */
+export function mulliganPlayer(state: GameState): string | null {
+  const setup = state.setup;
+  if (setup?.stage !== 'mulligan') return null;
+  const ids = state.players.map((p) => p.id);
+  const start = Math.max(0, ids.indexOf(state.activePlayerId));
+  const order = [...ids.slice(start), ...ids.slice(0, start)];
+  return order.find((id) => !setup.completedPlayerIds.includes(id)) ?? null;
+}
+
+/** Cartes choisies par le joueur du mulligan (0 à 2) -> remplacement sous le deck et pioche.
+ * Le premier tour démarre après le dernier choix. Refus sans modifier la partie. */
+export function confirmMulligan(
+  session: Session,
+  cardIds: readonly string[],
+): Session {
+  const playerId = mulliganPlayer(session.state);
+  if (!playerId)
+    return { ...session, error: 'Aucun mulligan n’est en attente.' };
+  if (cardIds.length > 2)
+    return { ...session, error: refusals.INVALID_MULLIGAN! };
+  return dispatch(session, { type: 'mulligan', playerId, cardIds });
 }
