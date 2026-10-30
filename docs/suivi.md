@@ -1035,3 +1035,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 
 - Shipyard Skulker (ogn-175) : unité sans capacité.
 - Hextech Ray (ogn-009) : 3 dégâts à une unité sur un champ (effet de dégâts existant).
+- Void Seeker (ogn-024) : 4 dégâts à une unité sur un champ puis pioche 1, même si la cible meurt.

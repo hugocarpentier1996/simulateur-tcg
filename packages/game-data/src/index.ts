@@ -143,3 +143,4 @@ export { defineBattlefield } from './battlefield-definition.js';
 export type { BattlefieldDefinition } from './battlefield-definition.js';
 export { shipyardSkulker } from './ogn/shipyard-skulker.js';
 export { hextechRay } from './ogn/hextech-ray.js';
+export { voidSeeker } from './ogn/void-seeker.js';
