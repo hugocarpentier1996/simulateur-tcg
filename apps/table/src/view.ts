@@ -8,6 +8,8 @@ import {
 } from '../../../packages/game-engine/src/index.js';
 import {
   cardName,
+  cardActions,
+  handPlayer,
   tableActions,
   playerName,
   boardOptions,
@@ -18,6 +20,7 @@ import { fanLayout } from './fan.js';
 /** Sélection locale, sans conséquence sur la partie avant validation par act. */
 export interface Selection {
   cardId: string;
+  destinationId?: string;
 }
 
 const escape = (text: string | number) =>
@@ -104,36 +107,63 @@ function zone(
 }
 
 function paymentPanel(session: Session, selection: Selection | null): string {
+  if (selection) {
+    const instance = session.state.cards.find((c) => c.id === selection.cardId);
+    const options = cardActions(session, selection.cardId);
+    if (instance || options.length)
+      return selectedCardPanel(session, selection);
+  }
   const choices = tableActions(session);
   const state = session.state;
+  const visionCard = state.cards.find(
+    (c) => c.id === state.pendingVision?.cardId,
+  );
+  const vision = visionCard
+    ? `<p>Vision : ${escape(cardName(visionCard.definitionId))}</p>${art(visionCard.definitionId, 'card-preview')}`
+    : '';
   if (
-    (!selection && choices.some((a) => a.type === 'end-turn')) ||
+    (!selection &&
+      choices.some((a) => a.type === 'end-turn' || a.type === 'pass')) ||
+    state.pendingVision ||
+    state.pendingDiscard ||
+    state.pendingDeaths ||
+    state.pendingAttackChoices?.length ||
     state.setup ||
     state.stack ||
     state.pendingDefenseShield ||
     state.pendingHoldChannel ||
     state.showdown
   ) {
-    const heading = state.pendingDefenseShield
-      ? 'Choisir une unité · Shield 2'
-      : state.pendingHoldChannel
-        ? 'Startipped Peak'
-        : state.setup
-          ? 'Choisir les champs · BO3'
-          : state.stack
-            ? 'Réactions'
-            : state.showdown?.kind === 'combat' &&
-                state.showdown.stage === 'damage'
-              ? 'Répartir les dégâts'
-              : state.showdown
-                ? 'Combat Showdown'
-                : 'Fin de tour · Dark Child';
+    const heading = state.pendingVision
+      ? 'Vision'
+      : state.pendingDiscard
+        ? 'Choisir une carte à défausser'
+        : state.pendingDeaths
+          ? 'Effets de mort'
+          : state.pendingAttackChoices?.length
+            ? 'Capacités d’attaque'
+            : state.pendingDefenseShield
+              ? 'Choisir une unité · Shield 2'
+              : state.pendingHoldChannel
+                ? 'Startipped Peak'
+                : state.setup
+                  ? 'Choisir les champs · BO3'
+                  : state.stack
+                    ? 'Réactions'
+                    : state.showdown?.kind === 'combat' &&
+                        state.showdown.stage === 'damage'
+                      ? 'Répartir les dégâts'
+                      : state.showdown
+                        ? 'Combat Showdown'
+                        : choices.some((a) => a.type === 'end-turn')
+                          ? 'Fin de tour · Dark Child'
+                          : 'Rendre la priorité';
     if (state.showdown) {
       const show = state.showdown;
       const priority = state.stack?.priorityPlayerId ?? show.priorityPlayerId;
-      return `<section class="showdown-panel"><div class="eyebrow">${show.kind === 'combat' ? 'Combat Showdown' : 'Open Showdown'}</div><h3>Champ de bataille ${state.battlefields.findIndex((b) => b.zoneId === show.battlefieldId) + 1}</h3><p>Priorité : ${escape(playerName(priority))}</p><p class="help">${state.stack ? 'Réactions' : show.kind === 'combat' && show.stage === 'damage' ? 'Répartir les dégâts' : show.kind === 'combat' ? 'Les passes ouvrent la répartition des dégâts.' : 'Les passes clôturent la fenêtre de conquête.'}</p><p>${show.consecutivePasses} / ${show.participants.length} passes</p><div class="choice-list">${choices.map((a, i) => `<button class="${a.type === 'pass' ? 'primary' : 'quiet'}" data-choice="${i}">${escape(actionLabel(session, a))}</button>`).join('')}</div></section>`;
+      return `<section class="showdown-panel">${vision}<div class="eyebrow">${show.kind === 'combat' ? 'Combat Showdown' : 'Open Showdown'}</div><h3>Champ de bataille ${state.battlefields.findIndex((b) => b.zoneId === show.battlefieldId) + 1}</h3><p>Priorité : ${escape(playerName(priority))}</p><p class="help">${state.stack ? 'Réactions' : show.kind === 'combat' && show.stage === 'damage' ? 'Répartir les dégâts' : show.kind === 'combat' ? 'Les passes ouvrent la répartition des dégâts.' : 'Les passes clôturent la fenêtre de conquête.'}</p><p>${show.consecutivePasses} / ${show.participants.length} passes</p><div class="choice-list">${choices.map((a, i) => `<button class="${a.type === 'pass' ? 'primary' : 'quiet'}" data-choice="${i}">${escape(actionLabel(session, a))}</button>`).join('')}</div></section>`;
     }
-    return `<div class="eyebrow">Choix du moteur</div><h3>${heading}</h3><p class="help">Les boutons proposent uniquement les actions actuellement autorisées.</p><div class="choice-list">${choices.map((a, i) => `<button class="quiet" data-choice="${i}">${escape(actionLabel(session, a))}</button>`).join('')}</div>`;
+    return `<div class="eyebrow">Choix du moteur</div><h3>${heading}</h3>${vision}<p class="help">Les boutons proposent uniquement les actions actuellement autorisées.</p><div class="choice-list">${choices.map((a, i) => `<button class="quiet" data-choice="${i}">${escape(actionLabel(session, a))}</button>`).join('')}</div>`;
   }
   const unit = session.state.units.find((u) => u.id === selection?.cardId);
   if (unit) {
@@ -219,9 +249,10 @@ export function renderTable(
     state.showdown?.priorityPlayerId ??
     state.priorityPlayerId ??
     active;
+  const handOwner = handPlayer(state);
   const hand = state.cards.filter((c) =>
     state.zones.some(
-      (z) => z.id === c.zoneId && z.ownerId === active && z.kind === 'hand',
+      (z) => z.id === c.zoneId && z.ownerId === handOwner && z.kind === 'hand',
     ),
   );
   const canEnd =
@@ -242,7 +273,7 @@ export function renderTable(
       ${resourceRow(state, active)}
     </div>
     <div class="reserve"><span>${escape(playerName(active))} · Réserve flottante</span><span><b>${state.resources[active]?.energy ?? 0}</b> énergie · <b>${escape(powerText(state.resources[active]?.power ?? {}))}</b> Power</span></div>
-    <section class="hand-section"><header><h2>Main de ${escape(playerName(active))}</h2><span>${hand.length} cartes · sélectionner pour jouer</span></header>${handFan(hand, selected)}</section></section>
+    <section class="hand-section"><header><h2>Main de ${escape(playerName(handOwner))}</h2><span>${hand.length} cartes · sélectionner pour jouer</span></header>${handFan(hand, selected)}</section></section>
     <aside><section class="action-panel">${session.error ? `<p role="alert" class="error">${escape(session.error)}</p>` : ''}${moves.length ? movementPanel(session, moves) : paymentPanel(session, selected)}</section><section class="journal"><header><h2>Journal de partie</h2><span>${session.log.length}</span></header><ol>${session.log
       .slice()
       .reverse()
@@ -263,8 +294,94 @@ function actionLabel(
       ? `${cardName(u.definitionId)} (${playerName(u.ownerId)}, ${u.id})`
       : id;
   };
+  const target = (id: string): string => {
+    const u = state.units.find((u) => u.id === id);
+    if (u) return unit(id);
+    const c = state.cards.find((c) => c.id === id);
+    if (c) return cardName(c.definitionId) + ' (' + id + ')';
+    const z = state.zones.find((z) => z.id === id);
+    if (z)
+      return z.kind === 'base'
+        ? 'Base de ' + playerName(z.ownerId!)
+        : 'Champ ' + (state.battlefields.findIndex((f) => f.zoneId === id) + 1);
+    return state.players.some((p) => p.id === id) ? playerName(id) : id;
+  };
   const prefix = playerName(action.playerId) + ' · ';
   switch (action.type) {
+    case 'cast-spell': {
+      const parts: string[] = [];
+      if (action.selectedUnitIds)
+        parts.push(
+          action.selectedUnitIds.length
+            ? action.selectedUnitIds.map(target).join(' + ')
+            : 'Aucune unité',
+        );
+      else if (!state.players.some((p) => p.id === action.targetId))
+        parts.push(target(action.targetId));
+      if (action.secondaryTargetId)
+        parts.push('contre ' + target(action.secondaryTargetId));
+      if (action.destinationId)
+        parts.push('vers ' + target(action.destinationId));
+      if (action.tokenDestinations)
+        parts.push(
+          'Recrues : ' +
+            action.tokenDestinations
+              .map((id, i) => `${i + 1} → ${target(id)}`)
+              .join(' ; '),
+        );
+      if (action.exhaustUnitId)
+        parts.push('Épuiser ' + target(action.exhaustUnitId));
+      return 'Lancer' + (parts.length ? ' · ' + parts.join(' · ') : ' le sort');
+    }
+    case 'play-unit':
+      return (
+        'Jouer → ' +
+        target(
+          action.destinationId ??
+            state.zones.find(
+              (z) => z.kind === 'base' && z.ownerId === action.playerId,
+            )!.id,
+        ) +
+        (action.onPlayTargetId
+          ? ' · Cible : ' + target(action.onPlayTargetId)
+          : '') +
+        (action.returnSpellId
+          ? ' · Récupérer : ' + target(action.returnSpellId)
+          : '')
+      );
+    case 'activate-spell-energy':
+      return (
+        'Épuiser ' +
+        target(action.unitId) +
+        ' pour produire de l’énergie de sort'
+      );
+    case 'choose-discard':
+      return prefix + 'Défausser ' + target(action.cardId);
+    case 'choose-vision':
+      return (
+        prefix +
+        (action.recycle
+          ? 'Recycler sous le deck'
+          : 'Conserver au-dessus du deck')
+      );
+    case 'choose-attack-targets':
+      return (
+        prefix +
+        action.effects
+          .map(
+            (e) =>
+              target(e.sourceId) +
+              (e.targetId ? ' → ' + target(e.targetId) : ' · sans cible'),
+          )
+          .join(' ; ')
+      );
+    case 'queue-death-effects':
+      return (
+        prefix +
+        action.effects
+          .map((e) => target(e.sourceId) + ' → ' + target(e.destinationId))
+          .join(' puis ')
+      );
     case 'choose-battlefield': {
       const setup = state.setup;
       const field =
@@ -355,4 +472,26 @@ function victoryTrack(
   opponent: boolean,
 ): string {
   return `<div class="victory-track ${opponent ? 'opponent' : 'active'}" aria-label="${escape(playerName(playerId))} : ${score} points sur 8">${Array.from({ length: 8 }, (_, i) => `<span class="victory-crystal ${score > i ? 'earned' : ''}" title="${i + 1} point(s)"><b>${i + 1}</b></span>`).join('')}</div>`;
+}
+
+/** Carte/unité sélectionnée -> liste de choix complets issus du moteur, jamais de cible implicite.
+ * Les index réfèrent à cardActions ; seuls les choix d'une destination retenue sont affichés. */
+function selectedCardPanel(session: Session, selection: Selection): string {
+  const state = session.state;
+  const card =
+    state.cards.find((c) => c.id === selection.cardId) ??
+    state.units.find((c) => c.id === selection.cardId);
+  if (!card)
+    return '<p>Carte indisponible.</p><button data-action="cancel">Retour</button>';
+  const choices = cardActions(session, card.id)
+    .map((action, index) => ({ action, index }))
+    .filter(
+      ({ action }) =>
+        !selection.destinationId ||
+        (action.type === 'play-unit' &&
+          action.destinationId === selection.destinationId),
+    );
+  const info = cardInfo(card.definitionId);
+  const spell = state.spellDefinitions?.find((d) => d.id === card.definitionId);
+  return `<div class="eyebrow">${spell ? { normal: 'Sort normal', action: 'Sort Action', reaction: 'Sort Réaction' }[spell.timing] : 'Carte sélectionnée'}</div><h3>${escape(cardName(card.definitionId))}</h3>${art(card.definitionId, 'card-preview')}${info?.cost ? `<p class="cost-summary">Coût imprimé : ${info.cost.energy} énergie · ${escape(powerText(info.cost.power))} Power${info.cost.powerChoice ? ` + ${info.cost.powerChoiceAmount ?? 1} ${escape(info.cost.powerChoice.map(domainName).join(' / '))}` : ''}</p>` : ''}<p class="help">${escape(info?.text ?? '')}</p><p class="help">${choices.length ? (spell ? 'Choisis les cibles ci-dessous. Le paiement est automatique ; la résolution attend les réactions.' : 'Choisis la mise en jeu ou la capacité ci-dessous. Le paiement est automatique.') : 'Aucun choix légal : vérifie les cibles, les ressources et la priorité.'}</p><div class="choice-list">${choices.map(({ action, index }) => `<button class="quiet" data-card-action="${index}">${escape(actionLabel(session, action))}</button>`).join('')}</div><button class="quiet" data-action="cancel">Retour</button>`;
 }

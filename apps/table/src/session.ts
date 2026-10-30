@@ -334,6 +334,10 @@ export function tableActions(session: Session): GameAction[] {
       (a) =>
         (a.type === 'end-turn' && a.readyRuneIds !== undefined) ||
         [
+          'choose-vision',
+          'choose-discard',
+          'choose-attack-targets',
+          'queue-death-effects',
           'choose-battlefield',
           'choose-defense-shield',
           'choose-hold-channel',
@@ -341,4 +345,50 @@ export function tableActions(session: Session): GameAction[] {
           'pass',
         ].includes(a.type),
     );
+}
+
+/** Joueur dont les choix/main doivent être présentés ; les fenêtres obligatoires priment. */
+export function handPlayer(state: GameState): string {
+  return (
+    state.pendingDiscard?.playerId ??
+    state.pendingVision?.playerId ??
+    state.pendingDeaths?.playerOrder[0] ??
+    state.pendingAttackChoices?.[0]?.ownerId ??
+    state.stack?.priorityPlayerId ??
+    state.showdown?.priorityPlayerId ??
+    state.priorityPlayerId ??
+    state.activePlayerId
+  );
+}
+/** Carte sélectionnée -> choix complets légaux (cibles, destinations et paiement inclus).
+ * Ne choisit jamais automatiquement une cible. Une carte hors fenêtre donne []. */
+export function cardActions(session: Session, cardId: string): GameAction[] {
+  const instance =
+    session.state.cards.find((c) => c.id === cardId) ??
+    session.state.units.find((u) => u.id === cardId);
+  if (!instance) return [];
+  return getLegalActions(session.state, instance.ownerId).filter(
+    (a) =>
+      ((a.type === 'cast-spell' || a.type === 'play-unit') &&
+        a.cardId === cardId) ||
+      (a.type === 'activate-spell-energy' && a.unitId === cardId),
+  );
+}
+/** Choix complet précédemment affiché -> revérification, paiement et empilement atomiques.
+ * Si l'état a changé, refuse sans modifier partie/historique ; ne réinterprète pas l'index. */
+export function submitCardAction(
+  session: Session,
+  cardId: string,
+  action: GameAction,
+): Session {
+  const legal = cardActions(session, cardId).find(
+    (a) => JSON.stringify(a) === JSON.stringify(action),
+  );
+  return legal
+    ? dispatch(session, legal)
+    : {
+        ...session,
+        error:
+          'Ce choix n’est plus disponible. Sélectionne à nouveau la carte.',
+      };
 }

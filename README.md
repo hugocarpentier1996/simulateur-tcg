@@ -52,10 +52,14 @@ Les piles, runes de couleur, bases et champs sont disposés en miroir ; la main 
 éventail. Le nombre de colonnes des champs suit celui fourni par le moteur.
 La légende est entre la base et le chosen champion, à droite pour le joueur actif.
 
-Limites de cette tranche : préparation fixe sans écran de dés/mulligan, unités de test
-uniquement, pas encore de commandes de combat, sort ou gear. Les déplacements sont limités
-à la base vers un champ sans unité adverse ; les attaques seront accessibles avec
-l'interface de combat. Les champs neutres restent interdits à la mise en jeu depuis la main.
+Sélectionner un sort (ou une unité dont la mise en jeu demande une cible) affiche dans le
+panneau la liste complète des choix légaux fournis par le moteur : cibles, destinations
+des jetons et paiement automatique. Aucune cible n'est choisie implicitement. Le sort est
+empilé puis résolu après les passes ; la main affichée est celle du joueur qui doit agir
+(réaction, Vision, défausse, effets de mort ou capacités d'attaque).
+
+Limites de cette tranche : préparation fixe sans écran de dés/mulligan, pas encore de
+commandes de gear. Les champs neutres restent interdits à la mise en jeu depuis la main.
 Pas de sauvegarde :
 recharger la page ou démarrer une nouvelle partie remet la démo à zéro.
 `pnpm build` crée `apps/table/dist` ; `pnpm check` vérifie aussi cette construction.

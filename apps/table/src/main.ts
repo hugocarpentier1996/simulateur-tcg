@@ -2,6 +2,8 @@ import { createStarterSession } from './starter-session.js';
 import { planMove, confirmMoves, type PlannedMove } from './move-plan.js';
 import {
   createDemo,
+  cardActions,
+  submitCardAction,
   tableActions,
   dispatch,
   boardOptions,
@@ -20,8 +22,12 @@ let session = newStarterGame();
 let selection: Selection | null = null;
 let suppressClick = false;
 let moves: readonly PlannedMove[] = [];
+let displayedCardActions: ReturnType<typeof cardActions> = [];
 
 function render() {
+  displayedCardActions = selection
+    ? cardActions(session, selection.cardId)
+    : [];
   const focusId = document.activeElement?.id;
   root.innerHTML = renderTable(session, selection, moves);
   if (focusId) document.getElementById(focusId)?.focus({ preventScroll: true });
@@ -41,7 +47,17 @@ function place(destinationId: string) {
       ...session,
       error: 'Valide ou annule les déplacements avant de jouer une carte.',
     };
-  } else session = playOrMove(session, selection.cardId, destinationId);
+  } else {
+    const options = cardActions(session, selection.cardId).filter(
+      (a) => a.type === 'play-unit' && a.destinationId === destinationId,
+    );
+    if (options.length > 1) {
+      selection = { ...selection, destinationId };
+      render();
+      return;
+    }
+    session = playOrMove(session, selection.cardId, destinationId);
+  }
   if (!session.error) selection = null;
   render();
 }
@@ -82,7 +98,11 @@ root.addEventListener('click', (event) => {
     button.dataset.action !== 'cancel'
   )
     return;
-  if (button.dataset.choice !== undefined) {
+  if (button.dataset.cardAction !== undefined && selection) {
+    const action = displayedCardActions[Number(button.dataset.cardAction)];
+    if (action) session = submitCardAction(session, selection.cardId, action);
+    if (!session.error) selection = null;
+  } else if (button.dataset.choice !== undefined) {
     const action = tableActions(session)[Number(button.dataset.choice)];
     if (action) session = dispatch(session, action);
     selection = null;

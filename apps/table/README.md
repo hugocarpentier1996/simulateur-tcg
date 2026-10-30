@@ -53,7 +53,14 @@ avec la graine fixe de démonstration ; deux exemplaires du même champ sont pos
 Cette vue teste la première manche ; le suivi complet de série BO3 reste une API moteur.
 
 `tableActions(session)` fournit les choix autorisés aux deux joueurs locaux :
-Shield, Channel facultatif, passes et allocations de combat. `main.ts` recalcule
+Shield, Channel facultatif, passes, allocations de combat, Vision, défausse,
+capacités d'attaque et ordre des effets de mort.
+
+`cardActions(session, cardId)` liste les actions complètes d'une carte de la main ou
+d'une unité (sort ciblé, mise en jeu avec cible, énergie de sort), pour son propriétaire.
+`submitCardAction` revérifie l'action affichée au clic : si l'état a changé, refus
+sans modifier la partie. `handPlayer(state)` désigne le joueur dont la main est montrée,
+les fenêtres obligatoires primant sur la priorité. `main.ts` recalcule
 la liste au clic puis transmet l'intention à `dispatch`. Aucun bouton ne résout
 une capacité ou ne répartit les dégâts en contournant `act`.
 

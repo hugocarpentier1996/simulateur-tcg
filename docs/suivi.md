@@ -924,3 +924,11 @@ de toutes les développer. À la reprise, vérifier les modifications locales av
 - TDD : échecs pertinents constatés pour aperçu, cristaux/domaines, panneau commun, préparation des decks et fin de tour Annie avant correction. Validation pnpm check : 471 tests, lint/types/format et build réussis.
 - Navigateur : absence de débordement de page mesurée en 1280×720 et 1024×600 ; pose, fin de tour Annie, redressement et aperçu Tap observés. Capture locale work/table-apercu-cristaux.png.
 - Limites préexistantes : l'interface de dépôt joue encore uniquement les unités ; lancement/ciblage des sorts et certains choix de capacités restent à raccorder, même si les cartes et leurs règles sont présentes dans le moteur. Les listes complètes sont maintenant distribuées, pas seulement les unités. Suite : sélecteurs de cibles et actions de cartes depuis la main.
+
+### Sorts et choix de capacités dans la table — 30 octobre 2026
+
+- Panneau de carte sélectionnée : `cardActions` expose les actions complètes du moteur (cibles, seconde cible du Duel, destinations des Recrues, épuisement, énergie de sort) ; `submitCardAction` refuse un choix périmé sans toucher la partie.
+- Main du joueur qui doit agir (`handPlayer`) : réaction du joueur prioritaire, Vision, défausse, effets de mort, capacités d'attaque. Panneau dédié à ces choix obligatoires, carte révélée par Vision, bouton pour rendre la priorité hors Showdown.
+- Plusieurs mises en jeu possibles vers une même destination (cibles de capacité) : choix explicite dans le panneau au lieu d'un placement implicite.
+- Tests `spell-ui.test.ts` : ciblage/paiement/empilement, refus d'un choix périmé, réaction à une réaction, Duel, Recrues, Vision, défausse, priorité après résolution.
+- Vérification : registre npm inaccessible depuis l'environnement de reprise. Tests exécutés hors ligne avec TypeScript 6.0.3/tsx et un équivalent minimal de l'API vitest : 477 tests réussis ; typage du code de production sans erreur. Prettier, ESLint et build Vite non exécutés : `pnpm check` (Docker ou CI) reste à confirmer.
