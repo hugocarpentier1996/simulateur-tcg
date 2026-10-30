@@ -5,6 +5,9 @@
   résultats, refus et limites. Éviter les commentaires qui paraphrasent chaque ligne.
 - TDD strict pour les comportements : écrire le test, constater un échec pertinent,
   implémenter le minimum, vérifier puis refactorer.
+- Toutes les vérifications (format, lint, types, tests, build) doivent passer **avant** chaque
+  commit. La CI GitHub est un contrôle de sécurité, pas un outil de test : ne jamais pousser
+  pour découvrir un échec, ni laisser dans l'historique un commit dont la CI échoue.
 - Lancer `pnpm check` après les modifications. Avec Docker :
   `docker compose run --rm dev sh -c "pnpm install --frozen-lockfile --store-dir /pnpm/store && pnpm check"`.
 - Moteur TypeScript pur : aucune dépendance UI, réseau ou base de données.
