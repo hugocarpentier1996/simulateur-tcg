@@ -11,7 +11,7 @@ import {
   undo,
   passShowdown,
 } from './session.js';
-import { renderTable, type Selection } from './view.js';
+import { renderTable, type PendingReset, type Selection } from './view.js';
 import './style.css';
 
 const root = document.querySelector<HTMLDivElement>('#app')!;
@@ -23,13 +23,14 @@ let selection: Selection | null = null;
 let suppressClick = false;
 let moves: readonly PlannedMove[] = [];
 let displayedCardActions: ReturnType<typeof cardActions> = [];
+let pendingReset: PendingReset = null;
 
 function render() {
   displayedCardActions = selection
     ? cardActions(session, selection.cardId)
     : [];
   const focusId = document.activeElement?.id;
-  root.innerHTML = renderTable(session, selection, moves);
+  root.innerHTML = renderTable(session, selection, moves, pendingReset);
   if (focusId) document.getElementById(focusId)?.focus({ preventScroll: true });
 }
 
@@ -68,6 +69,14 @@ root.addEventListener('click', (event) => {
     return;
   }
   const target = event.target as HTMLElement;
+  // Une remise à zéro en attente fige la table jusqu'à sa confirmation ou son abandon.
+  const resetAction = target.closest<HTMLElement>('button')?.dataset.action;
+  if (
+    pendingReset &&
+    resetAction !== 'confirm-reset' &&
+    resetAction !== 'cancel-reset'
+  )
+    return;
   const zone = target.closest<HTMLElement>('[data-zone]');
   if (zone && selection && !target.closest('[data-card]')) {
     place(zone.dataset.zone!);
@@ -126,18 +135,14 @@ root.addEventListener('click', (event) => {
     button.dataset.action === 'reset' ||
     button.dataset.action === 'bo3'
   ) {
-    if (
-      !window.confirm(
-        'Recommencer la partie de test ? La partie actuelle sera effacée.',
-      )
-    )
-      return;
+    pendingReset = button.dataset.action;
+  } else if (button.dataset.action === 'confirm-reset' && pendingReset) {
     session =
-      button.dataset.action === 'bo3'
-        ? createDemo(true, 'bo3')
-        : newStarterGame();
+      pendingReset === 'bo3' ? createDemo(true, 'bo3') : newStarterGame();
+    pendingReset = null;
     selection = null;
-  } else return;
+  } else if (button.dataset.action === 'cancel-reset') pendingReset = null;
+  else return;
   render();
 });
 
@@ -152,7 +157,7 @@ let gesture: {
 } | null = null;
 root.addEventListener('dragstart', (event) => event.preventDefault());
 root.addEventListener('pointerdown', (event) => {
-  if (event.button !== 0) return;
+  if (event.button !== 0 || pendingReset) return;
   suppressClick = false;
   const source = (event.target as HTMLElement).closest<HTMLElement>(
     '[data-card]',

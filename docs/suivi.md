@@ -939,3 +939,10 @@ de toutes les développer. À la reprise, vérifier les modifications locales av
 - Les noms sont cherchés dans l'état après puis avant l'action, pour nommer une unité détruite ou un sort parti au cimetière. Aucune règle n'est recalculée par la table.
 - TDD : `spell-journal.test.ts` échouait (seule la ligne de paiement apparaissait) avant l'implémentation.
 - Vérification hors ligne (même banc que l'étape précédente) : 479 tests réussis, typage sans erreur. `pnpm check` complet reste à confirmer par Docker ou la CI.
+
+### Confirmation de remise à zéro dans la page — 30 octobre 2026
+
+- « Nouvelle partie BO1 » et « Choix BO3 » affichent une confirmation dans le panneau d'action au lieu de `window.confirm`, dont le dialogue natif bloquait les outils d'automatisation du navigateur.
+- Pendant la confirmation, la table est figée (clics et glisser-déposer ignorés) jusqu'à « Recommencer » ou « Continuer la partie ». `renderTable` reçoit l'état `PendingReset`.
+- TDD : `reset-confirm.test.ts` (rendu BO1/BO3, absence sans demande, plus de `window.confirm`) échouait avant l'implémentation.
+- Vérification hors ligne : 483 tests réussis, typage sans erreur. Navigateur (bundle esbuild + Chromium, 1280×720) : panneau affiché, clic sur une carte ignoré, abandon puis confirmation BO3 fonctionnels, aucune erreur de page ni dialogue. `pnpm check` reste à confirmer.

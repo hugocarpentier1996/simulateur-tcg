@@ -232,10 +232,14 @@ function handFan(hand: CardInstance[], selected: Selection | null): string {
 
 /** Session de démo et sélection -> HTML échappé. Affiche la main du joueur actif.
  * Les destinations viennent de getLegalActions ; aucune règle de paiement n'est dupliquée ici. */
+/** Remise à zéro demandée, en attente de confirmation dans la page (aucun dialogue natif). */
+export type PendingReset = 'reset' | 'bo3' | null;
+
 export function renderTable(
   session: Session,
   selected: Selection | null,
   moves: readonly PlannedMove[] = [],
+  pendingReset: PendingReset = null,
 ): string {
   const state = session.state;
   const destinations =
@@ -274,7 +278,7 @@ export function renderTable(
     </div>
     <div class="reserve"><span>${escape(playerName(active))} · Réserve flottante</span><span><b>${state.resources[active]?.energy ?? 0}</b> énergie · <b>${escape(powerText(state.resources[active]?.power ?? {}))}</b> Power</span></div>
     <section class="hand-section"><header><h2>Main de ${escape(playerName(handOwner))}</h2><span>${hand.length} cartes · sélectionner pour jouer</span></header>${handFan(hand, selected)}</section></section>
-    <aside><section class="action-panel">${session.error ? `<p role="alert" class="error">${escape(session.error)}</p>` : ''}${moves.length ? movementPanel(session, moves) : paymentPanel(session, selected)}</section><section class="journal"><header><h2>Journal de partie</h2><span>${session.log.length}</span></header><ol>${session.log
+    <aside><section class="action-panel">${session.error ? `<p role="alert" class="error">${escape(session.error)}</p>` : ''}${pendingReset ? resetPanel(pendingReset) : moves.length ? movementPanel(session, moves) : paymentPanel(session, selected)}</section><section class="journal"><header><h2>Journal de partie</h2><span>${session.log.length}</span></header><ol>${session.log
       .slice()
       .reverse()
       .map((line) => `<li>${escape(line)}</li>`)
@@ -494,4 +498,11 @@ function selectedCardPanel(session: Session, selection: Selection): string {
   const info = cardInfo(card.definitionId);
   const spell = state.spellDefinitions?.find((d) => d.id === card.definitionId);
   return `<div class="eyebrow">${spell ? { normal: 'Sort normal', action: 'Sort Action', reaction: 'Sort Réaction' }[spell.timing] : 'Carte sélectionnée'}</div><h3>${escape(cardName(card.definitionId))}</h3>${art(card.definitionId, 'card-preview')}${info?.cost ? `<p class="cost-summary">Coût imprimé : ${info.cost.energy} énergie · ${escape(powerText(info.cost.power))} Power${info.cost.powerChoice ? ` + ${info.cost.powerChoiceAmount ?? 1} ${escape(info.cost.powerChoice.map(domainName).join(' / '))}` : ''}</p>` : ''}<p class="help">${escape(info?.text ?? '')}</p><p class="help">${choices.length ? (spell ? 'Choisis les cibles ci-dessous. Le paiement est automatique ; la résolution attend les réactions.' : 'Choisis la mise en jeu ou la capacité ci-dessous. Le paiement est automatique.') : 'Aucun choix légal : vérifie les cibles, les ressources et la priorité.'}</p><div class="choice-list">${choices.map(({ action, index }) => `<button class="quiet" data-card-action="${index}">${escape(actionLabel(session, action))}</button>`).join('')}</div><button class="quiet" data-action="cancel">Retour</button>`;
+}
+
+/** Confirmation de remise à zéro ; la partie n'est effacée qu'après « Recommencer ». */
+function resetPanel(kind: Exclude<PendingReset, null>): string {
+  const label =
+    kind === 'bo3' ? 'Choix BO3 · manche d’essai BO3' : 'Nouvelle partie BO1';
+  return `<section class="reset-confirm" role="alertdialog" aria-labelledby="reset-title"><div class="eyebrow">${escape(label)}</div><h3 id="reset-title">Recommencer la partie de test ?</h3><p class="help">La partie actuelle sera effacée, ainsi que l’historique d’annulation.</p><div class="choice-list"><button class="primary" data-action="confirm-reset">Recommencer</button><button class="quiet" data-action="cancel-reset">Continuer la partie</button></div></section>`;
 }
