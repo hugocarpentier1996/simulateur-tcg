@@ -976,3 +976,14 @@ de toutes les développer. À la reprise, vérifier les modifications locales av
 - `domainName` déplacé dans la session pour nommer les domaines aussi dans le journal.
 - TDD : `manual-runes.test.ts` (moteur, 4 échecs constatés avant le raccordement à `act`) et `apps/table/src/manual-runes.test.ts` (API absente). Banc hors ligne : 499 tests, typage sans erreur. Navigateur : Tap puis recyclage, réserve « 2 énergie · 1 Order Power », aucune erreur.
 - Règle de production manuelle ajoutée à `regles.md`, confirmée par l'utilisateur.
+
+### Parcours de la défausse — 30 octobre 2026
+
+- Les deux piles « Défausse » sont des boutons : un clic ouvre dans le panneau la défausse (publique) du joueur, carte la plus récente en premier, avec illustrations, noms et texte en info-bulle. « Fermer » ou un second clic la referme. Lecture seule, sans effet sur la partie.
+- `TableUi.graveyard` porte l'état local d'affichage.
+- TDD : `graveyard.test.ts` (3 échecs avant implémentation). Navigateur : ouverture et fermeture sans erreur.
+
+### Outillage de vérification hors Docker — 30 octobre 2026
+
+- Le registre npm reste inaccessible depuis l'environnement de Claude. Prettier, ESLint et TypeScript sont récupérés depuis le magasin pnpm local (paquets JavaScript purs) pour vérifier format, lint et types avant chaque push ; vitest et Vite exigent le binaire natif rolldown et ne tournent que dans la CI GitHub (ou Docker), qui reste la référence.
+- Validation CI de la série du 30 octobre : 502 tests attendus, CI verte à chaque étape poussée après correction des écarts de format.

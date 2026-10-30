@@ -37,6 +37,7 @@ let displayedCardActions: ReturnType<typeof cardActions> = [];
 let pendingReset: PendingReset = null;
 // Runes cliquées pour l'effet de fin de tour (null hors sélection) et réglage « Auto » par joueur.
 let endRunes: string[] | null = null;
+let graveyard: string | null = null;
 const autoRunes: Record<string, boolean> = {};
 
 function render() {
@@ -44,7 +45,7 @@ function render() {
     ? cardActions(session, selection.cardId)
     : [];
   const focusId = document.activeElement?.id;
-  const ui: TableUi = { endRunes, autoRunes };
+  const ui: TableUi = { endRunes, autoRunes, graveyard };
   root.innerHTML = renderTable(session, selection, moves, pendingReset, ui);
   if (focusId) document.getElementById(focusId)?.focus({ preventScroll: true });
 }
@@ -213,6 +214,10 @@ root.addEventListener('click', (event) => {
   } else if (button.dataset.action === 'cancel') selection = null;
   else if (button.dataset.action === 'end') endTurnClicked();
   else if (button.dataset.action === 'cancel-end') endRunes = null;
+  else if (button.dataset.graveyard)
+    graveyard =
+      graveyard === button.dataset.graveyard ? null : button.dataset.graveyard;
+  else if (button.dataset.action === 'close-graveyard') graveyard = null;
   else if (button.dataset.action === 'toggle-auto-runes') {
     const playerId = session.state.activePlayerId;
     autoRunes[playerId] = !autoRunes[playerId];

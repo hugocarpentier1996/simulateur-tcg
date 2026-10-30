@@ -188,8 +188,12 @@ function resourceRow(
       (z) => z.id === c.zoneId && z.kind === 'runes' && z.ownerId === ownerId,
     ),
   );
-  const pile = (kind: string, label: string, symbol: string) =>
-    `<div class="pile ${kind}" aria-label="${escape(label)} de ${escape(playerName(ownerId))}"><div class="pile-face"><span aria-hidden="true">${symbol}</span><b>${count(state, ownerId, kind)}</b></div><small>${label}</small></div>`;
+  const pile = (kind: string, label: string, symbol: string) => {
+    const content = `<div class="pile-face"><span aria-hidden="true">${symbol}</span><b>${count(state, ownerId, kind)}</b></div><small>${label}</small>`;
+    return kind === 'graveyard'
+      ? `<button type="button" class="pile ${kind}" data-graveyard="${escape(ownerId)}" aria-label="Parcourir la défausse de ${escape(playerName(ownerId))}" title="Parcourir la défausse">${content}</button>`
+      : `<div class="pile ${kind}" aria-label="${escape(label)} de ${escape(playerName(ownerId))}">${content}</div>`;
+  };
   return `<div class="resource-row ${opponent ? 'opponent-resources' : ''}" aria-label="Ressources de ${escape(playerName(ownerId))}">
     ${pile('rune-pile', 'Deck de runes', '◇')}
     <div class="rune-cards">${runes.length ? runes.map((r) => `<article class="rune-card ${escape(r.color ?? '')} ${r.ready ? '' : 'tapped'}${endRunes ? ' choosable' : ''}${endRunes?.includes(r.id) ? ' chosen' : ''}" data-rune="${escape(r.id)}" role="button" tabindex="0" title="Clic : Tap pour 1 énergie · Clic droit : recycler sous le deck de runes pour 1 Power${r.ready ? ' (+1 énergie)' : ''}"><span aria-hidden="true">${art(r.definitionId, 'rune-art') || (r.color === 'rouge' ? '◆' : '◈')}</span><strong>${escape(domainName(r.color ?? ''))}</strong><small>${r.ready ? 'Ready' : 'Tap'}</small></article>`).join('') : '<span class="empty">Aucune rune en jeu</span>'}</div>
@@ -237,6 +241,8 @@ export type PendingReset = 'reset' | 'bo3' | null;
  * endRunes : runes cliquées pour Dark Child (null hors sélection) ;
  * autoRunes : joueurs dont les runes de fin de tour sont choisies automatiquement. */
 export interface TableUi {
+  /** Joueur dont la défausse (publique) est ouverte dans le panneau. */
+  graveyard?: string | null;
   endRunes?: readonly string[] | null;
   autoRunes?: Readonly<Record<string, boolean>>;
 }
@@ -303,7 +309,7 @@ export function renderTable(
     </div>
     <div class="reserve"><span>${escape(playerName(active))} · Réserve flottante</span><span><b>${state.resources[active]?.energy ?? 0}</b> énergie · <b>${escape(powerText(state.resources[active]?.power ?? {}))}</b> Power</span></div>
     <section class="hand-section"><header><h2>Main de ${escape(playerName(handOwner))}</h2><span>${hand.length} cartes · sélectionner pour jouer</span></header>${handFan(hand, selected)}</section></section>
-    <aside><section class="action-panel">${session.error ? `<p role="alert" class="error">${escape(session.error)}</p>` : ''}${pendingReset ? resetPanel(pendingReset) : endRunes && runeChoice ? endRunesPanel(endRunes.length, runeChoice.count) : moves.length ? movementPanel(session, moves) : paymentPanel(session, selected)}</section><section class="journal"><header><h2>Journal de partie</h2><span>${session.log.length}</span></header><ol>${session.log
+    <aside><section class="action-panel">${session.error ? `<p role="alert" class="error">${escape(session.error)}</p>` : ''}${pendingReset ? resetPanel(pendingReset) : ui.graveyard ? graveyardPanel(state, ui.graveyard) : endRunes && runeChoice ? endRunesPanel(endRunes.length, runeChoice.count) : moves.length ? movementPanel(session, moves) : paymentPanel(session, selected)}</section><section class="journal"><header><h2>Journal de partie</h2><span>${session.log.length}</span></header><ol>${session.log
       .slice()
       .reverse()
       .map((line) => `<li>${escape(line)}</li>`)
@@ -544,4 +550,17 @@ function resetPanel(kind: Exclude<PendingReset, null>): string {
 /** Sélection des runes de fin de tour : les runes se cliquent sur le plateau. */
 function endRunesPanel(chosen: number, count: number): string {
   return `<div class="eyebrow">Fin de tour · Dark Child</div><h3>Redresser ${count} rune(s)</h3><p class="help">Clique les runes à redresser sur ta rangée (${chosen} / ${count}), puis valide avec le bouton de fin de tour.</p><div class="choice-list"><button class="primary" data-action="end" ${chosen === count ? '' : 'disabled'}>Valider la fin de tour</button><button class="quiet" data-action="cancel-end">Annuler</button></div>`;
+}
+
+/** Défausse publique d'un joueur, la carte la plus récente en premier. Lecture seule. */
+function graveyardPanel(state: GameState, ownerId: string): string {
+  const cards = state.cards
+    .filter((c) =>
+      state.zones.some(
+        (z) =>
+          z.id === c.zoneId && z.kind === 'graveyard' && z.ownerId === ownerId,
+      ),
+    )
+    .reverse();
+  return `<div class="eyebrow">Défausse</div><h3>Défausse de ${escape(playerName(ownerId))} · ${cards.length} carte${cards.length > 1 ? 's' : ''}</h3>${cards.length ? `<ol class="graveyard-list">${cards.map((c) => `<li title="${escape(cardInfo(c.definitionId)?.text ?? '')}">${art(c.definitionId, 'graveyard-art')}<span>${escape(cardName(c.definitionId))}</span></li>`).join('')}</ol>` : '<p class="help">Aucune carte dans cette défausse.</p>'}<button class="quiet" data-action="close-graveyard">Fermer</button>`;
 }
