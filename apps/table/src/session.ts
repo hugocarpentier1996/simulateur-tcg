@@ -18,6 +18,7 @@ import {
   testUnits,
   defineUnit,
 } from '../../../packages/game-data/src/index.js';
+import type { Selection } from './view.js';
 
 /** Adaptation locale des couleurs provisoires du catalogue, sans modifier ses cartes de test. */
 export const demoUnits = testUnits.map((unit) =>
@@ -426,4 +427,84 @@ export function submitCardAction(
         error:
           'Ce choix n’est plus disponible. Sélectionne à nouveau la carte.',
       };
+}
+
+/** Action complète -> cibles cliquables dans l'ordre du choix (unité, seconde unité, zone).
+ * Les cibles joueur, listes d'unités et destinations de jetons restent choisies au panneau. */
+function targetChain(state: GameState, action: GameAction): string[] {
+  if (action.type === 'play-unit')
+    return action.onPlayTargetId ? [action.onPlayTargetId] : [];
+  if (action.type !== 'cast-spell') return [];
+  const chain: string[] = [];
+  if (
+    !action.selectedUnitIds &&
+    !state.players.some((p) => p.id === action.targetId)
+  )
+    chain.push(action.targetId);
+  if (action.secondaryTargetId) chain.push(action.secondaryTargetId);
+  if (action.destinationId) chain.push(action.destinationId);
+  return chain;
+}
+
+/** Carte sélectionnée + cibles déjà cliquées -> actions encore compatibles et prochaines
+ * cibles cliquables (unités ou zones), sans doublon. Ne modifie pas la partie. */
+export function targetOptions(
+  session: Session,
+  cardId: string,
+  picks: readonly string[],
+  destinationId?: string,
+): { actions: GameAction[]; next: string[] } {
+  const state = session.state;
+  const actions = cardActions(session, cardId).filter((action) => {
+    if (
+      destinationId &&
+      action.type === 'play-unit' &&
+      action.destinationId !== destinationId
+    )
+      return false;
+    const chain = targetChain(state, action);
+    return picks.every((id, i) => chain[i] === id);
+  });
+  const next = actions
+    .map((action) => targetChain(state, action)[picks.length])
+    .filter((id): id is string => id !== undefined);
+  return { actions, next: [...new Set(next)] };
+}
+
+/** Clic sur une unité ou zone pendant un ciblage -> lancement si le choix devient unique,
+ * sinon sélection affinée (cible suivante ou options au panneau). Une cible illégale
+ * est refusée avec un message, sans modifier la partie ni la sélection. */
+export function pickTarget(
+  session: Session,
+  selection: Selection,
+  id: string,
+): { session: Session; selection: Selection | null } {
+  const picks = [...(selection.picks ?? []), id];
+  const { actions } = targetOptions(
+    session,
+    selection.cardId,
+    picks,
+    selection.destinationId,
+  );
+  if (!actions.length)
+    return {
+      session: {
+        ...session,
+        error: 'Cette carte n’est pas une cible possible pour ce choix.',
+      },
+      selection,
+    };
+  const [only] = actions;
+  if (
+    actions.length === 1 &&
+    only &&
+    targetChain(session.state, only).length === picks.length
+  ) {
+    const next = submitCardAction(session, selection.cardId, only);
+    return { session: next, selection: next.error ? selection : null };
+  }
+  return {
+    session: session.error ? { ...session, error: null } : session,
+    selection: { ...selection, picks },
+  };
 }

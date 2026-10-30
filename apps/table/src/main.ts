@@ -10,6 +10,8 @@ import {
   playOrMove,
   undo,
   passShowdown,
+  pickTarget,
+  targetOptions,
 } from './session.js';
 import { renderTable, type PendingReset, type Selection } from './view.js';
 import './style.css';
@@ -34,8 +36,33 @@ function render() {
   if (focusId) document.getElementById(focusId)?.focus({ preventScroll: true });
 }
 
+/** Cible cliquable de la carte sélectionnée ? (unité ou zone fournie par le moteur) */
+function isTarget(id: string): boolean {
+  return (
+    !!selection &&
+    targetOptions(
+      session,
+      selection.cardId,
+      selection.picks ?? [],
+      selection.destinationId,
+    ).next.includes(id)
+  );
+}
+
+function chooseTarget(id: string) {
+  if (!selection) return;
+  const picked = pickTarget(session, selection, id);
+  session = picked.session;
+  selection = picked.selection;
+  render();
+}
+
 function place(destinationId: string) {
   if (!selection) return;
+  if (isTarget(destinationId)) {
+    chooseTarget(destinationId);
+    return;
+  }
   if (session.state.units.some((u) => u.id === selection!.cardId)) {
     const planned = planMove(session, moves, selection.cardId, destinationId);
     session = {
@@ -115,6 +142,9 @@ root.addEventListener('click', (event) => {
     const action = tableActions(session)[Number(button.dataset.choice)];
     if (action) session = dispatch(session, action);
     selection = null;
+  } else if (button.dataset.card && isTarget(button.dataset.card)) {
+    chooseTarget(button.dataset.card);
+    return;
   } else if (button.dataset.card) {
     selection = { cardId: button.dataset.card };
     session = { ...session, error: null };

@@ -16,6 +16,12 @@
     0 0 12px #75ce8e22;
   cursor: pointer;
 }
+.unit-card.targetable {
+  outline: 2px solid #f0a35e;
+  outline-offset: 2px;
+  box-shadow: 0 0 14px #f0a35e88;
+  cursor: crosshair;
+}
 .place-here {
   display: block;
   margin: 4px auto 0;

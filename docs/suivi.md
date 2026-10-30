@@ -953,3 +953,10 @@ de toutes les développer. À la reprise, vérifier les modifications locales av
 - Règle ajoutée à `regles.md` comme confirmée par l'utilisateur.
 - TDD : nouveau test Mystic Poro observé en échec (priorité « b ») avant la correction de `chooseVision`.
 - Question ouverte : après la résolution d'un sort hors Showdown, la priorité revient encore à l'adversaire, conformément à la règle de chaîne actuelle. À aligner si l'utilisateur le souhaite.
+
+### Ciblage par clic sur le plateau — 30 octobre 2026
+
+- Après sélection d'un sort (ou d'une unité dont la mise en jeu cible), les unités et zones ciblables sont surlignées. Un clic choisit la cible ; si le choix devient unique, le sort est payé et empilé immédiatement. Le Duel se cible en deux clics (alliée puis ennemie). Le panneau latéral reste disponible et n'affiche que les options compatibles.
+- `targetOptions` et `pickTarget` (session) dérivent les cibles des actions légales du moteur ; aucune règle n'est dupliquée. Cible illégale : message, partie et sélection inchangées.
+- Restent au panneau : cibles joueur, listes d'unités (Flash) et destinations des Recrues.
+- TDD : `click-target.test.ts` échouait (API absente) avant l'implémentation. Banc hors ligne : 487 tests, typage sans erreur.

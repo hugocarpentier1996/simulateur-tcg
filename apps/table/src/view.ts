@@ -10,6 +10,7 @@ import {
   cardName,
   cardActions,
   handPlayer,
+  targetOptions,
   tableActions,
   playerName,
   boardOptions,
@@ -21,6 +22,8 @@ import { fanLayout } from './fan.js';
 export interface Selection {
   cardId: string;
   destinationId?: string;
+  /** Cibles déjà cliquées sur le plateau, dans l'ordre du choix (ex. Duel : alliée puis ennemie). */
+  picks?: readonly string[];
 }
 
 const escape = (text: string | number) =>
@@ -97,7 +100,7 @@ function zone(
         ? units
             .map((u) => {
               const label = `${cardName(u.definitionId)} · ${playerName(u.ownerId)} · ${u.ready ? 'Ready' : 'Tap'} · Might ${effectiveMight(u, state)} · ${u.damage} dégât(s)`;
-              return `<div class="unit-slot"><button type="button" id="unit-${escape(u.id)}" data-card="${escape(u.id)}" class="unit-card ${u.ready ? 'ready' : 'tapped'}" aria-label="${escape(label)}" title="${escape(label)}"><span class="unit-face">${art(u.definitionId, 'unit-art') || `<span class="unit-fallback">${escape(cardName(u.definitionId))}</span>`}</span><span class="unit-might">${effectiveMight(u, state)}</span></button></div>`;
+              return `<div class="unit-slot"><button type="button" id="unit-${escape(u.id)}" data-card="${escape(u.id)}" class="unit-card ${u.ready ? 'ready' : 'tapped'}${destinations.includes(u.id) ? ' targetable' : ''}" aria-label="${escape(label)}" title="${escape(label)}"><span class="unit-face">${art(u.definitionId, 'unit-art') || `<span class="unit-fallback">${escape(cardName(u.definitionId))}</span>`}</span><span class="unit-might">${effectiveMight(u, state)}</span></button></div>`;
             })
             .join('')
         : moves.some((m) => m.destinationId === zoneId)
@@ -242,10 +245,19 @@ export function renderTable(
   pendingReset: PendingReset = null,
 ): string {
   const state = session.state;
+  // Zones de dépôt et cibles cliquables partagent la surbrillance ; le moteur les fournit.
   const destinations =
     selected &&
     (!moves.length || state.units.some((u) => u.id === selected.cardId))
-      ? boardOptions(state, selected.cardId).map((a) => a.destinationId!)
+      ? [
+          ...boardOptions(state, selected.cardId).map((a) => a.destinationId!),
+          ...targetOptions(
+            session,
+            selected.cardId,
+            selected.picks ?? [],
+            selected.destinationId,
+          ).next,
+        ]
       : [];
   const active = state.activePlayerId;
   const priority =
@@ -487,17 +499,26 @@ function selectedCardPanel(session: Session, selection: Selection): string {
     state.units.find((c) => c.id === selection.cardId);
   if (!card)
     return '<p>Carte indisponible.</p><button data-action="cancel">Retour</button>';
+  const compatible = new Set(
+    targetOptions(
+      session,
+      card.id,
+      selection.picks ?? [],
+      selection.destinationId,
+    ).actions.map((action) => JSON.stringify(action)),
+  );
   const choices = cardActions(session, card.id)
     .map((action, index) => ({ action, index }))
     .filter(
       ({ action }) =>
-        !selection.destinationId ||
-        (action.type === 'play-unit' &&
-          action.destinationId === selection.destinationId),
+        compatible.has(JSON.stringify(action)) &&
+        (!selection.destinationId ||
+          (action.type === 'play-unit' &&
+            action.destinationId === selection.destinationId)),
     );
   const info = cardInfo(card.definitionId);
   const spell = state.spellDefinitions?.find((d) => d.id === card.definitionId);
-  return `<div class="eyebrow">${spell ? { normal: 'Sort normal', action: 'Sort Action', reaction: 'Sort Réaction' }[spell.timing] : 'Carte sélectionnée'}</div><h3>${escape(cardName(card.definitionId))}</h3>${art(card.definitionId, 'card-preview')}${info?.cost ? `<p class="cost-summary">Coût imprimé : ${info.cost.energy} énergie · ${escape(powerText(info.cost.power))} Power${info.cost.powerChoice ? ` + ${info.cost.powerChoiceAmount ?? 1} ${escape(info.cost.powerChoice.map(domainName).join(' / '))}` : ''}</p>` : ''}<p class="help">${escape(info?.text ?? '')}</p><p class="help">${choices.length ? (spell ? 'Choisis les cibles ci-dessous. Le paiement est automatique ; la résolution attend les réactions.' : 'Choisis la mise en jeu ou la capacité ci-dessous. Le paiement est automatique.') : 'Aucun choix légal : vérifie les cibles, les ressources et la priorité.'}</p><div class="choice-list">${choices.map(({ action, index }) => `<button class="quiet" data-card-action="${index}">${escape(actionLabel(session, action))}</button>`).join('')}</div><button class="quiet" data-action="cancel">Retour</button>`;
+  return `<div class="eyebrow">${spell ? { normal: 'Sort normal', action: 'Sort Action', reaction: 'Sort Réaction' }[spell.timing] : 'Carte sélectionnée'}</div><h3>${escape(cardName(card.definitionId))}</h3>${art(card.definitionId, 'card-preview')}${info?.cost ? `<p class="cost-summary">Coût imprimé : ${info.cost.energy} énergie · ${escape(powerText(info.cost.power))} Power${info.cost.powerChoice ? ` + ${info.cost.powerChoiceAmount ?? 1} ${escape(info.cost.powerChoice.map(domainName).join(' / '))}` : ''}</p>` : ''}<p class="help">${escape(info?.text ?? '')}</p><p class="help">${choices.length ? (spell ? 'Clique une cible en surbrillance sur le plateau, ou choisis ci-dessous. Le paiement est automatique ; la résolution attend les réactions.' : 'Choisis la mise en jeu ou la capacité ci-dessous. Le paiement est automatique.') : 'Aucun choix légal : vérifie les cibles, les ressources et la priorité.'}</p>${selection.picks?.length ? `<p class="help">Cibles choisies : ${escape(selection.picks.map((id) => cardName(state.units.find((u) => u.id === id)?.definitionId ?? id)).join(' → '))}</p>` : ''}<div class="choice-list">${choices.map(({ action, index }) => `<button class="quiet" data-card-action="${index}">${escape(actionLabel(session, action))}</button>`).join('')}</div><button class="quiet" data-action="cancel">Retour</button>`;
 }
 
 /** Confirmation de remise à zéro ; la partie n'est effacée qu'après « Recommencer ». */
