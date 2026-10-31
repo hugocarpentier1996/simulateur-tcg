@@ -241,3 +241,4 @@ export { leeSinBody } from './ogn/lee-sin-body.js';
 export { cithriaOfCloudfield } from './ogn/cithria-of-cloudfield.js';
 export { yasuoChaos } from './ogn/yasuo-chaos.js';
 export { rhasaTheSunderer } from './ogn/rhasa-the-sunderer.js';
+export { spoilsOfWar } from './ogn/spoils-of-war.js';

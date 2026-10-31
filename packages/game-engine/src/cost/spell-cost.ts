@@ -20,14 +20,18 @@ export function spellCost(
             .filter((u) => u.ownerId === playerId)
             .map((u) => effectiveMight(u, state)),
         )
-      : own?.kind === 'opponent-near-victory' &&
-          state.players.some(
-            (p) =>
-              p.id !== playerId &&
-              p.score >= (p.victoryTarget ?? 8) - own.within,
-          )
-        ? own.energy
-        : 0;
+      : own?.kind === 'enemy-died-this-turn'
+        ? state.enemyDeathsThisTurn?.includes(playerId)
+          ? own.energy
+          : 0
+        : own?.kind === 'opponent-near-victory' &&
+            state.players.some(
+              (p) =>
+                p.id !== playerId &&
+                p.score >= (p.victoryTarget ?? 8) - own.within,
+            )
+          ? own.energy
+          : 0;
   const base = Math.max(
     0,
     printed.energy - ownReduction - (state.nextSpellDiscount?.[playerId] ?? 0),

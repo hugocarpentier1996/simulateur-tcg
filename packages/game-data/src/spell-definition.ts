@@ -143,7 +143,9 @@ export interface SpellDefinition extends PrintedMetadata {
         readonly energy: number;
       }
     /** Sky Splitter : réduite de la plus haute Might parmi les unités du lanceur. */
-    | { readonly kind: 'highest-own-might' };
+    | { readonly kind: 'highest-own-might' }
+    /** Spoils of War : si une unité ennemie du lanceur est morte ce tour. */
+    | { readonly kind: 'enemy-died-this-turn'; readonly energy: number };
   readonly timing: SpellTiming;
   readonly cost: CardCost;
   readonly target:

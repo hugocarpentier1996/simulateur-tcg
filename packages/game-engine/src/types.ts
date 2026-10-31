@@ -40,6 +40,8 @@ export interface GameState {
   readyEntryPlayers?: readonly string[];
   /** Réduction d'énergie du prochain sort de chaque joueur ce tour (Raging Firebrand). */
   nextSpellDiscount?: Readonly<Record<string, number>>;
+  /** Joueurs dont au moins une unité ennemie est morte ce tour (Spoils of War). */
+  enemyDeathsThisTurn?: readonly string[];
   /** Joueurs ayant défaussé au moins une carte ce tour (événements card-discarded). */
   discardedThisTurn?: readonly string[];
   /** Joueurs qui ne peuvent plus jouer de carte ce tour (Brynhir Thundersong). */

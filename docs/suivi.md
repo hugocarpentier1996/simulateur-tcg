@@ -1134,3 +1134,5 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Cithria of Cloudfield (ogn-139) : se buffe quand son propriétaire joue une autre unité (`buffOnAllyPlayed`, sans pile).
 - Yasuo (ogn-205, Chaos) : Ganking ; à son troisième déplacement du tour, son propriétaire marque 1 point (`scoreOnThirdMove`, via `movesThisTurn` et `awardPoints`).
 - Rhasa the Sunderer (ogn-195) : coûte 1 énergie de moins par carte de son cimetière (`energyReductionPerTrashCard` dans `unitCost`).
+- Rhasa the Sunderer (ogn-195) : coûte 1 énergie de moins par carte de son cimetière (`energyReductionPerTrashCard` dans `unitCost`).
+- Spoils of War (ogn-144) : Réaction ; pioche 2 ; coûte 2 de moins si une unité ennemie est morte ce tour (`enemyDeathsThisTurn` tenu par `act`, `costReduction` `enemy-died-this-turn`).

@@ -197,3 +197,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Cithria of Cloudfield — ogn-139-298
 - [x] Yasuo — ogn-205-298
 - [x] Rhasa the Sunderer — ogn-195-298
+- [x] Spoils of War — ogn-144-298

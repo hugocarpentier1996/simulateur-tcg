@@ -112,15 +112,37 @@ export function act(state: GameState, action: GameAction): ActionResult {
   const discarders = events.flatMap((e) =>
     e.type === 'card-discarded' ? [e.playerId] : [],
   );
+  // Morts d'unités : leurs adversaires sont inscrits (Spoils of War).
+  const deadOwners = events.flatMap((e) =>
+    e.type === 'unit-died' || e.type === 'token-removed'
+      ? (state.units.find((u) => u.id === e.unitId)?.ownerId ??
+        entered.cards.find((c) => c.id === e.unitId)?.ownerId ??
+        [])
+      : [],
+  );
+  const beneficiaries = state.players
+    .map((p) => p.id)
+    .filter((id) => deadOwners.some((owner) => owner !== id));
+  const tracked = beneficiaries.length
+    ? {
+        ...entered,
+        enemyDeathsThisTurn: [
+          ...new Set([
+            ...(entered.enemyDeathsThisTurn ?? []),
+            ...beneficiaries,
+          ]),
+        ],
+      }
+    : entered;
   const counted = countMoves(
     discarders.length
       ? {
-          ...entered,
+          ...tracked,
           discardedThisTurn: [
             ...new Set([...(entered.discardedThisTurn ?? []), ...discarders]),
           ],
         }
-      : entered,
+      : tracked,
     events,
   );
   const scoredMoves = thirdMovePoints(entered, counted);
