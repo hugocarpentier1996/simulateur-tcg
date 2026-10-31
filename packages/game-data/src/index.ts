@@ -180,3 +180,4 @@ export { legionRearguard } from './ogn/legion-rearguard.js';
 export { blazingScorcher } from './ogn/blazing-scorcher.js';
 export { draven } from './ogn/draven.js';
 export { captainFarron } from './ogn/captain-farron.js';
+export { taric } from './ogn/taric.js';
