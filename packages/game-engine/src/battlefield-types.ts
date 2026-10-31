@@ -10,6 +10,8 @@ export interface BattlefieldBlueprint {
   readonly holdDraw?: number;
   /** Conquête : le conquérant défausse 1 puis pioche 1, via la pile. */
   readonly conquerLoot?: boolean;
+  /** Conquête : le conquérant redressera ce nombre de runes à la fin du tour. */
+  readonly conquerEndTurnReadyRunes?: number;
   /** Points supplémentaires nécessaires pour gagner tant qu'il est en jeu. */
   readonly victoryTargetBonus?: number;
   /** Tenue : jeton de cette définition joué dans la base du contrôleur, via la pile. */

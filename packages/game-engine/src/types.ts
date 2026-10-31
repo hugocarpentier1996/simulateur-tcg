@@ -49,6 +49,8 @@ export interface GameState {
   enemyDeathsThisTurn?: readonly string[];
   /** Joueurs ayant défaussé au moins une carte ce tour (événements card-discarded). */
   discardedThisTurn?: readonly string[];
+  /** Runes à redresser en fin de tour par joueur (Targon's Peak), via la pile. */
+  endTurnReadyRunes?: Readonly<Record<string, number>>;
   /** Joueurs qui ne peuvent plus jouer de carte ce tour (Brynhir Thundersong). */
   playLockedPlayers?: readonly string[];
   /** Cartes jouées (unités, sorts, gears) par joueur depuis le début du tour (Legion). */

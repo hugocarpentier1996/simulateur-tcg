@@ -7,10 +7,27 @@ import { activeLegends } from './legends.js';
  * Vérifie le seuil à la conquête ; la résolution le vérifiera à nouveau. Victoire : aucun ajout.
  * Appelé une seule fois par act, pas lors d'une tenue ni d'un simple mouvement. */
 export function queueConquestLegends(
-  state: GameState,
+  input: GameState,
   events: readonly GameEvent[],
 ): { state: GameState; events: GameEvent[] } {
+  let state = input;
   if (state.result) return { state, events: [] };
+  // Targon's Peak : redressement de runes différé à la fin du tour.
+  for (const e of events)
+    if (e.type === 'battlefield-conquered') {
+      const runes = battlefieldDefinition(
+        state,
+        e.battlefieldId,
+      )?.conquerEndTurnReadyRunes;
+      if (runes)
+        state = {
+          ...state,
+          endTurnReadyRunes: {
+            ...state.endTurnReadyRunes,
+            [e.playerId]: (state.endTurnReadyRunes?.[e.playerId] ?? 0) + runes,
+          },
+        };
+    }
   const entries: (LegendEntry | MovementEntry)[] = events.flatMap((e) =>
     e.type === 'battlefield-conquered'
       ? activeLegends(state, e.playerId).flatMap(({ card, definition }) =>

@@ -28,6 +28,7 @@ export function startNextTurn(
     ...(state.readyEntryPlayers ? { readyEntryPlayers: [] } : {}),
     ...(state.cardsPlayedThisTurn ? { cardsPlayedThisTurn: {} } : {}),
     ...(state.playLockedPlayers ? { playLockedPlayers: [] } : {}),
+    ...(state.endTurnReadyRunes ? { endTurnReadyRunes: {} } : {}),
     ...(state.discardedThisTurn ? { discardedThisTurn: [] } : {}),
     ...(state.enemyDeathsThisTurn ? { enemyDeathsThisTurn: [] } : {}),
     ...(state.effectDamagePrevented ? { effectDamagePrevented: false } : {}),

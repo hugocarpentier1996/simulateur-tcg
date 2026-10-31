@@ -215,3 +215,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Altar to Unity — ogn-275-298
 - [x] Aspirant's Climb — ogn-276-298
 - [x] Zaun Warrens — ogn-298-298
+- [x] Targon's Peak — ogn-289-298

@@ -66,6 +66,20 @@ export function endTurn(
       runeIds: runes.slice(0, count),
     });
   }
+  const delayed = state.endTurnReadyRunes?.[action.playerId];
+  if (delayed)
+    entries.push({
+      kind: 'legend-ready-runes',
+      sourceId: 'end-turn-runes',
+      ownerId: action.playerId,
+      runeIds: runeIdsInPlay(state, action.playerId)
+        .sort(
+          (x, y) =>
+            Number(state.cards.find((c) => c.id === x)?.ready !== false) -
+            Number(state.cards.find((c) => c.id === y)?.ready !== false),
+        )
+        .slice(0, delayed),
+    });
   if (entries.length)
     return {
       ok: true,
