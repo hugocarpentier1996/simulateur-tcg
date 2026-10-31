@@ -221,6 +221,43 @@ export function resolveSpell(
       });
       continue;
     }
+    if (effect.type === 'discard-hands-then-draw') {
+      const graveOf = (ownerId: string) =>
+        state.zones.find((z) => z.kind === 'graveyard' && z.ownerId === ownerId)
+          ?.id;
+      const discarded = state.cards.filter((c) =>
+        state.zones.some(
+          (z) =>
+            z.id === c.zoneId && z.kind === 'hand' && z.ownerId === c.ownerId,
+        ),
+      );
+      state = {
+        ...state,
+        cards: state.cards.map((c) =>
+          discarded.includes(c)
+            ? { ...c, zoneId: graveOf(c.ownerId) ?? c.zoneId }
+            : c,
+        ),
+      };
+      events.push(
+        ...discarded.map((c) => ({
+          type: 'card-discarded' as const,
+          playerId: c.ownerId,
+          cardId: c.id,
+        })),
+      );
+      const order = [
+        entry.casterId,
+        ...state.players.map((p) => p.id).filter((id) => id !== entry.casterId),
+      ];
+      for (const playerId of order)
+        for (let i = 0; i < effect.count && !state.result; i++) {
+          const drawn = drawCardForPlayer(state, playerId);
+          state = drawn.state;
+          events.push(...drawn.events);
+        }
+      continue;
+    }
     if (effect.type === 'kill-target-gear') {
       const killed = killGears(state, [entry.targetId]);
       state = killed.state;

@@ -1095,3 +1095,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Sky Splitter (ogn-014) : Action ; 5 dégâts à une unité sur un champ ; énergie réduite de la plus haute Might parmi ses unités (`costReduction: highest-own-might`, plancher 0).
 - Zenith Blade (ogn-262) : Action ; étourdit une unité ennemie sur un champ puis peut y déplacer une unité alliée (effet `move-ally-to-target`, seconde cible facultative ; déplacement par sort factorisé dans `moveUnit`).
 - Stormbringer (ogn-250) : unité alliée en base (nouvelle restriction de cible `zone: 'base'`) ; sa Might en dégâts à toutes les unités ennemies d'un champ choisi, puis elle s'y déplace (effet `might-damage-enemies-then-move`).
+- Invert Timelines (ogn-201) : chaque joueur défausse sa main puis pioche 4, lanceur d'abord (effet `discard-hands-then-draw`).

@@ -65,6 +65,8 @@ export interface SpellBlueprint {
     | { readonly type: 'exhaust-allies' }
     /** Détruit tous les équipements en jeu (cimetière de leur propriétaire). */
     | { readonly type: 'kill-all-gear' }
+    /** Chaque joueur défausse toute sa main, puis chacun pioche `count` (lanceur d'abord). */
+    | { readonly type: 'discard-hands-then-draw'; readonly count: number }
     /** L'unité ciblée inflige sa Might (dégâts du sort) à toutes les unités ennemies du champ
      * destinationId, puis s'y déplace. */
     | { readonly type: 'might-damage-enemies-then-move' }
