@@ -1104,3 +1104,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Undercover Agent (ogn-178) : Deathknell — défausse 2 cartes choisies puis pioche 2 (DeathEffect `discard-draw`, via `startDiscard`).
 - Ekko (ogn-110) : Accelerate ; Deathknell — se recycle (cimetière -> sous le deck) pour redresser les runes de son propriétaire (DeathEffect `recycle-self-ready-runes`, appliqué automatiquement).
 - Kayn (ogn-189) : Ganking ; ne subit aucun dégât après deux déplacements dans le tour (compteur `movesThisTurn` tenu par `act` à partir des événements `unit-moved`, remis à zéro en fin de tour ; `preventsDamage` appliqué au combat, aux dégâts d'effet, aux duels et aux frappes).
+- Fiora (ogn-232) : tant qu'elle est Mighty (5+ Might), Deflect, Ganking et Shield 1 (`mightyKeywords`, helper `hasKeyword` utilisé par le déplacement et Deflect ; le Shield conditionnel est évalué sans lui-même).

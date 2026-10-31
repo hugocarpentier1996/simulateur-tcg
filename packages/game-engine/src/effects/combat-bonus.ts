@@ -1,3 +1,4 @@
+import { effectiveMight } from './modifiers.js';
 import { activeLegends } from './legends.js';
 import type { GameState, UnitState } from '../types.js';
 
@@ -41,7 +42,7 @@ export function combatMightBonus(unit: UnitState, state: GameState): number {
       personal
     );
   if (unit.ownerId === combat.defenderId) {
-    return (
+    const shield =
       (definition?.shield ?? 0) +
       granted('otherAlliesHereShield') +
       (combat.shieldBonuses?.[unit.id] ?? 0) +
@@ -51,8 +52,12 @@ export function combatMightBonus(unit: UnitState, state: GameState): number {
             (sum, l) => sum + (l.definition.aloneDefenseBonus ?? 0),
             0,
           )
-        : 0)
-    );
+        : 0);
+    // Fiora : Shield 1 tant qu'elle est Mighty, mesurée sans ce Shield conditionnel.
+    const mighty =
+      !!definition?.mightyKeywords &&
+      effectiveMight(unit, { ...state, showdown: null }) + shield >= 5;
+    return shield + (mighty ? 1 : 0);
   }
   return 0;
 }

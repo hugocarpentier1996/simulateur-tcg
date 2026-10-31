@@ -1,3 +1,4 @@
+import { hasKeyword } from '../effects/modifiers.js';
 import type { GameState, GameAction, UnitBlueprint } from '../types.js';
 import type { SpellBlueprint } from '../spell-types.js';
 /** Choix individuels adverses -> un Power quelconque par Deflect ; les zones ne passent pas ici.
@@ -13,7 +14,7 @@ export function withDeflect(
       (u) =>
         u.id === id &&
         u.ownerId !== playerId &&
-        state.unitDefinitions?.find((d) => d.id === u.definitionId)?.deflect,
+        hasKeyword(u, state, 'deflect'),
     ),
   ).length;
   return tax ? { ...cost, genericPower: (cost.genericPower ?? 0) + tax } : cost;

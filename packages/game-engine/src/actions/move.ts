@@ -1,3 +1,4 @@
+import { hasKeyword } from '../effects/modifiers.js';
 import type { GameState, GameAction, ActionResult } from '../types.js';
 
 type MoveAction = Extract<GameAction, { type: 'move' }>;
@@ -35,9 +36,7 @@ function validateMove(state: GameState, action: MoveAction): MoveValidation {
   if (!unit || unit.ownerId !== action.playerId)
     return { ok: false, reason: 'INVALID_UNIT' };
   if (!unit.ready) return { ok: false, reason: 'UNIT_NOT_READY' };
-  const ganking =
-    state.unitDefinitions?.find((d) => d.id === unit.definitionId)?.ganking ===
-    true;
+  const ganking = hasKeyword(unit, state, 'ganking');
   const destination = state.zones.find((z) => z.id === action.destinationId);
   const toField = !!battlefield && destination?.kind === 'battlefield';
   const toOwnBase =

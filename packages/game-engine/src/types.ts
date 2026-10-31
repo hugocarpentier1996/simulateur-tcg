@@ -165,6 +165,8 @@ export interface UnitBlueprint {
   readonly tags?: readonly string[];
   /** Exception de mise en jeu : champ entièrement vide en plus des destinations ordinaires. */
   readonly canPlayToOpenBattlefield?: boolean;
+  /** Tant qu'elle est Mighty (5+ Might) : Deflect, Ganking et Shield 1 (Fiora). */
+  readonly mightyKeywords?: boolean;
   /** Ne subit aucun dégât après s'être déplacé au moins ce nombre de fois ce tour (Kayn). */
   readonly noDamageAfterMoves?: number;
   /** Legion : « when you play me, ready me » si une autre carte a été jouée ce tour.

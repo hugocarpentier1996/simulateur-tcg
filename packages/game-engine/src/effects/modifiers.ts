@@ -42,3 +42,16 @@ export function preventsDamage(unit: UnitState, state: GameState): boolean {
   )?.noDamageAfterMoves;
   return threshold !== undefined && (unit.movesThisTurn ?? 0) >= threshold;
 }
+
+/** Unité + état -> Deflect ou Ganking imprimé, ou accordé tant qu'elle est Mighty. */
+export function hasKeyword(
+  unit: UnitState,
+  state: GameState,
+  key: 'deflect' | 'ganking',
+): boolean {
+  const definition = state.unitDefinitions?.find(
+    (d) => d.id === unit.definitionId,
+  );
+  if (definition?.[key]) return true;
+  return !!definition?.mightyKeywords && effectiveMight(unit, state) >= 5;
+}
