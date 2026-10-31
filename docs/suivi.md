@@ -1133,3 +1133,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Lee Sin (ogn-151, Body) : Accelerate ; les autres alliés buffés de son champ ont +2 Might (`otherBuffedAlliesHereMight`).
 - Cithria of Cloudfield (ogn-139) : se buffe quand son propriétaire joue une autre unité (`buffOnAllyPlayed`, sans pile).
 - Yasuo (ogn-205, Chaos) : Ganking ; à son troisième déplacement du tour, son propriétaire marque 1 point (`scoreOnThirdMove`, via `movesThisTurn` et `awardPoints`).
+- Rhasa the Sunderer (ogn-195) : coûte 1 énergie de moins par carte de son cimetière (`energyReductionPerTrashCard` dans `unitCost`).

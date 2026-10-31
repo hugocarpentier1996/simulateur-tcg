@@ -67,6 +67,8 @@ export interface UnitDefinition extends PrintedMetadata {
   readonly otherAlliesEnterReady?: boolean;
   /** Legion : énergie en moins si une autre carte a été jouée ce tour (plancher 0). */
   readonly legionEnergyReduction?: number;
+  /** Énergie en moins par carte du cimetière de son propriétaire (plancher 0). */
+  readonly energyReductionPerTrashCard?: number;
   /** Peut être joué sur un champ occupé par des unités ennemies (Showdown à l'arrivée). */
   readonly canPlayToOccupiedEnemyBattlefield?: boolean;
   /** Déplacement vers un champ : invoquer ce jeton ici via la pile, sans condition de contrôle. */

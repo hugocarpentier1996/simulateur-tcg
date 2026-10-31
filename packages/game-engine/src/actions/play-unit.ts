@@ -284,5 +284,18 @@ export function unitCost(
     (state.cardsPlayedThisTurn?.[playerId] ?? 0) > 0
       ? (definition.legionEnergyReduction ?? 0)
       : 0;
-  return legion ? { ...cost, energy: Math.max(0, cost.energy - legion) } : cost;
+  const trash = definition.energyReductionPerTrashCard
+    ? definition.energyReductionPerTrashCard *
+      state.cards.filter((c) =>
+        state.zones.some(
+          (z) =>
+            z.id === c.zoneId &&
+            z.kind === 'graveyard' &&
+            z.ownerId === playerId,
+        ),
+      ).length
+    : 0;
+  return legion + trash
+    ? { ...cost, energy: Math.max(0, cost.energy - legion - trash) }
+    : cost;
 }
