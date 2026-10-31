@@ -31,6 +31,7 @@ export function startNextTurn(
     ...(state.discardedThisTurn ? { discardedThisTurn: [] } : {}),
     ...(state.enemyDeathsThisTurn ? { enemyDeathsThisTurn: [] } : {}),
     ...(state.effectDamagePrevented ? { effectDamagePrevented: false } : {}),
+    ...(state.damageBaseline ? { damageBaseline: null } : {}),
     ...(state.nextSpellDiscount ? { nextSpellDiscount: {} } : {}),
     ...(state.pendingTurnEnd ? { pendingTurnEnd: false } : {}),
     units: end.state.units.map((current) => {

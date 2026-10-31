@@ -1,4 +1,9 @@
-import type { ActionResult, GameState, GameEvent } from '../types.js';
+import type {
+  ActionResult,
+  GameState,
+  GameEvent,
+  UnitState,
+} from '../types.js';
 import type { DeathTrigger } from '../death-types.js';
 import { effectiveMight } from './modifiers.js';
 import { replaceDeaths } from './replace-death.js';
@@ -22,9 +27,7 @@ export function settleLethalUnits(
   let forced = destroyedIds;
   while (!state.result) {
     const lethal = state.units.filter(
-      (u) =>
-        forced.has(u.id) ||
-        (u.damage > 0 && u.damage >= effectiveMight(u, state)),
+      (u) => forced.has(u.id) || isLethal(u, state),
     );
     forced = new Set();
     if (!lethal.length) break;
@@ -100,4 +103,15 @@ export function settleLethalUnits(
     ),
   };
   return { ok: true, state, events };
+}
+
+/** Unité mortellement blessée : dégâts >= Might, ou dégâts subis depuis Imperial Decree. */
+export function isLethal(unit: UnitState, state: GameState): boolean {
+  if (unit.damage <= 0) return false;
+  if (
+    state.damageBaseline &&
+    unit.damage > (state.damageBaseline[unit.id] ?? 0)
+  )
+    return true;
+  return unit.damage >= effectiveMight(unit, state);
 }

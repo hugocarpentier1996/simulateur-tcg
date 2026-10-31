@@ -1141,3 +1141,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Jinx (ogn-202, Chaos) : quand son propriétaire défausse (une fois par action), se redresse et gagne +1 Might ce tour (`onOwnerDiscard`, appliqué par `act`).
 - Vanguard Captain (ogn-218) : Legion — à la mise en jeu, deux jetons Recrue 1 ici (`onPlaySummonHereCount`, `onPlaySummonHereLegion`).
 - Herald of Scales (ogn-140) : les Dragons de son propriétaire coûtent 2 énergie de moins, minimum 1 (`dragonEnergyReduction`, tag imprimé Dragon, dans `unitCost`).
+- Imperial Decree (ogn-221) : Action ; ce tour, toute unité qui subit des dégâts est tuée (`damageBaseline` relevé au décret, helper `isLethal` utilisé par les morts et le combat).

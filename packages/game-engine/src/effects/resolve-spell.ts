@@ -265,6 +265,15 @@ export function resolveSpell(
       events.push(...killed.events);
       continue;
     }
+    if (effect.type === 'damage-kills-this-turn') {
+      state = {
+        ...state,
+        damageBaseline: Object.fromEntries(
+          state.units.map((u) => [u.id, u.damage]),
+        ),
+      };
+      continue;
+    }
     if (effect.type === 'prevent-effect-damage') {
       state = { ...state, effectDamagePrevented: true };
       continue;

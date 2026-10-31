@@ -40,6 +40,9 @@ export interface GameState {
   readyEntryPlayers?: readonly string[];
   /** Réduction d'énergie du prochain sort de chaque joueur ce tour (Raging Firebrand). */
   nextSpellDiscount?: Readonly<Record<string, number>>;
+  /** Imperial Decree : dégâts de chaque unité au moment du décret ; toute unité dont les
+   * dégâts dépassent ensuite cette valeur (0 si absente) meurt. Effacé en fin de tour. */
+  damageBaseline?: Readonly<Record<string, number>> | null;
   /** Dégâts de sort et de capacité empêchés jusqu'à la fin du tour (Unyielding Spirit). */
   effectDamagePrevented?: boolean;
   /** Joueurs dont au moins une unité ennemie est morte ce tour (Spoils of War). */

@@ -1,3 +1,4 @@
+import { isLethal } from '../effects/lethal-units.js';
 import type {
   ActionResult,
   CardInstance,
@@ -31,7 +32,8 @@ export function resolveCombat(
   const lethal = damaged.filter(
     (unit) =>
       unit.zoneId === combat.battlefieldId &&
-      (unit.damage ?? 0) >= Math.max(1, effectiveMight(unit, state)),
+      ((unit.damage ?? 0) >= Math.max(1, effectiveMight(unit, state)) ||
+        isLethal(unit, state)),
   );
   const replaced = replaceDeaths(
     { ...state, units: damaged },
