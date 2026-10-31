@@ -58,6 +58,8 @@ export interface UnitDefinition extends PrintedMetadata {
   /** En attaque avec un ennemi Ready ici : bonus temporaire via la pile, condition revérifiée. */
   readonly onAttackReadyEnemyMightBonus?: number;
   readonly onAttackDamage?: number;
+  /** Bonus continu de Might par point de son propriétaire. */
+  readonly mightPerOwnPoint?: number;
   /** Accelerate : 1 énergie + 1 Power de cette couleur en plus pour arriver Ready. */
   readonly accelerate?: { readonly power: string };
   /** « When I hold » : points d'effet de carte quand son propriétaire tient son champ. */

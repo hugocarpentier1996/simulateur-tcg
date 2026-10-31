@@ -3,7 +3,7 @@ import type { GameState, UnitState } from '../types.js';
 import { gearMightBonus } from './gear-bonus.js';
 import { combatMightBonus } from './combat-bonus.js';
 import { runeMightBonus } from './rune-bonus.js';
-import { unitAuraMightBonus } from './unit-aura.js';
+import { selfScoreMightBonus, unitAuraMightBonus } from './unit-aura.js';
 
 /** Unité + état -> Might actuelle avec auras/équipement et Assault/Shield, sans modifier la valeur imprimée.
  * Sans état : seulement Might de base et modificateurs temporaires (compatibilité des anciens appels). */
@@ -18,6 +18,7 @@ export function effectiveMight(unit: UnitState, state?: GameState): number {
       (state ? combatMightBonus(unit, state) : 0) +
       (state ? runeMightBonus(unit, state) : 0) +
       (state ? unitAuraMightBonus(unit, state) : 0) +
+      (state ? selfScoreMightBonus(unit, state) : 0) +
       (unit.temporaryEffects ?? []).reduce(
         (sum, effect) =>
           sum + (effect.type === 'modify-might' ? effect.amount : 0),

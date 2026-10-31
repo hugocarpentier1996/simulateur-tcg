@@ -17,3 +17,13 @@ export function unitAuraMightBonus(unit: UnitState, state: GameState): number {
     return sum + (definition?.otherAlliesHereMightBonus ?? 0);
   }, 0);
 }
+
+/** Bonus personnel continu dépendant du score de son propriétaire (Draven). */
+export function selfScoreMightBonus(unit: UnitState, state: GameState): number {
+  const perPoint = state.unitDefinitions?.find(
+    (d) => d.id === unit.definitionId,
+  )?.mightPerOwnPoint;
+  if (!perPoint) return 0;
+  const score = state.players.find((p) => p.id === unit.ownerId)?.score ?? 0;
+  return perPoint * score;
+}
