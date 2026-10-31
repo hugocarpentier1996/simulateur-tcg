@@ -1,3 +1,4 @@
+import { alliesEnterReady } from './unit-aura.js';
 import type { ActionResult, GameState } from '../types.js';
 import { canSummonAt } from '../actions/unit-destination.js';
 
@@ -46,6 +47,7 @@ export function summonToken(
           damage: 0,
           ready:
             definition.entersReady === true ||
+            alliesEnterReady(state, ownerId) ||
             !!state.readyEntryPlayers?.includes(ownerId),
           token: true,
         },

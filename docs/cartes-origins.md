@@ -175,3 +175,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Scrapyard Champion — ogn-020-298
 - [x] Dangerous Duo — ogn-016-298
 - [x] Kadregrin the Infernal — ogn-038-298
+- [x] Magma Wurm — ogn-011-298

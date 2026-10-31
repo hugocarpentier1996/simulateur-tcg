@@ -27,3 +27,13 @@ export function selfScoreMightBonus(unit: UnitState, state: GameState): number {
   const score = state.players.find((p) => p.id === unit.ownerId)?.score ?? 0;
   return perPoint * score;
 }
+
+/** Joueur -> vrai si une de ses unités en jeu fait entrer Ready ses autres unités. */
+export function alliesEnterReady(state: GameState, ownerId: string): boolean {
+  return state.units.some(
+    (u) =>
+      u.ownerId === ownerId &&
+      state.unitDefinitions?.find((d) => d.id === u.definitionId)
+        ?.otherAlliesEnterReady,
+  );
+}

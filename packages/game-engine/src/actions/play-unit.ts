@@ -1,3 +1,4 @@
+import { alliesEnterReady } from '../effects/unit-aura.js';
 import { withDeflect } from '../cost/deflect.js';
 import { playTargetChoices } from '../effects/play-targets.js';
 import type { PlayEffectEntry } from '../effects/play-effect.js';
@@ -204,6 +205,7 @@ export function playUnit(
           zoneId: destinationId,
           ready:
             definition.entersReady === true ||
+            alliesEnterReady(state, card.ownerId) ||
             (definition.legionReady === true &&
               (state.cardsPlayedThisTurn?.[action.playerId] ?? 0) > 0) ||
             action.accelerate === true ||
