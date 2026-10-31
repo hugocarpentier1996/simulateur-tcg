@@ -1,3 +1,4 @@
+import { battlefieldDefinition } from './effects/battlefield.js';
 import { awardPoints } from './effects/hold-units.js';
 import {
   chooseDefenseShield,
@@ -309,11 +310,29 @@ function countMoves(state: GameState, events: readonly GameEvent[]): GameState {
     if (e.type === 'unit-moved' && e.from !== e.to)
       moves.set(e.unitId, (moves.get(e.unitId) ?? 0) + 1);
   if (!moves.size) return state;
+  // Back-Alley Bar : bonus de Might pour chaque départ du champ.
+  const bonus = new Map<string, number>();
+  for (const e of events)
+    if (e.type === 'unit-moved' && e.from !== e.to) {
+      const amount = battlefieldDefinition(state, e.from)?.moveOutMightBonus;
+      if (amount) bonus.set(e.unitId, (bonus.get(e.unitId) ?? 0) + amount);
+    }
   return {
     ...state,
     units: state.units.map((u) =>
       moves.has(u.id)
-        ? { ...u, movesThisTurn: (u.movesThisTurn ?? 0) + moves.get(u.id)! }
+        ? {
+            ...u,
+            movesThisTurn: (u.movesThisTurn ?? 0) + moves.get(u.id)!,
+            ...(bonus.has(u.id)
+              ? {
+                  temporaryEffects: [
+                    ...(u.temporaryEffects ?? []),
+                    { type: 'modify-might' as const, amount: bonus.get(u.id)! },
+                  ],
+                }
+              : {}),
+          }
         : u,
     ),
   };

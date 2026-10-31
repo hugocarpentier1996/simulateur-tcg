@@ -210,3 +210,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Mask of Foresight — ogn-060-298
 - [x] Windswept Hillock — ogn-297-298
 - [x] Vilemaw's Lair — ogn-295-298
+- [x] Back-Alley Bar — ogn-277-298

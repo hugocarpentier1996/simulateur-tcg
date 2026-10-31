@@ -1149,3 +1149,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Mask of Foresight (ogn-060) : gear ; une unité alliée seule de son camp au combat a +1 Might (portée de gear `alone-in-combat`).
 - Windswept Hillock (ogn-297) : champ ; les unités présentes ont Ganking (`grantsGanking`, pris en compte par `hasKeyword`).
 - Vilemaw's Lair (ogn-295) : champ ; aucune unité ne peut se déplacer d'ici vers une base, par mouvement ou par sort (`noMoveToBase`).
+- Back-Alley Bar (ogn-277) : champ ; une unité qui s'en déplace gagne +1 Might ce tour (`moveOutMightBonus`, appliqué par `act` avec le compteur de déplacements).
