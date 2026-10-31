@@ -68,3 +68,23 @@ export function validDestination(
         (z.kind === 'base' && z.ownerId === unit.ownerId)),
   );
 }
+
+/** Seconde cible ennemie d'un sort (duel ou frappe) -> unité adverse encore valide, avec la
+ * restriction de zone de la frappe le cas échéant. */
+export function secondaryEnemyTarget(
+  state: GameState,
+  definition: SpellBlueprint,
+  casterId: string,
+  targetId?: string,
+): UnitState | undefined {
+  const unit = duelEnemyTarget(state, casterId, targetId);
+  const strike = definition.effects.find((e) => e.type === 'strike');
+  if (
+    unit &&
+    strike?.type === 'strike' &&
+    strike.enemyZone === 'battlefield' &&
+    !state.battlefields.some((f) => f.zoneId === unit.zoneId)
+  )
+    return undefined;
+  return unit;
+}

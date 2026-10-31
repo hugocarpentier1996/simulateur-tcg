@@ -45,6 +45,9 @@ export interface SpellBlueprint {
     | { readonly type: 'damage-all-at-battlefields'; readonly amount: number }
     /** Épuise toutes les unités alliées du lanceur. */
     | { readonly type: 'exhaust-allies' }
+    /** L'unité ciblée inflige sa Might à l'unité ennemie choisie au lancement
+     * (secondaryTargetId), sans réciproque ; enemyZone restreint la zone de l'ennemie. */
+    | { readonly type: 'strike'; readonly enemyZone?: 'battlefield' }
     /** Sur le champ ciblé : modificateurs jusqu'à la fin du tour aux alliés et aux ennemis
      * du lanceur ; `minimum` borne la baisse des ennemis. */
     | {

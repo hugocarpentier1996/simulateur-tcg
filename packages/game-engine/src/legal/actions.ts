@@ -1,3 +1,4 @@
+import { secondaryEnemyTarget } from '../effects/target.js';
 import { defenseShieldActions } from '../effects/defense-shield.js';
 import { attackTargetActions } from '../effects/attack-targets.js';
 import { withDeflect, spellChosenUnits } from '../cost/deflect.js';
@@ -197,9 +198,13 @@ function* candidates(
               for (const second of ids.slice(i + 1))
                 yield { ...base, selectedUnitIds: [id, second] };
             }
-          } else if (spell.effects.some((e) => e.type === 'duel'))
+          } else if (
+            spell.effects.some((e) => e.type === 'duel' || e.type === 'strike')
+          )
             for (const enemy of state.units.filter(
-              (u) => u.ownerId !== playerId,
+              (u) =>
+                u.ownerId !== playerId &&
+                secondaryEnemyTarget(state, spell, playerId, u.id),
             ))
               yield { ...base, secondaryTargetId: enemy.id };
           else if (spell.effects.some((e) => e.type === 'move-unit'))

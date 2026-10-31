@@ -192,3 +192,4 @@ export { cleave } from './ogn/cleave.js';
 export { rideTheWind } from './ogn/ride-the-wind.js';
 export { charm } from './ogn/charm.js';
 export { siphonPower } from './ogn/siphon-power.js';
+export { lastBreath } from './ogn/last-breath.js';

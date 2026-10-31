@@ -9,7 +9,7 @@ import { validFlashSelection } from '../effects/flash.js';
 import {
   spellTarget,
   validDestination,
-  duelEnemyTarget,
+  secondaryEnemyTarget,
   validBattlefieldTarget,
 } from '../effects/target.js';
 
@@ -92,8 +92,13 @@ export function castSpell(
   )
     return { ok: false, reason: 'INVALID_TARGET' };
   if (
-    definition.effects.some((e) => e.type === 'duel') &&
-    !duelEnemyTarget(state, action.playerId, action.secondaryTargetId)
+    definition.effects.some((e) => e.type === 'duel' || e.type === 'strike') &&
+    !secondaryEnemyTarget(
+      state,
+      definition,
+      action.playerId,
+      action.secondaryTargetId,
+    )
   )
     return { ok: false, reason: 'INVALID_TARGET' };
   if (

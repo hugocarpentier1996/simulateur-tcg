@@ -11,6 +11,7 @@ import {
   validDestination,
   duelEnemyTarget,
   validBattlefieldTarget,
+  secondaryEnemyTarget,
 } from './target.js';
 import { resolveDuel } from './duel.js';
 import { drawCardForPlayer } from '../turn/draw.js';
@@ -217,6 +218,30 @@ export function resolveSpell(
       const killed = settleLethalUnits(state, new Set([target.id]));
       state = killed.state;
       events.push(...killed.events);
+    } else if (effect.type === 'strike') {
+      const enemy = secondaryEnemyTarget(
+        state,
+        entry.definition,
+        entry.casterId,
+        entry.secondaryTargetId,
+      );
+      if (!enemy) continue;
+      const amount = target.cannotDealDamage
+        ? 0
+        : effectiveMight(target, state);
+      state = {
+        ...state,
+        units: state.units.map((u) =>
+          u.id === enemy.id ? { ...u, damage: u.damage + amount } : u,
+        ),
+      };
+      events.push({
+        type: 'unit-damage',
+        context: 'strike',
+        sourceId: target.id,
+        unitId: enemy.id,
+        amount,
+      });
     } else if (effect.type === 'duel') {
       const enemy = duelEnemyTarget(
         state,

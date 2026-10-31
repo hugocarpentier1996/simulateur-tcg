@@ -569,7 +569,7 @@ export type GameEvent =
   /** Dégâts infligés directement par une unité hors combat, distincts d'un sort/capacité. */
   | {
       type: 'unit-damage';
-      context: 'duel';
+      context: 'duel' | 'strike';
       sourceId: string;
       unitId: string;
       amount: number;
