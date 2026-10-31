@@ -413,6 +413,23 @@ export function resolveSpell(
       const moved = moveUnit(state, mover, fieldId);
       state = moved.state;
       events.push(...moved.events);
+    } else if (effect.type === 'double-might-temporary') {
+      const amount = effectiveMight(target, state);
+      state = {
+        ...state,
+        units: state.units.map((u) =>
+          u.id === target.id
+            ? {
+                ...u,
+                temporary: true,
+                temporaryEffects: [
+                  ...(u.temporaryEffects ?? []),
+                  { type: 'modify-might' as const, amount },
+                ],
+              }
+            : u,
+        ),
+      };
     } else if (effect.type === 'match-ally-might') {
       const other = otherAlly(
         state,

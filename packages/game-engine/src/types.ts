@@ -343,6 +343,8 @@ export interface UnitState {
   backline?: boolean;
   stunned?: boolean;
   cannotDealDamage?: boolean;
+  /** Temporary : tuée au début de la Beginning de son contrôleur, avant le score. */
+  temporary?: boolean;
   /** Déplacements effectués ce tour (événements unit-moved), remis à zéro en fin de tour. */
   movesThisTurn?: number;
 }

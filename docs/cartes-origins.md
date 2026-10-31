@@ -180,3 +180,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Pit Crew — ogn-091-298
 - [x] Convergent Mutation — ogn-108-298
 - [x] Darius — ogn-027-298
+- [x] Last Stand — ogn-069-298

@@ -35,6 +35,8 @@ export type SpellEffect =
   | { readonly type: 'exhaust-allies' }
   /** Détruit tous les équipements en jeu (cimetière de leur propriétaire). */
   | { readonly type: 'kill-all-gear' }
+  /** Double la Might actuelle de la cible ce tour et lui donne Temporary. */
+  | { readonly type: 'double-might-temporary' }
   /** Ce tour, la Might de la cible monte à celle de l'autre unité alliée secondaryTargetId. */
   | { readonly type: 'match-ally-might' }
   /** X (Power quelconque payé au lancement) dégâts aux unités ennemies du champ ciblé. */

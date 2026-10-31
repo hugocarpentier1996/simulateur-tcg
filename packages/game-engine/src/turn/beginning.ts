@@ -1,3 +1,4 @@
+import { settleLethalUnits } from '../effects/lethal-units.js';
 import { queueHoldChannel } from '../effects/hold-channel.js';
 import { queueHoldUnits } from '../effects/hold-units.js';
 import type { ActionResult, GameEvent, GameState } from '../types.js';
@@ -8,15 +9,26 @@ import { scoreBattlefield } from '../scoring/battlefield.js';
  * la conquête. Arrête les gains dès la victoire. Le contrôle fourni fait autorité ;
  * aucun Showdown ne doit être actif. Les champs suivent leur ordre dans l'état. */
 export function scoreHolding(
-  state: GameState,
+  input: GameState,
 ): Extract<ActionResult, { ok: true }> {
+  let state = input;
   const playerId = state.activePlayerId;
+  // Temporary : ses unités meurent avant le score.
+  const temporary = new Set(
+    state.units
+      .filter((u) => u.ownerId === playerId && u.temporary)
+      .map((u) => u.id),
+  );
+  const killed = temporary.size
+    ? settleLethalUnits(state, temporary)
+    : { state, events: [] as GameEvent[] };
+  state = killed.state;
   const scored = state.scoredBattlefields[playerId] ?? [];
   const fields = state.battlefields.filter(
     (field) =>
       field.controllerId === playerId && !scored.includes(field.zoneId),
   );
-  const events: GameEvent[] = [];
+  const events: GameEvent[] = [...killed.events];
   let current = state;
   for (const field of fields) {
     if (current.result) break;
