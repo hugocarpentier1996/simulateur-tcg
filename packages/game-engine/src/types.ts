@@ -339,6 +339,8 @@ export interface UnitBlueprint {
   readonly onPlayBattlefieldDamage?: number;
   /** À la mise en jeu, récupérer le sort choisi de son cimetière via la pile. */
   readonly onPlayReturnSpell?: boolean;
+  /** À la mise en jeu, récupérer l'unité choisie de son cimetière (champ returnSpellId). */
+  readonly onPlayReturnUnit?: boolean;
   /** Au lancement d'un sort de coût imprimé suffisant : bonus personnel pour le tour, via la pile. */
   readonly onExpensiveSpell?: {
     readonly minimumEnergy: number;

@@ -142,8 +142,9 @@ export function playUnit(
       ownerId: card.ownerId,
       effect: definition.onPlayEffect,
     });
-  if (definition.onPlayReturnSpell) {
-    const choices = recoverableSpells(state, action.playerId);
+  if (definition.onPlayReturnSpell || definition.onPlayReturnUnit) {
+    const cardKind = definition.onPlayReturnUnit ? 'unit' : 'spell';
+    const choices = recoverableSpells(state, action.playerId, cardKind);
     if (
       action.returnSpellId
         ? !choices.includes(action.returnSpellId)
@@ -154,6 +155,7 @@ export function playUnit(
       kind: 'return-spell',
       sourceId: card.id,
       ownerId: card.ownerId,
+      ...(cardKind === 'unit' ? { cardKind } : {}),
       ...(action.returnSpellId ? { targetId: action.returnSpellId } : {}),
     });
   }

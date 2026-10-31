@@ -7,14 +7,17 @@ export interface ReturnSpellEntry {
   sourceId: string;
   ownerId: string;
   targetId?: string;
+  /** Type de carte récupérée ; sort par défaut. */
+  cardKind?: 'spell' | 'unit';
 }
 /** État + propriétaire -> IDs des sorts de son cimetière, dans l'ordre des cartes. */
 export function recoverableSpells(
   state: GameState,
   playerId: string,
+  kind: 'spell' | 'unit' = 'spell',
 ): string[] {
   return state.cards
-    .filter((c) => graveyardCard(state, playerId, c.id, 'spell'))
+    .filter((c) => graveyardCard(state, playerId, c.id, kind))
     .map((c) => c.id);
 }
 /** Effet -> carte choisie en main si encore légale. Source indépendante ; aucune pioche,
@@ -29,11 +32,18 @@ export function resolveReturnSpell(
   const valid =
     hand &&
     entry.targetId &&
-    recoverableSpells(state, entry.ownerId).includes(entry.targetId);
+    recoverableSpells(state, entry.ownerId, entry.cardKind).includes(
+      entry.targetId,
+    );
   return {
     ok: true,
     state: valid
-      ? returnGraveyardCard(state, entry.ownerId, entry.targetId!, 'spell')
+      ? returnGraveyardCard(
+          state,
+          entry.ownerId,
+          entry.targetId!,
+          entry.cardKind ?? 'spell',
+        )
       : state,
     events: [
       { type: 'unit-play-effect-resolved', sourceId: entry.sourceId },

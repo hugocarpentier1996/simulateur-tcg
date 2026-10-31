@@ -122,9 +122,18 @@ function* candidates(
               unit,
               zone.id,
             ))
-              for (const returnSpellId of unit.onPlayReturnSpell
-                ? recoverableSpells(state, playerId).length
-                  ? recoverableSpells(state, playerId)
+              for (const returnSpellId of unit.onPlayReturnSpell ||
+              unit.onPlayReturnUnit
+                ? recoverableSpells(
+                    state,
+                    playerId,
+                    unit.onPlayReturnUnit ? 'unit' : 'spell',
+                  ).length
+                  ? recoverableSpells(
+                      state,
+                      playerId,
+                      unit.onPlayReturnUnit ? 'unit' : 'spell',
+                    )
                   : [undefined]
                 : [undefined])
                 yield {
