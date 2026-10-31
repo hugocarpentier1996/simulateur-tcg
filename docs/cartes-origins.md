@@ -120,3 +120,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Carnivorous Snapvine — ogn-149-298
 - [x] Watchful Sentry — ogn-096-298
 - [x] Soaring Scout — ogn-216-298
+- [x] Machine Evangel — ogn-239-298

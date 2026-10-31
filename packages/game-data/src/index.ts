@@ -164,3 +164,4 @@ export { solariChief } from './ogn/solari-chief.js';
 export { carnivorousSnapvine } from './ogn/carnivorous-snapvine.js';
 export { watchfulSentry } from './ogn/watchful-sentry.js';
 export { soaringScout } from './ogn/soaring-scout.js';
+export { machineEvangel } from './ogn/machine-evangel.js';
