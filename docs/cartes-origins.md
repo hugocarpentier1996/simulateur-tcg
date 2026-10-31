@@ -208,3 +208,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Dragon's Rage — ogn-258-298
 - [x] Showstopper — ogn-270-298
 - [x] Mask of Foresight — ogn-060-298
+- [x] Windswept Hillock — ogn-297-298

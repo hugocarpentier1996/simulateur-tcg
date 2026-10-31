@@ -10,6 +10,8 @@ export interface BattlefieldDefinition extends PrintedMetadata {
   readonly effectDamageBonus?: number;
   readonly defenseShield?: number;
   readonly holdChannel?: number;
+  /** Les unités présentes ont Ganking (Windswept Hillock). */
+  readonly grantsGanking?: boolean;
 }
 /** Définition de confiance -> copie immuable, indépendante de son contrôleur. */
 export function defineBattlefield(

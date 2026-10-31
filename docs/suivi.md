@@ -1147,3 +1147,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Dragon's Rage (ogn-258) : Power hybride Calm/Body ; déplace une unité ennemie puis elle et une autre unité ennemie déjà à destination s'infligent leur Might (effet `fight-at-destination`, helper `destinationFoe`).
 - Showstopper (ogn-270) : Power hybride Body/Order ; buffe un allié de sa base puis le déplace sur un champ (effets `buff-unit` et `move-to-battlefield`).
 - Mask of Foresight (ogn-060) : gear ; une unité alliée seule de son camp au combat a +1 Might (portée de gear `alone-in-combat`).
+- Windswept Hillock (ogn-297) : champ ; les unités présentes ont Ganking (`grantsGanking`, pris en compte par `hasKeyword`).

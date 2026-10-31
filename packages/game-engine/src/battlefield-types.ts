@@ -6,4 +6,6 @@ export interface BattlefieldBlueprint {
   readonly effectDamageBonus?: number;
   readonly defenseShield?: number;
   readonly holdChannel?: number;
+  /** Les unités présentes ont Ganking (Windswept Hillock). */
+  readonly grantsGanking?: boolean;
 }
