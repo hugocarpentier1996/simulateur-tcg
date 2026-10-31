@@ -33,3 +33,12 @@ export function isStunned(unit: UnitState): boolean {
     !!unit.temporaryEffects?.some((effect) => effect.type === 'stun')
   );
 }
+
+/** Unité + état -> vrai si elle ne subit actuellement aucun dégât (Kayn après deux
+ * déplacements ce tour). Les sources de dégâts appliquent alors 0. */
+export function preventsDamage(unit: UnitState, state: GameState): boolean {
+  const threshold = state.unitDefinitions?.find(
+    (d) => d.id === unit.definitionId,
+  )?.noDamageAfterMoves;
+  return threshold !== undefined && (unit.movesThisTurn ?? 0) >= threshold;
+}

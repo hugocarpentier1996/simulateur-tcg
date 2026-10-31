@@ -1,5 +1,5 @@
 import type { ActionResult, GameState, UnitState } from '../types.js';
-import { effectiveMight } from './modifiers.js';
+import { effectiveMight, preventsDamage } from './modifiers.js';
 
 /** Deux unités valides + état après bonus -> dégâts réciproques simultanés.
  * Chaque unité est la source : ni dégâts de sort/capacité ni dégâts de combat.
@@ -24,7 +24,9 @@ export function resolveDuel(
       ...state,
       units: state.units.map((u) => {
         const hit = hits.find((h) => h.unitId === u.id);
-        return hit ? { ...u, damage: u.damage + hit.amount } : u;
+        return hit && !preventsDamage(u, state)
+          ? { ...u, damage: u.damage + hit.amount }
+          : u;
       }),
     },
     events: hits.map((hit) => ({

@@ -166,3 +166,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Jinx — ogn-030-298
 - [x] Undercover Agent — ogn-178-298
 - [x] Ekko — ogn-110-298
+- [x] Kayn — ogn-189-298

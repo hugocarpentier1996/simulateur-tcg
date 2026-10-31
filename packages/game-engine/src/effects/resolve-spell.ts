@@ -1,6 +1,6 @@
 import { channelForPlayer } from '../turn/supplies.js';
 import { returnGraveyardCard } from './graveyard-card.js';
-import { effectiveMight } from './modifiers.js';
+import { effectiveMight, preventsDamage } from './modifiers.js';
 import { leaveBoard } from './leave-board.js';
 import { getBattlefieldSides } from '../battlefield-areas.js';
 import { dealAreaDamage } from './area-damage.js';
@@ -338,7 +338,9 @@ export function resolveSpell(
       state = {
         ...state,
         units: state.units.map((u) =>
-          u.id === enemy.id ? { ...u, damage: u.damage + amount } : u,
+          u.id === enemy.id && !preventsDamage(u, state)
+            ? { ...u, damage: u.damage + amount }
+            : u,
         ),
       };
       events.push({

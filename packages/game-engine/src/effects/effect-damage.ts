@@ -1,3 +1,4 @@
+import { preventsDamage } from './modifiers.js';
 import { battlefieldDefinition } from './battlefield.js';
 import type { GameState, UnitState, ActionResult } from '../types.js';
 import { spellAbilityDamageBonus } from './damage-bonus.js';
@@ -25,7 +26,9 @@ export function dealEffectDamage(
     state: {
       ...state,
       units: state.units.map((u) =>
-        ids.has(u.id) ? { ...u, damage: u.damage + damage(u.id) } : u,
+        ids.has(u.id) && !preventsDamage(u, state)
+          ? { ...u, damage: u.damage + damage(u.id) }
+          : u,
       ),
     },
     events: [...ids].map((unitId) =>

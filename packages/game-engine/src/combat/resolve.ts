@@ -7,7 +7,7 @@ import type {
 } from '../types.js';
 import { finishCombat } from './finish.js';
 import { deathTriggers } from '../effects/death.js';
-import { effectiveMight } from '../effects/modifiers.js';
+import { effectiveMight, preventsDamage } from '../effects/modifiers.js';
 import { replaceDeaths } from '../effects/replace-death.js';
 
 type Combat = Extract<NonNullable<GameState['showdown']>, { kind: 'combat' }>;
@@ -24,7 +24,7 @@ export function resolveCombat(
   );
   const damage = new Map(allocations.map((a) => [a.targetId, a.amount]));
   const damaged = state.units.map((unit) =>
-    damage.has(unit.id)
+    damage.has(unit.id) && !preventsDamage(unit, state)
       ? { ...unit, damage: (unit.damage ?? 0) + damage.get(unit.id)! }
       : unit,
   );

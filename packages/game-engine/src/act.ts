@@ -11,7 +11,12 @@ import { chooseDiscard } from './actions/choose-discard.js';
 import { queueMovementEffects } from './effects/movement-triggers.js';
 import { startNextTurn } from './turn/progression.js';
 import { queueConquestLegends } from './effects/conquest-legends.js';
-import type { GameState, GameAction, ActionResult } from './types.js';
+import type {
+  GameState,
+  GameAction,
+  ActionResult,
+  GameEvent,
+} from './types.js';
 import { activateSpellEnergy } from './actions/activate-spell-energy.js';
 import { tapRune, recycleRune } from './actions/manual-runes.js';
 import { activateGear } from './actions/activate-gear.js';
@@ -91,7 +96,8 @@ export function act(state: GameState, action: GameAction): ActionResult {
     ...queued.events,
     ...moved.events,
   ];
-  const attacked = queueAttackEffects(state, entered, events);
+  const counted = countMoves(entered, events);
+  const attacked = queueAttackEffects(state, counted, events);
   const next = queueDefenseShield(state, attacked.state, events);
   events.push(...attacked.events);
   if (
@@ -223,4 +229,21 @@ function dispatch(state: GameState, action: GameAction): ActionResult {
       return unhandled;
     }
   }
+}
+
+/** Événements unit-moved effectifs -> compteur de déplacements du tour sur chaque unité. */
+function countMoves(state: GameState, events: readonly GameEvent[]): GameState {
+  const moves = new Map<string, number>();
+  for (const e of events)
+    if (e.type === 'unit-moved' && e.from !== e.to)
+      moves.set(e.unitId, (moves.get(e.unitId) ?? 0) + 1);
+  if (!moves.size) return state;
+  return {
+    ...state,
+    units: state.units.map((u) =>
+      moves.has(u.id)
+        ? { ...u, movesThisTurn: (u.movesThisTurn ?? 0) + moves.get(u.id)! }
+        : u,
+    ),
+  };
 }

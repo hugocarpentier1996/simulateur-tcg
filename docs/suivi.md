@@ -1103,3 +1103,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Jinx (ogn-030) : Accelerate, Assault 2 ; à la mise en jeu, défausse 2 cartes choisies (`onPlayEffect` `discard` ; `pendingDiscard` généralisé avec `remaining`/`draw`, le loot reste le cas par défaut).
 - Undercover Agent (ogn-178) : Deathknell — défausse 2 cartes choisies puis pioche 2 (DeathEffect `discard-draw`, via `startDiscard`).
 - Ekko (ogn-110) : Accelerate ; Deathknell — se recycle (cimetière -> sous le deck) pour redresser les runes de son propriétaire (DeathEffect `recycle-self-ready-runes`, appliqué automatiquement).
+- Kayn (ogn-189) : Ganking ; ne subit aucun dégât après deux déplacements dans le tour (compteur `movesThisTurn` tenu par `act` à partir des événements `unit-moved`, remis à zéro en fin de tour ; `preventsDamage` appliqué au combat, aux dégâts d'effet, aux duels et aux frappes).

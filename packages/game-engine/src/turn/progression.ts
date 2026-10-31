@@ -28,11 +28,11 @@ export function startNextTurn(
     ...(state.readyEntryPlayers ? { readyEntryPlayers: [] } : {}),
     ...(state.cardsPlayedThisTurn ? { cardsPlayedThisTurn: {} } : {}),
     ...(state.pendingTurnEnd ? { pendingTurnEnd: false } : {}),
-    units: end.state.units.map((unit) => ({
-      ...unit,
-      damage: 0,
-      temporaryEffects: [],
-    })),
+    units: end.state.units.map((current) => {
+      const unit = { ...current, damage: 0, temporaryEffects: [] };
+      delete unit.movesThisTurn;
+      return unit;
+    }),
     priorityPlayerId: nextPlayerId,
     activePlayerId: nextPlayerId,
     scoredBattlefields: Object.fromEntries(

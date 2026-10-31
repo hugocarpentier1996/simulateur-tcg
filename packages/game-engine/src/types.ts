@@ -165,6 +165,8 @@ export interface UnitBlueprint {
   readonly tags?: readonly string[];
   /** Exception de mise en jeu : champ entièrement vide en plus des destinations ordinaires. */
   readonly canPlayToOpenBattlefield?: boolean;
+  /** Ne subit aucun dégât après s'être déplacé au moins ce nombre de fois ce tour (Kayn). */
+  readonly noDamageAfterMoves?: number;
   /** Legion : « when you play me, ready me » si une autre carte a été jouée ce tour.
    * Hypothèse de prototype : appliqué à l'entrée en jeu, sans passer par la pile. */
   readonly legionReady?: boolean;
@@ -313,6 +315,8 @@ export interface UnitState {
   backline?: boolean;
   stunned?: boolean;
   cannotDealDamage?: boolean;
+  /** Déplacements effectués ce tour (événements unit-moved), remis à zéro en fin de tour. */
+  movesThisTurn?: number;
 }
 
 /** Choix du joueur : runes tap pour l'énergie, puis recyclées pour le Power.

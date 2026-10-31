@@ -210,3 +210,4 @@ export { darius } from './ogn/darius.js';
 export { jinx } from './ogn/jinx.js';
 export { undercoverAgent } from './ogn/undercover-agent.js';
 export { ekko } from './ogn/ekko.js';
+export { kayn } from './ogn/kayn.js';

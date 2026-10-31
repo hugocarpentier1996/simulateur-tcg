@@ -17,6 +17,8 @@ export interface UnitDefinition extends PrintedMetadata {
   /** Bonus continu par instance de dégâts des sorts et capacités du propriétaire. */
   /** Exception de mise en jeu : champ entièrement vide en plus des destinations ordinaires. */
   readonly canPlayToOpenBattlefield?: boolean;
+  /** Ne subit aucun dégât après s'être déplacé au moins ce nombre de fois ce tour (Kayn). */
+  readonly noDamageAfterMoves?: number;
   /** Legion : « when you play me, ready me » si une autre carte a été jouée ce tour.
    * Hypothèse de prototype : appliqué à l'entrée en jeu, sans passer par la pile. */
   readonly legionReady?: boolean;
