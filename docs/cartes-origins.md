@@ -130,3 +130,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Seal of Unity — ogn-245-298
 - [x] Energy Conduit — ogn-098-298
 - [x] Anivia — ogn-148-298
+- [x] Warwick — ogn-159-298
