@@ -249,3 +249,4 @@ export { vanguardCaptain } from './ogn/vanguard-captain.js';
 export { heraldOfScales } from './ogn/herald-of-scales.js';
 export { imperialDecree } from './ogn/imperial-decree.js';
 export { noxianGuillotine } from './ogn/noxian-guillotine.js';
+export { dragonsRage } from './ogn/dragons-rage.js';

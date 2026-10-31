@@ -20,6 +20,7 @@ import {
   stackSpellTarget,
   allyToMove,
   otherAlly,
+  destinationFoe,
 } from './target.js';
 import { resolveDuel } from './duel.js';
 import { drawCardForPlayer } from '../turn/draw.js';
@@ -427,6 +428,19 @@ export function resolveSpell(
       const moved = moveUnit(state, mover, fieldId);
       state = moved.state;
       events.push(...moved.events);
+    } else if (effect.type === 'fight-at-destination') {
+      const mover = state.units.find((u) => u.id === target.id);
+      const foe = destinationFoe(
+        state,
+        entry.casterId,
+        target.id,
+        mover?.zoneId,
+        entry.secondaryTargetId,
+      );
+      if (!mover || !foe || mover.zoneId !== entry.destinationId) continue;
+      const fought = resolveDuel(state, mover, foe);
+      state = fought.state;
+      events.push(...fought.events);
     } else if (effect.type === 'guillotine') {
       if ((state.cardsPlayedThisTurn?.[entry.casterId] ?? 0) >= 2) {
         const killed = settleLethalUnits(state, new Set([target.id]));

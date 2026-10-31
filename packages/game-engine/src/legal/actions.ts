@@ -3,6 +3,7 @@ import {
   stackSpellTarget,
   allyToMove,
   otherAlly,
+  destinationFoe,
 } from '../effects/target.js';
 import { defenseShieldActions } from '../effects/defense-shield.js';
 import { attackTargetActions } from '../effects/attack-targets.js';
@@ -238,7 +239,21 @@ function* candidates(
                 secondaryEnemyTarget(state, spell, playerId, u.id),
             ))
               yield { ...base, secondaryTargetId: enemy.id };
-          else if (spell.effects.some((e) => e.type === 'match-ally-might')) {
+          else if (
+            spell.effects.some((e) => e.type === 'fight-at-destination')
+          ) {
+            const unit = state.units.find((u) => u.id === target.id);
+            for (const zone of unit ? destinations : [])
+              if (zone.id !== unit!.zoneId)
+                for (const foe of state.units.filter((u) =>
+                  destinationFoe(state, playerId, unit!.id, zone.id, u.id),
+                ))
+                  yield {
+                    ...base,
+                    destinationId: zone.id,
+                    secondaryTargetId: foe.id,
+                  };
+          } else if (spell.effects.some((e) => e.type === 'match-ally-might')) {
             for (const ally of state.units.filter((u) =>
               otherAlly(state, playerId, target.id, u.id),
             ))

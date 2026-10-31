@@ -147,3 +147,20 @@ export function otherAlly(
     (u) => u.id === allyId && u.ownerId === casterId && u.id !== targetId,
   );
 }
+
+/** Dragon's Rage : autre unité ennemie déjà présente à la destination annoncée. */
+export function destinationFoe(
+  state: GameState,
+  casterId: string,
+  targetId: string,
+  destinationId?: string,
+  foeId?: string,
+): UnitState | undefined {
+  return state.units.find(
+    (u) =>
+      u.id === foeId &&
+      u.id !== targetId &&
+      u.ownerId !== casterId &&
+      u.zoneId === destinationId,
+  );
+}

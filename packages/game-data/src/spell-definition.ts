@@ -35,6 +35,9 @@ export type SpellEffect =
   | { readonly type: 'exhaust-allies' }
   /** Détruit tous les équipements en jeu (cimetière de leur propriétaire). */
   | { readonly type: 'kill-all-gear' }
+  /** Après move-unit : la cible et l'autre unité ennemie secondaryTargetId, présente à la
+   * destination, s'infligent leur Might (comme un duel). */
+  | { readonly type: 'fight-at-destination' }
   /** La cible meurt la prochaine fois qu'elle subit des dégâts ce tour ; Legion (une autre
    * carte jouée par le lanceur ce tour) : elle meurt aussitôt. */
   | { readonly type: 'guillotine' }
