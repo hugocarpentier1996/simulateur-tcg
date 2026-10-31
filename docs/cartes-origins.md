@@ -112,3 +112,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Grand Strategem — ogn-233-298
 - [x] Challenge — ogn-128-298
 - [x] Whiteflame Protector — ogn-082-298
+- [x] Riptide Rex — ogn-092-298

@@ -156,3 +156,4 @@ export { rebuke } from './ogn/rebuke.js';
 export { grandStrategem } from './ogn/grand-strategem.js';
 export { challenge } from './ogn/challenge.js';
 export { whiteflameProtector } from './ogn/whiteflame-protector.js';
+export { riptideRex } from './ogn/riptide-rex.js';
