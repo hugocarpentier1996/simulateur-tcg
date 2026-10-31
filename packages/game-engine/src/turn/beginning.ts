@@ -1,3 +1,4 @@
+import { awardPoints } from '../effects/hold-units.js';
 import { battlefieldDefinition } from '../effects/battlefield.js';
 import { settleLethalUnits } from '../effects/lethal-units.js';
 import { queueHoldChannel, queueHoldDraw } from '../effects/hold-channel.js';
@@ -12,8 +13,9 @@ import { scoreBattlefield } from '../scoring/battlefield.js';
 export function scoreHolding(
   input: GameState,
 ): Extract<ActionResult, { ok: true }> {
-  let state = input;
-  const playerId = state.activePlayerId;
+  const playerId = input.activePlayerId;
+  const first = firstBeginning(input, playerId);
+  let state = first.state;
   // Temporary : ses unités meurent avant le score.
   const temporary = new Set(
     state.units
@@ -30,7 +32,7 @@ export function scoreHolding(
     (field) =>
       field.controllerId === playerId && !scored.includes(field.zoneId),
   );
-  const events: GameEvent[] = [...killed.events];
+  const events: GameEvent[] = [...first.events, ...killed.events];
   let current = state;
   for (const field of fields) {
     if (current.result) break;
@@ -86,4 +88,33 @@ function recycleTrash(state: GameState, playerId: string): GameState {
       ...recycled.map((c) => ({ ...c, zoneId: deck.id })),
     ],
   };
+}
+
+/** Première Beginning du joueur -> effets des champs en jeu (The Arena's Greatest : 1 point),
+ * puis inscription du joueur ; ensuite plus rien. */
+function firstBeginning(
+  state: GameState,
+  playerId: string,
+): { state: GameState; events: GameEvent[] } {
+  if (
+    state.firstBeginningDone?.includes(playerId) ||
+    !state.battlefields.some(
+      (f) => battlefieldDefinition(state, f.zoneId)?.firstBeginning,
+    )
+  )
+    return { state, events: [] };
+  let next: GameState = {
+    ...state,
+    firstBeginningDone: [...(state.firstBeginningDone ?? []), playerId],
+  };
+  const events: GameEvent[] = [];
+  for (const field of state.battlefields) {
+    const effect = battlefieldDefinition(state, field.zoneId)?.firstBeginning;
+    if (effect === 'point') {
+      const awarded = awardPoints(next, playerId, 1, field.zoneId);
+      next = awarded.state;
+      events.push(...awarded.events);
+    }
+  }
+  return { state: next, events };
 }

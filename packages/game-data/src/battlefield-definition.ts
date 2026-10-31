@@ -14,6 +14,8 @@ export interface BattlefieldDefinition extends PrintedMetadata {
   readonly holdDraw?: number;
   /** Conquête : le conquérant défausse 1 puis pioche 1, via la pile. */
   readonly conquerLoot?: boolean;
+  /** Début de la première Beginning de chaque joueur : 1 point (The Arena's Greatest). */
+  readonly firstBeginning?: 'point';
   /** Tenue avec au moins ce nombre d'unités alliées ici : victoire immédiate. */
   readonly holdWinUnits?: number;
   /** Conquête : le conquérant redressera ce nombre de runes à la fin du tour. */

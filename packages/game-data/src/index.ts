@@ -261,3 +261,4 @@ export { aspirantsClimb } from './ogn/aspirants-climb.js';
 export { zaunWarrens } from './ogn/zaun-warrens.js';
 export { targonsPeak } from './ogn/targons-peak.js';
 export { theGrandPlaza } from './ogn/the-grand-plaza.js';
+export { theArenasGreatest } from './ogn/the-arenas-greatest.js';

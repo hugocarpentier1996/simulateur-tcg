@@ -217,3 +217,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Zaun Warrens — ogn-298-298
 - [x] Targon's Peak — ogn-289-298
 - [x] The Grand Plaza — ogn-293-298
+- [x] The Arena's Greatest — ogn-290-298

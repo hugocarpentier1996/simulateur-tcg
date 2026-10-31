@@ -1156,3 +1156,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Zaun Warrens (ogn-298) : champ ; le conquérir fait défausser 1 puis piocher 1 via la pile (`conquerLoot`, entrée de loot existante).
 - Targon's Peak (ogn-289) : champ ; le conquérir fait redresser 2 runes à la fin du tour, via la pile (`endTurnReadyRunes`, Tap d'abord).
 - The Grand Plaza (ogn-293) : champ ; le tenir avec 7 unités alliées ou plus fait gagner la partie (`holdWinUnits`, résultat `GRAND_PLAZA`, appliqué sans pile).
+- The Arena's Greatest (ogn-290) : champ ; au début de la première Beginning de chaque joueur, il gagne 1 point (`firstBeginning`, registre `firstBeginningDone`).
