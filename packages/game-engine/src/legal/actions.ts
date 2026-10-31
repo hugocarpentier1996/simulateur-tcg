@@ -1,4 +1,8 @@
-import { secondaryEnemyTarget, stackSpellTarget } from '../effects/target.js';
+import {
+  secondaryEnemyTarget,
+  stackSpellTarget,
+  allyToMove,
+} from '../effects/target.js';
 import { defenseShieldActions } from '../effects/defense-shield.js';
 import { attackTargetActions } from '../effects/attack-targets.js';
 import { withDeflect, spellChosenUnits } from '../cost/deflect.js';
@@ -224,7 +228,18 @@ function* candidates(
                 secondaryEnemyTarget(state, spell, playerId, u.id),
             ))
               yield { ...base, secondaryTargetId: enemy.id };
-          else if (spell.effects.some((e) => e.type === 'move-unit'))
+          else if (
+            spell.effects.some((e) => e.type === 'move-ally-to-target')
+          ) {
+            yield base;
+            const unit = state.units.find((u) => u.id === target.id);
+            for (const ally of unit
+              ? state.units.filter((u) =>
+                  allyToMove(state, playerId, unit, u.id),
+                )
+              : [])
+              yield { ...base, secondaryTargetId: ally.id };
+          } else if (spell.effects.some((e) => e.type === 'move-unit'))
             for (const zone of destinations)
               yield { ...base, destinationId: zone.id };
           else yield base;

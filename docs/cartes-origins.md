@@ -156,3 +156,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Defy — ogn-045-298
 - [x] Find Your Center — ogn-047-298
 - [x] Sky Splitter — ogn-014-298
+- [x] Zenith Blade — ogn-262-298

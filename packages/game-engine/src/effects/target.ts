@@ -111,3 +111,17 @@ export function stackSpellTarget(
   }
   return undefined;
 }
+
+/** Allié à déplacer vers le champ de la cible (Zenith Blade) -> unité du lanceur située
+ * ailleurs que sur ce champ ; undefined sinon. */
+export function allyToMove(
+  state: GameState,
+  casterId: string,
+  target: UnitState,
+  allyId?: string,
+): UnitState | undefined {
+  return state.units.find(
+    (u) =>
+      u.id === allyId && u.ownerId === casterId && u.zoneId !== target.zoneId,
+  );
+}

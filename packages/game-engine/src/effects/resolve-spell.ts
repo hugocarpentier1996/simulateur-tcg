@@ -4,7 +4,12 @@ import { effectiveMight } from './modifiers.js';
 import { leaveBoard } from './leave-board.js';
 import { getBattlefieldSides } from '../battlefield-areas.js';
 import { dealAreaDamage } from './area-damage.js';
-import type { ActionResult, GameEvent, GameState } from '../types.js';
+import type {
+  ActionResult,
+  GameEvent,
+  GameState,
+  UnitState,
+} from '../types.js';
 import type { SpellEntry } from '../spell-types.js';
 import {
   spellTarget,
@@ -13,6 +18,7 @@ import {
   validBattlefieldTarget,
   secondaryEnemyTarget,
   stackSpellTarget,
+  allyToMove,
 } from './target.js';
 import { resolveDuel } from './duel.js';
 import { drawCardForPlayer } from '../turn/draw.js';
@@ -346,45 +352,22 @@ export function resolveSpell(
           u.id === target.id ? { ...u, ready: true } : u,
         ),
       };
+    } else if (effect.type === 'move-ally-to-target') {
+      const ally = allyToMove(
+        state,
+        entry.casterId,
+        target,
+        entry.secondaryTargetId,
+      );
+      if (!ally) continue;
+      const moved = moveUnit(state, ally, target.zoneId);
+      state = moved.state;
+      events.push(...moved.events);
     } else if (effect.type === 'move-unit') {
       if (!validDestination(state, target, entry.destinationId)) continue;
-      const destinationId = entry.destinationId!;
-      state = {
-        ...state,
-        units: state.units.map((u) =>
-          u.id === target.id ? { ...u, zoneId: destinationId } : u,
-        ),
-      };
-      state = {
-        ...state,
-        battlefields: state.battlefields.map((f) =>
-          f.zoneId !== state.showdown?.battlefieldId &&
-          !state.units.some(
-            (u) => u.zoneId === f.zoneId && u.ownerId === f.controllerId,
-          )
-            ? { ...f, controllerId: null }
-            : f,
-        ),
-      };
-      if (
-        destinationId !== target.zoneId &&
-        state.battlefields.some((f) => f.zoneId === destinationId) &&
-        destinationId !== state.showdown?.battlefieldId
-      ) {
-        state = {
-          ...state,
-          pendingShowdowns: [
-            ...(state.pendingShowdowns ?? []),
-            { battlefieldId: destinationId, initiatorId: target.ownerId },
-          ],
-        };
-      }
-      events.push({
-        type: 'unit-moved',
-        unitId: target.id,
-        from: target.zoneId,
-        to: destinationId,
-      });
+      const moved = moveUnit(state, target, entry.destinationId!);
+      state = moved.state;
+      events.push(...moved.events);
     } else {
       const modifier =
         effect.type === 'modify-might'
@@ -440,4 +423,52 @@ export function resolveSpell(
   });
   const settled = settleLethalUnits(state);
   return { ...settled, events: [...events, ...settled.events] };
+}
+
+/** Déplacement par sort : unité -> zone, contrôle des champs abandonnés recalculé (hors
+ * champ du showdown) et showdown en attente sur un autre champ atteint. */
+function moveUnit(
+  input: GameState,
+  target: UnitState,
+  destinationId: string,
+): { state: GameState; events: GameEvent[] } {
+  let state = input;
+  const events: GameEvent[] = [];
+  state = {
+    ...state,
+    units: state.units.map((u) =>
+      u.id === target.id ? { ...u, zoneId: destinationId } : u,
+    ),
+  };
+  state = {
+    ...state,
+    battlefields: state.battlefields.map((f) =>
+      f.zoneId !== state.showdown?.battlefieldId &&
+      !state.units.some(
+        (u) => u.zoneId === f.zoneId && u.ownerId === f.controllerId,
+      )
+        ? { ...f, controllerId: null }
+        : f,
+    ),
+  };
+  if (
+    destinationId !== target.zoneId &&
+    state.battlefields.some((f) => f.zoneId === destinationId) &&
+    destinationId !== state.showdown?.battlefieldId
+  ) {
+    state = {
+      ...state,
+      pendingShowdowns: [
+        ...(state.pendingShowdowns ?? []),
+        { battlefieldId: destinationId, initiatorId: target.ownerId },
+      ],
+    };
+  }
+  events.push({
+    type: 'unit-moved',
+    unitId: target.id,
+    from: target.zoneId,
+    to: destinationId,
+  });
+  return { state, events };
 }

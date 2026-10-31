@@ -200,3 +200,4 @@ export { windWall } from './ogn/wind-wall.js';
 export { defy } from './ogn/defy.js';
 export { findYourCenter } from './ogn/find-your-center.js';
 export { skySplitter } from './ogn/sky-splitter.js';
+export { zenithBlade } from './ogn/zenith-blade.js';

@@ -11,6 +11,7 @@ import {
   validDestination,
   secondaryEnemyTarget,
   stackSpellTarget,
+  allyToMove,
   validBattlefieldTarget,
 } from '../effects/target.js';
 
@@ -116,6 +117,13 @@ export function castSpell(
       action.playerId,
       action.secondaryTargetId,
     )
+  )
+    return { ok: false, reason: 'INVALID_TARGET' };
+  if (
+    definition.effects.some((e) => e.type === 'move-ally-to-target') &&
+    action.secondaryTargetId !== undefined &&
+    (!target ||
+      !allyToMove(state, action.playerId, target, action.secondaryTargetId))
   )
     return { ok: false, reason: 'INVALID_TARGET' };
   if (

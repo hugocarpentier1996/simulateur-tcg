@@ -64,6 +64,8 @@ export interface SpellBlueprint {
     | { readonly type: 'exhaust-allies' }
     /** Détruit tous les équipements en jeu (cimetière de leur propriétaire). */
     | { readonly type: 'kill-all-gear' }
+    /** Facultatif : déplace l'unité alliée secondaryTargetId sur le champ de l'unité ciblée. */
+    | { readonly type: 'move-ally-to-target' }
     /** Contre le sort ciblé (cible stack-spell) : retiré de la pile, au cimetière, sans effet. */
     | { readonly type: 'counter-spell' }
     /** `count` instructions « inflige amount à une unité » : selectedUnitIds en donne exactement
