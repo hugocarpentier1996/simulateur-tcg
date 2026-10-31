@@ -13,7 +13,7 @@ import type { GameAction, GameState } from '../types.js';
 import { act } from '../act.js';
 import { canSummonAt } from '../actions/unit-destination.js';
 import { recoverableSpells } from '../effects/return-spell.js';
-import { acceleratedCost } from '../actions/play-unit.js';
+import { unitCost } from '../actions/play-unit.js';
 import { findPayment } from './payment.js';
 import { resolutionChoices, setupChoices } from './choices.js';
 
@@ -111,7 +111,7 @@ function* candidates(
         const payment = findPayment(
           state,
           playerId,
-          accelerate ? acceleratedCost(unit) : unit.cost,
+          unitCost(state, playerId, unit, accelerate),
         );
         if (payment)
           for (const zone of destinations)
@@ -340,7 +340,14 @@ function targetPayment(state: GameState, action: GameAction): GameAction[] {
       : withDeflect(
           state,
           action.playerId,
-          definition.cost,
+          definition.type === 'unit'
+            ? unitCost(
+                state,
+                action.playerId,
+                definition,
+                action.type === 'play-unit' && action.accelerate === true,
+              )
+            : definition.cost,
           action.type === 'play-unit' && action.onPlayTargetId
             ? [action.onPlayTargetId]
             : [],

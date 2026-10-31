@@ -154,7 +154,7 @@ export function playUnit(
   const cost = withDeflect(
     state,
     action.playerId,
-    action.accelerate ? acceleratedCost(definition) : definition.cost,
+    unitCost(state, action.playerId, definition, action.accelerate === true),
     action.onPlayTargetId ? [action.onPlayTargetId] : [],
   );
   const payment = payCost(state, action.playerId, cost, action.payment);
@@ -238,4 +238,20 @@ export function acceleratedCost(
       [color]: (definition.cost.power[color] ?? 0) + 1,
     },
   };
+}
+
+/** Coût payable d'une unité : imprimé, + Accelerate si choisi, - réduction Legion si une
+ * autre carte a déjà été jouée ce tour. */
+export function unitCost(
+  state: GameState,
+  playerId: string,
+  definition: UnitBlueprint,
+  accelerate: boolean,
+): UnitBlueprint['cost'] {
+  const cost = accelerate ? acceleratedCost(definition) : definition.cost;
+  const legion =
+    (state.cardsPlayedThisTurn?.[playerId] ?? 0) > 0
+      ? (definition.legionEnergyReduction ?? 0)
+      : 0;
+  return legion ? { ...cost, energy: Math.max(0, cost.energy - legion) } : cost;
 }

@@ -1108,3 +1108,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Chemtech Enforcer (ogn-003) : Assault 2 ; à la mise en jeu, défausse 1 (réutilise `onPlayEffect` `discard`).
 - Jeweled Colossus (ogn-086) : Vision et Shield (mots-clés existants).
 - Retreat (ogn-104) : Réaction ; renvoie une unité alliée en main puis canalise 1 rune Tap (effets existants).
+- Noxus Hopeful (ogn-012) : Legion — coûte 2 énergie de moins (`legionEnergyReduction`, helper `unitCost` partagé par l'action et les actions légales ; corrige au passage le plan de paiement proposé pour Accelerate).
