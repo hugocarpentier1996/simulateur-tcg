@@ -6,7 +6,12 @@ export const stormbringer = defineSpell({
   name: 'Stormbringer',
   type: 'spell',
   timing: 'normal',
-  cost: { energy: 6, power: { rouge: 1, orange: 1 } },
+  cost: {
+    energy: 6,
+    power: {},
+    powerChoice: ['rouge', 'orange'],
+    powerChoiceAmount: 2,
+  },
   target: {
     kind: 'unit',
     combatRole: 'any',

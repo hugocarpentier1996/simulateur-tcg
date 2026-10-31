@@ -41,3 +41,11 @@ it('Last Breath : l’ennemi doit être sur un champ', () => {
     .map((a) => (a.type === 'cast-spell' ? a.secondaryTargetId : null));
   expect(new Set(enemies)).toEqual(new Set(['enemy']));
 });
+
+it('Last Breath : deux symboles hybrides, payables en Calm et/ou Chaos', () => {
+  const s = scenario();
+  s.resources.a = { energy: 3, power: { violet: 2 } };
+  expect(act(s, cast('enemy')).ok).toBe(true);
+  s.resources.a = { energy: 3, power: { vert: 1, rouge: 1 } };
+  expect(act(s, cast('enemy')).ok).toBe(false);
+});

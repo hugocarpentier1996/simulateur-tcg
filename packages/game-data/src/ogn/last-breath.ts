@@ -5,7 +5,12 @@ export const lastBreath = defineSpell({
   name: 'Last Breath',
   type: 'spell',
   timing: 'action',
-  cost: { energy: 3, power: { vert: 1, violet: 1 } },
+  cost: {
+    energy: 3,
+    power: {},
+    powerChoice: ['vert', 'violet'],
+    powerChoiceAmount: 2,
+  },
   target: { kind: 'unit', combatRole: 'any', allegiance: 'friendly' },
   effects: [
     { type: 'ready-unit' },

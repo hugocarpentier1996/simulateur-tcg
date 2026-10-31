@@ -5,7 +5,7 @@ export const siphonPower = defineSpell({
   name: 'Siphon Power',
   type: 'spell',
   timing: 'reaction',
-  cost: { energy: 2, power: { bleu: 1 } },
+  cost: { energy: 2, power: {}, powerChoice: ['bleu', 'jaune'] },
   target: { kind: 'battlefield' },
   effects: [
     {

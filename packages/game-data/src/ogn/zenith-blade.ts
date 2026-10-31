@@ -6,7 +6,12 @@ export const zenithBlade = defineSpell({
   name: 'Zenith Blade',
   type: 'spell',
   timing: 'action',
-  cost: { energy: 3, power: { vert: 1, jaune: 1 } },
+  cost: {
+    energy: 3,
+    power: {},
+    powerChoice: ['vert', 'jaune'],
+    powerChoiceAmount: 2,
+  },
   target: {
     kind: 'unit',
     combatRole: 'any',
