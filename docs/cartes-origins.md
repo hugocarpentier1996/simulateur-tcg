@@ -144,3 +144,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Kai'Sa — ogn-039-298
 - [x] Flurry of Blades — ogn-133-298
 - [x] Unchecked Power — ogn-123-298
+- [x] Cleave — ogn-004-298

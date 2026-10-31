@@ -293,7 +293,9 @@ export function resolveSpell(
                       ),
                     ),
             }
-          : { type: effect.type };
+          : effect.type === 'grant-assault'
+            ? { type: 'assault' as const, amount: effect.amount }
+            : { type: effect.type };
       state = {
         ...state,
         units: state.units.map((u) =>

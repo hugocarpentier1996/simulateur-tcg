@@ -272,6 +272,8 @@ export interface UnitState {
   token?: boolean;
   temporaryEffects?: (
     | { type: 'modify-might'; amount: number }
+    /** Assault accordé jusqu'à la fin du tour, compté seulement en attaque. */
+    | { type: 'assault'; amount: number }
     | { type: 'stun' }
     | { type: 'recall-on-death' }
   )[];

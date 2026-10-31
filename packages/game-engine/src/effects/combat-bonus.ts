@@ -29,9 +29,16 @@ export function combatMightBonus(unit: UnitState, state: GameState): number {
           : sum,
       0,
     );
+  const temporaryAssault = (unit.temporaryEffects ?? []).reduce(
+    (sum, e) => sum + (e.type === 'assault' ? e.amount : 0),
+    0,
+  );
   if (unit.ownerId === combat.initiatorId)
     return (
-      (definition?.assault ?? 0) + granted('otherAlliesHereAssault') + personal
+      (definition?.assault ?? 0) +
+      granted('otherAlliesHereAssault') +
+      temporaryAssault +
+      personal
     );
   if (unit.ownerId === combat.defenderId) {
     return (

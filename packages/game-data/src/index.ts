@@ -188,3 +188,4 @@ export { yasuoCalm } from './ogn/yasuo-calm.js';
 export { kaiSaFury } from './ogn/kai-sa-fury.js';
 export { flurryOfBlades } from './ogn/flurry-of-blades.js';
 export { uncheckedPower } from './ogn/unchecked-power.js';
+export { cleave } from './ogn/cleave.js';

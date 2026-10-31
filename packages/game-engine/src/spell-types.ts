@@ -45,6 +45,12 @@ export interface SpellBlueprint {
     | { readonly type: 'damage-all-at-battlefields'; readonly amount: number }
     /** Épuise toutes les unités alliées du lanceur. */
     | { readonly type: 'exhaust-allies' }
+    /** Assault temporaire (+amount en attaque) jusqu'à la fin du tour. */
+    | {
+        readonly type: 'grant-assault';
+        readonly amount: number;
+        readonly duration: 'end-of-turn';
+      }
     | { readonly type: 'return-graveyard-unit' }
     | {
         readonly type: 'channel-exhausted';
