@@ -14,7 +14,7 @@ export interface SpellBlueprint {
     | {
         readonly zone?: 'battlefield';
         readonly maximumMight?: number;
-        readonly allegiance?: 'friendly';
+        readonly allegiance?: 'friendly' | 'enemy';
         readonly kind: 'unit';
         readonly combatRole: 'any' | 'attacker';
       };

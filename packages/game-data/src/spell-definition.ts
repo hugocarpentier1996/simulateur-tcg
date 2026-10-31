@@ -106,7 +106,7 @@ export interface SpellDefinition extends PrintedMetadata {
         readonly zone?: 'battlefield';
         readonly maximumMight?: number;
         /** Absent : toute unité ; friendly : unité du lanceur, revérifiée à la résolution. */
-        readonly allegiance?: 'friendly';
+        readonly allegiance?: 'friendly' | 'enemy';
         readonly kind: 'unit';
         readonly combatRole: 'any' | 'attacker';
       };

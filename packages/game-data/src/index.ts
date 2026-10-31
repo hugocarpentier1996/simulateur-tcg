@@ -190,3 +190,4 @@ export { flurryOfBlades } from './ogn/flurry-of-blades.js';
 export { uncheckedPower } from './ogn/unchecked-power.js';
 export { cleave } from './ogn/cleave.js';
 export { rideTheWind } from './ogn/ride-the-wind.js';
+export { charm } from './ogn/charm.js';

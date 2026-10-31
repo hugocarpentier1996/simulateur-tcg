@@ -27,6 +27,8 @@ export function spellTarget(
     return undefined;
   if (definition.target.allegiance === 'friendly' && unit?.ownerId !== casterId)
     return undefined;
+  if (definition.target.allegiance === 'enemy' && unit?.ownerId === casterId)
+    return undefined;
   if (
     unit &&
     definition.target.maximumMight !== undefined &&
