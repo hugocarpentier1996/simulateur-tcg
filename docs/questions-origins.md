@@ -48,3 +48,6 @@ existantes ; seuls les nouveaux doutes utiles rejoindront le prochain lot de que
 
 - Crackshot Corsair : « here » conserve également le champ annoncé tant que sa source reste en jeu ; sa sortie du terrain annule les dégâts. Même question de déplacement interne que Noxian/Manufactor.
 - Captain Farron / Taric (hypothèse) : un Assault ou Shield accordé par une autre unité s'ajoute à la valeur imprimée de l'unité qui le reçoit.
+- Darius (hypothèse) : Legion « ready me » est appliqué à l'entrée en jeu, sans passer par la pile ni ouvrir de fenêtre de réaction.
+- Falling Star / instructions multiples (hypothèse) : chaque instruction choisit sa cible au lancement ; la même unité peut être choisie plusieurs fois.
+- Contre (Wind Wall, Defy) : le sort contré va au cimetière de son propriétaire et n'est pas « joué » (aucun déclenchement de sort joué).
