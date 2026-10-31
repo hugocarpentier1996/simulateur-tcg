@@ -251,3 +251,4 @@ export { imperialDecree } from './ogn/imperial-decree.js';
 export { noxianGuillotine } from './ogn/noxian-guillotine.js';
 export { dragonsRage } from './ogn/dragons-rage.js';
 export { showstopper } from './ogn/showstopper.js';
+export { maskOfForesight } from './ogn/mask-of-foresight.js';

@@ -14,7 +14,8 @@ export interface GearBlueprint {
   };
   readonly effects: readonly {
     readonly type: 'might-bonus';
-    readonly scope: 'allied-units' | 'attached-unit';
+    /** alone-in-combat : unité alliée seule de son camp au combat (Mask of Foresight). */
+    readonly scope: 'allied-units' | 'attached-unit' | 'alone-in-combat';
     readonly amount: number;
   }[];
 }

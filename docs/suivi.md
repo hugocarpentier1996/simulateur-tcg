@@ -1146,3 +1146,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Noxian Guillotine (ogn-254) : Action, Power hybride Fury/Order ; la cible meurt la prochaine fois qu'elle subit des dégâts ce tour (`killOnDamageAbove`, effacé en fin de tour), ou aussitôt avec Legion.
 - Dragon's Rage (ogn-258) : Power hybride Calm/Body ; déplace une unité ennemie puis elle et une autre unité ennemie déjà à destination s'infligent leur Might (effet `fight-at-destination`, helper `destinationFoe`).
 - Showstopper (ogn-270) : Power hybride Body/Order ; buffe un allié de sa base puis le déplace sur un champ (effets `buff-unit` et `move-to-battlefield`).
+- Mask of Foresight (ogn-060) : gear ; une unité alliée seule de son camp au combat a +1 Might (portée de gear `alone-in-combat`).

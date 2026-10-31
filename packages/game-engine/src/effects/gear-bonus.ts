@@ -11,7 +11,10 @@ export function gearMightBonus(unit: UnitState, state: GameState): number {
       (d) => d.id === gear.definitionId,
     );
     for (const effect of definition?.effects ?? []) {
-      if (effect.scope === 'allied-units' || gear.attachedUnitId === unit.id)
+      if (
+        effect.scope === 'allied-units' ||
+        (effect.scope === 'attached-unit' && gear.attachedUnitId === unit.id)
+      )
         bonus += effect.amount;
     }
   }

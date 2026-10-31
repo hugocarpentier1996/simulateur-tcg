@@ -4,7 +4,8 @@ import { printedMetadata, type PrintedMetadata } from './printed-metadata.js';
 /** Effet continu tant que le gear est en jeu, sans durée de fin de tour. */
 export interface GearEffect {
   readonly type: 'might-bonus';
-  readonly scope: 'allied-units' | 'attached-unit';
+  /** alone-in-combat : unité alliée seule de son camp au combat (Mask of Foresight). */
+  readonly scope: 'allied-units' | 'attached-unit' | 'alone-in-combat';
   readonly amount: number;
 }
 
