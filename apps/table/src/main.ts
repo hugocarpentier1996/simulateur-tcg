@@ -231,6 +231,10 @@ root.addEventListener('click', (event) => {
   }
   // Gear : capacité de ressource au clic, sinon sélection (options d'équipement au panneau).
   const gearId = target.closest<HTMLElement>('[data-gear]')?.dataset.gear;
+  if (gearId && isTarget(gearId)) {
+    chooseTarget(gearId);
+    return;
+  }
   if (gearId && !moves.length) {
     if (gearHasResource(session.state, gearId))
       session = useGear(session, gearId);

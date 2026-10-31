@@ -16,7 +16,8 @@
     0 0 12px #75ce8e22;
   cursor: pointer;
 }
-.unit-card.targetable {
+.unit-card.targetable,
+.gear-card.targetable {
   outline: 2px solid #f0a35e;
   outline-offset: 2px;
   box-shadow: 0 0 14px #f0a35e88;
@@ -1807,7 +1808,8 @@ button.pile.graveyard:hover .pile-face {
 }
 
 /* Ciblage : cibles déjà choisies. */
-.unit-card.picked {
+.unit-card.picked,
+.gear-card.picked {
   outline: 3px solid #e6c481;
   outline-offset: 2px;
   box-shadow: 0 0 16px #e6c481aa;

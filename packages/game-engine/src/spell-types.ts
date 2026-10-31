@@ -10,6 +10,8 @@ export interface SpellBlueprint {
   readonly target:
     | { readonly kind: 'graveyard-unit' }
     | { readonly kind: 'caster' }
+    /** Un équipement en jeu, ou le lanceur lui-même pour renoncer (« you may »). */
+    | { readonly kind: 'optional-gear' }
     | { readonly kind: 'battlefield' }
     | {
         readonly zone?: 'battlefield';
@@ -47,6 +49,8 @@ export interface SpellBlueprint {
     | { readonly type: 'exhaust-allies' }
     /** Détruit tous les équipements en jeu (cimetière de leur propriétaire). */
     | { readonly type: 'kill-all-gear' }
+    /** Détruit l'équipement ciblé (cible optional-gear ; lanceur ciblé : aucun effet). */
+    | { readonly type: 'kill-target-gear' }
     /** L'unité ciblée inflige sa Might à l'unité ennemie choisie au lancement
      * (secondaryTargetId), sans réciproque ; enemyZone restreint la zone de l'ennemie. */
     | { readonly type: 'strike'; readonly enemyZone?: 'battlefield' }

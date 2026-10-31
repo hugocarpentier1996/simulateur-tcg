@@ -88,7 +88,10 @@ export function castSpell(
         ? !validBattlefieldTarget(state, action.targetId)
         : definition.target.kind === 'caster'
           ? action.targetId !== action.playerId
-          : !target
+          : definition.target.kind === 'optional-gear'
+            ? action.targetId !== action.playerId &&
+              !state.gears?.some((g) => g.id === action.targetId)
+            : !target
   )
     return { ok: false, reason: 'INVALID_TARGET' };
   if (

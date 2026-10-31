@@ -171,6 +171,12 @@ export function resolveSpell(
       };
       continue;
     }
+    if (effect.type === 'kill-target-gear') {
+      const killed = killGears(state, [entry.targetId]);
+      state = killed.state;
+      events.push(...killed.events);
+      continue;
+    }
     if (effect.type === 'kill-all-gear') {
       const killed = killGears(
         state,

@@ -96,7 +96,7 @@ function zone(
   const gearCards = gears
     .map((g) => {
       const label = `${cardName(g.definitionId)} · ${playerName(g.ownerId)} · ${g.ready ? 'Ready' : 'Tap'}${g.attachedUnitId ? ' · équipé' : ''}`;
-      return `<div class="gear-slot"><button type="button" data-gear="${escape(g.id)}" class="gear-card ${g.ready ? 'ready' : 'tapped'}${g.attachedUnitId ? ' attached' : ''}" aria-label="${escape(label)}" title="${escape(label)}"><span class="gear-face">${art(g.definitionId, 'gear-art') || `<span class="unit-fallback">${escape(cardName(g.definitionId))}</span>`}</span></button></div>`;
+      return `<div class="gear-slot"><button type="button" data-gear="${escape(g.id)}" class="gear-card ${g.ready ? 'ready' : 'tapped'}${g.attachedUnitId ? ' attached' : ''}${destinations.includes(g.id) ? ' targetable' : ''}${picked.includes(g.id) ? ' picked' : ''}" aria-label="${escape(label)}" title="${escape(label)}"><span class="gear-face">${art(g.definitionId, 'gear-art') || `<span class="unit-fallback">${escape(cardName(g.definitionId))}</span>`}</span></button></div>`;
     })
     .join('');
   return `<section data-zone="${escape(zoneId)}" class="zone ${destinations.includes(zoneId) ? 'drop-target' : ''}${picked.includes(zoneId) ? ' picked' : ''} ${battlefield ? 'battlefield' : 'base'}"><header><h3>${escape(title)}</h3><span>${escape(subtitle)}</span></header>

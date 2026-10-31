@@ -31,7 +31,7 @@ it('chaque carte réelle implémentée possède une image locale présente, jeto
       typeof v.id === 'string' &&
       /^(ogs|ogn)-/.test(v.id),
   );
-  expect(definitions).toHaveLength(123);
+  expect(definitions).toHaveLength(124);
   for (const d of definitions) {
     expect(d.imageLocal, d.id).toMatch(/^\/cards\/[a-z0-9-]+\.png$/);
     expect(existsSync('apps/table/public' + d.imageLocal), d.id).toBe(true);

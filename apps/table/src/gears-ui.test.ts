@@ -2,11 +2,13 @@ import { expect, it } from 'vitest';
 import { spellScenario } from '../../../packages/game-engine/src/origins-test-fixtures.js';
 import {
   incinerate,
+  salvage,
   sealOfRage,
 } from '../../../packages/game-data/src/index.js';
 import {
   cardActions,
   submitCardAction,
+  targetOptions,
   useGear,
   type Session,
 } from './session.js';
@@ -47,4 +49,23 @@ it('active un gear de ressource au clic, qui se couche', () => {
   expect(used.log.at(-1)).toMatch(/Seal of Rage.*\+1 Power Fury/);
   expect(renderTable(used, null)).toContain('gear-card tapped');
   expect(useGear(used, 'seal').error).toBeTruthy();
+});
+
+it('Salvage : un gear en jeu est une cible cliquable du ciblage', () => {
+  const state = spellScenario(salvage);
+  state.gearDefinitions = [sealOfRage];
+  state.gears = [
+    {
+      id: 'seal',
+      definitionId: sealOfRage.id,
+      ownerId: 'b',
+      zoneId: 'base-b',
+      ready: true,
+    },
+  ];
+  state.resources.a = { energy: 2, power: { jaune: 1 } };
+  const s: Session = { state, history: [], log: [], error: null };
+  expect(targetOptions(s, 'spell', []).next).toContain('seal');
+  const html = renderTable(s, { cardId: 'spell', targeting: true, picks: [] });
+  expect(html).toMatch(/data-gear="seal" class="gear-card ready targetable"/);
 });
