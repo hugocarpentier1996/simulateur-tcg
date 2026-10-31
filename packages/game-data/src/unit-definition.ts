@@ -26,6 +26,8 @@ export interface UnitDefinition extends PrintedMetadata {
   readonly legionReady?: boolean;
   /** Ganking tant que l'unité est buffée (Bilgewater Bully). */
   readonly buffedGanking?: boolean;
+  /** Sur un champ : +Might par unité alliée buffée de ce champ, elle comprise (Sett). */
+  readonly mightPerBuffedAllyHere?: number;
   /** Might supplémentaire tant que l'unité est buffée (Wizened Elder). */
   readonly buffedExtraMight?: number;
   /** +Might par carte du cimetière de son propriétaire (Dr. Mundo). */

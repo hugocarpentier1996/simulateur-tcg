@@ -34,7 +34,16 @@ export function selfScoreMightBonus(unit: UnitState, state: GameState): number {
         ),
       ).length
     : 0;
-  const buffed = unit.buffed ? (definition?.buffedExtraMight ?? 0) : 0;
+  const perBuffed = definition?.mightPerBuffedAllyHere;
+  const buffed =
+    (unit.buffed ? (definition?.buffedExtraMight ?? 0) : 0) +
+    (perBuffed && state.battlefields.some((f) => f.zoneId === unit.zoneId)
+      ? perBuffed *
+        state.units.filter(
+          (u) =>
+            u.ownerId === unit.ownerId && u.zoneId === unit.zoneId && u.buffed,
+        ).length
+      : 0);
   const perPoint = definition?.mightPerOwnPoint;
   if (!perPoint) return trash + buffed;
   const score = state.players.find((p) => p.id === unit.ownerId)?.score ?? 0;
