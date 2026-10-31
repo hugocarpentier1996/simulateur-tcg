@@ -1,3 +1,4 @@
+import { startDiscard } from './loot.js';
 import { summonToken } from './summon-token.js';
 import type {
   ActionResult,
@@ -155,6 +156,16 @@ export function resolveDeathEffect(
       events.push(...drawn.events);
     }
     return { ok: true, state, events };
+  }
+  if (effect.type === 'discard-draw') {
+    const started = startDiscard(
+      state,
+      entry.ownerId,
+      entry.sourceId,
+      effect.discard,
+      effect.draw,
+    );
+    return { ...started, events: [...events, ...started.events] };
   }
   if (effect.type === 'summon-tokens-base') {
     const base = deathBaseId(state, entry.ownerId);

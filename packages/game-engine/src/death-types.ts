@@ -16,7 +16,13 @@ export type DeathEffect =
       readonly count: number;
     }
   /** Dégâts de capacité à toutes les unités du champ où l'unité est morte ; rien en base. */
-  | { readonly type: 'damage-here'; readonly amount: number };
+  | { readonly type: 'damage-here'; readonly amount: number }
+  /** Défausse `discard` cartes choisies (autant que possible), puis pioche `draw`. */
+  | {
+      readonly type: 'discard-draw';
+      readonly discard: number;
+      readonly draw: number;
+    };
 export interface DeathTrigger {
   sourceId: string;
   ownerId: string;
