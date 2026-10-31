@@ -24,6 +24,8 @@ export interface UnitDefinition extends PrintedMetadata {
   /** Legion : « when you play me, ready me » si une autre carte a été jouée ce tour.
    * Hypothèse de prototype : appliqué à l'entrée en jeu, sans passer par la pile. */
   readonly legionReady?: boolean;
+  /** Ganking tant que l'unité est buffée (Bilgewater Bully). */
+  readonly buffedGanking?: boolean;
   /** +Might par carte du cimetière de son propriétaire (Dr. Mundo). */
   readonly mightPerTrashCard?: number;
   /** Au début de la Beginning de son propriétaire, recycle ce nombre de cartes de son

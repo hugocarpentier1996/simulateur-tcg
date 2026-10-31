@@ -188,3 +188,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Sona — ogn-073-298
 - [x] Dr. Mundo — ogn-109-298
 - [x] Pit Rookie — ogn-136-298
+- [x] Bilgewater Bully — ogn-125-298

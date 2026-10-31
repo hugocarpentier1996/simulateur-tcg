@@ -1125,3 +1125,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Sona (ogn-073) : sur un champ, redresse 4 runes alliées à la fin du tour de son propriétaire, via la pile, Tap d'abord sans choix (`readyRunesAtEndAtBattlefield`, entrée `legend-ready-runes` réutilisée).
 - Dr. Mundo (ogn-109) : +1 Might par carte de son cimetière (`mightPerTrashCard`) ; au début de sa Beginning, recycle ses 3 plus anciennes cartes de cimetière (`recycleTrashAtBeginning`, sans choix).
 - Pit Rookie (ogn-136) : à la mise en jeu, buffe une autre unité alliée. Nouveau mécanisme Buff : `buffed` sur l'unité (+1 Might permanent, au plus un), helpers `buffUnit` / `spendBuff` ; la table l'indique dans l'infobulle (avec Temporary).
+- Bilgewater Bully (ogn-125) : Ganking tant qu'il est buffé (`buffedGanking`).

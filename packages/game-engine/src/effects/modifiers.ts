@@ -69,6 +69,8 @@ export function hasKeyword(
     (d) => d.id === unit.definitionId,
   );
   if (definition?.[key]) return true;
+  if (key === 'ganking' && definition?.buffedGanking && unit.buffed)
+    return true;
   if (
     key === 'ganking' &&
     definition?.ifDiscardedThisTurn?.ganking &&
