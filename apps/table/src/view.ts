@@ -431,7 +431,12 @@ function actionLabel(
       return (
         prefix +
         action.effects
-          .map((e) => target(e.sourceId) + ' → ' + target(e.destinationId))
+          .map((e) =>
+            state.pendingDeaths?.triggers.find((t) => t.sourceId === e.sourceId)
+              ?.effect.type === 'summon-token'
+              ? target(e.sourceId) + ' → ' + target(e.destinationId)
+              : target(e.sourceId),
+          )
           .join(' puis ')
       );
     case 'choose-battlefield': {

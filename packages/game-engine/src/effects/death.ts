@@ -5,7 +5,34 @@ import type {
   GameAction,
   UnitState,
 } from '../types.js';
-import type { DeathEntry, DeathTrigger } from '../death-types.js';
+import {
+  deathNeedsDestination,
+  type DeathEntry,
+  type DeathTrigger,
+} from '../death-types.js';
+import { drawCardForPlayer } from '../turn/draw.js';
+import { channelForPlayer } from '../turn/supplies.js';
+import { dealEffectDamage } from './effect-damage.js';
+import { settleLethalUnits } from './lethal-units.js';
+
+/** Base du joueur : destination conventionnelle des effets de mort sans destination. */
+export function deathBaseId(state: GameState, playerId: string): string {
+  return state.zones.find((z) => z.kind === 'base' && z.ownerId === playerId)!
+    .id;
+}
+
+function destinationValid(
+  state: GameState,
+  playerId: string,
+  own: readonly DeathTrigger[],
+  choice: { sourceId: string; destinationId: string },
+): boolean {
+  const trigger = own.find((t) => t.sourceId === choice.sourceId);
+  if (!trigger) return false;
+  return deathNeedsDestination(trigger.effect)
+    ? canSummonAt(state, playerId, choice.destinationId)
+    : choice.destinationId === deathBaseId(state, playerId);
+}
 import { canSummonAt } from '../actions/unit-destination.js';
 
 /** Morts identifiés -> déclenchements de confiance dans l'ordre attaquant puis défenseur.
@@ -18,7 +45,16 @@ export function deathTriggers(
     const effect = state.unitDefinitions?.find(
       (d) => d.id === unit.definitionId,
     )?.onDeath;
-    return effect ? [{ sourceId: unit.id, ownerId: unit.ownerId, effect }] : [];
+    return effect
+      ? [
+          {
+            sourceId: unit.id,
+            ownerId: unit.ownerId,
+            effect,
+            zoneId: unit.zoneId,
+          },
+        ]
+      : [];
   });
 }
 
@@ -39,7 +75,7 @@ export function queueDeathEffects(
     action.effects.some(
       (e) =>
         !own.some((t) => t.sourceId === e.sourceId) ||
-        !canSummonAt(state, action.playerId, e.destinationId),
+        !destinationValid(state, action.playerId, own, e),
     )
   )
     return { ok: false, reason: 'INVALID_DEATH_CHOICES' };
@@ -80,9 +116,10 @@ export function queueDeathEffects(
   };
 }
 
-/** Effet du sommet -> jeton Tap sans paiement ; vérifie à nouveau le contrôle.
- * Si la destination n'est plus légale, l'invocation est ignorée. IDs déterministes,
- * distincts des cartes existantes ; les jetons ne rejoignent pas le cimetière à leur mort. */
+/** Effet du sommet -> application selon son type, indépendante de la carte source.
+ * summon-token : jeton Tap sans paiement à la destination revérifiée (sinon ignoré).
+ * draw / channel-exhausted : pour le propriétaire. summon-tokens-base : jetons dans sa base.
+ * damage-here : dégâts de capacité aux unités du champ de la mort, morts traitées ensuite. */
 export function resolveDeathEffect(
   state: GameState,
   entry: DeathEntry,
@@ -90,11 +127,59 @@ export function resolveDeathEffect(
   const events: Extract<ActionResult, { ok: true }>['events'] = [
     { type: 'death-effect-resolved', sourceId: entry.sourceId },
   ];
-  const summoned = summonToken(
+  const effect = entry.effect;
+  if (effect.type === 'summon-token') {
+    const summoned = summonToken(
+      state,
+      entry.ownerId,
+      entry.destinationId,
+      effect.definitionId,
+    );
+    return { ...summoned, events: [...events, ...summoned.events] };
+  }
+  if (effect.type === 'draw') {
+    for (let i = 0; i < effect.count && !state.result; i++) {
+      const drawn = drawCardForPlayer(state, entry.ownerId);
+      state = drawn.state;
+      events.push(...drawn.events);
+    }
+    return { ok: true, state, events };
+  }
+  if (effect.type === 'channel-exhausted') {
+    const channeled = channelForPlayer(state, entry.ownerId, effect.count);
+    return {
+      ok: true,
+      state: channeled.state,
+      events: [...events, ...channeled.events],
+    };
+  }
+  if (effect.type === 'summon-tokens-base') {
+    const base = deathBaseId(state, entry.ownerId);
+    for (let i = 0; i < effect.count; i++) {
+      const summoned = summonToken(
+        state,
+        entry.ownerId,
+        base,
+        effect.definitionId,
+      );
+      state = summoned.state;
+      events.push(...summoned.events);
+    }
+    return { ok: true, state, events };
+  }
+  const zoneId = entry.zoneId;
+  if (!zoneId || !state.battlefields.some((f) => f.zoneId === zoneId))
+    return { ok: true, state, events };
+  const damaged = dealEffectDamage(
     state,
-    entry.ownerId,
-    entry.destinationId,
-    entry.effect.definitionId,
+    { kind: 'ability', sourceId: entry.sourceId, playerId: entry.ownerId },
+    state.units.filter((u) => u.zoneId === zoneId),
+    effect.amount,
   );
-  return { ...summoned, events: [...events, ...summoned.events] };
+  const settled = settleLethalUnits(damaged.state);
+  return {
+    ok: true,
+    state: settled.state,
+    events: [...events, ...damaged.events, ...settled.events],
+  };
 }

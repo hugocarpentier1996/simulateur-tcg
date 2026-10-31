@@ -162,3 +162,4 @@ export { harnessedDragon } from './ogn/harnessed-dragon.js';
 export { zauniteBouncer } from './ogn/zaunite-bouncer.js';
 export { solariChief } from './ogn/solari-chief.js';
 export { carnivorousSnapvine } from './ogn/carnivorous-snapvine.js';
+export { watchfulSentry } from './ogn/watchful-sentry.js';

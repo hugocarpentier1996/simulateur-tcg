@@ -90,10 +90,17 @@ export interface UnitDefinition extends PrintedMetadata {
   /** Métadonnées d'affichage, jamais chargées par le moteur. */
   readonly imageUrl?: string;
   readonly text?: string;
-  readonly onDeath?: {
-    readonly type: 'summon-token';
-    readonly definitionId: string;
-  };
+  /** Deathknell ; voir DeathEffect du moteur pour la résolution de chaque type. */
+  readonly onDeath?:
+    | { readonly type: 'summon-token'; readonly definitionId: string }
+    | { readonly type: 'draw'; readonly count: number }
+    | { readonly type: 'channel-exhausted'; readonly count: number }
+    | {
+        readonly type: 'summon-tokens-base';
+        readonly definitionId: string;
+        readonly count: number;
+      }
+    | { readonly type: 'damage-here'; readonly amount: number };
   readonly id: string;
   readonly name: string;
   readonly type: 'unit';

@@ -118,3 +118,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Zaunite Bouncer — ogn-188-298
 - [x] Solari Chief — ogn-225-298
 - [x] Carnivorous Snapvine — ogn-149-298
+- [x] Watchful Sentry — ogn-096-298

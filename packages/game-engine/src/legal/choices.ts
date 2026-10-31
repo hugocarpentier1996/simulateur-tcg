@@ -6,6 +6,8 @@ import type {
 } from '../types.js';
 import { combatPower, lethalDamage } from '../combat/allocation.js';
 import { canSummonAt } from '../actions/unit-destination.js';
+import { deathNeedsDestination } from '../death-types.js';
+import { deathBaseId } from '../effects/death.js';
 
 /** Choix de dégâts ou d'effets de mort -> candidats complets. La validation finale reste act.
  * Énumération combinatoire : prévue pour les petits plateaux du prototype, sans troncature cachée. */
@@ -15,12 +17,19 @@ export function* resolutionChoices(
 ): Generator<GameAction> {
   if (state.pendingDeaths) {
     if (state.pendingDeaths.playerOrder[0] !== playerId) return;
-    const sources = state.pendingDeaths.triggers
-      .filter((t) => t.ownerId === playerId)
-      .map((t) => t.sourceId);
-    const zones = state.zones
+    const own = state.pendingDeaths.triggers.filter(
+      (t) => t.ownerId === playerId,
+    );
+    const sources = own.map((t) => t.sourceId);
+    const summonZones = state.zones
       .filter((z) => canSummonAt(state, playerId, z.id))
       .map((z) => z.id);
+    const base = deathBaseId(state, playerId);
+    // Seule l'invocation d'un jeton choisit une destination ; les autres effets visent la base.
+    const zonesFor = (sourceId: string) =>
+      deathNeedsDestination(own.find((t) => t.sourceId === sourceId)!.effect)
+        ? summonZones
+        : [base];
     function* choose(
       left: string[],
       selected: { sourceId: string; destinationId: string }[],
@@ -30,7 +39,7 @@ export function* resolutionChoices(
         return;
       }
       for (const sourceId of left)
-        for (const destinationId of zones)
+        for (const destinationId of zonesFor(sourceId))
           yield* choose(
             left.filter((id) => id !== sourceId),
             [...selected, { sourceId, destinationId }],
