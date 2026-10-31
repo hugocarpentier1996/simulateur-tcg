@@ -235,3 +235,4 @@ export { pitRookie } from './ogn/pit-rookie.js';
 export { bilgewaterBully } from './ogn/bilgewater-bully.js';
 export { wizenedElder } from './ogn/wizened-elder.js';
 export { trifarianGloryseeker } from './ogn/trifarian-gloryseeker.js';
+export { peakGuardian } from './ogn/peak-guardian.js';

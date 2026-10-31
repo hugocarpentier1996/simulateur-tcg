@@ -1128,3 +1128,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Bilgewater Bully (ogn-125) : Ganking tant qu'il est buffé (`buffedGanking`).
 - Wizened Elder (ogn-065) : +1 Might supplémentaire tant qu'il est buffé (`buffedExtraMight`).
 - Trifarian Gloryseeker (ogn-217) : Legion — se buffe à la mise en jeu (`onPlayEffect` `buff-self`).
+- Peak Guardian (ogn-223) : se buffe puis, sur un champ, buffe les autres alliés de ce champ (`buff-self` avec `alliesHere`).
