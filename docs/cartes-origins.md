@@ -211,3 +211,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Windswept Hillock — ogn-297-298
 - [x] Vilemaw's Lair — ogn-295-298
 - [x] Back-Alley Bar — ogn-277-298
+- [x] Grove of the God-Willow — ogn-280-298

@@ -67,3 +67,30 @@ export function chooseHoldChannel(
     },
   ]);
 }
+
+/** Tenue d'un champ holdDraw -> pioche du contrôleur empilée (entrée legend-draw). */
+export function queueHoldDraw(
+  state: GameState,
+  playerId: string,
+  battlefieldId: string,
+): GameState {
+  const count = battlefieldDefinition(state, battlefieldId)?.holdDraw;
+  if (state.result || !count) return state;
+  return {
+    ...state,
+    stack: {
+      entries: [
+        ...(state.stack?.entries ?? []),
+        {
+          kind: 'legend-draw',
+          sourceId: battlefieldId,
+          ownerId: playerId,
+          count,
+        },
+      ],
+      initiatorId: state.stack?.initiatorId ?? playerId,
+      priorityPlayerId: state.activePlayerId,
+      consecutivePasses: 0,
+    },
+  };
+}
