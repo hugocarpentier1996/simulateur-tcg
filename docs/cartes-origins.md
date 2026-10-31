@@ -135,3 +135,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Legion Rearguard — ogn-010-298
 - [x] Blazing Scorcher — ogn-001-298
 - [x] Draven — ogn-028-298
+- [x] Captain Farron — ogn-015-298

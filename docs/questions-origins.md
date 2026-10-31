@@ -47,3 +47,4 @@ existantes ; seuls les nouveaux doutes utiles rejoindront le prochain lot de que
 - Le cas « here » après déplacement interne concerne aussi Faithful Manufactor ; son lieu initial est conservé provisoirement, comme Noxian.
 
 - Crackshot Corsair : « here » conserve également le champ annoncé tant que sa source reste en jeu ; sa sortie du terrain annule les dégâts. Même question de déplacement interne que Noxian/Manufactor.
+- Captain Farron / Taric (hypothèse) : un Assault ou Shield accordé par une autre unité s'ajoute à la valeur imprimée de l'unité qui le reçoit.

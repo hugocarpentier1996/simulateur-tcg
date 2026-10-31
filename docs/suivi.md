@@ -1072,3 +1072,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Legion Rearguard (ogn-010) : mécanique Accelerate (`accelerate` sur la définition, option `accelerate` de `play-unit` : +1 énergie et +1 Power du domaine, arrivée Ready). Les actions légales proposent les deux variantes quand elles sont payables ; la table l'indique dans le libellé.
 - Blazing Scorcher (ogn-001) : Accelerate (Fury).
 - Draven (ogn-028) : +1 Might par point de son propriétaire (`mightPerOwnPoint`).
+- Captain Farron (ogn-015) : les autres unités alliées de sa zone ont Assault (`otherAlliesHereAssault`). Hypothèse documentée : un Assault accordé s'ajoute à l'Assault imprimé.

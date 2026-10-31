@@ -197,6 +197,10 @@ export interface UnitBlueprint {
   /** En attaque avec un ennemi Ready ici : bonus temporaire via la pile, condition revérifiée. */
   readonly onAttackReadyEnemyMightBonus?: number;
   readonly onAttackDamage?: number;
+  /** Les autres unités alliées de sa zone ont Assault de cette valeur (cumulable). */
+  readonly otherAlliesHereAssault?: number;
+  /** Les autres unités alliées de sa zone ont Shield de cette valeur (cumulable). */
+  readonly otherAlliesHereShield?: number;
   /** Bonus continu de Might par point de son propriétaire. */
   readonly mightPerOwnPoint?: number;
   /** Accelerate : 1 énergie + 1 Power de cette couleur en plus pour arriver Ready. */

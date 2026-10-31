@@ -15,11 +15,28 @@ export function combatMightBonus(unit: UnitState, state: GameState): number {
       (u) => u.ownerId === unit.ownerId && u.zoneId === combat.battlefieldId,
     ).length === 1;
   const personal = alone ? (definition?.aloneCombatMightBonus ?? 0) : 0;
+  // Mots-clés accordés par les autres unités alliées de la zone (Captain Farron, Taric).
+  const granted = (key: 'otherAlliesHereAssault' | 'otherAlliesHereShield') =>
+    state.units.reduce(
+      (sum, source) =>
+        source.id !== unit.id &&
+        source.ownerId === unit.ownerId &&
+        source.zoneId === unit.zoneId
+          ? sum +
+            (state.unitDefinitions?.find((d) => d.id === source.definitionId)?.[
+              key
+            ] ?? 0)
+          : sum,
+      0,
+    );
   if (unit.ownerId === combat.initiatorId)
-    return (definition?.assault ?? 0) + personal;
+    return (
+      (definition?.assault ?? 0) + granted('otherAlliesHereAssault') + personal
+    );
   if (unit.ownerId === combat.defenderId) {
     return (
       (definition?.shield ?? 0) +
+      granted('otherAlliesHereShield') +
       (combat.shieldBonuses?.[unit.id] ?? 0) +
       personal +
       (alone
