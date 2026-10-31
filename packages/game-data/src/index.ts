@@ -193,3 +193,4 @@ export { rideTheWind } from './ogn/ride-the-wind.js';
 export { charm } from './ogn/charm.js';
 export { siphonPower } from './ogn/siphon-power.js';
 export { lastBreath } from './ogn/last-breath.js';
+export { thermoBeam } from './ogn/thermo-beam.js';

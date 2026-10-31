@@ -182,6 +182,8 @@ function describe(
       return `${playerName(event.playerId)} gagne ${event.amount} point(s) grâce à ${name(event.sourceId)}.`;
     case 'gear-played':
       return `${playerName(event.playerId)} pose ${name(event.gearId)}.`;
+    case 'gear-killed':
+      return `${name(event.gearId)} est détruit.`;
     case 'gear-equipped':
       return `${playerName(event.playerId)} équipe ${name(event.gearId)} sur ${name(event.unitId)}.`;
     case 'gear-resource-added':

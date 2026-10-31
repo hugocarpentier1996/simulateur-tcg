@@ -33,6 +33,8 @@ export type SpellEffect =
   | { readonly type: 'damage-all-at-battlefields'; readonly amount: number }
   /** Épuise toutes les unités alliées du lanceur. */
   | { readonly type: 'exhaust-allies' }
+  /** Détruit tous les équipements en jeu (cimetière de leur propriétaire). */
+  | { readonly type: 'kill-all-gear' }
   /** L'unité ciblée inflige sa Might à l'unité ennemie choisie au lancement
    * (secondaryTargetId), sans réciproque ; enemyZone restreint la zone de l'ennemie. */
   | { readonly type: 'strike'; readonly enemyZone?: 'battlefield' }

@@ -149,3 +149,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Charm — ogn-043-298
 - [x] Siphon Power — ogn-266-298
 - [x] Last Breath — ogn-260-298
+- [x] Thermo Beam — ogn-022-298

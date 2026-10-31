@@ -19,6 +19,7 @@ import { settleLethalUnits } from './lethal-units.js';
 import { dealSpellDamage } from './spell-damage.js';
 import { summonToken } from './summon-token.js';
 import { resolveFlash } from './flash.js';
+import { killGears } from './kill-gear.js';
 
 /** Sort payé -> effets dans l'ordre puis carte au cimetière. Aucune fenêtre au milieu
  * des instructions d'un même sort. Cible devenue illégale : effet ciblé ignoré ;
@@ -168,6 +169,15 @@ export function resolveSpell(
           };
         }),
       };
+      continue;
+    }
+    if (effect.type === 'kill-all-gear') {
+      const killed = killGears(
+        state,
+        (state.gears ?? []).map((g) => g.id),
+      );
+      state = killed.state;
+      events.push(...killed.events);
       continue;
     }
     if (effect.type === 'exhaust-allies') {

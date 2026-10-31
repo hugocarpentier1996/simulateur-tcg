@@ -1086,3 +1086,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Charm (ogn-043) : déplace une unité ennemie (nouvelle restriction de cible `allegiance: 'enemy'` pour les sorts).
 - Siphon Power (ogn-266) : Réaction ; sur un champ choisi, +1 Might aux alliés et -1 aux ennemis (minimum 1) jusqu'à la fin du tour (effet `modify-battlefield-sides`).
 - Last Breath (ogn-260) : redresse une unité alliée qui inflige sa Might à une unité ennemie sur un champ, sans réciproque (effet `strike`).
+- Thermo Beam (ogn-022) : détruit tous les équipements en jeu, posés ou attachés (effet `kill-all-gear`, helper `killGears`, event `gear-killed`).

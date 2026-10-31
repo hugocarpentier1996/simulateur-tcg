@@ -524,6 +524,7 @@ export type GameEvent =
       from: string;
       to: string;
     }
+  | { type: 'gear-killed'; gearId: string; ownerId: string }
   | { type: 'gear-detached'; gearId: string; unitId: string; zoneId: string }
   | {
       type: 'battlefield-selected';
