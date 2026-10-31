@@ -1,3 +1,4 @@
+import { channelForPlayer } from './supplies.js';
 import { awardPoints } from '../effects/hold-units.js';
 import { battlefieldDefinition } from '../effects/battlefield.js';
 import { settleLethalUnits } from '../effects/lethal-units.js';
@@ -110,6 +111,11 @@ function firstBeginning(
   const events: GameEvent[] = [];
   for (const field of state.battlefields) {
     const effect = battlefieldDefinition(state, field.zoneId)?.firstBeginning;
+    if (effect === 'channel') {
+      const channeled = channelForPlayer(next, playerId, 1, true);
+      next = channeled.state;
+      events.push(...channeled.events);
+    }
     if (effect === 'point') {
       const awarded = awardPoints(next, playerId, 1, field.zoneId);
       next = awarded.state;

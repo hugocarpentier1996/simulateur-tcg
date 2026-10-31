@@ -7,6 +7,11 @@ export interface PrintedMetadata {
   readonly imageLocal?: string;
 }
 const entries: Record<string, PrintedMetadata> = {
+  'ogn-284-298': {
+    displayName: 'Obelisk of Power',
+    tags: [],
+    imageLocal: '/cards/ogn-284-298.png',
+  },
   'ogn-290-298': {
     displayName: "The Arena's Greatest",
     tags: [],
