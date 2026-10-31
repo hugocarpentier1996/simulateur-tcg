@@ -121,11 +121,14 @@ export interface SpellDefinition extends PrintedMetadata {
   readonly type: 'spell';
   readonly optionalExhaustAlly?: boolean;
   /** Réduction d'énergie propre au sort (plancher 0), avant les réductions d'unités. */
-  readonly costReduction?: {
-    readonly kind: 'opponent-near-victory';
-    readonly within: number;
-    readonly energy: number;
-  };
+  readonly costReduction?:
+    | {
+        readonly kind: 'opponent-near-victory';
+        readonly within: number;
+        readonly energy: number;
+      }
+    /** Sky Splitter : réduite de la plus haute Might parmi les unités du lanceur. */
+    | { readonly kind: 'highest-own-might' };
   readonly timing: SpellTiming;
   readonly cost: CardCost;
   readonly target:
