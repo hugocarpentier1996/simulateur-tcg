@@ -12,6 +12,8 @@ export interface BattlefieldDefinition extends PrintedMetadata {
   readonly holdChannel?: number;
   /** Tenue : son contrôleur pioche ce nombre de cartes via la pile. */
   readonly holdDraw?: number;
+  /** Tenue : jeton de cette définition joué dans la base du contrôleur, via la pile. */
+  readonly holdSummonBase?: string;
   /** Les unités présentes ont Ganking (Windswept Hillock). */
   readonly grantsGanking?: boolean;
   /** Les unités ne peuvent pas se déplacer d'ici vers une base (Vilemaw's Lair). */

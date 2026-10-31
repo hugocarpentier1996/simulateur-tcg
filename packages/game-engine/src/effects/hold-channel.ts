@@ -68,25 +68,49 @@ export function chooseHoldChannel(
   ]);
 }
 
-/** Tenue d'un champ holdDraw -> pioche du contrôleur empilée (entrée legend-draw). */
+/** Tenue d'un champ holdDraw / holdSummonBase -> pioche (entrée legend-draw) et/ou jeton
+ * dans la base du contrôleur (entrée play-effect), empilés. */
 export function queueHoldDraw(
   state: GameState,
   playerId: string,
   battlefieldId: string,
 ): GameState {
-  const count = battlefieldDefinition(state, battlefieldId)?.holdDraw;
-  if (state.result || !count) return state;
+  const definition = battlefieldDefinition(state, battlefieldId);
+  const count = definition?.holdDraw;
+  const token = definition?.holdSummonBase;
+  const base = state.zones.find(
+    (z) => z.kind === 'base' && z.ownerId === playerId,
+  );
+  if (state.result || (!count && !(token && base))) return state;
   return {
     ...state,
     stack: {
       entries: [
         ...(state.stack?.entries ?? []),
-        {
-          kind: 'legend-draw',
-          sourceId: battlefieldId,
-          ownerId: playerId,
-          count,
-        },
+        ...(count
+          ? [
+              {
+                kind: 'legend-draw' as const,
+                sourceId: battlefieldId,
+                ownerId: playerId,
+                count,
+              },
+            ]
+          : []),
+        ...(token && base
+          ? [
+              {
+                kind: 'play-effect' as const,
+                sourceId: battlefieldId,
+                ownerId: playerId,
+                effect: {
+                  type: 'summon-base' as const,
+                  destinationId: base.id,
+                  definitionId: token,
+                },
+              },
+            ]
+          : []),
       ],
       initiatorId: state.stack?.initiatorId ?? playerId,
       priorityPlayerId: state.activePlayerId,

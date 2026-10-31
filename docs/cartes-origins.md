@@ -212,3 +212,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Vilemaw's Lair — ogn-295-298
 - [x] Back-Alley Bar — ogn-277-298
 - [x] Grove of the God-Willow — ogn-280-298
+- [x] Altar to Unity — ogn-275-298

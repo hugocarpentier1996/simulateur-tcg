@@ -1,3 +1,4 @@
+import { summonToken } from './summon-token.js';
 import { buffUnit } from './buff.js';
 import { startDiscard } from './loot.js';
 import { summonHere } from './summon-here.js';
@@ -15,6 +16,8 @@ export interface PlayEffectEntry {
   ownerId: string;
   effect:
     | { type: 'summon-here'; destinationId: string; definitionId: string }
+    /** Jeton dans la base indiquée, sans exiger que la source soit une unité en jeu. */
+    | { type: 'summon-base'; destinationId: string; definitionId: string }
     | { type: 'vision' }
     | NonNullable<UnitBlueprint['onPlayEffect']>
     | { type: 'ready-other'; targetId?: string }
@@ -37,6 +40,22 @@ export function resolvePlayEffect(
       entry.ownerId,
       entry.effect.destinationId,
       entry.effect.definitionId,
+    );
+    return {
+      ...summoned,
+      events: [
+        ...summoned.events,
+        { type: 'unit-play-effect-resolved', sourceId: entry.sourceId },
+      ],
+    };
+  }
+  if (entry.effect.type === 'summon-base') {
+    const summoned = summonToken(
+      state,
+      entry.ownerId,
+      entry.effect.destinationId,
+      entry.effect.definitionId,
+      'here',
     );
     return {
       ...summoned,
