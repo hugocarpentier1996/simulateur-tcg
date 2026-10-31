@@ -176,3 +176,4 @@ export { energyConduit } from './ogn/energy-conduit.js';
 export { anivia } from './ogn/anivia.js';
 export { warwick } from './ogn/warwick.js';
 export { ahriCalm } from './ogn/ahri-calm.js';
+export { legionRearguard } from './ogn/legion-rearguard.js';

@@ -405,6 +405,7 @@ function actionLabel(
         (action.onPlayTargetId
           ? ' · Cible : ' + target(action.onPlayTargetId)
           : '') +
+        (action.accelerate ? ' · Accelerate (arrive Ready)' : '') +
         (action.returnSpellId
           ? ' · Récupérer : ' + target(action.returnSpellId)
           : '')

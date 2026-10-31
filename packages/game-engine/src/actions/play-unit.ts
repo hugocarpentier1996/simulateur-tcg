@@ -1,7 +1,12 @@
 import { withDeflect } from '../cost/deflect.js';
 import { playTargetChoices } from '../effects/play-targets.js';
 import type { PlayEffectEntry } from '../effects/play-effect.js';
-import type { GameState, GameAction, ActionResult } from '../types.js';
+import type {
+  GameState,
+  GameAction,
+  ActionResult,
+  UnitBlueprint,
+} from '../types.js';
 import {
   recoverableSpells,
   type ReturnSpellEntry,
@@ -137,10 +142,12 @@ export function playUnit(
       ownerId: card.ownerId,
       amount: definition.onPlayBattlefieldDamage,
     });
+  if (action.accelerate && !definition.accelerate)
+    return { ok: false, reason: 'NO_ACCELERATE' };
   const cost = withDeflect(
     state,
     action.playerId,
-    definition.cost,
+    action.accelerate ? acceleratedCost(definition) : definition.cost,
     action.onPlayTargetId ? [action.onPlayTargetId] : [],
   );
   const payment = payCost(state, action.playerId, cost, action.payment);
@@ -177,6 +184,7 @@ export function playUnit(
           zoneId: destinationId,
           ready:
             definition.entersReady === true ||
+            action.accelerate === true ||
             !!state.readyEntryPlayers?.includes(card.ownerId),
           might: definition.might,
           ...(definition.tank ? { tank: true } : {}),
@@ -204,5 +212,21 @@ export function playUnit(
         ? [{ type: 'unit-play-effect-queued' as const, sourceId: card.id }]
         : []),
     ],
+  };
+}
+
+/** Coût imprimé + Accelerate : 1 énergie et 1 Power de la couleur indiquée en plus. */
+export function acceleratedCost(
+  definition: UnitBlueprint,
+): UnitBlueprint['cost'] {
+  const color = definition.accelerate?.power;
+  if (!color) return definition.cost;
+  return {
+    ...definition.cost,
+    energy: definition.cost.energy + 1,
+    power: {
+      ...definition.cost.power,
+      [color]: (definition.cost.power[color] ?? 0) + 1,
+    },
   };
 }

@@ -197,6 +197,8 @@ export interface UnitBlueprint {
   /** En attaque avec un ennemi Ready ici : bonus temporaire via la pile, condition revérifiée. */
   readonly onAttackReadyEnemyMightBonus?: number;
   readonly onAttackDamage?: number;
+  /** Accelerate : 1 énergie + 1 Power de cette couleur en plus pour arriver Ready. */
+  readonly accelerate?: { readonly power: string };
   /** « When I hold » : points d'effet de carte quand son propriétaire tient son champ. */
   readonly onHoldScore?: number;
   /** En attaquant : dégâts de capacité à toutes les unités ennemies du champ, via la pile. */
@@ -392,6 +394,8 @@ export type GameAction =
       type: 'play-unit';
       /** Cible de capacité choisie à la mise en jeu, avant réactions. */
       onPlayTargetId?: string;
+      /** Paye le coût supplémentaire Accelerate de l'unité pour qu'elle arrive Ready. */
+      accelerate?: boolean;
       /** Annie Chaos : sort choisi avant les réactions ; requis si un sort est récupérable. */
       returnSpellId?: string;
       playerId: string;

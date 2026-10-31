@@ -8,6 +8,7 @@ import type { GameAction, GameState } from '../types.js';
 import { act } from '../act.js';
 import { canSummonAt } from '../actions/unit-destination.js';
 import { recoverableSpells } from '../effects/return-spell.js';
+import { acceleratedCost } from '../actions/play-unit.js';
 import { findPayment } from './payment.js';
 import { resolutionChoices, setupChoices } from './choices.js';
 
@@ -101,29 +102,36 @@ function* candidates(
   for (const card of state.cards.filter((c) => c.ownerId === playerId)) {
     const unit = state.unitDefinitions?.find((d) => d.id === card.definitionId);
     if (unit) {
-      const payment = findPayment(state, playerId, unit.cost);
-      if (payment)
-        for (const zone of destinations)
-          for (const onPlayTargetId of playTargetChoices(
-            state,
-            card.id,
-            unit,
-            zone.id,
-          ))
-            for (const returnSpellId of unit.onPlayReturnSpell
-              ? recoverableSpells(state, playerId).length
-                ? recoverableSpells(state, playerId)
-                : [undefined]
-              : [undefined])
-              yield {
-                type: 'play-unit',
-                ...(onPlayTargetId ? { onPlayTargetId } : {}),
-                ...(returnSpellId ? { returnSpellId } : {}),
-                playerId,
-                cardId: card.id,
-                destinationId: zone.id,
-                payment,
-              };
+      for (const accelerate of unit.accelerate ? [false, true] : [false]) {
+        const payment = findPayment(
+          state,
+          playerId,
+          accelerate ? acceleratedCost(unit) : unit.cost,
+        );
+        if (payment)
+          for (const zone of destinations)
+            for (const onPlayTargetId of playTargetChoices(
+              state,
+              card.id,
+              unit,
+              zone.id,
+            ))
+              for (const returnSpellId of unit.onPlayReturnSpell
+                ? recoverableSpells(state, playerId).length
+                  ? recoverableSpells(state, playerId)
+                  : [undefined]
+                : [undefined])
+                yield {
+                  type: 'play-unit',
+                  ...(onPlayTargetId ? { onPlayTargetId } : {}),
+                  ...(accelerate ? { accelerate } : {}),
+                  ...(returnSpellId ? { returnSpellId } : {}),
+                  playerId,
+                  cardId: card.id,
+                  destinationId: zone.id,
+                  payment,
+                };
+      }
     }
     const gear = state.gearDefinitions?.find((d) => d.id === card.definitionId);
     if (gear) {
