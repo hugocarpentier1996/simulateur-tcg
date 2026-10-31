@@ -1145,3 +1145,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Correction des coûts hybrides (symbole de Power bicolore, cf. illustration) : Last Breath, Zenith Blade et Stormbringer coûtent 2 Power au choix parmi leurs deux domaines, Siphon Power 1 Power Mind ou Order (`powerChoice`).
 - Noxian Guillotine (ogn-254) : Action, Power hybride Fury/Order ; la cible meurt la prochaine fois qu'elle subit des dégâts ce tour (`killOnDamageAbove`, effacé en fin de tour), ou aussitôt avec Legion.
 - Dragon's Rage (ogn-258) : Power hybride Calm/Body ; déplace une unité ennemie puis elle et une autre unité ennemie déjà à destination s'infligent leur Might (effet `fight-at-destination`, helper `destinationFoe`).
+- Showstopper (ogn-270) : Power hybride Body/Order ; buffe un allié de sa base puis le déplace sur un champ (effets `buff-unit` et `move-to-battlefield`).

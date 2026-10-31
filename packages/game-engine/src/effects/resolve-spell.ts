@@ -1,3 +1,4 @@
+import { buffUnit } from './buff.js';
 import { channelForPlayer } from '../turn/supplies.js';
 import { returnGraveyardCard } from './graveyard-card.js';
 import { effectiveMight, preventsDamage } from './modifiers.js';
@@ -426,6 +427,15 @@ export function resolveSpell(
       const mover = state.units.find((u) => u.id === target.id);
       if (!mover) continue;
       const moved = moveUnit(state, mover, fieldId);
+      state = moved.state;
+      events.push(...moved.events);
+    } else if (effect.type === 'buff-unit') {
+      state = buffUnit(state, target.id);
+    } else if (effect.type === 'move-to-battlefield') {
+      const mover = state.units.find((u) => u.id === target.id);
+      if (!mover || !validBattlefieldTarget(state, entry.destinationId ?? ''))
+        continue;
+      const moved = moveUnit(state, mover, entry.destinationId!);
       state = moved.state;
       events.push(...moved.events);
     } else if (effect.type === 'fight-at-destination') {

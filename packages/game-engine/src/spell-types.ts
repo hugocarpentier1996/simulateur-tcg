@@ -69,6 +69,10 @@ export interface SpellBlueprint {
     | { readonly type: 'exhaust-allies' }
     /** Détruit tous les équipements en jeu (cimetière de leur propriétaire). */
     | { readonly type: 'kill-all-gear' }
+    /** Buffe la cible. */
+    | { readonly type: 'buff-unit' }
+    /** Déplace la cible vers le champ destinationId (jamais vers une base). */
+    | { readonly type: 'move-to-battlefield' }
     /** Après move-unit : la cible et l'autre unité ennemie secondaryTargetId, présente à la
      * destination, s'infligent leur Might (comme un duel). */
     | { readonly type: 'fight-at-destination' }

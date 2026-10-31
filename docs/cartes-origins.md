@@ -206,3 +206,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Imperial Decree — ogn-221-298
 - [x] Noxian Guillotine — ogn-254-298
 - [x] Dragon's Rage — ogn-258-298
+- [x] Showstopper — ogn-270-298

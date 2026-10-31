@@ -271,7 +271,9 @@ function* candidates(
               yield { ...base, secondaryTargetId: ally.id };
           } else if (
             spell.effects.some(
-              (e) => e.type === 'might-damage-enemies-then-move',
+              (e) =>
+                e.type === 'might-damage-enemies-then-move' ||
+                e.type === 'move-to-battlefield',
             )
           ) {
             for (const field of state.battlefields)

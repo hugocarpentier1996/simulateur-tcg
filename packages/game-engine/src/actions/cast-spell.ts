@@ -159,7 +159,9 @@ export function castSpell(
     return { ok: false, reason: 'INVALID_TARGET' };
   if (
     definition.effects.some(
-      (e) => e.type === 'might-damage-enemies-then-move',
+      (e) =>
+        e.type === 'might-damage-enemies-then-move' ||
+        e.type === 'move-to-battlefield',
     ) &&
     !validBattlefieldTarget(state, action.destinationId ?? '')
   )
