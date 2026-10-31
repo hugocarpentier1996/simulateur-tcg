@@ -21,6 +21,8 @@ export interface UnitDefinition extends PrintedMetadata {
   readonly mightyKeywords?: boolean;
   /** Ne subit aucun dégât après s'être déplacé au moins ce nombre de fois ce tour (Kayn). */
   readonly noDamageAfterMoves?: number;
+  /** Au troisième déplacement du tour, son propriétaire marque 1 point (sans pile). */
+  readonly scoreOnThirdMove?: boolean;
   /** Legion : « when you play me, ready me » si une autre carte a été jouée ce tour.
    * Hypothèse de prototype : appliqué à l'entrée en jeu, sans passer par la pile. */
   readonly legionReady?: boolean;

@@ -195,3 +195,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Sett — ogn-240-298
 - [x] Lee Sin — ogn-151-298
 - [x] Cithria of Cloudfield — ogn-139-298
+- [x] Yasuo — ogn-205-298

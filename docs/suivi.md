@@ -1132,3 +1132,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Sett (ogn-240, Order) : Tank ; +1 Might par unité alliée buffée de son champ (`mightPerBuffedAllyHere`).
 - Lee Sin (ogn-151, Body) : Accelerate ; les autres alliés buffés de son champ ont +2 Might (`otherBuffedAlliesHereMight`).
 - Cithria of Cloudfield (ogn-139) : se buffe quand son propriétaire joue une autre unité (`buffOnAllyPlayed`, sans pile).
+- Yasuo (ogn-205, Chaos) : Ganking ; à son troisième déplacement du tour, son propriétaire marque 1 point (`scoreOnThirdMove`, via `movesThisTurn` et `awardPoints`).

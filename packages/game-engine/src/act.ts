@@ -1,3 +1,4 @@
+import { awardPoints } from './effects/hold-units.js';
 import {
   chooseDefenseShield,
   queueDefenseShield,
@@ -122,7 +123,9 @@ export function act(state: GameState, action: GameAction): ActionResult {
       : entered,
     events,
   );
-  const attacked = queueAttackEffects(state, counted, events);
+  const scoredMoves = thirdMovePoints(entered, counted);
+  events.push(...scoredMoves.events);
+  const attacked = queueAttackEffects(state, scoredMoves.state, events);
   const next = queueDefenseShield(state, attacked.state, events);
   events.push(...attacked.events);
   if (
@@ -294,4 +297,28 @@ function secondCardTriggers(state: GameState, playerId: string): GameState {
       };
     }),
   };
+}
+
+/** Yasuo (Chaos) : unité passée à 3 déplacements ce tour -> 1 point pour son propriétaire. */
+function thirdMovePoints(
+  before: GameState,
+  state: GameState,
+): { state: GameState; events: GameEvent[] } {
+  let next = state;
+  const events: GameEvent[] = [];
+  for (const unit of state.units) {
+    const previous =
+      before.units.find((u) => u.id === unit.id)?.movesThisTurn ?? 0;
+    if (
+      previous < 3 &&
+      (unit.movesThisTurn ?? 0) >= 3 &&
+      state.unitDefinitions?.find((d) => d.id === unit.definitionId)
+        ?.scoreOnThirdMove
+    ) {
+      const awarded = awardPoints(next, unit.ownerId, 1, unit.id);
+      next = awarded.state;
+      events.push(...awarded.events);
+    }
+  }
+  return { state: next, events };
 }
