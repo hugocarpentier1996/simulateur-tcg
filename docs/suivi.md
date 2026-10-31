@@ -1106,3 +1106,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Kayn (ogn-189) : Ganking ; ne subit aucun dégât après deux déplacements dans le tour (compteur `movesThisTurn` tenu par `act` à partir des événements `unit-moved`, remis à zéro en fin de tour ; `preventsDamage` appliqué au combat, aux dégâts d'effet, aux duels et aux frappes).
 - Fiora (ogn-232) : tant qu'elle est Mighty (5+ Might), Deflect, Ganking et Shield 1 (`mightyKeywords`, helper `hasKeyword` utilisé par le déplacement et Deflect ; le Shield conditionnel est évalué sans lui-même).
 - Chemtech Enforcer (ogn-003) : Assault 2 ; à la mise en jeu, défausse 1 (réutilise `onPlayEffect` `discard`).
+- Jeweled Colossus (ogn-086) : Vision et Shield (mots-clés existants).
