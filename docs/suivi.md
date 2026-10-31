@@ -1109,3 +1109,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Jeweled Colossus (ogn-086) : Vision et Shield (mots-clés existants).
 - Retreat (ogn-104) : Réaction ; renvoie une unité alliée en main puis canalise 1 rune Tap (effets existants).
 - Noxus Hopeful (ogn-012) : Legion — coûte 2 énergie de moins (`legionEnergyReduction`, helper `unitCost` partagé par l'action et les actions légales ; corrige au passage le plan de paiement proposé pour Accelerate).
+- Scrapyard Champion (ogn-020) : Legion — à la mise en jeu, défausse 2 puis pioche 2 (`discard` avec `draw` et condition `legion`).

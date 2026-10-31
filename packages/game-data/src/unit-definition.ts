@@ -67,8 +67,14 @@ export interface UnitDefinition extends PrintedMetadata {
         readonly type: 'channel-exhausted' | 'draw';
         readonly count: number;
       }
-    /** Défausse `count` cartes choisies dans sa main (autant que possible), sans pioche. */
-    | { readonly type: 'discard'; readonly count: number }
+    /** Défausse `count` cartes choisies (autant que possible), puis pioche `draw` (0 par
+     * défaut) ; legion : seulement si une autre carte a été jouée ce tour. */
+    | {
+        readonly type: 'discard';
+        readonly count: number;
+        readonly draw?: number;
+        readonly legion?: boolean;
+      }
     /** Modificateur de Might jusqu'à la fin du tour à toutes les unités ennemies. */
     | {
         readonly type: 'weaken-enemies';

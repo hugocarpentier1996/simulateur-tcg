@@ -120,7 +120,14 @@ export function playUnit(
         ...(action.onPlayTargetId ? { targetId: action.onPlayTargetId } : {}),
       },
     });
-  if (definition.onPlayEffect)
+  if (
+    definition.onPlayEffect &&
+    !(
+      definition.onPlayEffect.type === 'discard' &&
+      definition.onPlayEffect.legion &&
+      !(state.cardsPlayedThisTurn?.[action.playerId] ?? 0)
+    )
+  )
     entries.push({
       kind: 'play-effect',
       sourceId: card.id,

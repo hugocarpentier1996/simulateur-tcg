@@ -102,7 +102,7 @@ export function resolvePlayEffect(
       entry.ownerId,
       entry.sourceId,
       entry.effect.count,
-      0,
+      entry.effect.draw ?? 0,
     );
     return {
       ...started,
