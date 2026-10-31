@@ -114,3 +114,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Whiteflame Protector — ogn-082-298
 - [x] Riptide Rex — ogn-092-298
 - [x] Solari Shieldbearer — ogn-051-298
+- [x] Harnessed Dragon — ogn-234-298

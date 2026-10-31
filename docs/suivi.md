@@ -1050,3 +1050,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Whiteflame Protector (ogn-082) : nouvel effet générique `onPlayTargetEffect` (cible d'unité choisie à la mise en jeu, restrictions allié/ennemi/champ/soi-même, effets Might, dégâts de capacité, Stun, destruction, renvoi en main). Ici +8 Might à une unité, lui-même compris ; cible disparue = aucun effet.
 - Riptide Rex (ogn-092) : à la mise en jeu, 6 dégâts à une unité ennemie sur un champ.
 - Solari Shieldbearer (ogn-051) : à la mise en jeu, Stun d'une unité jusqu'à la fin du tour.
+- Harnessed Dragon (ogn-234) : à la mise en jeu, tue une unité ennemie ; sans ennemi, aucun effet.
