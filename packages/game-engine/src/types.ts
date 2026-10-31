@@ -176,6 +176,8 @@ export interface UnitBlueprint {
         }
       | { readonly type: 'damage'; readonly amount: number }
       | { readonly type: 'stun' }
+      /** L'unité jouée et la cible s'infligent leur Might (sans effet si l'une a disparu). */
+      | { readonly type: 'fight' }
       /** Tue la cible si elle est Stun à la résolution, sinon la Stun. */
       | { readonly type: 'kill-if-stunned-else-stun' }
       | { readonly type: 'kill' }

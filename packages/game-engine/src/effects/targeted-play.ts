@@ -2,6 +2,7 @@ import type { ActionResult, GameState, UnitBlueprint } from '../types.js';
 import { dealEffectDamage } from './effect-damage.js';
 import { settleLethalUnits } from './lethal-units.js';
 import { leaveBoard } from './leave-board.js';
+import { resolveDuel } from './duel.js';
 import { effectiveMight, isStunned } from './modifiers.js';
 
 type TargetedEffect = NonNullable<
@@ -20,6 +21,12 @@ export function resolveTargetedPlay(
 ): Extract<ActionResult, { ok: true }> {
   const target = state.units.find((u) => u.id === targetId);
   if (!target) return { ok: true, state, events: [] };
+  if (effect.type === 'fight') {
+    const source = state.units.find((u) => u.id === sourceId);
+    if (!source) return { ok: true, state, events: [] };
+    const fought = resolveDuel(state, source, target);
+    return { ok: true, state: fought.state, events: fought.events };
+  }
   if (effect.type === 'damage') {
     const damaged = dealEffectDamage(
       state,

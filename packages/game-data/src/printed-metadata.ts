@@ -7,6 +7,11 @@ export interface PrintedMetadata {
   readonly imageLocal?: string;
 }
 const entries: Record<string, PrintedMetadata> = {
+  'ogn-149-298': {
+    displayName: 'Carnivorous Snapvine',
+    tags: ['Shadow Isles'],
+    imageLocal: '/cards/ogn-149-298.png',
+  },
   'ogn-225-298': {
     displayName: 'Solari Chief',
     tags: ['Mount Targon'],
