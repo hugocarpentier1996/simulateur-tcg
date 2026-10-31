@@ -108,7 +108,20 @@ export function act(state: GameState, action: GameAction): ActionResult {
     ...queued.events,
     ...moved.events,
   ];
-  const counted = countMoves(entered, events);
+  const discarders = events.flatMap((e) =>
+    e.type === 'card-discarded' ? [e.playerId] : [],
+  );
+  const counted = countMoves(
+    discarders.length
+      ? {
+          ...entered,
+          discardedThisTurn: [
+            ...new Set([...(entered.discardedThisTurn ?? []), ...discarders]),
+          ],
+        }
+      : entered,
+    events,
+  );
   const attacked = queueAttackEffects(state, counted, events);
   const next = queueDefenseShield(state, attacked.state, events);
   events.push(...attacked.events);

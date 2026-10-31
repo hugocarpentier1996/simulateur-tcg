@@ -24,6 +24,11 @@ export interface UnitDefinition extends PrintedMetadata {
   /** Legion : « when you play me, ready me » si une autre carte a été jouée ce tour.
    * Hypothèse de prototype : appliqué à l'entrée en jeu, sans passer par la pile. */
   readonly legionReady?: boolean;
+  /** Mots-clés tant que son propriétaire a défaussé une carte ce tour (Raging Soul). */
+  readonly ifDiscardedThisTurn?: {
+    readonly assault: number;
+    readonly ganking: boolean;
+  };
   /** Temporary imprimé (jetons Sprite) : l'unité entre en jeu avec Temporary. */
   readonly temporary?: boolean;
   /** Quand son propriétaire joue sa deuxième carte du tour : bonus de Might ce tour et

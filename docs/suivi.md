@@ -1121,3 +1121,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Sprite Mother (ogn-106) : à la mise en jeu, joue ici un jeton Sprite 3 Might Ready et Temporary (jeton `token-sprite`, champ `temporary` des définitions appliqué par `summonToken`).
 - Brynhir Thundersong (ogn-026) : à la mise en jeu (après réactions), les adversaires ne peuvent plus jouer de carte ce tour (`playLockedPlayers`, refus `PLAY_LOCKED` dans `act`).
 - Raging Firebrand (ogn-031) : à la mise en jeu, le prochain sort joué ce tour coûte 5 énergie de moins (`nextSpellDiscount`, appliqué par `spellCost` et consommé au lancement).
+- Raging Soul (ogn-019) : Assault et Ganking si son propriétaire a défaussé une carte ce tour (`discardedThisTurn` tenu par `act` depuis les événements `card-discarded`).

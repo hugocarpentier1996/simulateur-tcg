@@ -184,3 +184,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Sprite Mother — ogn-106-298
 - [x] Brynhir Thundersong — ogn-026-298
 - [x] Raging Firebrand — ogn-031-298
+- [x] Raging Soul — ogn-019-298

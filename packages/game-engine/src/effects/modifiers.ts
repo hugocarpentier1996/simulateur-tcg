@@ -68,5 +68,11 @@ export function hasKeyword(
     (d) => d.id === unit.definitionId,
   );
   if (definition?.[key]) return true;
+  if (
+    key === 'ganking' &&
+    definition?.ifDiscardedThisTurn?.ganking &&
+    state.discardedThisTurn?.includes(unit.ownerId)
+  )
+    return true;
   return !!definition?.mightyKeywords && effectiveMight(unit, state) >= 5;
 }

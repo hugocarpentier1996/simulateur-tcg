@@ -40,6 +40,8 @@ export interface GameState {
   readyEntryPlayers?: readonly string[];
   /** Réduction d'énergie du prochain sort de chaque joueur ce tour (Raging Firebrand). */
   nextSpellDiscount?: Readonly<Record<string, number>>;
+  /** Joueurs ayant défaussé au moins une carte ce tour (événements card-discarded). */
+  discardedThisTurn?: readonly string[];
   /** Joueurs qui ne peuvent plus jouer de carte ce tour (Brynhir Thundersong). */
   playLockedPlayers?: readonly string[];
   /** Cartes jouées (unités, sorts, gears) par joueur depuis le début du tour (Legion). */
@@ -176,6 +178,11 @@ export interface UnitBlueprint {
   /** Legion : « when you play me, ready me » si une autre carte a été jouée ce tour.
    * Hypothèse de prototype : appliqué à l'entrée en jeu, sans passer par la pile. */
   readonly legionReady?: boolean;
+  /** Mots-clés tant que son propriétaire a défaussé une carte ce tour (Raging Soul). */
+  readonly ifDiscardedThisTurn?: {
+    readonly assault: number;
+    readonly ganking: boolean;
+  };
   /** Temporary imprimé (jetons Sprite) : l'unité entre en jeu avec Temporary. */
   readonly temporary?: boolean;
   /** Quand son propriétaire joue sa deuxième carte du tour : bonus de Might ce tour et

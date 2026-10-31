@@ -28,6 +28,7 @@ export function startNextTurn(
     ...(state.readyEntryPlayers ? { readyEntryPlayers: [] } : {}),
     ...(state.cardsPlayedThisTurn ? { cardsPlayedThisTurn: {} } : {}),
     ...(state.playLockedPlayers ? { playLockedPlayers: [] } : {}),
+    ...(state.discardedThisTurn ? { discardedThisTurn: [] } : {}),
     ...(state.nextSpellDiscount ? { nextSpellDiscount: {} } : {}),
     ...(state.pendingTurnEnd ? { pendingTurnEnd: false } : {}),
     units: end.state.units.map((current) => {

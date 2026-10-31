@@ -39,6 +39,9 @@ export function combatMightBonus(unit: UnitState, state: GameState): number {
       (definition?.assault ?? 0) +
       granted('otherAlliesHereAssault') +
       temporaryAssault +
+      (state.discardedThisTurn?.includes(unit.ownerId)
+        ? (definition?.ifDiscardedThisTurn?.assault ?? 0)
+        : 0) +
       personal
     );
   if (unit.ownerId === combat.defenderId) {
