@@ -1080,3 +1080,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Yasuo (ogn-076) : en attaquant, dégâts égaux à sa Might (à la résolution) à une unité ennemie du champ.
 - Kai'Sa (ogn-039) : Accelerate (Fury) ; « When I conquer », pioche 1 (`onConquerDraw`, capacité d'unité empilée après la conquête comme celles des légendes).
 - Flurry of Blades (ogn-133) : Réaction, 1 dégât de sort à toutes les unités sur les champs (effet `damage-all-at-battlefields` ; ajout de `exhaust-allies` pour Unchecked Power).
+- Unchecked Power (ogn-123) : épuise les unités alliées puis 12 dégâts à toutes les unités sur les champs.
