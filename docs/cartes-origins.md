@@ -170,3 +170,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Fiora — ogn-232-298
 - [x] Chemtech Enforcer — ogn-003-298
 - [x] Jeweled Colossus — ogn-086-298
+- [x] Retreat — ogn-104-298

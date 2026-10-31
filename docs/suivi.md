@@ -1107,3 +1107,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Fiora (ogn-232) : tant qu'elle est Mighty (5+ Might), Deflect, Ganking et Shield 1 (`mightyKeywords`, helper `hasKeyword` utilisé par le déplacement et Deflect ; le Shield conditionnel est évalué sans lui-même).
 - Chemtech Enforcer (ogn-003) : Assault 2 ; à la mise en jeu, défausse 1 (réutilise `onPlayEffect` `discard`).
 - Jeweled Colossus (ogn-086) : Vision et Shield (mots-clés existants).
+- Retreat (ogn-104) : Réaction ; renvoie une unité alliée en main puis canalise 1 rune Tap (effets existants).
