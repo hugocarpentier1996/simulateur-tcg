@@ -212,3 +212,4 @@ export { undercoverAgent } from './ogn/undercover-agent.js';
 export { ekko } from './ogn/ekko.js';
 export { kayn } from './ogn/kayn.js';
 export { fiora } from './ogn/fiora.js';
+export { chemtechEnforcer } from './ogn/chemtech-enforcer.js';

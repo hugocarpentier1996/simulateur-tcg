@@ -168,3 +168,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Ekko — ogn-110-298
 - [x] Kayn — ogn-189-298
 - [x] Fiora — ogn-232-298
+- [x] Chemtech Enforcer — ogn-003-298
