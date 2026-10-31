@@ -1,3 +1,4 @@
+import { victoryTarget } from './victory-target.js';
 import type { ActionResult, GameEvent, GameState } from '../types.js';
 import { drawCardForPlayer } from '../turn/draw.js';
 
@@ -18,7 +19,7 @@ export function scoreBattlefield(
     return { ok: true, state, events: [] };
   const player = state.players.find((p) => p.id === playerId);
   if (!player) throw new Error('Joueur absent pour le score.');
-  const target = player.victoryTarget ?? 8;
+  const target = victoryTarget(state, player.id);
   const next: GameState = {
     ...state,
     scoredBattlefields: {

@@ -8,6 +8,8 @@ export interface BattlefieldBlueprint {
   readonly holdChannel?: number;
   /** Tenue : son contrôleur pioche ce nombre de cartes via la pile. */
   readonly holdDraw?: number;
+  /** Points supplémentaires nécessaires pour gagner tant qu'il est en jeu. */
+  readonly victoryTargetBonus?: number;
   /** Tenue : jeton de cette définition joué dans la base du contrôleur, via la pile. */
   readonly holdSummonBase?: string;
   /** Les unités présentes ont Ganking (Windswept Hillock). */

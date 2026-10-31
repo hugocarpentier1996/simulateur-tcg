@@ -1,3 +1,4 @@
+import { victoryTarget } from '../scoring/victory-target.js';
 import type { ActionResult, GameEvent, GameState } from '../types.js';
 
 /** Épuisement 1v1 -> +1 à l'adversaire ou les points manquants si rien n'est recyclable.
@@ -15,7 +16,7 @@ export function applyDeckPenalty(
       'La pénalité de deck exige un adversaire unique (règle FFA à définir).',
     );
   const opponent = opponents[0]!;
-  const target = opponent.victoryTarget ?? 8;
+  const target = victoryTarget(state, opponent.id);
   const amount = unrecoverable ? Math.max(0, target - opponent.score) : 1;
   const score = opponent.score + amount;
   const events: GameEvent[] = [

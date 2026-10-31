@@ -1,3 +1,4 @@
+import { victoryTarget } from '../scoring/victory-target.js';
 import { alliesEnterReady } from '../effects/unit-aura.js';
 import { withDeflect } from '../cost/deflect.js';
 import { playTargetChoices } from '../effects/play-targets.js';
@@ -228,7 +229,7 @@ export function playUnit(
                 (p) =>
                   p.id !== card.ownerId &&
                   p.score >=
-                    (p.victoryTarget ?? 8) -
+                    victoryTarget(state, p.id) -
                       definition.entersReadyIfOpponentWithin!,
               )) ||
             (definition.legionReady === true &&

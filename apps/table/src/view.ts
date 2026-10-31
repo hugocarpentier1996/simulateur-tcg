@@ -1,3 +1,4 @@
+import { victoryTarget } from '../../../packages/game-engine/src/scoring/victory-target.js';
 import type { PlannedMove } from './move-plan.js';
 import { cardInfo } from './catalogue.js';
 import {
@@ -320,7 +321,7 @@ export function renderTable(
       ? `Valider · ${endRunes.length} / ${runeChoice.count} runes`
       : 'Terminer le tour →';
   return `<header class="topbar"><div class="brand"><span class="brand-icon" aria-hidden="true">◇</span><div><h1>Simulateur TCG</h1><p>La table d’essai</p></div></div><div class="local-tag"><span></span> Local · 2 joueurs</div><button id="undo-action" class="quiet" data-action="undo" title="Annuler la dernière action réussie (10 maximum)" ${moves.length || session.history.length === 0 ? 'disabled' : ''}>↶ Annuler l’action (${session.history.length}/10)</button><button class="quiet" data-action="reset" ${moves.length ? 'disabled' : ''}>Nouvelle partie BO1</button><button class="quiet" data-action="bo3" ${moves.length ? 'disabled' : ''}>Choix BO3 · manche d’essai</button></header>
-    <main><section class="play-area"><div class="scoreboard">${state.players.map((p) => `<div class="player ${p.id === active ? 'active' : ''}"><span>${escape(playerName(p.id))}<small>${p.id === active ? 'Tour actif' : 'En attente'}</small></span><strong>${p.score}<small> / ${p.victoryTarget ?? 8}</small></strong></div>`).join('')}</div>
+    <main><section class="play-area"><div class="scoreboard">${state.players.map((p) => `<div class="player ${p.id === active ? 'active' : ''}"><span>${escape(playerName(p.id))}<small>${p.id === active ? 'Tour actif' : 'En attente'}</small></span><strong>${p.score}<small> / ${victoryTarget(state, p.id)}</small></strong></div>`).join('')}</div>
     <div class="turnbar"><div><span class="eyebrow">${state.result ? 'Partie terminée' : mulliganTurn ? 'Préparation · Mulligan' : state.showdown ? 'Main · Showdown en cours' : escape(state.phase === 'main' ? 'Phase principale · Main' : state.phase)}</span><h2>${state.result ? `${escape(playerName(state.result.winnerId))} gagne` : `À ${escape(playerName(active))} de jouer`}</h2></div><span class="priority">Priorité : ${escape(playerName(priority))}</span><button class="primary" data-action="end" ${!canEnd ? 'disabled' : ''}>${escape(endLabel)}</button></div>
     <div class="board">${state.players.map((p) => victoryTrack(p.id, p.score, p.id !== active)).join('')}
       ${state.players

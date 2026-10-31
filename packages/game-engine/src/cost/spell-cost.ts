@@ -1,3 +1,4 @@
+import { victoryTarget } from '../scoring/victory-target.js';
 import { effectiveMight } from '../effects/modifiers.js';
 import type { GameState, UnitBlueprint } from '../types.js';
 import type { SpellBlueprint } from '../spell-types.js';
@@ -28,7 +29,7 @@ export function spellCost(
             state.players.some(
               (p) =>
                 p.id !== playerId &&
-                p.score >= (p.victoryTarget ?? 8) - own.within,
+                p.score >= victoryTarget(state, p.id) - own.within,
             )
           ? own.energy
           : 0;

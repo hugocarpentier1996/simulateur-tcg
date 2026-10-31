@@ -1,3 +1,4 @@
+import { victoryTarget } from '../scoring/victory-target.js';
 import type { ActionResult, GameEvent, GameState } from '../types.js';
 
 /** Capacité « When I hold » d'une unité, déclenchée par une tenue effectivement scorée. */
@@ -66,7 +67,7 @@ export function awardPoints(
   if (state.result || !player || amount <= 0)
     return { ok: true, state, events: [] };
   const score = player.score + amount;
-  const target = player.victoryTarget ?? 8;
+  const target = victoryTarget(state, player.id);
   const events: GameEvent[] = [
     {
       type: 'points-gained',
