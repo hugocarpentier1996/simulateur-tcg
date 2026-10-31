@@ -55,3 +55,4 @@ existantes ; seuls les nouveaux doutes utiles rejoindront le prochain lot de que
 - Pit Crew (hypothèse) : « When you play a gear, ready me » est appliqué immédiatement à la pose du gear, sans passer par la pile.
 - Darius Fury (hypothèse) : le déclencheur « second card » s'applique immédiatement quand la carte est jouée (avant sa résolution), sans pile.
 - Sona (hypothèse) : les 4 runes redressées sont choisies automatiquement (Tap d'abord) plutôt que par le joueur.
+- Dr. Mundo (hypothèse) : les 3 cartes recyclées sont les plus anciennes du cimetière, sans choix du joueur ; l'effet s'applique sans pile au début de la Beginning.

@@ -19,6 +19,7 @@ export function scoreHolding(
       .filter((u) => u.ownerId === playerId && u.temporary)
       .map((u) => u.id),
   );
+  state = recycleTrash(state, playerId);
   const killed = temporary.size
     ? settleLethalUnits(state, temporary)
     : { state, events: [] as GameEvent[] };
@@ -39,4 +40,36 @@ export function scoreHolding(
     events.push(...result.events);
   }
   return { ok: true, state: current, events };
+}
+
+/** Dr. Mundo : chaque unité du joueur actif recycle ses cartes de cimetière les plus
+ * anciennes sous son deck. */
+function recycleTrash(state: GameState, playerId: string): GameState {
+  const count = state.units.reduce(
+    (sum, u) =>
+      u.ownerId === playerId
+        ? sum +
+          (state.unitDefinitions?.find((d) => d.id === u.definitionId)
+            ?.recycleTrashAtBeginning ?? 0)
+        : sum,
+    0,
+  );
+  const grave = state.zones.find(
+    (z) => z.kind === 'graveyard' && z.ownerId === playerId,
+  );
+  const deck = state.zones.find(
+    (z) => z.kind === 'deck' && z.ownerId === playerId,
+  );
+  if (!count || !grave || !deck) return state;
+  const recycled = state.cards
+    .filter((c) => c.zoneId === grave.id)
+    .slice(0, count);
+  if (!recycled.length) return state;
+  return {
+    ...state,
+    cards: [
+      ...state.cards.filter((c) => !recycled.includes(c)),
+      ...recycled.map((c) => ({ ...c, zoneId: deck.id })),
+    ],
+  };
 }

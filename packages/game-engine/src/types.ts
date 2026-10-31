@@ -178,6 +178,11 @@ export interface UnitBlueprint {
   /** Legion : « when you play me, ready me » si une autre carte a été jouée ce tour.
    * Hypothèse de prototype : appliqué à l'entrée en jeu, sans passer par la pile. */
   readonly legionReady?: boolean;
+  /** +Might par carte du cimetière de son propriétaire (Dr. Mundo). */
+  readonly mightPerTrashCard?: number;
+  /** Au début de la Beginning de son propriétaire, recycle ce nombre de cartes de son
+   * cimetière (les plus anciennes, sans choix ; hypothèse de prototype). */
+  readonly recycleTrashAtBeginning?: number;
   /** Sur un champ en fin de tour de son propriétaire : redresse ce nombre de runes
    * alliées (Tap d'abord, sans choix), via la pile (Sona). */
   readonly readyRunesAtEndAtBattlefield?: number;

@@ -20,12 +20,24 @@ export function unitAuraMightBonus(unit: UnitState, state: GameState): number {
 
 /** Bonus personnel continu dépendant du score de son propriétaire (Draven). */
 export function selfScoreMightBonus(unit: UnitState, state: GameState): number {
-  const perPoint = state.unitDefinitions?.find(
+  const definition = state.unitDefinitions?.find(
     (d) => d.id === unit.definitionId,
-  )?.mightPerOwnPoint;
-  if (!perPoint) return 0;
+  );
+  const trash = definition?.mightPerTrashCard
+    ? definition.mightPerTrashCard *
+      state.cards.filter((c) =>
+        state.zones.some(
+          (z) =>
+            z.id === c.zoneId &&
+            z.kind === 'graveyard' &&
+            z.ownerId === unit.ownerId,
+        ),
+      ).length
+    : 0;
+  const perPoint = definition?.mightPerOwnPoint;
+  if (!perPoint) return trash;
   const score = state.players.find((p) => p.id === unit.ownerId)?.score ?? 0;
-  return perPoint * score;
+  return trash + perPoint * score;
 }
 
 /** Joueur -> vrai si une de ses unités en jeu fait entrer Ready ses autres unités. */

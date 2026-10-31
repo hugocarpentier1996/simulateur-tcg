@@ -186,3 +186,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Raging Firebrand — ogn-031-298
 - [x] Raging Soul — ogn-019-298
 - [x] Sona — ogn-073-298
+- [x] Dr. Mundo — ogn-109-298

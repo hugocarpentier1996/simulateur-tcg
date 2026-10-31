@@ -230,3 +230,4 @@ export { brynhirThundersong } from './ogn/brynhir-thundersong.js';
 export { ragingFirebrand } from './ogn/raging-firebrand.js';
 export { ragingSoul } from './ogn/raging-soul.js';
 export { sona } from './ogn/sona.js';
+export { drMundo } from './ogn/dr-mundo.js';
