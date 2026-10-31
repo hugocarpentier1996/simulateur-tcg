@@ -1111,3 +1111,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Noxus Hopeful (ogn-012) : Legion — coûte 2 énergie de moins (`legionEnergyReduction`, helper `unitCost` partagé par l'action et les actions légales ; corrige au passage le plan de paiement proposé pour Accelerate).
 - Scrapyard Champion (ogn-020) : Legion — à la mise en jeu, défausse 2 puis pioche 2 (`discard` avec `draw` et condition `legion`).
 - Dangerous Duo (ogn-016) : Legion — à la mise en jeu, +2 Might à une unité ce tour (`onPlayTargetEffect.legion`).
+- Kadregrin the Infernal (ogn-038) : à la mise en jeu, pioche 1 par unité alliée Mighty, comptée à la résolution (`onPlayEffect` `draw-per-mighty`).

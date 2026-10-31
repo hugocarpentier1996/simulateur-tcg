@@ -96,6 +96,25 @@ export function resolvePlayEffect(
       events: [{ type: 'unit-play-effect-resolved', sourceId: entry.sourceId }],
     };
   }
+  if (entry.effect.type === 'draw-per-mighty') {
+    const count = state.units.filter(
+      (u) => u.ownerId === entry.ownerId && effectiveMight(u, state) >= 5,
+    ).length;
+    const events: Extract<ActionResult, { ok: true }>['events'] = [];
+    for (let i = 0; i < count && !state.result; i++) {
+      const drawn = drawCardForPlayer(state, entry.ownerId);
+      state = drawn.state;
+      events.push(...drawn.events);
+    }
+    return {
+      ok: true,
+      state,
+      events: [
+        ...events,
+        { type: 'unit-play-effect-resolved', sourceId: entry.sourceId },
+      ],
+    };
+  }
   if (entry.effect.type === 'discard') {
     const started = startDiscard(
       state,

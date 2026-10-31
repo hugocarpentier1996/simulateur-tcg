@@ -225,6 +225,8 @@ export interface UnitBlueprint {
         readonly draw?: number;
         readonly legion?: boolean;
       }
+    /** Pioche 1 par unité alliée Mighty (5+ Might) à la résolution. */
+    | { readonly type: 'draw-per-mighty' }
     /** Modificateur de Might jusqu'à la fin du tour à toutes les unités ennemies. */
     | {
         readonly type: 'weaken-enemies';

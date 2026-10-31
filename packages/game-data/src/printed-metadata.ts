@@ -7,6 +7,11 @@ export interface PrintedMetadata {
   readonly imageLocal?: string;
 }
 const entries: Record<string, PrintedMetadata> = {
+  'ogn-038-298': {
+    displayName: 'Kadregrin the Infernal',
+    tags: ['Dragon', 'Demacia'],
+    imageLocal: '/cards/ogn-038-298.png',
+  },
   'ogn-016-298': {
     displayName: 'Dangerous Duo',
     tags: ['Mech', 'Bandle City'],
