@@ -106,7 +106,7 @@ function zone(
         ? gearCards +
           units
             .map((u) => {
-              const label = `${cardName(u.definitionId)} · ${playerName(u.ownerId)} · ${u.ready ? 'Ready' : 'Tap'} · Might ${effectiveMight(u, state)} · ${u.damage} dégât(s)`;
+              const label = `${cardName(u.definitionId)} · ${playerName(u.ownerId)} · ${u.ready ? 'Ready' : 'Tap'} · Might ${effectiveMight(u, state)} · ${u.damage} dégât(s)${u.buffed ? ' · Buff' : ''}${u.temporary ? ' · Temporary' : ''}`;
               return `<div class="unit-slot"><button type="button" id="unit-${escape(u.id)}" data-card="${escape(u.id)}" class="unit-card ${u.ready ? 'ready' : 'tapped'}${destinations.includes(u.id) ? ' targetable' : ''}${picked.includes(u.id) ? ' picked' : ''}" aria-label="${escape(label)}" title="${escape(label)}"><span class="unit-face">${art(u.definitionId, 'unit-art') || `<span class="unit-fallback">${escape(cardName(u.definitionId))}</span>`}</span><span class="unit-might">${effectiveMight(u, state)}</span></button></div>`;
             })
             .join('')

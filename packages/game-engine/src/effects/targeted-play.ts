@@ -1,3 +1,4 @@
+import { buffUnit } from './buff.js';
 import type { ActionResult, GameState, UnitBlueprint } from '../types.js';
 import { dealEffectDamage } from './effect-damage.js';
 import { settleLethalUnits } from './lethal-units.js';
@@ -21,6 +22,8 @@ export function resolveTargetedPlay(
 ): Extract<ActionResult, { ok: true }> {
   const target = state.units.find((u) => u.id === targetId);
   if (!target) return { ok: true, state, events: [] };
+  if (effect.type === 'buff')
+    return { ok: true, state: buffUnit(state, target.id), events: [] };
   if (effect.type === 'fight') {
     const source = state.units.find((u) => u.id === sourceId);
     if (!source) return { ok: true, state, events: [] };

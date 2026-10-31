@@ -238,6 +238,8 @@ export interface UnitBlueprint {
       | { readonly type: 'fight' }
       /** Tue la cible si elle est Stun à la résolution, sinon la Stun. */
       | { readonly type: 'kill-if-stunned-else-stun' }
+      /** Buffe la cible (+1 Might permanent si elle n'a pas déjà de buff). */
+      | { readonly type: 'buff' }
       | { readonly type: 'kill' }
       | { readonly type: 'return-to-hand' };
   };
@@ -368,6 +370,8 @@ export interface UnitState {
   backline?: boolean;
   stunned?: boolean;
   cannotDealDamage?: boolean;
+  /** Buff : +1 Might permanent tant qu'elle reste en jeu ; au plus un buff. */
+  buffed?: boolean;
   /** Temporary : tuée au début de la Beginning de son contrôleur, avant le score. */
   temporary?: boolean;
   /** Déplacements effectués ce tour (événements unit-moved), remis à zéro en fin de tour. */
