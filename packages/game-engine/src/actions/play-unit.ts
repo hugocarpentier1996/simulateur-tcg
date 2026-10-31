@@ -55,7 +55,14 @@ export function playUnit(
       (z) => z.id === destinationId && z.kind === 'battlefield',
     ) &&
     !state.units.some((u) => u.zoneId === destinationId);
-  if (!canSummonAt(state, action.playerId, destinationId) && !openField)
+  const enemyField =
+    definition.canPlayToOccupiedEnemyBattlefield === true &&
+    state.battlefields.some((f) => f.zoneId === destinationId) &&
+    state.units.some(
+      (u) => u.zoneId === destinationId && u.ownerId !== action.playerId,
+    );
+  const contested = openField || enemyField;
+  if (!canSummonAt(state, action.playerId, destinationId) && !contested)
     return { ok: false, reason: 'INVALID_SUMMON_DESTINATION' };
   const entries: (ReturnSpellEntry | UnitPlayEntry | PlayEffectEntry)[] = [];
   if (
@@ -156,7 +163,7 @@ export function playUnit(
     ok: true,
     state: {
       ...payment.state,
-      ...(openField
+      ...(contested
         ? {
             pendingShowdowns: [
               ...(state.pendingShowdowns ?? []),

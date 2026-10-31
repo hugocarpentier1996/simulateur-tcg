@@ -1098,3 +1098,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Invert Timelines (ogn-201) : chaque joueur défausse sa main puis pioche 4, lanceur d'abord (effet `discard-hands-then-draw`).
 - Bullet Time (ogn-268) : Action ; coût X (`variablePower`, champ d'action `xPower`, payé en Power quelconque) pour X dégâts aux unités ennemies d'un champ ; X proposé au panneau (« X = n »).
 - Ahri (ogn-119) : en attaquant ou en défendant, -2 Might (minimum 1) à une unité ennemie ici (`onAttackTargetEffect` de type `weaken` avec `defendToo` ; les défenseurs présents au début du combat déclenchent aussi).
+- Deadbloom Predator (ogn-161) : Deflect ; peut être joué sur un champ occupé par l'ennemi, ce qui lance un combat à l'arrivée (`canPlayToOccupiedEnemyBattlefield`).

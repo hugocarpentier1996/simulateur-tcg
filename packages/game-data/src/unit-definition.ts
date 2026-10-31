@@ -17,6 +17,8 @@ export interface UnitDefinition extends PrintedMetadata {
   /** Bonus continu par instance de dégâts des sorts et capacités du propriétaire. */
   /** Exception de mise en jeu : champ entièrement vide en plus des destinations ordinaires. */
   readonly canPlayToOpenBattlefield?: boolean;
+  /** Peut être joué sur un champ occupé par des unités ennemies (Showdown à l'arrivée). */
+  readonly canPlayToOccupiedEnemyBattlefield?: boolean;
   /** Déplacement vers un champ : invoquer ce jeton ici via la pile, sans condition de contrôle. */
   readonly onMoveSummonHere?: string;
   /** Après tout déplacement : défausser une carte disponible puis piocher, via la pile. */

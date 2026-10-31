@@ -161,3 +161,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Invert Timelines — ogn-201-298
 - [x] Bullet Time — ogn-268-298
 - [x] Ahri — ogn-119-298
+- [x] Deadbloom Predator — ogn-161-298
