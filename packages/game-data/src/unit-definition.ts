@@ -109,7 +109,11 @@ export interface UnitDefinition extends PrintedMetadata {
   readonly onDeath?:
     | { readonly type: 'summon-token'; readonly definitionId: string }
     | { readonly type: 'draw'; readonly count: number }
-    | { readonly type: 'channel-exhausted'; readonly count: number }
+    | {
+        readonly type: 'channel-exhausted';
+        readonly count: number;
+        readonly draw?: number;
+      }
     | {
         readonly type: 'summon-tokens-base';
         readonly definitionId: string;

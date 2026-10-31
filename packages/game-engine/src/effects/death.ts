@@ -147,11 +147,14 @@ export function resolveDeathEffect(
   }
   if (effect.type === 'channel-exhausted') {
     const channeled = channelForPlayer(state, entry.ownerId, effect.count);
-    return {
-      ok: true,
-      state: channeled.state,
-      events: [...events, ...channeled.events],
-    };
+    state = channeled.state;
+    events.push(...channeled.events);
+    for (let i = 0; i < (effect.draw ?? 0) && !state.result; i++) {
+      const drawn = drawCardForPlayer(state, entry.ownerId);
+      state = drawn.state;
+      events.push(...drawn.events);
+    }
+    return { ok: true, state, events };
   }
   if (effect.type === 'summon-tokens-base') {
     const base = deathBaseId(state, entry.ownerId);

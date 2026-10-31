@@ -3,8 +3,12 @@
 export type DeathEffect =
   | { readonly type: 'summon-token'; readonly definitionId: string }
   | { readonly type: 'draw'; readonly count: number }
-  /** Canaliser des runes Tap. */
-  | { readonly type: 'channel-exhausted'; readonly count: number }
+  /** Canaliser des runes Tap, puis piocher `draw` cartes si indiqué. */
+  | {
+      readonly type: 'channel-exhausted';
+      readonly count: number;
+      readonly draw?: number;
+    }
   /** Jetons joués dans la base du propriétaire, sans choix de destination. */
   | {
       readonly type: 'summon-tokens-base';
