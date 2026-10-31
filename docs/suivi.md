@@ -1058,3 +1058,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Soaring Scout (ogn-216) : Deathknell, canalise 1 rune Tap.
 - Machine Evangel (ogn-239) : Deathknell, trois Recrues de 1 Might dans la base du propriétaire.
 - Kog'Maw (ogn-190) : Deathknell, 4 dégâts de capacité à toutes les unités du champ où il est mort (aucun effet s'il meurt en base).
+- Seal of Rage (ogn-040) : capacité ADD des gears (`resourceAbility`, action `activate-gear`) : Tap, +1 Power Fury dans la réserve, sans pile, dans une fenêtre de Réaction. Les gears reçoivent désormais leurs métadonnées imprimées (image, tags).

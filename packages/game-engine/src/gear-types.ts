@@ -7,6 +7,11 @@ export interface GearBlueprint {
   readonly type: 'gear';
   readonly cost: UnitBlueprint['cost'];
   readonly equipCost?: UnitBlueprint['cost'];
+  /** Capacité ADD « Tap : ajoute » : énergie et/ou Power d'une couleur, sans pile. */
+  readonly resourceAbility?: {
+    readonly energy?: number;
+    readonly power?: string;
+  };
   readonly effects: readonly {
     readonly type: 'might-bonus';
     readonly scope: 'allied-units' | 'attached-unit';

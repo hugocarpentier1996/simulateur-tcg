@@ -1,4 +1,5 @@
 import type { CardCost } from './unit-definition.js';
+import { printedMetadata, type PrintedMetadata } from './printed-metadata.js';
 
 /** Effet continu tant que le gear est en jeu, sans durée de fin de tour. */
 export interface GearEffect {
@@ -9,7 +10,15 @@ export interface GearEffect {
 
 /** Gear non-unité. Coût de pose distinct du coût facultatif d'équipement.
  * Sans equipCost il ne peut pas s'attacher. Position, Ready et porteur sont des données d'instance. */
-export interface GearDefinition {
+export interface GearDefinition extends PrintedMetadata {
+  /** Capacité ADD « Tap : ajoute » ; énergie et/ou Power d'une couleur, sans pile. */
+  readonly resourceAbility?: {
+    readonly energy?: number;
+    readonly power?: string;
+  };
+  /** Métadonnées d'affichage, jamais chargées par le moteur. */
+  readonly imageUrl?: string;
+  readonly text?: string;
   readonly id: string;
   readonly name: string;
   readonly type: 'gear';
@@ -48,7 +57,11 @@ export function defineGear(input: GearDefinition): GearDefinition {
       power: Object.freeze({ ...cost.power }),
     });
   return Object.freeze({
+    ...printedMetadata(input.id),
     ...input,
+    ...(input.resourceAbility
+      ? { resourceAbility: Object.freeze({ ...input.resourceAbility }) }
+      : {}),
     cost: freezeCost(input.cost),
     ...(input.equipCost ? { equipCost: freezeCost(input.equipCost) } : {}),
     effects: Object.freeze(

@@ -338,6 +338,8 @@ export type GameAction =
   | { type: 'choose-vision'; playerId: string; recycle: boolean }
   | { type: 'choose-discard'; playerId: string; cardId: string }
   | { type: 'activate-spell-energy'; playerId: string; unitId: string }
+  /** Capacité ADD d'un gear Ready : Tap et ressource dans la réserve flottante. */
+  | { type: 'activate-gear'; playerId: string; gearId: string }
   /** Ressource manuelle : Tap d'une rune Ready pour 1 énergie dans la réserve. */
   | { type: 'tap-rune'; playerId: string; runeId: string }
   /** Ressource manuelle : rune sous son deck pour 1 Power (+1 énergie si elle était Ready). */
@@ -435,6 +437,14 @@ export type GameEvent =
       sourceId: string;
     }
   | { type: 'spell-returned'; playerId: string; cardId: string }
+  /** Gear activé pour sa capacité de ressource. */
+  | {
+      type: 'gear-resource-added';
+      playerId: string;
+      gearId: string;
+      energy: number;
+      power: string | null;
+    }
   /** Rune utilisée manuellement ; power = couleur gagnée, ou null pour un simple Tap. */
   | {
       type: 'rune-used';

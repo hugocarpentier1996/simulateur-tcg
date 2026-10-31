@@ -14,6 +14,7 @@ import { queueConquestLegends } from './effects/conquest-legends.js';
 import type { GameState, GameAction, ActionResult } from './types.js';
 import { activateSpellEnergy } from './actions/activate-spell-energy.js';
 import { tapRune, recycleRune } from './actions/manual-runes.js';
+import { activateGear } from './actions/activate-gear.js';
 import { moveGroup } from './actions/move-group.js';
 import { moveUnit } from './actions/move.js';
 import { passPriority } from './actions/pass.js';
@@ -150,6 +151,7 @@ function dispatch(state: GameState, action: GameAction): ActionResult {
     action.type !== 'pass' &&
     action.type !== 'activate-spell-energy' &&
     action.type !== 'tap-rune' &&
+    action.type !== 'activate-gear' &&
     action.type !== 'recycle-rune'
   )
     return { ok: false, reason: 'STACK_IN_PROGRESS' };
@@ -165,6 +167,8 @@ function dispatch(state: GameState, action: GameAction): ActionResult {
       return activateSpellEnergy(state, action);
     case 'tap-rune':
       return tapRune(state, action);
+    case 'activate-gear':
+      return activateGear(state, action);
     case 'recycle-rune':
       return recycleRune(state, action);
     case 'play-gear':
