@@ -200,3 +200,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Spoils of War — ogn-144-298
 - [x] Unyielding Spirit — ogn-145-298
 - [x] Cemetery Attendant — ogn-165-298
+- [x] Jinx — ogn-202-298

@@ -1138,3 +1138,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Spoils of War (ogn-144) : Réaction ; pioche 2 ; coûte 2 de moins si une unité ennemie est morte ce tour (`enemyDeathsThisTurn` tenu par `act`, `costReduction` `enemy-died-this-turn`).
 - Unyielding Spirit (ogn-145) : Réaction ; empêche tous les dégâts de sort et de capacité ce tour (`effectDamagePrevented`, appliqué par `dealEffectDamage` et la frappe).
 - Cemetery Attendant (ogn-165) : à la mise en jeu, récupère une unité de son cimetière (`onPlayReturnUnit`, entrée `return-spell` généralisée avec `cardKind`).
+- Jinx (ogn-202, Chaos) : quand son propriétaire défausse (une fois par action), se redresse et gagne +1 Might ce tour (`onOwnerDiscard`, appliqué par `act`).

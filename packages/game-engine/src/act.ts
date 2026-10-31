@@ -145,7 +145,28 @@ export function act(state: GameState, action: GameAction): ActionResult {
       : tracked,
     events,
   );
-  const scoredMoves = thirdMovePoints(entered, counted);
+  const afterDiscard = discarders.length
+    ? {
+        ...counted,
+        units: counted.units.map((u) => {
+          const trigger = discarders.includes(u.ownerId)
+            ? counted.unitDefinitions?.find((d) => d.id === u.definitionId)
+                ?.onOwnerDiscard
+            : undefined;
+          return trigger
+            ? {
+                ...u,
+                ready: u.ready || trigger.ready,
+                temporaryEffects: [
+                  ...(u.temporaryEffects ?? []),
+                  { type: 'modify-might' as const, amount: trigger.might },
+                ],
+              }
+            : u;
+        }),
+      }
+    : counted;
+  const scoredMoves = thirdMovePoints(entered, afterDiscard);
   events.push(...scoredMoves.events);
   const attacked = queueAttackEffects(state, scoredMoves.state, events);
   const next = queueDefenseShield(state, attacked.state, events);

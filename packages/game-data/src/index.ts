@@ -244,3 +244,4 @@ export { rhasaTheSunderer } from './ogn/rhasa-the-sunderer.js';
 export { spoilsOfWar } from './ogn/spoils-of-war.js';
 export { unyieldingSpirit } from './ogn/unyielding-spirit.js';
 export { cemeteryAttendant } from './ogn/cemetery-attendant.js';
+export { jinxChaos } from './ogn/jinx-chaos.js';
