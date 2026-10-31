@@ -1089,3 +1089,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Thermo Beam (ogn-022) : détruit tous les équipements en jeu, posés ou attachés (effet `kill-all-gear`, helper `killGears`, event `gear-killed`).
 - Salvage (ogn-224) : Action ; détruit facultativement un équipement (cible `optional-gear`, le lanceur pour s'abstenir) puis pioche 1 ; les gears deviennent cliquables en mode ciblage.
 - Falling Star (ogn-029) : deux instructions « inflige 3 à une unité » (effet `damage-instances`, cibles multi-ensemble : la même unité peut être choisie deux fois, aussi au clic dans la table).
+- Wind Wall (ogn-064) : Réaction ; contre un sort de la pile (cible `stack-spell` avec plafonds de coût optionnels, effet `counter-spell`, event `spell-countered`). Le sort contré n'est pas « joué » (pas de déclenchement). Dans la table, le sort contré se choisit au panneau.

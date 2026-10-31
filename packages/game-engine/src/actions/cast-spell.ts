@@ -10,6 +10,7 @@ import {
   spellTarget,
   validDestination,
   secondaryEnemyTarget,
+  stackSpellTarget,
   validBattlefieldTarget,
 } from '../effects/target.js';
 
@@ -99,10 +100,12 @@ export function castSpell(
         ? !validBattlefieldTarget(state, action.targetId)
         : definition.target.kind === 'caster'
           ? action.targetId !== action.playerId
-          : definition.target.kind === 'optional-gear'
-            ? action.targetId !== action.playerId &&
-              !state.gears?.some((g) => g.id === action.targetId)
-            : !target
+          : definition.target.kind === 'stack-spell'
+            ? !stackSpellTarget(state, definition, action.targetId)
+            : definition.target.kind === 'optional-gear'
+              ? action.targetId !== action.playerId &&
+                !state.gears?.some((g) => g.id === action.targetId)
+              : !target
   )
     return { ok: false, reason: 'INVALID_TARGET' };
   if (

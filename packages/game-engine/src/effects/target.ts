@@ -1,6 +1,6 @@
 import { effectiveMight } from './modifiers.js';
 import type { GameState, UnitState } from '../types.js';
-import type { SpellBlueprint } from '../spell-types.js';
+import type { SpellBlueprint, SpellEntry } from '../spell-types.js';
 
 /** Cible secondaire du duel -> unité adverse encore présente, sans restriction de zone. */
 export function duelEnemyTarget(
@@ -87,4 +87,27 @@ export function secondaryEnemyTarget(
   )
     return undefined;
   return unit;
+}
+
+/** Sort ciblable par un contre -> entrée de pile d'un sort dont le coût respecte les plafonds. */
+export function stackSpellTarget(
+  state: GameState,
+  definition: SpellBlueprint,
+  targetId: string | undefined,
+): SpellEntry | undefined {
+  const limits = definition.target;
+  if (limits.kind !== 'stack-spell') return undefined;
+  for (const entry of state.stack?.entries ?? []) {
+    if (!('card' in entry) || entry.card.id !== targetId) continue;
+    const cost = entry.definition.cost;
+    const power =
+      Object.values(cost.power).reduce((sum, n) => sum + (n ?? 0), 0) +
+      (cost.genericPower ?? 0);
+    if (limits.maxEnergy !== undefined && cost.energy > limits.maxEnergy)
+      return undefined;
+    if (limits.maxPower !== undefined && power > limits.maxPower)
+      return undefined;
+    return entry;
+  }
+  return undefined;
 }

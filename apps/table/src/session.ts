@@ -182,6 +182,8 @@ function describe(
       return `${playerName(event.playerId)} gagne ${event.amount} point(s) grâce à ${name(event.sourceId)}.`;
     case 'gear-played':
       return `${playerName(event.playerId)} pose ${name(event.gearId)}.`;
+    case 'spell-countered':
+      return `${name(event.sourceId)} contre ${name(event.cardId)}.`;
     case 'gear-killed':
       return `${name(event.gearId)} est détruit.`;
     case 'gear-equipped':
@@ -494,7 +496,13 @@ function targetPlan(
   if (action.selectedUnitIds)
     return { ordered: false, ids: [...action.selectedUnitIds] };
   const ids: string[] = [];
-  if (!state.players.some((p) => p.id === action.targetId))
+  // Joueur (effet global) ou sort de la pile (contre, choisi au panneau) : rien à cliquer.
+  if (
+    !state.players.some((p) => p.id === action.targetId) &&
+    !state.stack?.entries.some(
+      (e) => 'card' in e && e.card.id === action.targetId,
+    )
+  )
     ids.push(action.targetId);
   if (action.secondaryTargetId) ids.push(action.secondaryTargetId);
   if (action.destinationId) ids.push(action.destinationId);

@@ -12,6 +12,7 @@ import {
   duelEnemyTarget,
   validBattlefieldTarget,
   secondaryEnemyTarget,
+  stackSpellTarget,
 } from './target.js';
 import { resolveDuel } from './duel.js';
 import { drawCardForPlayer } from '../turn/draw.js';
@@ -185,6 +186,33 @@ export function resolveSpell(
         state = damaged.state;
         events.push(...damaged.events);
       }
+      continue;
+    }
+    if (effect.type === 'counter-spell') {
+      const countered = stackSpellTarget(
+        state,
+        entry.definition,
+        entry.targetId,
+      );
+      if (!countered || !state.stack) continue;
+      const grave = state.zones.find(
+        (z) => z.ownerId === countered.card.ownerId && z.kind === 'graveyard',
+      );
+      if (!grave) throw new Error('Cimetière absent pour le sort contré.');
+      state = {
+        ...state,
+        stack: {
+          ...state.stack,
+          entries: state.stack.entries.filter((e) => e !== countered),
+        },
+        cards: [...state.cards, { ...countered.card, zoneId: grave.id }],
+      };
+      events.push({
+        type: 'spell-countered',
+        cardId: countered.card.id,
+        playerId: countered.casterId,
+        sourceId: entry.card.id,
+      });
       continue;
     }
     if (effect.type === 'kill-target-gear') {

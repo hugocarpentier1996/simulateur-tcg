@@ -1,4 +1,4 @@
-import { secondaryEnemyTarget } from '../effects/target.js';
+import { secondaryEnemyTarget, stackSpellTarget } from '../effects/target.js';
 import { defenseShieldActions } from '../effects/defense-shield.js';
 import { attackTargetActions } from '../effects/attack-targets.js';
 import { withDeflect, spellChosenUnits } from '../cost/deflect.js';
@@ -160,9 +160,15 @@ function* candidates(
             ? state.battlefields.map((f) => ({ id: f.zoneId }))
             : spell.target.kind === 'caster'
               ? [{ id: playerId }]
-              : spell.target.kind === 'optional-gear'
-                ? [{ id: playerId }, ...(state.gears ?? [])]
-                : state.units) {
+              : spell.target.kind === 'stack-spell'
+                ? (state.stack?.entries ?? []).flatMap((e) =>
+                    'card' in e && stackSpellTarget(state, spell, e.card.id)
+                      ? [{ id: e.card.id }]
+                      : [],
+                  )
+                : spell.target.kind === 'optional-gear'
+                  ? [{ id: playerId }, ...(state.gears ?? [])]
+                  : state.units) {
           const base = {
             type: 'cast-spell' as const,
             playerId,

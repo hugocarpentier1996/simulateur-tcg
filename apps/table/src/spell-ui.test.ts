@@ -6,6 +6,8 @@ import {
   gentlemensDuel,
   recruitTheVanguard,
   recruitToken,
+  windWall,
+  hextechRay,
 } from '../../../packages/game-data/src/index.js';
 import {
   cardActions,
@@ -13,6 +15,7 @@ import {
   handPlayer,
   tableActions,
   dispatch,
+  startTargeting,
   type Session,
 } from './session.js';
 import { renderTable } from './view.js';
@@ -143,4 +146,34 @@ it('rend directement la Main au joueur actif après résolution hors Showdown', 
   expect(handPlayer(s.state)).toBe('a');
   expect(tableActions(s)).toEqual([]);
   expect(renderTable(s, null)).not.toContain('Rendre la priorité');
+});
+
+it('Wind Wall : « Lancer » contre directement l’unique sort de la pile', () => {
+  const state = spellScenario(windWall);
+  state.resources.a = { energy: 3, power: { vert: 2 } };
+  state.activePlayerId = 'b';
+  state.spellDefinitions = [windWall, hextechRay];
+  state.stack = {
+    entries: [
+      {
+        card: {
+          id: 'ray',
+          definitionId: hextechRay.id,
+          ownerId: 'b',
+          zoneId: 'hand-b',
+        },
+        definition: hextechRay,
+        casterId: 'b',
+        targetId: 'ally',
+      },
+    ],
+    initiatorId: 'b',
+    priorityPlayerId: 'a',
+    consecutivePasses: 0,
+  };
+  const s: Session = { state, history: [], log: [], error: null };
+  expect(renderTable(s, { cardId: 'spell' })).toContain('Hextech Ray (ray)');
+  const cast = startTargeting(s, { cardId: 'spell' });
+  expect(cast.selection).toBeNull();
+  expect(cast.session.error).toBeNull();
 });

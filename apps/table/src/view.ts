@@ -357,7 +357,11 @@ function actionLabel(
   const target = (id: string): string => {
     const u = state.units.find((u) => u.id === id);
     if (u) return unit(id);
-    const c = state.cards.find((c) => c.id === id);
+    const c =
+      state.cards.find((c) => c.id === id) ??
+      state.stack?.entries.flatMap((e) =>
+        'card' in e && e.card.id === id ? [e.card] : [],
+      )[0];
     if (c) return cardName(c.definitionId) + ' (' + id + ')';
     const z = state.zones.find((z) => z.id === id);
     if (z)

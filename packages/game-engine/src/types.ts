@@ -525,6 +525,12 @@ export type GameEvent =
       to: string;
     }
   | { type: 'gear-killed'; gearId: string; ownerId: string }
+  | {
+      type: 'spell-countered';
+      cardId: string;
+      playerId: string;
+      sourceId: string;
+    }
   | { type: 'gear-detached'; gearId: string; unitId: string; zoneId: string }
   | {
       type: 'battlefield-selected';

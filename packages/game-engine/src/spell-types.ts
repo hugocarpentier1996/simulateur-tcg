@@ -12,6 +12,12 @@ export interface SpellBlueprint {
     | { readonly kind: 'caster' }
     /** Un équipement en jeu, ou le lanceur lui-même pour renoncer (« you may »). */
     | { readonly kind: 'optional-gear' }
+    /** Un sort sur la pile ; maxEnergy / maxPower plafonnent son coût imprimé. */
+    | {
+        readonly kind: 'stack-spell';
+        readonly maxEnergy?: number;
+        readonly maxPower?: number;
+      }
     | { readonly kind: 'battlefield' }
     | {
         readonly zone?: 'battlefield';
@@ -49,6 +55,8 @@ export interface SpellBlueprint {
     | { readonly type: 'exhaust-allies' }
     /** Détruit tous les équipements en jeu (cimetière de leur propriétaire). */
     | { readonly type: 'kill-all-gear' }
+    /** Contre le sort ciblé (cible stack-spell) : retiré de la pile, au cimetière, sans effet. */
+    | { readonly type: 'counter-spell' }
     /** `count` instructions « inflige amount à une unité » : selectedUnitIds en donne exactement
      * `count`, une même unité pouvant être choisie plusieurs fois (dégâts cumulés). */
     | {
