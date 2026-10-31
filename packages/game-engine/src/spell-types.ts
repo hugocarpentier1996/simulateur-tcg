@@ -5,6 +5,8 @@ export interface SpellBlueprint {
   readonly id: string;
   readonly type: 'spell';
   readonly optionalExhaustAlly?: boolean;
+  /** Coût X : le lanceur choisit xPower, payé en Power quelconque en plus du coût. */
+  readonly variablePower?: boolean;
   /** Réduction d'énergie propre au sort (plancher 0), avant les réductions d'unités. */
   readonly costReduction?:
     | {
@@ -65,6 +67,8 @@ export interface SpellBlueprint {
     | { readonly type: 'exhaust-allies' }
     /** Détruit tous les équipements en jeu (cimetière de leur propriétaire). */
     | { readonly type: 'kill-all-gear' }
+    /** X (Power quelconque payé au lancement) dégâts aux unités ennemies du champ ciblé. */
+    | { readonly type: 'damage-enemies-at-battlefield-x' }
     /** Chaque joueur défausse toute sa main, puis chacun pioche `count` (lanceur d'abord). */
     | { readonly type: 'discard-hands-then-draw'; readonly count: number }
     /** L'unité ciblée inflige sa Might (dégâts du sort) à toutes les unités ennemies du champ
@@ -164,4 +168,6 @@ export interface SpellEntry {
   /** Adversaire du duel choisi au lancement ; requis pour l'effet duel. */
   secondaryTargetId?: string;
   destinationId?: string;
+  /** Coût X payé au lancement (variablePower). */
+  xPower?: number;
 }

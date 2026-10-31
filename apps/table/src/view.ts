@@ -374,6 +374,7 @@ function actionLabel(
   switch (action.type) {
     case 'cast-spell': {
       const parts: string[] = [];
+      if (action.xPower !== undefined) parts.push('X = ' + action.xPower);
       if (action.selectedUnitIds)
         parts.push(
           action.selectedUnitIds.length

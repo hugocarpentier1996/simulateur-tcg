@@ -284,6 +284,7 @@ export function resolveSpell(
     }
     if (
       effect.type === 'damage-enemies-at-battlefield' ||
+      effect.type === 'damage-enemies-at-battlefield-x' ||
       effect.type === 'damage-enemies-in-combat'
     ) {
       const fieldId =
@@ -300,7 +301,9 @@ export function resolveSpell(
         state,
         { kind: 'spell', cardId: entry.card.id, playerId: entry.casterId },
         areas,
-        effect.amount,
+        effect.type === 'damage-enemies-at-battlefield-x'
+          ? (entry.xPower ?? 0)
+          : effect.amount,
       );
       state = damaged.state;
       events.push(...damaged.events);

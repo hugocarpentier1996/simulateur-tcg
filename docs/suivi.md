@@ -1096,3 +1096,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Zenith Blade (ogn-262) : Action ; étourdit une unité ennemie sur un champ puis peut y déplacer une unité alliée (effet `move-ally-to-target`, seconde cible facultative ; déplacement par sort factorisé dans `moveUnit`).
 - Stormbringer (ogn-250) : unité alliée en base (nouvelle restriction de cible `zone: 'base'`) ; sa Might en dégâts à toutes les unités ennemies d'un champ choisi, puis elle s'y déplace (effet `might-damage-enemies-then-move`).
 - Invert Timelines (ogn-201) : chaque joueur défausse sa main puis pioche 4, lanceur d'abord (effet `discard-hands-then-draw`).
+- Bullet Time (ogn-268) : Action ; coût X (`variablePower`, champ d'action `xPower`, payé en Power quelconque) pour X dégâts aux unités ennemies d'un champ ; X proposé au panneau (« X = n »).

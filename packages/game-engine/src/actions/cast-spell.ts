@@ -1,5 +1,5 @@
 import { withDeflect, spellChosenUnits } from '../cost/deflect.js';
-import { spellCost } from '../cost/spell-cost.js';
+import { spellCost, withX } from '../cost/spell-cost.js';
 import { graveyardCard } from '../effects/graveyard-card.js';
 import type { ActionResult, GameAction, GameState } from '../types.js';
 import { canUseTiming } from './timing.js';
@@ -42,6 +42,13 @@ export function castSpell(
   if (!definition) return { ok: false, reason: 'UNKNOWN_SPELL_DEFINITION' };
   if (!canUseTiming(state, action.playerId, definition.timing))
     return { ok: false, reason: 'SPELL_WINDOW_CLOSED' };
+  if (
+    action.xPower !== undefined &&
+    (!definition.variablePower ||
+      !Number.isInteger(action.xPower) ||
+      action.xPower < 0)
+  )
+    return { ok: false, reason: 'INVALID_X' };
   if (
     definition.effects.some(
       (e) => e.type === 'move-up-to-two-allies-to-base',
@@ -167,7 +174,7 @@ export function castSpell(
   const cost = withDeflect(
     state,
     action.playerId,
-    spellCost(state, action.playerId, definition),
+    withX(spellCost(state, action.playerId, definition), action.xPower),
     spellChosenUnits(definition, action),
   );
   const paid = payCost(state, action.playerId, cost, action.payment, 'spell');
@@ -205,6 +212,7 @@ export function castSpell(
             ...(action.destinationId
               ? { destinationId: action.destinationId }
               : {}),
+            ...(action.xPower ? { xPower: action.xPower } : {}),
           },
         ],
         initiatorId: state.stack?.initiatorId ?? action.playerId,

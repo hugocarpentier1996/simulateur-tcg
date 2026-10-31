@@ -44,3 +44,13 @@ export function spellCost(
     energy: Math.min(base, Math.max(1, base - reduction)),
   };
 }
+
+/** Coût + X choisi -> X Power quelconque supplémentaire (sorts variablePower). */
+export function withX(
+  cost: UnitBlueprint['cost'],
+  xPower: number | undefined,
+): UnitBlueprint['cost'] {
+  return xPower
+    ? { ...cost, genericPower: (cost.genericPower ?? 0) + xPower }
+    : cost;
+}

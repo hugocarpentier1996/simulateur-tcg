@@ -6,7 +6,7 @@ import {
 import { defenseShieldActions } from '../effects/defense-shield.js';
 import { attackTargetActions } from '../effects/attack-targets.js';
 import { withDeflect, spellChosenUnits } from '../cost/deflect.js';
-import { spellCost } from '../cost/spell-cost.js';
+import { spellCost, withX } from '../cost/spell-cost.js';
 import { playTargetChoices } from '../effects/play-targets.js';
 import { endTurnChoices } from '../effects/end-runes.js';
 import type { GameAction, GameState } from '../types.js';
@@ -289,6 +289,23 @@ function* tokenPlacements(
 function optionalCosts(state: GameState, action: GameAction): GameAction[] {
   if (action.type !== 'cast-spell') return [action];
   const card = state.cards.find((c) => c.id === action.cardId);
+  // Coût X : une variante par X jusqu'au Power potentiellement disponible (filtrée au paiement).
+  if (
+    state.spellDefinitions?.find((d) => d.id === card?.definitionId)
+      ?.variablePower
+  ) {
+    const pool = Object.values(
+      state.resources[action.playerId]?.power ?? {},
+    ).reduce((sum, n) => sum + (n ?? 0), 0);
+    const runes = state.cards.filter(
+      (c) =>
+        c.ownerId === action.playerId &&
+        state.zones.some((z) => z.id === c.zoneId && z.kind === 'runes'),
+    ).length;
+    return Array.from({ length: pool + runes + 1 }, (_, x) =>
+      x ? { ...action, xPower: x } : action,
+    );
+  }
   if (
     !state.spellDefinitions?.find((d) => d.id === card?.definitionId)
       ?.optionalExhaustAlly
@@ -317,7 +334,7 @@ function targetPayment(state: GameState, action: GameAction): GameAction[] {
       ? withDeflect(
           state,
           action.playerId,
-          spellCost(state, action.playerId, definition),
+          withX(spellCost(state, action.playerId, definition), action.xPower),
           spellChosenUnits(definition, action),
         )
       : withDeflect(

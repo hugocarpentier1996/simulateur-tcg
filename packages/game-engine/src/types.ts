@@ -409,6 +409,8 @@ export type GameAction =
       /** Duel : seconde unité, ennemie, choisie dès le lancement. */
       secondaryTargetId?: string;
       destinationId?: string;
+      /** Coût X (sort variablePower) : Power quelconque supplémentaire, entier >= 0. */
+      xPower?: number;
       payment: PaymentPlan;
     }
   | {

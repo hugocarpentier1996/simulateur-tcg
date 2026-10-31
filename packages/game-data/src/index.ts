@@ -203,3 +203,4 @@ export { skySplitter } from './ogn/sky-splitter.js';
 export { zenithBlade } from './ogn/zenith-blade.js';
 export { stormbringer } from './ogn/stormbringer.js';
 export { invertTimelines } from './ogn/invert-timelines.js';
+export { bulletTime } from './ogn/bullet-time.js';
