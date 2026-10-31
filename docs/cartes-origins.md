@@ -116,3 +116,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Solari Shieldbearer — ogn-051-298
 - [x] Harnessed Dragon — ogn-234-298
 - [x] Zaunite Bouncer — ogn-188-298
+- [x] Solari Chief — ogn-225-298

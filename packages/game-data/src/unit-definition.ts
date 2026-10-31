@@ -38,6 +38,8 @@ export interface UnitDefinition extends PrintedMetadata {
         }
       | { readonly type: 'damage'; readonly amount: number }
       | { readonly type: 'stun' }
+      /** Tue la cible si elle est Stun à la résolution, sinon la Stun. */
+      | { readonly type: 'kill-if-stunned-else-stun' }
       | { readonly type: 'kill' }
       | { readonly type: 'return-to-hand' };
   };

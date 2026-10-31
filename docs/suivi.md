@@ -1052,3 +1052,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Solari Shieldbearer (ogn-051) : à la mise en jeu, Stun d'une unité jusqu'à la fin du tour.
 - Harnessed Dragon (ogn-234) : à la mise en jeu, tue une unité ennemie ; sans ennemi, aucun effet.
 - Zaunite Bouncer (ogn-188) : à la mise en jeu, renvoie en main une autre unité sur un champ.
+- Solari Chief (ogn-225) : à la mise en jeu, une unité ennemie est tuée si elle est Stun, sinon Stun (variante `kill-if-stunned-else-stun`, état évalué à la résolution).

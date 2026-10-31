@@ -2,7 +2,7 @@ import type { ActionResult, GameState, UnitBlueprint } from '../types.js';
 import { dealEffectDamage } from './effect-damage.js';
 import { settleLethalUnits } from './lethal-units.js';
 import { leaveBoard } from './leave-board.js';
-import { effectiveMight } from './modifiers.js';
+import { effectiveMight, isStunned } from './modifiers.js';
 
 type TargetedEffect = NonNullable<
   UnitBlueprint['onPlayTargetEffect']
@@ -34,7 +34,10 @@ export function resolveTargetedPlay(
       events: [...damaged.events, ...settled.events],
     };
   }
-  if (effect.type === 'kill') {
+  if (
+    effect.type === 'kill' ||
+    (effect.type === 'kill-if-stunned-else-stun' && isStunned(target))
+  ) {
     const killed = settleLethalUnits(state, new Set([target.id]));
     return { ok: true, state: killed.state, events: killed.events };
   }
@@ -43,7 +46,7 @@ export function resolveTargetedPlay(
     return { ok: true, state: left.state, events: left.events };
   }
   const modifier =
-    effect.type === 'stun'
+    effect.type === 'stun' || effect.type === 'kill-if-stunned-else-stun'
       ? { type: 'stun' as const }
       : {
           type: 'modify-might' as const,
