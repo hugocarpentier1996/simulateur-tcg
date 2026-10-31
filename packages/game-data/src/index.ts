@@ -167,3 +167,4 @@ export { soaringScout } from './ogn/soaring-scout.js';
 export { machineEvangel } from './ogn/machine-evangel.js';
 export { kogMaw } from './ogn/kog-maw.js';
 export { sealOfRage } from './ogn/seal-of-rage.js';
+export { sealOfFocus } from './ogn/seal-of-focus.js';

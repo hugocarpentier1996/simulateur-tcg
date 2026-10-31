@@ -123,3 +123,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Machine Evangel — ogn-239-298
 - [x] Kog'Maw — ogn-190-298
 - [x] Seal of Rage — ogn-040-298
+- [x] Seal of Focus — ogn-081-298
