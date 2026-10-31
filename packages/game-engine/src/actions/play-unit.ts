@@ -87,6 +87,17 @@ export function playUnit(
         ...(action.onPlayTargetId ? { targetId: action.onPlayTargetId } : {}),
       },
     });
+  if (definition.onPlayTargetEffect)
+    entries.push({
+      kind: 'play-effect',
+      sourceId: card.id,
+      ownerId: card.ownerId,
+      effect: {
+        type: 'targeted',
+        effect: definition.onPlayTargetEffect.effect,
+        ...(action.onPlayTargetId ? { targetId: action.onPlayTargetId } : {}),
+      },
+    });
   if (definition.onPlayReadyOther)
     entries.push({
       kind: 'play-effect',

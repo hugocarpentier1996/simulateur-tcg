@@ -21,6 +21,26 @@ export function playTargetChoices(
     );
     return valid.length ? valid : [undefined];
   };
+  const targeted = definition.onPlayTargetEffect;
+  if (targeted) {
+    const toField = state.battlefields.some((f) => f.zoneId === destinationId);
+    const ids = state.units
+      .filter(
+        (u) =>
+          (targeted.allegiance !== 'friendly' || u.ownerId === playerId) &&
+          (targeted.allegiance !== 'enemy' || u.ownerId !== playerId) &&
+          (targeted.zone !== 'battlefield' ||
+            state.battlefields.some((f) => f.zoneId === u.zoneId)),
+      )
+      .map((u) => u.id);
+    if (
+      !targeted.excludeSelf &&
+      targeted.allegiance !== 'enemy' &&
+      (targeted.zone !== 'battlefield' || toField)
+    )
+      ids.push(sourceId);
+    return payable(ids);
+  }
   if (definition.onPlayMoveToBase) {
     const ids = state.units
       .filter((u) => state.battlefields.some((f) => f.zoneId === u.zoneId))

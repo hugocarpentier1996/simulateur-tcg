@@ -23,6 +23,24 @@ export interface UnitDefinition extends PrintedMetadata {
   readonly onMoveLoot?: boolean;
   readonly tank?: boolean;
   readonly deflect?: boolean;
+  /** Capacité « When you play me » visant une unité choisie à la mise en jeu, via la pile.
+   * allegiance relative au joueur ; zone 'battlefield' exclut les bases ; excludeSelf exclut
+   * l'unité jouée. Sans cible légale, la capacité reste sans effet. */
+  readonly onPlayTargetEffect?: {
+    readonly allegiance?: 'friendly' | 'enemy';
+    readonly zone?: 'battlefield';
+    readonly excludeSelf?: boolean;
+    readonly effect:
+      | {
+          readonly type: 'modify-might';
+          readonly amount: number;
+          readonly minimum?: number;
+        }
+      | { readonly type: 'damage'; readonly amount: number }
+      | { readonly type: 'stun' }
+      | { readonly type: 'kill' }
+      | { readonly type: 'return-to-hand' };
+  };
   readonly onPlayReadyOther?: boolean;
   readonly onPlayMoveToBase?: boolean;
   readonly onPlayVision?: boolean;

@@ -1047,3 +1047,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Rebuke (ogn-172) : renvoie en main une unité sur un champ, sans limite de Might.
 - Grand Strategem (ogn-233) : +5 Might à toutes les unités alliées jusqu'à la fin du tour.
 - Challenge (ogn-128) : duel entre une unité alliée et une ennemie choisies au lancement, sans bonus.
+- Whiteflame Protector (ogn-082) : nouvel effet générique `onPlayTargetEffect` (cible d'unité choisie à la mise en jeu, restrictions allié/ennemi/champ/soi-même, effets Might, dégâts de capacité, Stun, destruction, renvoi en main). Ici +8 Might à une unité, lui-même compris ; cible disparue = aucun effet.

@@ -155,3 +155,4 @@ export { vengeance } from './ogn/vengeance.js';
 export { rebuke } from './ogn/rebuke.js';
 export { grandStrategem } from './ogn/grand-strategem.js';
 export { challenge } from './ogn/challenge.js';
+export { whiteflameProtector } from './ogn/whiteflame-protector.js';

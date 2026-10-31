@@ -4,6 +4,7 @@ import { resolveFlash } from './flash.js';
 import { drawCardForPlayer } from '../turn/draw.js';
 import type { ActionResult, GameState, UnitBlueprint } from '../types.js';
 import { channelForPlayer } from '../turn/supplies.js';
+import { resolveTargetedPlay } from './targeted-play.js';
 /** Effet imprimé copié à l'empilement ; les réactions précèdent sa résolution. */
 export interface PlayEffectEntry {
   kind: 'play-effect';
@@ -14,6 +15,11 @@ export interface PlayEffectEntry {
     | { type: 'vision' }
     | NonNullable<UnitBlueprint['onPlayEffect']>
     | { type: 'ready-other'; targetId?: string }
+    | {
+        type: 'targeted';
+        targetId?: string;
+        effect: NonNullable<UnitBlueprint['onPlayTargetEffect']>['effect'];
+      }
     | { type: 'move-to-base'; targetId?: string };
 }
 /** Capacité de mise en jeu -> opération commune, indépendante de la survie de la source. */
@@ -33,6 +39,22 @@ export function resolvePlayEffect(
       ...summoned,
       events: [
         ...summoned.events,
+        { type: 'unit-play-effect-resolved', sourceId: entry.sourceId },
+      ],
+    };
+  }
+  if (entry.effect.type === 'targeted') {
+    const resolved = resolveTargetedPlay(
+      state,
+      entry.sourceId,
+      entry.ownerId,
+      entry.effect.targetId,
+      entry.effect.effect,
+    );
+    return {
+      ...resolved,
+      events: [
+        ...resolved.events,
         { type: 'unit-play-effect-resolved', sourceId: entry.sourceId },
       ],
     };
