@@ -190,3 +190,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Pit Rookie — ogn-136-298
 - [x] Bilgewater Bully — ogn-125-298
 - [x] Wizened Elder — ogn-065-298
+- [x] Trifarian Gloryseeker — ogn-217-298

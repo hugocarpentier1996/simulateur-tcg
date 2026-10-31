@@ -130,7 +130,8 @@ export function playUnit(
   if (
     definition.onPlayEffect &&
     !(
-      definition.onPlayEffect.type === 'discard' &&
+      (definition.onPlayEffect.type === 'discard' ||
+        definition.onPlayEffect.type === 'buff-self') &&
       definition.onPlayEffect.legion &&
       !(state.cardsPlayedThisTurn?.[action.playerId] ?? 0)
     )

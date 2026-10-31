@@ -1,3 +1,4 @@
+import { buffUnit } from './buff.js';
 import { startDiscard } from './loot.js';
 import { summonHere } from './summon-here.js';
 import { startVision } from './vision.js';
@@ -93,6 +94,27 @@ export function resolvePlayEffect(
             : u,
         ),
       },
+      events: [{ type: 'unit-play-effect-resolved', sourceId: entry.sourceId }],
+    };
+  }
+  if (entry.effect.type === 'buff-self') {
+    let next = buffUnit(state, entry.sourceId);
+    const source = next.units.find((u) => u.id === entry.sourceId);
+    if (
+      entry.effect.alliesHere &&
+      source &&
+      next.battlefields.some((f) => f.zoneId === source.zoneId)
+    )
+      for (const ally of next.units.filter(
+        (u) =>
+          u.id !== source.id &&
+          u.ownerId === source.ownerId &&
+          u.zoneId === source.zoneId,
+      ))
+        next = buffUnit(next, ally.id);
+    return {
+      ok: true,
+      state: next,
       events: [{ type: 'unit-play-effect-resolved', sourceId: entry.sourceId }],
     };
   }

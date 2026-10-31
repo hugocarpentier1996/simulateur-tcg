@@ -270,6 +270,13 @@ export interface UnitBlueprint {
     | { readonly type: 'draw-per-mighty' }
     /** Les adversaires ne peuvent plus jouer de carte jusqu'à la fin du tour. */
     | { readonly type: 'lock-opponents' }
+    /** Se buffe ; alliesHere : puis buffe les autres alliés de son champ (pas en base) ;
+     * legion : seulement si une autre carte a été jouée ce tour. */
+    | {
+        readonly type: 'buff-self';
+        readonly legion?: boolean;
+        readonly alliesHere?: boolean;
+      }
     /** Le prochain sort joué ce tour coûte `energy` de moins (plancher 0). */
     | { readonly type: 'next-spell-discount'; readonly energy: number }
     /** Modificateur de Might jusqu'à la fin du tour à toutes les unités ennemies. */

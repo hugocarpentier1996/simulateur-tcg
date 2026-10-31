@@ -234,3 +234,4 @@ export { drMundo } from './ogn/dr-mundo.js';
 export { pitRookie } from './ogn/pit-rookie.js';
 export { bilgewaterBully } from './ogn/bilgewater-bully.js';
 export { wizenedElder } from './ogn/wizened-elder.js';
+export { trifarianGloryseeker } from './ogn/trifarian-gloryseeker.js';
