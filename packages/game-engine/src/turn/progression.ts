@@ -30,6 +30,7 @@ export function startNextTurn(
     ...(state.playLockedPlayers ? { playLockedPlayers: [] } : {}),
     ...(state.discardedThisTurn ? { discardedThisTurn: [] } : {}),
     ...(state.enemyDeathsThisTurn ? { enemyDeathsThisTurn: [] } : {}),
+    ...(state.effectDamagePrevented ? { effectDamagePrevented: false } : {}),
     ...(state.nextSpellDiscount ? { nextSpellDiscount: {} } : {}),
     ...(state.pendingTurnEnd ? { pendingTurnEnd: false } : {}),
     units: end.state.units.map((current) => {

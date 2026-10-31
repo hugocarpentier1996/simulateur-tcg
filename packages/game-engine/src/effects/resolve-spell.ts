@@ -265,6 +265,10 @@ export function resolveSpell(
       events.push(...killed.events);
       continue;
     }
+    if (effect.type === 'prevent-effect-damage') {
+      state = { ...state, effectDamagePrevented: true };
+      continue;
+    }
     if (effect.type === 'kill-all-gear') {
       const killed = killGears(
         state,
@@ -333,9 +337,10 @@ export function resolveSpell(
         entry.secondaryTargetId,
       );
       if (!enemy) continue;
-      const amount = target.cannotDealDamage
-        ? 0
-        : effectiveMight(target, state);
+      const amount =
+        target.cannotDealDamage || state.effectDamagePrevented
+          ? 0
+          : effectiveMight(target, state);
       state = {
         ...state,
         units: state.units.map((u) =>

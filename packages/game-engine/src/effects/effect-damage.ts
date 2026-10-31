@@ -15,12 +15,18 @@ export function dealEffectDamage(
 ): Extract<ActionResult, { ok: true }> {
   if (!Number.isFinite(baseAmount) || baseAmount < 0)
     throw new RangeError('Dégâts invalides.');
-  const amount = baseAmount + spellAbilityDamageBonus(state, source.playerId);
+  const amount = state.effectDamagePrevented
+    ? 0
+    : baseAmount + spellAbilityDamageBonus(state, source.playerId);
   const ids = new Set(targets.map((u) => u.id));
   const damage = (id: string) =>
-    amount +
-    (battlefieldDefinition(state, state.units.find((u) => u.id === id)!.zoneId)
-      ?.effectDamageBonus ?? 0);
+    state.effectDamagePrevented
+      ? 0
+      : amount +
+        (battlefieldDefinition(
+          state,
+          state.units.find((u) => u.id === id)!.zoneId,
+        )?.effectDamageBonus ?? 0);
   return {
     ok: true,
     state: {

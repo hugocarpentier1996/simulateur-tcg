@@ -69,6 +69,8 @@ export interface SpellBlueprint {
     | { readonly type: 'exhaust-allies' }
     /** Détruit tous les équipements en jeu (cimetière de leur propriétaire). */
     | { readonly type: 'kill-all-gear' }
+    /** Empêche tous les dégâts de sort et de capacité jusqu'à la fin du tour. */
+    | { readonly type: 'prevent-effect-damage' }
     /** Double la Might actuelle de la cible ce tour et lui donne Temporary. */
     | { readonly type: 'double-might-temporary' }
     /** Ce tour, la Might de la cible monte à celle de l'autre unité alliée secondaryTargetId. */

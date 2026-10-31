@@ -1136,3 +1136,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Rhasa the Sunderer (ogn-195) : coûte 1 énergie de moins par carte de son cimetière (`energyReductionPerTrashCard` dans `unitCost`).
 - Rhasa the Sunderer (ogn-195) : coûte 1 énergie de moins par carte de son cimetière (`energyReductionPerTrashCard` dans `unitCost`).
 - Spoils of War (ogn-144) : Réaction ; pioche 2 ; coûte 2 de moins si une unité ennemie est morte ce tour (`enemyDeathsThisTurn` tenu par `act`, `costReduction` `enemy-died-this-turn`).
+- Unyielding Spirit (ogn-145) : Réaction ; empêche tous les dégâts de sort et de capacité ce tour (`effectDamagePrevented`, appliqué par `dealEffectDamage` et la frappe).

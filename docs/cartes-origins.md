@@ -198,3 +198,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Yasuo — ogn-205-298
 - [x] Rhasa the Sunderer — ogn-195-298
 - [x] Spoils of War — ogn-144-298
+- [x] Unyielding Spirit — ogn-145-298
