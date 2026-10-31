@@ -352,6 +352,24 @@ export function resolveSpell(
           u.id === target.id ? { ...u, ready: true } : u,
         ),
       };
+    } else if (effect.type === 'might-damage-enemies-then-move') {
+      const fieldId = entry.destinationId ?? '';
+      if (!validBattlefieldTarget(state, fieldId)) continue;
+      const damaged = dealAreaDamage(
+        state,
+        { kind: 'spell', cardId: entry.card.id, playerId: entry.casterId },
+        getBattlefieldSides(state, fieldId).filter(
+          (side) => side.playerId !== entry.casterId,
+        ),
+        effectiveMight(target, state),
+      );
+      state = damaged.state;
+      events.push(...damaged.events);
+      const mover = state.units.find((u) => u.id === target.id);
+      if (!mover) continue;
+      const moved = moveUnit(state, mover, fieldId);
+      state = moved.state;
+      events.push(...moved.events);
     } else if (effect.type === 'move-ally-to-target') {
       const ally = allyToMove(
         state,

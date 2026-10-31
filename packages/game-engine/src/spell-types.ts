@@ -29,7 +29,8 @@ export interface SpellBlueprint {
       }
     | { readonly kind: 'battlefield' }
     | {
-        readonly zone?: 'battlefield';
+        /** battlefield : sur un champ ; base : dans la base de son propriétaire. */
+        readonly zone?: 'battlefield' | 'base';
         readonly maximumMight?: number;
         readonly allegiance?: 'friendly' | 'enemy';
         readonly kind: 'unit';
@@ -64,6 +65,9 @@ export interface SpellBlueprint {
     | { readonly type: 'exhaust-allies' }
     /** Détruit tous les équipements en jeu (cimetière de leur propriétaire). */
     | { readonly type: 'kill-all-gear' }
+    /** L'unité ciblée inflige sa Might (dégâts du sort) à toutes les unités ennemies du champ
+     * destinationId, puis s'y déplace. */
+    | { readonly type: 'might-damage-enemies-then-move' }
     /** Facultatif : déplace l'unité alliée secondaryTargetId sur le champ de l'unité ciblée. */
     | { readonly type: 'move-ally-to-target' }
     /** Contre le sort ciblé (cible stack-spell) : retiré de la pile, au cimetière, sans effet. */

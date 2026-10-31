@@ -25,6 +25,16 @@ export function spellTarget(
     !state.zones.some((z) => z.id === unit?.zoneId && z.kind === 'battlefield')
   )
     return undefined;
+  if (
+    definition.target.zone === 'base' &&
+    !state.zones.some(
+      (z) =>
+        z.id === unit?.zoneId &&
+        z.kind === 'base' &&
+        z.ownerId === unit.ownerId,
+    )
+  )
+    return undefined;
   if (definition.target.allegiance === 'friendly' && unit?.ownerId !== casterId)
     return undefined;
   if (definition.target.allegiance === 'enemy' && unit?.ownerId === casterId)

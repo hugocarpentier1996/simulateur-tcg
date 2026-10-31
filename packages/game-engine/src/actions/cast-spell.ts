@@ -127,6 +127,13 @@ export function castSpell(
   )
     return { ok: false, reason: 'INVALID_TARGET' };
   if (
+    definition.effects.some(
+      (e) => e.type === 'might-damage-enemies-then-move',
+    ) &&
+    !validBattlefieldTarget(state, action.destinationId ?? '')
+  )
+    return { ok: false, reason: 'UNSUPPORTED_DESTINATION' };
+  if (
     definition.effects.some((e) => e.type === 'move-unit') &&
     (!target || !validDestination(state, target, action.destinationId))
   )

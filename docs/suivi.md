@@ -1094,3 +1094,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Find Your Center (ogn-047) : Action ; pioche 1 et canalise 1 rune Tap ; coûte 2 énergie de moins si un adversaire est à 3 points ou moins de son seuil de victoire (`costReduction` de sort, `spellCost` prend désormais la définition).
 - Sky Splitter (ogn-014) : Action ; 5 dégâts à une unité sur un champ ; énergie réduite de la plus haute Might parmi ses unités (`costReduction: highest-own-might`, plancher 0).
 - Zenith Blade (ogn-262) : Action ; étourdit une unité ennemie sur un champ puis peut y déplacer une unité alliée (effet `move-ally-to-target`, seconde cible facultative ; déplacement par sort factorisé dans `moveUnit`).
+- Stormbringer (ogn-250) : unité alliée en base (nouvelle restriction de cible `zone: 'base'`) ; sa Might en dégâts à toutes les unités ennemies d'un champ choisi, puis elle s'y déplace (effet `might-damage-enemies-then-move`).

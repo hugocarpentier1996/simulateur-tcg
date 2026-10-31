@@ -239,6 +239,13 @@ function* candidates(
                 )
               : [])
               yield { ...base, secondaryTargetId: ally.id };
+          } else if (
+            spell.effects.some(
+              (e) => e.type === 'might-damage-enemies-then-move',
+            )
+          ) {
+            for (const field of state.battlefields)
+              yield { ...base, destinationId: field.zoneId };
           } else if (spell.effects.some((e) => e.type === 'move-unit'))
             for (const zone of destinations)
               yield { ...base, destinationId: zone.id };
