@@ -1115,3 +1115,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Magma Wurm (ogn-011) : tant qu'il est en jeu, les autres unités alliées (jetons compris) entrent Ready (`otherAlliesEnterReady`, helper `alliesEnterReady`).
 - Leona (ogn-079, Calm) : entre Ready si un adversaire est à 3 points de la victoire (`entersReadyIfOpponentWithin`) ; les ennemis Stun de sa zone ont -8 Might, minimum 1 (`stunnedEnemiesHereMalus`, appliqué en fin de `effectiveMight`).
 - Pit Crew (ogn-091) : se redresse quand son propriétaire joue un gear (`readyOnGearPlayed`).
+- Convergent Mutation (ogn-108) : Réaction ; ce tour, la Might d'une unité alliée monte à celle d'une autre unité alliée, sans baisse (effet `match-ally-might`, seconde cible alliée).

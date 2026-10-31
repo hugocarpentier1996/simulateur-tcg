@@ -12,6 +12,7 @@ import {
   secondaryEnemyTarget,
   stackSpellTarget,
   allyToMove,
+  otherAlly,
   validBattlefieldTarget,
 } from '../effects/target.js';
 
@@ -122,6 +123,16 @@ export function castSpell(
       state,
       definition,
       action.playerId,
+      action.secondaryTargetId,
+    )
+  )
+    return { ok: false, reason: 'INVALID_TARGET' };
+  if (
+    definition.effects.some((e) => e.type === 'match-ally-might') &&
+    !otherAlly(
+      state,
+      action.playerId,
+      action.targetId,
       action.secondaryTargetId,
     )
   )

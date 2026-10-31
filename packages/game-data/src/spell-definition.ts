@@ -35,6 +35,8 @@ export type SpellEffect =
   | { readonly type: 'exhaust-allies' }
   /** Détruit tous les équipements en jeu (cimetière de leur propriétaire). */
   | { readonly type: 'kill-all-gear' }
+  /** Ce tour, la Might de la cible monte à celle de l'autre unité alliée secondaryTargetId. */
+  | { readonly type: 'match-ally-might' }
   /** X (Power quelconque payé au lancement) dégâts aux unités ennemies du champ ciblé. */
   | { readonly type: 'damage-enemies-at-battlefield-x' }
   /** Chaque joueur défausse toute sa main, puis chacun pioche `count` (lanceur d'abord). */

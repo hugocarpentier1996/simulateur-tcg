@@ -178,3 +178,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Magma Wurm — ogn-011-298
 - [x] Leona — ogn-079-298
 - [x] Pit Crew — ogn-091-298
+- [x] Convergent Mutation — ogn-108-298

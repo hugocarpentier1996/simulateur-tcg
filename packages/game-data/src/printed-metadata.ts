@@ -7,6 +7,11 @@ export interface PrintedMetadata {
   readonly imageLocal?: string;
 }
 const entries: Record<string, PrintedMetadata> = {
+  'ogn-108-298': {
+    displayName: 'Convergent Mutation',
+    tags: [],
+    imageLocal: '/cards/ogn-108-298.png',
+  },
   'ogn-091-298': {
     displayName: 'Pit Crew',
     tags: ['Bandle City'],

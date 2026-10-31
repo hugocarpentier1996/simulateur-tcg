@@ -2,6 +2,7 @@ import {
   secondaryEnemyTarget,
   stackSpellTarget,
   allyToMove,
+  otherAlly,
 } from '../effects/target.js';
 import { defenseShieldActions } from '../effects/defense-shield.js';
 import { attackTargetActions } from '../effects/attack-targets.js';
@@ -228,7 +229,12 @@ function* candidates(
                 secondaryEnemyTarget(state, spell, playerId, u.id),
             ))
               yield { ...base, secondaryTargetId: enemy.id };
-          else if (
+          else if (spell.effects.some((e) => e.type === 'match-ally-might')) {
+            for (const ally of state.units.filter((u) =>
+              otherAlly(state, playerId, target.id, u.id),
+            ))
+              yield { ...base, secondaryTargetId: ally.id };
+          } else if (
             spell.effects.some((e) => e.type === 'move-ally-to-target')
           ) {
             yield base;

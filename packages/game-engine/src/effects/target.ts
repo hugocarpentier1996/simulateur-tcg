@@ -135,3 +135,15 @@ export function allyToMove(
       u.id === allyId && u.ownerId === casterId && u.zoneId !== target.zoneId,
   );
 }
+
+/** Autre unité alliée de référence (Convergent Mutation) -> unité du lanceur distincte de la cible. */
+export function otherAlly(
+  state: GameState,
+  casterId: string,
+  targetId: string,
+  allyId?: string,
+): UnitState | undefined {
+  return state.units.find(
+    (u) => u.id === allyId && u.ownerId === casterId && u.id !== targetId,
+  );
+}

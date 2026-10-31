@@ -19,6 +19,7 @@ import {
   secondaryEnemyTarget,
   stackSpellTarget,
   allyToMove,
+  otherAlly,
 } from './target.js';
 import { resolveDuel } from './duel.js';
 import { drawCardForPlayer } from '../turn/draw.js';
@@ -412,6 +413,32 @@ export function resolveSpell(
       const moved = moveUnit(state, mover, fieldId);
       state = moved.state;
       events.push(...moved.events);
+    } else if (effect.type === 'match-ally-might') {
+      const other = otherAlly(
+        state,
+        entry.casterId,
+        target.id,
+        entry.secondaryTargetId,
+      );
+      if (!other) continue;
+      const amount = Math.max(
+        0,
+        effectiveMight(other, state) - effectiveMight(target, state),
+      );
+      state = {
+        ...state,
+        units: state.units.map((u) =>
+          u.id === target.id
+            ? {
+                ...u,
+                temporaryEffects: [
+                  ...(u.temporaryEffects ?? []),
+                  { type: 'modify-might' as const, amount },
+                ],
+              }
+            : u,
+        ),
+      };
     } else if (effect.type === 'move-ally-to-target') {
       const ally = allyToMove(
         state,
