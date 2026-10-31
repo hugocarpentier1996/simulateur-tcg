@@ -1113,3 +1113,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Dangerous Duo (ogn-016) : Legion — à la mise en jeu, +2 Might à une unité ce tour (`onPlayTargetEffect.legion`).
 - Kadregrin the Infernal (ogn-038) : à la mise en jeu, pioche 1 par unité alliée Mighty, comptée à la résolution (`onPlayEffect` `draw-per-mighty`).
 - Magma Wurm (ogn-011) : tant qu'il est en jeu, les autres unités alliées (jetons compris) entrent Ready (`otherAlliesEnterReady`, helper `alliesEnterReady`).
+- Leona (ogn-079, Calm) : entre Ready si un adversaire est à 3 points de la victoire (`entersReadyIfOpponentWithin`) ; les ennemis Stun de sa zone ont -8 Might, minimum 1 (`stunnedEnemiesHereMalus`, appliqué en fin de `effectiveMight`).

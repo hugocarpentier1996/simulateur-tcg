@@ -8,7 +8,7 @@ import { selfScoreMightBonus, unitAuraMightBonus } from './unit-aura.js';
 /** Unité + état -> Might actuelle avec auras/équipement et Assault/Shield, sans modifier la valeur imprimée.
  * Sans état : seulement Might de base et modificateurs temporaires (compatibilité des anciens appels). */
 export function effectiveMight(unit: UnitState, state?: GameState): number {
-  return Math.max(
+  const total = Math.max(
     0,
     unit.might +
       (state
@@ -25,6 +25,21 @@ export function effectiveMight(unit: UnitState, state?: GameState): number {
         0,
       ),
   );
+  // Leona : malus des ennemis Stun de sa zone, plancher 1 (sans relever une Might < 1).
+  const malus =
+    state && isStunned(unit)
+      ? state.units.reduce(
+          (sum, source) =>
+            source.ownerId !== unit.ownerId && source.zoneId === unit.zoneId
+              ? sum +
+                (state.unitDefinitions?.find(
+                  (d) => d.id === source.definitionId,
+                )?.stunnedEnemiesHereMalus ?? 0)
+              : sum,
+          0,
+        )
+      : 0;
+  return malus ? Math.max(Math.min(total, 1), total - malus) : total;
 }
 /** Unité -> présence d'un Stun actif. */
 export function isStunned(unit: UnitState): boolean {

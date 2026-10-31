@@ -172,6 +172,10 @@ export interface UnitBlueprint {
   /** Legion : « when you play me, ready me » si une autre carte a été jouée ce tour.
    * Hypothèse de prototype : appliqué à l'entrée en jeu, sans passer par la pile. */
   readonly legionReady?: boolean;
+  /** Entre Ready si un adversaire est à ce nombre de points ou moins de sa victoire. */
+  readonly entersReadyIfOpponentWithin?: number;
+  /** Les unités ennemies Stun de sa zone perdent cette Might, sans descendre sous 1. */
+  readonly stunnedEnemiesHereMalus?: number;
   /** Tant qu'elle est en jeu, les autres unités alliées (jetons compris) entrent Ready. */
   readonly otherAlliesEnterReady?: boolean;
   /** Legion : énergie en moins si une autre carte a été jouée ce tour (plancher 0). */

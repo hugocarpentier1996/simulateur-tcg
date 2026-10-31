@@ -206,6 +206,14 @@ export function playUnit(
           ready:
             definition.entersReady === true ||
             alliesEnterReady(state, card.ownerId) ||
+            (definition.entersReadyIfOpponentWithin !== undefined &&
+              state.players.some(
+                (p) =>
+                  p.id !== card.ownerId &&
+                  p.score >=
+                    (p.victoryTarget ?? 8) -
+                      definition.entersReadyIfOpponentWithin!,
+              )) ||
             (definition.legionReady === true &&
               (state.cardsPlayedThisTurn?.[action.playerId] ?? 0) > 0) ||
             action.accelerate === true ||
