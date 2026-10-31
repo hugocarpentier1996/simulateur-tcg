@@ -182,3 +182,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Darius — ogn-027-298
 - [x] Last Stand — ogn-069-298
 - [x] Sprite Mother — ogn-106-298
+- [x] Brynhir Thundersong — ogn-026-298

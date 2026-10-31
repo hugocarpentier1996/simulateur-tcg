@@ -62,6 +62,13 @@ import { settleLethalUnits } from './effects/lethal-units.js';
  * inéligible est remplacée par une pioche, avec le champ inscrit comme scoré.
  */
 export function act(state: GameState, action: GameAction): ActionResult {
+  if (
+    (action.type === 'play-unit' ||
+      action.type === 'cast-spell' ||
+      action.type === 'play-gear') &&
+    state.playLockedPlayers?.includes(action.playerId)
+  )
+    return { ok: false, reason: 'PLAY_LOCKED' };
   const dispatched = dispatch(state, action);
   if (!dispatched.ok) return dispatched;
   const result =

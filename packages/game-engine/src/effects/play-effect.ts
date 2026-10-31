@@ -96,6 +96,21 @@ export function resolvePlayEffect(
       events: [{ type: 'unit-play-effect-resolved', sourceId: entry.sourceId }],
     };
   }
+  if (entry.effect.type === 'lock-opponents') {
+    const locked = state.players
+      .map((p) => p.id)
+      .filter((id) => id !== entry.ownerId);
+    return {
+      ok: true,
+      state: {
+        ...state,
+        playLockedPlayers: [
+          ...new Set([...(state.playLockedPlayers ?? []), ...locked]),
+        ],
+      },
+      events: [{ type: 'unit-play-effect-resolved', sourceId: entry.sourceId }],
+    };
+  }
   if (entry.effect.type === 'draw-per-mighty') {
     const count = state.units.filter(
       (u) => u.ownerId === entry.ownerId && effectiveMight(u, state) >= 5,

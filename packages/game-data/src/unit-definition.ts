@@ -95,6 +95,8 @@ export interface UnitDefinition extends PrintedMetadata {
       }
     /** Pioche 1 par unité alliée Mighty (5+ Might) à la résolution. */
     | { readonly type: 'draw-per-mighty' }
+    /** Les adversaires ne peuvent plus jouer de carte jusqu'à la fin du tour. */
+    | { readonly type: 'lock-opponents' }
     /** Modificateur de Might jusqu'à la fin du tour à toutes les unités ennemies. */
     | {
         readonly type: 'weaken-enemies';

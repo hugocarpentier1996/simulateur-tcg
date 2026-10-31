@@ -38,6 +38,8 @@ export interface GameState {
   pendingAttackChoices?: AttackDamageTrigger[] | null;
   /** Joueurs dont les nouvelles unités entrent Ready jusqu’à la fin du tour courant. */
   readyEntryPlayers?: readonly string[];
+  /** Joueurs qui ne peuvent plus jouer de carte ce tour (Brynhir Thundersong). */
+  playLockedPlayers?: readonly string[];
   /** Cartes jouées (unités, sorts, gears) par joueur depuis le début du tour (Legion). */
   cardsPlayedThisTurn?: Readonly<Record<string, number>>;
   /** État serveur privé : sommet connu uniquement du joueur de Vision. */
@@ -243,6 +245,8 @@ export interface UnitBlueprint {
       }
     /** Pioche 1 par unité alliée Mighty (5+ Might) à la résolution. */
     | { readonly type: 'draw-per-mighty' }
+    /** Les adversaires ne peuvent plus jouer de carte jusqu'à la fin du tour. */
+    | { readonly type: 'lock-opponents' }
     /** Modificateur de Might jusqu'à la fin du tour à toutes les unités ennemies. */
     | {
         readonly type: 'weaken-enemies';
@@ -702,6 +706,7 @@ export type GameEvent =
  * NOT_MAIN_PHASE : la fin volontaire du tour exige la phase Main.
  * SHOWDOWN_IN_PROGRESS : terminer le Showdown avant de terminer le tour.
  * PLAY_WINDOW_CLOSED / CARD_NOT_IN_HAND / UNKNOWN_UNIT_DEFINITION / MISSING_BASE : mise en jeu impossible.
+ * PLAY_LOCKED : le joueur ne peut plus jouer de carte ce tour (Brynhir Thundersong).
  * DUPLICATE_RUNE / INVALID_RUNE / RUNE_NOT_READY / MISSING_RUNE_PILE : plan de paiement invalide.
  * INSUFFICIENT_RESOURCES : coût non couvert, aucun paiement partiel.
  * DAMAGE_ASSIGNMENT_REQUIRED / NO_DAMAGE_WINDOW : mauvaise fenêtre de combat.

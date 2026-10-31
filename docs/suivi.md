@@ -1119,3 +1119,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Darius (ogn-027, Fury) : à la deuxième carte jouée du tour par son propriétaire, +2 Might ce tour et se redresse (`onSecondCardPlayed`, appliqué par `act`).
 - Last Stand (ogn-069) : Action ; double la Might d'une unité alliée ce tour et lui donne Temporary (nouveau mot-clé : `temporary` sur l'unité, tuée au début de la Beginning de son contrôleur, avant le score).
 - Sprite Mother (ogn-106) : à la mise en jeu, joue ici un jeton Sprite 3 Might Ready et Temporary (jeton `token-sprite`, champ `temporary` des définitions appliqué par `summonToken`).
+- Brynhir Thundersong (ogn-026) : à la mise en jeu (après réactions), les adversaires ne peuvent plus jouer de carte ce tour (`playLockedPlayers`, refus `PLAY_LOCKED` dans `act`).
