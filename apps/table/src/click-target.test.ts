@@ -4,6 +4,7 @@ import {
   incinerate,
   gentlemensDuel,
   singularity,
+  fallingStar,
 } from '../../../packages/game-data/src/index.js';
 import {
   confirmTargets,
@@ -90,4 +91,20 @@ it('refuse de valider sans cible et garde la partie intacte', () => {
   });
   expect(refused.session.state).toBe(s.state);
   expect(refused.session.error).toMatch(/cible/);
+});
+
+it('Falling Star : recliquer une unité la choisit une seconde fois, puis Valider', () => {
+  const state = spellScenario(fallingStar);
+  state.resources.a = { energy: 2, power: { rouge: 2 } };
+  const s = session(state);
+  let selection = startTargeting(s, { cardId: 'spell' }).selection!;
+  selection = toggleTarget(s, selection, 'enemy').selection;
+  expect(targetOptions(s, 'spell', selection.picks!).next).toEqual(
+    expect.arrayContaining(['ally', 'enemy']),
+  );
+  selection = toggleTarget(s, selection, 'enemy').selection;
+  expect(selection.picks).toEqual(['enemy', 'enemy']);
+  expect(targetOptions(s, 'spell', selection.picks!).complete).toHaveLength(1);
+  const cast = confirmTargets(s, selection);
+  expect(cast.session.error).toBeNull();
 });

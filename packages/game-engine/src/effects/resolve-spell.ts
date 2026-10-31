@@ -171,6 +171,22 @@ export function resolveSpell(
       };
       continue;
     }
+    if (effect.type === 'damage-instances') {
+      for (const id of entry.selectedUnitIds ?? []) {
+        const unit = state.units.find((u) => u.id === id);
+        if (!unit) continue;
+        const damaged = dealSpellDamage(
+          state,
+          entry.card.id,
+          entry.casterId,
+          [unit],
+          effect.amount,
+        );
+        state = damaged.state;
+        events.push(...damaged.events);
+      }
+      continue;
+    }
     if (effect.type === 'kill-target-gear') {
       const killed = killGears(state, [entry.targetId]);
       state = killed.state;

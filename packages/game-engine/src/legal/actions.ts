@@ -150,6 +150,9 @@ function* candidates(
         spellCost(state, playerId, spell.cost),
         'spell',
       );
+      const instances = spell.effects.find(
+        (e) => e.type === 'damage-instances',
+      );
       if (payment)
         for (const target of spell.target.kind === 'graveyard-unit'
           ? state.cards
@@ -200,6 +203,12 @@ function* candidates(
               for (const second of ids.slice(i + 1))
                 yield { ...base, selectedUnitIds: [id, second] };
             }
+          } else if (instances) {
+            for (const selectedUnitIds of multisets(
+              state.units.map((u) => u.id),
+              instances.count,
+            ))
+              yield { ...base, selectedUnitIds };
           } else if (
             spell.effects.some((e) => e.type === 'duel' || e.type === 'strike')
           )
@@ -298,4 +307,12 @@ function targetPayment(state: GameState, action: GameAction): GameAction[] {
     action.type === 'cast-spell' ? 'spell' : 'ordinary',
   );
   return payment ? [{ ...action, payment }] : [];
+}
+
+/** Ids + taille -> combinaisons avec répétition (multi-ensembles), dans l'ordre des ids. */
+function multisets(ids: readonly string[], size: number): string[][] {
+  if (size === 0) return [[]];
+  return ids.flatMap((id, i) =>
+    multisets(ids.slice(i), size - 1).map((rest) => [id, ...rest]),
+  );
 }

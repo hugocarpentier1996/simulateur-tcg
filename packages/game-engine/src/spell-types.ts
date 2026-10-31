@@ -49,6 +49,13 @@ export interface SpellBlueprint {
     | { readonly type: 'exhaust-allies' }
     /** Détruit tous les équipements en jeu (cimetière de leur propriétaire). */
     | { readonly type: 'kill-all-gear' }
+    /** `count` instructions « inflige amount à une unité » : selectedUnitIds en donne exactement
+     * `count`, une même unité pouvant être choisie plusieurs fois (dégâts cumulés). */
+    | {
+        readonly type: 'damage-instances';
+        readonly count: number;
+        readonly amount: number;
+      }
     /** Détruit l'équipement ciblé (cible optional-gear ; lanceur ciblé : aucun effet). */
     | { readonly type: 'kill-target-gear' }
     /** L'unité ciblée inflige sa Might à l'unité ennemie choisie au lancement

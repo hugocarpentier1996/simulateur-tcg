@@ -151,3 +151,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Last Breath — ogn-260-298
 - [x] Thermo Beam — ogn-022-298
 - [x] Salvage — ogn-224-298
+- [x] Falling Star — ogn-029-298

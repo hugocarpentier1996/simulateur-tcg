@@ -75,6 +75,17 @@ export function castSpell(
       ))
   )
     return { ok: false, reason: 'INVALID_TARGET' };
+  const instances = definition.effects.find(
+    (e) => e.type === 'damage-instances',
+  );
+  if (
+    instances &&
+    (action.selectedUnitIds?.length !== instances.count ||
+      action.selectedUnitIds.some(
+        (id) => !state.units.some((u) => u.id === id),
+      ))
+  )
+    return { ok: false, reason: 'INVALID_TARGET' };
   const target = spellTarget(
     state,
     definition,

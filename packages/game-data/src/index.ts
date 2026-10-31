@@ -195,3 +195,4 @@ export { siphonPower } from './ogn/siphon-power.js';
 export { lastBreath } from './ogn/last-breath.js';
 export { thermoBeam } from './ogn/thermo-beam.js';
 export { salvage } from './ogn/salvage.js';
+export { fallingStar } from './ogn/falling-star.js';

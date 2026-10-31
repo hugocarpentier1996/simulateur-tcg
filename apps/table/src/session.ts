@@ -507,7 +507,22 @@ function fits(
 ): boolean {
   return plan.ordered
     ? picks.every((id, i) => plan.ids[i] === id)
-    : picks.every((id) => plan.ids.includes(id));
+    : remaining(plan.ids, picks) !== null;
+}
+
+/** Multi-ensemble des cibles prévues moins les choix (une unité peut figurer plusieurs
+ * fois, ex. Falling Star) ; null si un choix n'y figure pas assez de fois. */
+function remaining(
+  ids: readonly string[],
+  picks: readonly string[],
+): string[] | null {
+  const left = [...ids];
+  for (const id of picks) {
+    const index = left.indexOf(id);
+    if (index < 0) return null;
+    left.splice(index, 1);
+  }
+  return left;
 }
 
 /** Carte + cibles cliquées -> actions encore compatibles, prochaines cibles cliquables
@@ -531,7 +546,7 @@ export function targetOptions(
     const plan = targetPlan(state, action);
     return plan.ordered
       ? plan.ids.slice(picks.length, picks.length + 1)
-      : plan.ids.filter((id) => !picks.includes(id));
+      : (remaining(plan.ids, picks) ?? []);
   });
   const complete = actions.filter(
     (action) => targetPlan(state, action).ids.length === picks.length,
@@ -570,12 +585,21 @@ export function toggleTarget(
   const unordered = cardActions(session, selection.cardId).some(
     (a) => a.type === 'cast-spell' && a.selectedUnitIds !== undefined,
   );
+  // Cible répétable (plusieurs instructions sur la même unité) : un nouveau clic l'ajoute.
+  const repeat =
+    index >= 0 &&
+    targetOptions(
+      session,
+      selection.cardId,
+      [...picks, id],
+      selection.destinationId,
+    ).actions.length > 0;
   const nextPicks =
-    index >= 0
+    index >= 0 && !repeat
       ? [...picks.slice(0, index), ...(unordered ? picks.slice(index + 1) : [])]
       : [...picks, id];
   if (
-    index < 0 &&
+    (index < 0 || repeat) &&
     !targetOptions(
       session,
       selection.cardId,
