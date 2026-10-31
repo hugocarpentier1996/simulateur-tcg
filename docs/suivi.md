@@ -1070,3 +1070,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Warwick (ogn-159) : arrive Ready ; en attaquant, tue toutes les unités ennemies blessées du champ.
 - Ahri (ogn-066) : « When I hold » — capacité d'unité empilée après une tenue scorée sur son champ (`onHoldScore`), +1 point d'effet de carte (`awardPoints`, événement `points-gained`, victoire immédiate possible).
 - Legion Rearguard (ogn-010) : mécanique Accelerate (`accelerate` sur la définition, option `accelerate` de `play-unit` : +1 énergie et +1 Power du domaine, arrivée Ready). Les actions légales proposent les deux variantes quand elles sont payables ; la table l'indique dans le libellé.
+- Blazing Scorcher (ogn-001) : Accelerate (Fury).

@@ -133,3 +133,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Warwick — ogn-159-298
 - [x] Ahri — ogn-066-298
 - [x] Legion Rearguard — ogn-010-298
+- [x] Blazing Scorcher — ogn-001-298
