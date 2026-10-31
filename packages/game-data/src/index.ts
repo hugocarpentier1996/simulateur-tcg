@@ -168,3 +168,4 @@ export { machineEvangel } from './ogn/machine-evangel.js';
 export { kogMaw } from './ogn/kog-maw.js';
 export { sealOfRage } from './ogn/seal-of-rage.js';
 export { sealOfFocus } from './ogn/seal-of-focus.js';
+export { sealOfInsight } from './ogn/seal-of-insight.js';
