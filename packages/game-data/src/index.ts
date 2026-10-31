@@ -169,3 +169,4 @@ export { kogMaw } from './ogn/kog-maw.js';
 export { sealOfRage } from './ogn/seal-of-rage.js';
 export { sealOfFocus } from './ogn/seal-of-focus.js';
 export { sealOfInsight } from './ogn/seal-of-insight.js';
+export { sealOfStrength } from './ogn/seal-of-strength.js';

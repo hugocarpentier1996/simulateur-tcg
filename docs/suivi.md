@@ -1061,3 +1061,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Seal of Rage (ogn-040) : capacité ADD des gears (`resourceAbility`, action `activate-gear`) : Tap, +1 Power Fury dans la réserve, sans pile, dans une fenêtre de Réaction. Les gears reçoivent désormais leurs métadonnées imprimées (image, tags).
 - Seal of Focus (ogn-081) : Tap, +1 Power Calm (capacité ADD de gear).
 - Seal of Insight (ogn-120) : Tap, +1 Power Mind (capacité ADD de gear).
+- Seal of Strength (ogn-163) : Tap, +1 Power Body (capacité ADD de gear).
