@@ -38,6 +38,8 @@ export interface GameState {
   pendingAttackChoices?: AttackDamageTrigger[] | null;
   /** Joueurs dont les nouvelles unités entrent Ready jusqu’à la fin du tour courant. */
   readyEntryPlayers?: readonly string[];
+  /** Cartes jouées (unités, sorts, gears) par joueur depuis le début du tour (Legion). */
+  cardsPlayedThisTurn?: Readonly<Record<string, number>>;
   /** État serveur privé : sommet connu uniquement du joueur de Vision. */
   pendingVision?: { playerId: string; sourceId: string; cardId: string } | null;
   /** Choix obligatoire pendant une résolution ; aucune réaction entre défausse et pioche. */
@@ -156,6 +158,9 @@ export interface UnitBlueprint {
   readonly tags?: readonly string[];
   /** Exception de mise en jeu : champ entièrement vide en plus des destinations ordinaires. */
   readonly canPlayToOpenBattlefield?: boolean;
+  /** Legion : « when you play me, ready me » si une autre carte a été jouée ce tour.
+   * Hypothèse de prototype : appliqué à l'entrée en jeu, sans passer par la pile. */
+  readonly legionReady?: boolean;
   /** Peut être joué sur un champ occupé par des unités ennemies (Showdown à l'arrivée). */
   readonly canPlayToOccupiedEnemyBattlefield?: boolean;
   /** Déplacement vers un champ : invoquer ce jeton ici via la pile, sans condition de contrôle. */

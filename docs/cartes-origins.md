@@ -162,3 +162,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Bullet Time — ogn-268-298
 - [x] Ahri — ogn-119-298
 - [x] Deadbloom Predator — ogn-161-298
+- [x] Darius — ogn-243-298

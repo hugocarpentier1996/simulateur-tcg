@@ -206,3 +206,4 @@ export { invertTimelines } from './ogn/invert-timelines.js';
 export { bulletTime } from './ogn/bullet-time.js';
 export { ahri } from './ogn/ahri.js';
 export { deadbloomPredator } from './ogn/deadbloom-predator.js';
+export { darius } from './ogn/darius.js';

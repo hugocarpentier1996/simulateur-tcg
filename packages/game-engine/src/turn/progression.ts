@@ -26,6 +26,7 @@ export function startNextTurn(
   const current: GameState = {
     ...end.state,
     ...(state.readyEntryPlayers ? { readyEntryPlayers: [] } : {}),
+    ...(state.cardsPlayedThisTurn ? { cardsPlayedThisTurn: {} } : {}),
     ...(state.pendingTurnEnd ? { pendingTurnEnd: false } : {}),
     units: end.state.units.map((unit) => ({
       ...unit,

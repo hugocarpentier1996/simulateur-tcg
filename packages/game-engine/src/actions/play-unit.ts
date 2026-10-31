@@ -191,6 +191,8 @@ export function playUnit(
           zoneId: destinationId,
           ready:
             definition.entersReady === true ||
+            (definition.legionReady === true &&
+              (state.cardsPlayedThisTurn?.[action.playerId] ?? 0) > 0) ||
             action.accelerate === true ||
             !!state.readyEntryPlayers?.includes(card.ownerId),
           might: definition.might,

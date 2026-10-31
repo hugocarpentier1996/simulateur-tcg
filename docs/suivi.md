@@ -1099,3 +1099,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Bullet Time (ogn-268) : Action ; coût X (`variablePower`, champ d'action `xPower`, payé en Power quelconque) pour X dégâts aux unités ennemies d'un champ ; X proposé au panneau (« X = n »).
 - Ahri (ogn-119) : en attaquant ou en défendant, -2 Might (minimum 1) à une unité ennemie ici (`onAttackTargetEffect` de type `weaken` avec `defendToo` ; les défenseurs présents au début du combat déclenchent aussi).
 - Deadbloom Predator (ogn-161) : Deflect ; peut être joué sur un champ occupé par l'ennemi, ce qui lance un combat à l'arrivée (`canPlayToOccupiedEnemyBattlefield`).
+- Darius (ogn-243) : Legion (entre Ready si une autre carte a été jouée ce tour ; compteur `cardsPlayedThisTurn` tenu par `act`, remis à zéro au tour suivant) et +1 Might aux autres alliés de sa zone.

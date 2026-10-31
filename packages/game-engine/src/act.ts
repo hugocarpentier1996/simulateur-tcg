@@ -57,8 +57,25 @@ import { settleLethalUnits } from './effects/lethal-units.js';
  * inéligible est remplacée par une pioche, avec le champ inscrit comme scoré.
  */
 export function act(state: GameState, action: GameAction): ActionResult {
-  const result = dispatch(state, action);
-  if (!result.ok) return result;
+  const dispatched = dispatch(state, action);
+  if (!dispatched.ok) return dispatched;
+  const result =
+    action.type === 'play-unit' ||
+    action.type === 'cast-spell' ||
+    action.type === 'play-gear'
+      ? {
+          ...dispatched,
+          state: {
+            ...dispatched.state,
+            cardsPlayedThisTurn: {
+              ...dispatched.state.cardsPlayedThisTurn,
+              [action.playerId]:
+                (dispatched.state.cardsPlayedThisTurn?.[action.playerId] ?? 0) +
+                1,
+            },
+          },
+        }
+      : dispatched;
   const settled = settleLethalUnits(result.state);
   const attached = syncAttachments(settled.state);
   const queued = queueConquestLegends(attached.state, result.events);
