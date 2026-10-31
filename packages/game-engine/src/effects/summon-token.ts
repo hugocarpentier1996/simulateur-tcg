@@ -50,6 +50,7 @@ export function summonToken(
             alliesEnterReady(state, ownerId) ||
             !!state.readyEntryPlayers?.includes(ownerId),
           token: true,
+          ...(definition.temporary ? { temporary: true } : {}),
         },
       ],
     },

@@ -225,3 +225,4 @@ export { pitCrew } from './ogn/pit-crew.js';
 export { convergentMutation } from './ogn/convergent-mutation.js';
 export { dariusFury } from './ogn/darius-fury.js';
 export { lastStand } from './ogn/last-stand.js';
+export { spriteMother, spriteToken } from './ogn/sprite-mother.js';
