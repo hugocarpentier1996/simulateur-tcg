@@ -52,3 +52,4 @@ existantes ; seuls les nouveaux doutes utiles rejoindront le prochain lot de que
 - Falling Star / instructions multiples (hypothèse) : chaque instruction choisit sa cible au lancement ; la même unité peut être choisie plusieurs fois.
 - Contre (Wind Wall, Defy) : le sort contré va au cimetière de son propriétaire et n'est pas « joué » (aucun déclenchement de sort joué).
 - Ekko (hypothèse) : « Recycle me to ready your runes » est appliqué automatiquement (coût toujours accepté) tant que la carte est au cimetière.
+- Pit Crew (hypothèse) : « When you play a gear, ready me » est appliqué immédiatement à la pose du gear, sans passer par la pile.

@@ -221,3 +221,4 @@ export { dangerousDuo } from './ogn/dangerous-duo.js';
 export { kadregrinTheInfernal } from './ogn/kadregrin-the-infernal.js';
 export { magmaWurm } from './ogn/magma-wurm.js';
 export { leonaCalm } from './ogn/leona-calm.js';
+export { pitCrew } from './ogn/pit-crew.js';

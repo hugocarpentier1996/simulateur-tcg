@@ -24,6 +24,8 @@ export interface UnitDefinition extends PrintedMetadata {
   /** Legion : « when you play me, ready me » si une autre carte a été jouée ce tour.
    * Hypothèse de prototype : appliqué à l'entrée en jeu, sans passer par la pile. */
   readonly legionReady?: boolean;
+  /** Se redresse quand son propriétaire joue un gear (hypothèse : sans passer par la pile). */
+  readonly readyOnGearPlayed?: boolean;
   /** Entre Ready si un adversaire est à ce nombre de points ou moins de sa victoire. */
   readonly entersReadyIfOpponentWithin?: number;
   /** Les unités ennemies Stun de sa zone perdent cette Might, sans descendre sous 1. */
