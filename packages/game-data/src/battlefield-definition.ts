@@ -12,6 +12,8 @@ export interface BattlefieldDefinition extends PrintedMetadata {
   readonly holdChannel?: number;
   /** Les unités présentes ont Ganking (Windswept Hillock). */
   readonly grantsGanking?: boolean;
+  /** Les unités ne peuvent pas se déplacer d'ici vers une base (Vilemaw's Lair). */
+  readonly noMoveToBase?: boolean;
 }
 /** Définition de confiance -> copie immuable, indépendante de son contrôleur. */
 export function defineBattlefield(

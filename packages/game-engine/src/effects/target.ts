@@ -1,3 +1,4 @@
+import { battlefieldDefinition } from './battlefield.js';
 import { effectiveMight } from './modifiers.js';
 import type { GameState, UnitState } from '../types.js';
 import type { SpellBlueprint, SpellEntry } from '../spell-types.js';
@@ -75,7 +76,9 @@ export function validDestination(
     (z) =>
       z.id === destinationId &&
       (z.kind === 'battlefield' ||
-        (z.kind === 'base' && z.ownerId === unit.ownerId)),
+        (z.kind === 'base' &&
+          z.ownerId === unit.ownerId &&
+          !battlefieldDefinition(state, unit.zoneId)?.noMoveToBase)),
   );
 }
 

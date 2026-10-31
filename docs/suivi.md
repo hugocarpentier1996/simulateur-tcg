@@ -1148,3 +1148,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Showstopper (ogn-270) : Power hybride Body/Order ; buffe un allié de sa base puis le déplace sur un champ (effets `buff-unit` et `move-to-battlefield`).
 - Mask of Foresight (ogn-060) : gear ; une unité alliée seule de son camp au combat a +1 Might (portée de gear `alone-in-combat`).
 - Windswept Hillock (ogn-297) : champ ; les unités présentes ont Ganking (`grantsGanking`, pris en compte par `hasKeyword`).
+- Vilemaw's Lair (ogn-295) : champ ; aucune unité ne peut se déplacer d'ici vers une base, par mouvement ou par sort (`noMoveToBase`).

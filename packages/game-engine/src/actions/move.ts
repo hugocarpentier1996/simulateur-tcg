@@ -1,3 +1,4 @@
+import { battlefieldDefinition } from '../effects/battlefield.js';
 import { hasKeyword } from '../effects/modifiers.js';
 import type { GameState, GameAction, ActionResult } from '../types.js';
 
@@ -44,6 +45,12 @@ function validateMove(state: GameState, action: MoveAction): MoveValidation {
   const fromOwnBase =
     origin?.kind === 'base' && origin.ownerId === action.playerId;
   const fromField = origin?.kind === 'battlefield';
+  if (
+    fromField &&
+    toOwnBase &&
+    battlefieldDefinition(state, origin.id)?.noMoveToBase
+  )
+    return { ok: false, reason: 'UNSUPPORTED_DESTINATION' };
   if (
     unit.zoneId === action.destinationId ||
     !(

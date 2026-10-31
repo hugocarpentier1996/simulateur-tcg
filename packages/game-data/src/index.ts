@@ -253,3 +253,4 @@ export { dragonsRage } from './ogn/dragons-rage.js';
 export { showstopper } from './ogn/showstopper.js';
 export { maskOfForesight } from './ogn/mask-of-foresight.js';
 export { windsweptHillock } from './ogn/windswept-hillock.js';
+export { vilemawsLair } from './ogn/vilemaws-lair.js';
