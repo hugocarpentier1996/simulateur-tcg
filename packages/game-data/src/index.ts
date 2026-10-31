@@ -159,3 +159,4 @@ export { whiteflameProtector } from './ogn/whiteflame-protector.js';
 export { riptideRex } from './ogn/riptide-rex.js';
 export { solariShieldbearer } from './ogn/solari-shieldbearer.js';
 export { harnessedDragon } from './ogn/harnessed-dragon.js';
+export { zauniteBouncer } from './ogn/zaunite-bouncer.js';

@@ -1051,3 +1051,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Riptide Rex (ogn-092) : à la mise en jeu, 6 dégâts à une unité ennemie sur un champ.
 - Solari Shieldbearer (ogn-051) : à la mise en jeu, Stun d'une unité jusqu'à la fin du tour.
 - Harnessed Dragon (ogn-234) : à la mise en jeu, tue une unité ennemie ; sans ennemi, aucun effet.
+- Zaunite Bouncer (ogn-188) : à la mise en jeu, renvoie en main une autre unité sur un champ.
