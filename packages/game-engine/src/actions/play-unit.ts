@@ -72,17 +72,24 @@ export function playUnit(
     )
   )
     return { ok: false, reason: 'INVALID_TARGET' };
-  if (definition.onPlaySummonHere)
-    entries.push({
-      kind: 'play-effect',
-      sourceId: card.id,
-      ownerId: card.ownerId,
-      effect: {
-        type: 'summon-here',
-        destinationId,
-        definitionId: definition.onPlaySummonHere,
-      },
-    });
+  if (
+    definition.onPlaySummonHere &&
+    !(
+      definition.onPlaySummonHereLegion &&
+      !state.cardsPlayedThisTurn?.[action.playerId]
+    )
+  )
+    for (let i = 0; i < (definition.onPlaySummonHereCount ?? 1); i++)
+      entries.push({
+        kind: 'play-effect',
+        sourceId: card.id,
+        ownerId: card.ownerId,
+        effect: {
+          type: 'summon-here',
+          destinationId,
+          definitionId: definition.onPlaySummonHere,
+        },
+      });
   if (definition.onPlayVision)
     entries.push({
       kind: 'play-effect',

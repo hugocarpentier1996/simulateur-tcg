@@ -268,6 +268,10 @@ export interface UnitBlueprint {
   readonly onPlayMoveToBase?: boolean;
   readonly onPlayVision?: boolean;
   readonly onPlaySummonHere?: string;
+  /** Nombre de jetons onPlaySummonHere (1 par défaut). */
+  readonly onPlaySummonHereCount?: number;
+  /** Legion : jetons seulement si une autre carte a été jouée ce tour. */
+  readonly onPlaySummonHereLegion?: boolean;
   readonly spellEnergyReductionAtBattlefield?: number;
   /** Effet de mise en jeu, empilé avant résolution. */
   readonly onPlayEffect?:

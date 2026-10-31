@@ -245,3 +245,4 @@ export { spoilsOfWar } from './ogn/spoils-of-war.js';
 export { unyieldingSpirit } from './ogn/unyielding-spirit.js';
 export { cemeteryAttendant } from './ogn/cemetery-attendant.js';
 export { jinxChaos } from './ogn/jinx-chaos.js';
+export { vanguardCaptain } from './ogn/vanguard-captain.js';
