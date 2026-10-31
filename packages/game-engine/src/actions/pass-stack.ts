@@ -1,4 +1,5 @@
 import { resolveHoldChannel } from '../effects/hold-channel.js';
+import { resolveHoldUnit } from '../effects/hold-units.js';
 import { resolveDefenseShield } from '../effects/defense-shield.js';
 import { resolveAttackDamage } from '../effects/attack-targets.js';
 import { resolvePlayEffect } from '../effects/play-effect.js';
@@ -46,27 +47,29 @@ export function passStack(state: GameState, playerId: string): ActionResult {
       ? resolveSpell(popped, entry)
       : entry.kind === 'hold-channel'
         ? resolveHoldChannel(popped, entry)
-        : entry.kind === 'defense-shield'
-          ? resolveDefenseShield(popped, entry)
-          : entry.kind === 'attack-damage'
-            ? resolveAttackDamage(popped, entry)
-            : entry.kind === 'play-effect'
-              ? resolvePlayEffect(popped, entry)
-              : entry.kind === 'attack'
-                ? resolveAttackEffect(popped, entry)
-                : entry.kind === 'movement'
-                  ? resolveMovementEffect(popped, entry)
-                  : entry.kind === 'death'
-                    ? resolveDeathEffect(popped, entry)
-                    : entry.kind === 'unit-play'
-                      ? resolveUnitPlay(popped, entry)
-                      : entry.kind === 'return-spell'
-                        ? resolveReturnSpell(popped, entry)
-                        : entry.kind === 'legend-draw'
-                          ? resolveLegendDraw(popped, entry)
-                          : entry.kind === 'legend-ready-runes'
-                            ? resolveReadyRunes(popped, entry)
-                            : resolveSpellPlay(popped, entry);
+        : entry.kind === 'hold-unit'
+          ? resolveHoldUnit(popped, entry)
+          : entry.kind === 'defense-shield'
+            ? resolveDefenseShield(popped, entry)
+            : entry.kind === 'attack-damage'
+              ? resolveAttackDamage(popped, entry)
+              : entry.kind === 'play-effect'
+                ? resolvePlayEffect(popped, entry)
+                : entry.kind === 'attack'
+                  ? resolveAttackEffect(popped, entry)
+                  : entry.kind === 'movement'
+                    ? resolveMovementEffect(popped, entry)
+                    : entry.kind === 'death'
+                      ? resolveDeathEffect(popped, entry)
+                      : entry.kind === 'unit-play'
+                        ? resolveUnitPlay(popped, entry)
+                        : entry.kind === 'return-spell'
+                          ? resolveReturnSpell(popped, entry)
+                          : entry.kind === 'legend-draw'
+                            ? resolveLegendDraw(popped, entry)
+                            : entry.kind === 'legend-ready-runes'
+                              ? resolveReadyRunes(popped, entry)
+                              : resolveSpellPlay(popped, entry);
   // Le sort est « joué » une fois résolu : ses déclenchements s'empilent alors.
   const triggers =
     'card' in entry && !resolved.state.result && resolved.state.stack

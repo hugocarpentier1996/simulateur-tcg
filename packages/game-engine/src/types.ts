@@ -81,6 +81,7 @@ export interface GameState {
   stack?: {
     entries: (
       | import('./effects/hold-channel.js').HoldChannelEntry
+      | import('./effects/hold-units.js').HoldUnitEntry
       | import('./effects/defense-shield.js').DefenseShieldEntry
       | AttackDamageEntry
       | PlayEffectEntry
@@ -196,6 +197,8 @@ export interface UnitBlueprint {
   /** En attaque avec un ennemi Ready ici : bonus temporaire via la pile, condition revérifiée. */
   readonly onAttackReadyEnemyMightBonus?: number;
   readonly onAttackDamage?: number;
+  /** « When I hold » : points d'effet de carte quand son propriétaire tient son champ. */
+  readonly onHoldScore?: number;
   /** En attaquant : dégâts de capacité à toutes les unités ennemies du champ, via la pile. */
   readonly onAttackDamageEnemiesHere?: number;
   /** En attaquant : tue toutes les unités ennemies blessées du champ, via la pile. */
@@ -442,6 +445,14 @@ export type GameEvent =
       sourceId: string;
     }
   | { type: 'spell-returned'; playerId: string; cardId: string }
+  /** Points accordés par un effet de carte, hors tenue et conquête. */
+  | {
+      type: 'points-gained';
+      playerId: string;
+      amount: number;
+      sourceId: string;
+      source: 'CARD_EFFECT';
+    }
   /** Gear activé pour sa capacité de ressource. */
   | {
       type: 'gear-resource-added';

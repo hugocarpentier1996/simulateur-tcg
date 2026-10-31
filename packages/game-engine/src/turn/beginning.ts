@@ -1,4 +1,5 @@
 import { queueHoldChannel } from '../effects/hold-channel.js';
+import { queueHoldUnits } from '../effects/hold-units.js';
 import type { ActionResult, GameEvent, GameState } from '../types.js';
 import { scoreBattlefield } from '../scoring/battlefield.js';
 
@@ -21,6 +22,8 @@ export function scoreHolding(
     if (current.result) break;
     const result = scoreBattlefield(current, playerId, field.zoneId, 'HOLD');
     current = queueHoldChannel(result.state, playerId, field.zoneId);
+    if (result.events.some((e) => e.type === 'point-scored'))
+      current = queueHoldUnits(current, playerId, field.zoneId);
     events.push(...result.events);
   }
   return { ok: true, state: current, events };

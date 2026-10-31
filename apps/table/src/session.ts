@@ -178,6 +178,8 @@ function describe(
 ): string | null {
   const name = (id: string) => entityName(id, states);
   switch (event.type) {
+    case 'points-gained':
+      return `${playerName(event.playerId)} gagne ${event.amount} point(s) grâce à ${name(event.sourceId)}.`;
     case 'gear-played':
       return `${playerName(event.playerId)} pose ${name(event.gearId)}.`;
     case 'gear-equipped':

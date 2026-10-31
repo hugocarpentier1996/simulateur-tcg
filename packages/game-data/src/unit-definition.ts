@@ -58,6 +58,8 @@ export interface UnitDefinition extends PrintedMetadata {
   /** En attaque avec un ennemi Ready ici : bonus temporaire via la pile, condition revérifiée. */
   readonly onAttackReadyEnemyMightBonus?: number;
   readonly onAttackDamage?: number;
+  /** « When I hold » : points d'effet de carte quand son propriétaire tient son champ. */
+  readonly onHoldScore?: number;
   /** En attaquant : dégâts de capacité à toutes les unités ennemies du champ, via la pile. */
   readonly onAttackDamageEnemiesHere?: number;
   /** En attaquant : tue toutes les unités ennemies blessées du champ, via la pile. */
