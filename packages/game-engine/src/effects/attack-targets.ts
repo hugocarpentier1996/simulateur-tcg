@@ -18,7 +18,9 @@ export interface AttackDamageTrigger {
   amount: number;
   /** Absent : `amount` dégâts. stun : Stun ; might-damage : dégâts égaux à la Might
    * actuelle de la source à la résolution. */
-  effect?: 'stun' | 'might-damage';
+  effect?: 'stun' | 'might-damage' | 'weaken';
+  /** weaken : Might minimale laissée à la cible. */
+  minimum?: number;
 }
 export interface AttackDamageEntry extends AttackDamageTrigger {
   kind: 'attack-damage';
@@ -163,6 +165,30 @@ export function resolveAttackDamage(
       u.zoneId === entry.battlefieldId,
   );
   const source = state.units.find((u) => u.id === entry.sourceId);
+  if (target && source && entry.effect === 'weaken') {
+    const amount = Math.max(
+      -entry.amount,
+      Math.min(0, (entry.minimum ?? 0) - effectiveMight(target, state)),
+    );
+    return {
+      ok: true,
+      state: {
+        ...state,
+        units: state.units.map((u) =>
+          u.id === target.id
+            ? {
+                ...u,
+                temporaryEffects: [
+                  ...(u.temporaryEffects ?? []),
+                  { type: 'modify-might' as const, amount },
+                ],
+              }
+            : u,
+        ),
+      },
+      events: [{ type: 'attack-effect-resolved', sourceId: entry.sourceId }],
+    };
+  }
   if (target && source && entry.effect === 'stun')
     return {
       ok: true,

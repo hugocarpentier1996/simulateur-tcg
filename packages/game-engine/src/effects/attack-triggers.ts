@@ -62,13 +62,17 @@ export function queueAttackEffects(
         battlefieldId: combat.battlefieldId,
         amount: definition.onAttackDamage,
       });
-    if (definition?.onAttackTargetEffect)
+    const targetEffect = definition?.onAttackTargetEffect;
+    if (targetEffect)
       targeted.push({
         sourceId: u.id,
         ownerId: u.ownerId,
         battlefieldId: combat.battlefieldId,
-        amount: 0,
-        effect: definition.onAttackTargetEffect.type,
+        amount: targetEffect.type === 'weaken' ? targetEffect.amount : 0,
+        effect: targetEffect.type,
+        ...(targetEffect.type === 'weaken'
+          ? { minimum: targetEffect.minimum }
+          : {}),
       });
     if (definition?.onAttackDamageEnemiesHere !== undefined)
       entries.push({
@@ -100,6 +104,24 @@ export function queueAttackEffects(
         amount: definition.onAttackReadyEnemyMightBonus,
       });
   }
+  // « When I defend » : défenseurs présents au début du combat (Ahri).
+  if (begins)
+    for (const u of state.units) {
+      if (u.ownerId !== combat.defenderId || u.zoneId !== combat.battlefieldId)
+        continue;
+      const effect = state.unitDefinitions?.find(
+        (d) => d.id === u.definitionId,
+      )?.onAttackTargetEffect;
+      if (effect?.type === 'weaken' && effect.defendToo)
+        targeted.push({
+          sourceId: u.id,
+          ownerId: u.ownerId,
+          battlefieldId: combat.battlefieldId,
+          amount: effect.amount,
+          effect: 'weaken',
+          minimum: effect.minimum,
+        });
+    }
   if (!entries.length && !targeted.length)
     return { ok: true, state, events: [] };
   return {

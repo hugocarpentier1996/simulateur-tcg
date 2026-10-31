@@ -209,7 +209,16 @@ export interface UnitBlueprint {
   /** En attaquant : effet sur une unité ennemie de ce champ, choisie avant réactions.
    * stun : Stun jusqu'à la fin du tour ; might-damage : dégâts égaux à la Might de la source
    * à la résolution. */
-  readonly onAttackTargetEffect?: { readonly type: 'stun' | 'might-damage' };
+  readonly onAttackTargetEffect?:
+    | { readonly type: 'stun' | 'might-damage' }
+    /** weaken : -amount Might jusqu'à la fin du tour, sans descendre sous minimum ;
+     * defendToo : se déclenche aussi quand l'unité défend (Ahri). */
+    | {
+        readonly type: 'weaken';
+        readonly amount: number;
+        readonly minimum: number;
+        readonly defendToo?: boolean;
+      };
   /** Les autres unités alliées de sa zone ont Assault de cette valeur (cumulable). */
   readonly otherAlliesHereAssault?: number;
   /** Les autres unités alliées de sa zone ont Shield de cette valeur (cumulable). */

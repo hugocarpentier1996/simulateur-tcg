@@ -1097,3 +1097,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Stormbringer (ogn-250) : unité alliée en base (nouvelle restriction de cible `zone: 'base'`) ; sa Might en dégâts à toutes les unités ennemies d'un champ choisi, puis elle s'y déplace (effet `might-damage-enemies-then-move`).
 - Invert Timelines (ogn-201) : chaque joueur défausse sa main puis pioche 4, lanceur d'abord (effet `discard-hands-then-draw`).
 - Bullet Time (ogn-268) : Action ; coût X (`variablePower`, champ d'action `xPower`, payé en Power quelconque) pour X dégâts aux unités ennemies d'un champ ; X proposé au panneau (« X = n »).
+- Ahri (ogn-119) : en attaquant ou en défendant, -2 Might (minimum 1) à une unité ennemie ici (`onAttackTargetEffect` de type `weaken` avec `defendToo` ; les défenseurs présents au début du combat déclenchent aussi).
