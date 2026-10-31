@@ -147,7 +147,7 @@ function* candidates(
       const payment = findPayment(
         state,
         playerId,
-        spellCost(state, playerId, spell.cost),
+        spellCost(state, playerId, spell),
         'spell',
       );
       const instances = spell.effects.find(
@@ -295,7 +295,7 @@ function targetPayment(state: GameState, action: GameAction): GameAction[] {
       ? withDeflect(
           state,
           action.playerId,
-          spellCost(state, action.playerId, definition.cost),
+          spellCost(state, action.playerId, definition),
           spellChosenUnits(definition, action),
         )
       : withDeflect(

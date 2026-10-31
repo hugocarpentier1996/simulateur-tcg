@@ -152,7 +152,7 @@ export function castSpell(
   const cost = withDeflect(
     state,
     action.playerId,
-    spellCost(state, action.playerId, definition.cost),
+    spellCost(state, action.playerId, definition),
     spellChosenUnits(definition, action),
   );
   const paid = payCost(state, action.playerId, cost, action.payment, 'spell');

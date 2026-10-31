@@ -120,6 +120,12 @@ export interface SpellDefinition extends PrintedMetadata {
   readonly name: string;
   readonly type: 'spell';
   readonly optionalExhaustAlly?: boolean;
+  /** Réduction d'énergie propre au sort (plancher 0), avant les réductions d'unités. */
+  readonly costReduction?: {
+    readonly kind: 'opponent-near-victory';
+    readonly within: number;
+    readonly energy: number;
+  };
   readonly timing: SpellTiming;
   readonly cost: CardCost;
   readonly target:

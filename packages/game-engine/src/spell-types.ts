@@ -5,6 +5,12 @@ export interface SpellBlueprint {
   readonly id: string;
   readonly type: 'spell';
   readonly optionalExhaustAlly?: boolean;
+  /** Réduction d'énergie propre au sort (plancher 0), avant les réductions d'unités. */
+  readonly costReduction?: {
+    readonly kind: 'opponent-near-victory';
+    readonly within: number;
+    readonly energy: number;
+  };
   readonly timing: 'normal' | 'action' | 'reaction';
   readonly cost: UnitBlueprint['cost'];
   readonly target:
