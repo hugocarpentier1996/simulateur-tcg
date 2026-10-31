@@ -180,6 +180,8 @@ export interface UnitBlueprint {
   readonly legionReady?: boolean;
   /** Ganking tant que l'unité est buffée (Bilgewater Bully). */
   readonly buffedGanking?: boolean;
+  /** Sur un champ : les autres unités alliées buffées de ce champ ont ce bonus (Lee Sin). */
+  readonly otherBuffedAlliesHereMight?: number;
   /** Sur un champ : +Might par unité alliée buffée de ce champ, elle comprise (Sett). */
   readonly mightPerBuffedAllyHere?: number;
   /** Might supplémentaire tant que l'unité est buffée (Wizened Elder). */

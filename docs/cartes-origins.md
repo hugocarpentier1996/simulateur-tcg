@@ -193,3 +193,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Trifarian Gloryseeker — ogn-217-298
 - [x] Peak Guardian — ogn-223-298
 - [x] Sett — ogn-240-298
+- [x] Lee Sin — ogn-151-298

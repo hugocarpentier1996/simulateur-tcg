@@ -237,3 +237,4 @@ export { wizenedElder } from './ogn/wizened-elder.js';
 export { trifarianGloryseeker } from './ogn/trifarian-gloryseeker.js';
 export { peakGuardian } from './ogn/peak-guardian.js';
 export { settOrder } from './ogn/sett-order.js';
+export { leeSinBody } from './ogn/lee-sin-body.js';

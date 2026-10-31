@@ -14,7 +14,11 @@ export function unitAuraMightBonus(unit: UnitState, state: GameState): number {
     const definition = state.unitDefinitions?.find(
       (d) => d.id === source.definitionId,
     );
-    return sum + (definition?.otherAlliesHereMightBonus ?? 0);
+    const buffedBonus =
+      unit.buffed && state.battlefields.some((f) => f.zoneId === unit.zoneId)
+        ? (definition?.otherBuffedAlliesHereMight ?? 0)
+        : 0;
+    return sum + (definition?.otherAlliesHereMightBonus ?? 0) + buffedBonus;
   }, 0);
 }
 

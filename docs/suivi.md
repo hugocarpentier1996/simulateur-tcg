@@ -1130,3 +1130,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Trifarian Gloryseeker (ogn-217) : Legion — se buffe à la mise en jeu (`onPlayEffect` `buff-self`).
 - Peak Guardian (ogn-223) : se buffe puis, sur un champ, buffe les autres alliés de ce champ (`buff-self` avec `alliesHere`).
 - Sett (ogn-240, Order) : Tank ; +1 Might par unité alliée buffée de son champ (`mightPerBuffedAllyHere`).
+- Lee Sin (ogn-151, Body) : Accelerate ; les autres alliés buffés de son champ ont +2 Might (`otherBuffedAlliesHereMight`).
