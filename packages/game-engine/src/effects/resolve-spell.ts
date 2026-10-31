@@ -132,6 +132,29 @@ export function resolveSpell(
       }
       continue;
     }
+    if (effect.type === 'damage-all-at-battlefields') {
+      const damaged = dealAreaDamage(
+        state,
+        { kind: 'spell', cardId: entry.card.id, playerId: entry.casterId },
+        state.battlefields.map((f) => ({
+          kind: 'battlefield' as const,
+          battlefieldId: f.zoneId,
+        })),
+        effect.amount,
+      );
+      state = damaged.state;
+      events.push(...damaged.events);
+      continue;
+    }
+    if (effect.type === 'exhaust-allies') {
+      state = {
+        ...state,
+        units: state.units.map((u) =>
+          u.ownerId === entry.casterId ? { ...u, ready: false } : u,
+        ),
+      };
+      continue;
+    }
     if (
       effect.type === 'damage-enemies-at-battlefield' ||
       effect.type === 'damage-enemies-in-combat'

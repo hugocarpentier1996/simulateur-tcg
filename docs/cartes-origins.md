@@ -142,3 +142,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Leona — ogn-238-298
 - [x] Yasuo — ogn-076-298
 - [x] Kai'Sa — ogn-039-298
+- [x] Flurry of Blades — ogn-133-298

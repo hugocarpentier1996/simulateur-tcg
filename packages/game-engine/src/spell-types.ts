@@ -41,6 +41,10 @@ export interface SpellBlueprint {
         readonly amount: number;
       }
     | { readonly type: 'damage-enemies-in-combat'; readonly amount: number }
+    /** Dégâts de sort à toutes les unités sur tous les champs (alliées comprises). */
+    | { readonly type: 'damage-all-at-battlefields'; readonly amount: number }
+    /** Épuise toutes les unités alliées du lanceur. */
+    | { readonly type: 'exhaust-allies' }
     | { readonly type: 'return-graveyard-unit' }
     | {
         readonly type: 'channel-exhausted';
