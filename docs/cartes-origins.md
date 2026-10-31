@@ -126,3 +126,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Seal of Focus — ogn-081-298
 - [x] Seal of Insight — ogn-120-298
 - [x] Seal of Strength — ogn-163-298
+- [x] Seal of Discord — ogn-204-298
