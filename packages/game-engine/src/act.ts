@@ -81,6 +81,11 @@ export function act(state: GameState, action: GameAction): ActionResult {
           },
         }
       : dispatched;
+  if (
+    result !== dispatched &&
+    result.state.cardsPlayedThisTurn?.[action.playerId] === 2
+  )
+    result.state = secondCardTriggers(result.state, action.playerId);
   const settled = settleLethalUnits(result.state);
   const attached = syncAttachments(settled.state);
   const queued = queueConquestLegends(attached.state, result.events);
@@ -245,5 +250,28 @@ function countMoves(state: GameState, events: readonly GameEvent[]): GameState {
         ? { ...u, movesThisTurn: (u.movesThisTurn ?? 0) + moves.get(u.id)! }
         : u,
     ),
+  };
+}
+
+/** Deuxième carte jouée du tour -> unités onSecondCardPlayed du joueur (Darius Fury). */
+function secondCardTriggers(state: GameState, playerId: string): GameState {
+  return {
+    ...state,
+    units: state.units.map((u) => {
+      const trigger =
+        u.ownerId === playerId
+          ? state.unitDefinitions?.find((d) => d.id === u.definitionId)
+              ?.onSecondCardPlayed
+          : undefined;
+      if (!trigger) return u;
+      return {
+        ...u,
+        ready: u.ready || trigger.ready,
+        temporaryEffects: [
+          ...(u.temporaryEffects ?? []),
+          { type: 'modify-might' as const, amount: trigger.might },
+        ],
+      };
+    }),
   };
 }
