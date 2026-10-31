@@ -1055,3 +1055,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Solari Chief (ogn-225) : à la mise en jeu, une unité ennemie est tuée si elle est Stun, sinon Stun (variante `kill-if-stunned-else-stun`, état évalué à la résolution).
 - Carnivorous Snapvine (ogn-149) : à la mise en jeu, duel avec une unité ennemie sur un champ (variante `fight` ; source disparue = aucun dégât).
 - Watchful Sentry (ogn-096) : Deathknell, pioche 1. `DeathEffect` devient une union (jeton, pioche, canalisation Tap, jetons en base, dégâts sur le champ de la mort) ; seule l'invocation d'un jeton choisit une destination, les autres effets utilisent conventionnellement la base. La zone de la mort est conservée dans le déclenchement.
+- Soaring Scout (ogn-216) : Deathknell, canalise 1 rune Tap.
