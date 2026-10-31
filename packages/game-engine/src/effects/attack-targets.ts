@@ -10,11 +10,15 @@ import { payCost } from '../cost/payment.js';
 import { findPayment } from '../legal/payment.js';
 import { dealEffectDamage } from './effect-damage.js';
 import { settleLethalUnits } from './lethal-units.js';
+import { effectiveMight } from './modifiers.js';
 export interface AttackDamageTrigger {
   sourceId: string;
   ownerId: string;
   battlefieldId: string;
   amount: number;
+  /** Absent : `amount` dégâts. stun : Stun ; might-damage : dégâts égaux à la Might
+   * actuelle de la source à la résolution. */
+  effect?: 'stun' | 'might-damage';
 }
 export interface AttackDamageEntry extends AttackDamageTrigger {
   kind: 'attack-damage';
@@ -158,8 +162,28 @@ export function resolveAttackDamage(
       u.ownerId !== entry.ownerId &&
       u.zoneId === entry.battlefieldId,
   );
+  const source = state.units.find((u) => u.id === entry.sourceId);
+  if (target && source && entry.effect === 'stun')
+    return {
+      ok: true,
+      state: {
+        ...state,
+        units: state.units.map((u) =>
+          u.id === target.id
+            ? {
+                ...u,
+                temporaryEffects: [
+                  ...(u.temporaryEffects ?? []),
+                  { type: 'stun' as const },
+                ],
+              }
+            : u,
+        ),
+      },
+      events: [{ type: 'attack-effect-resolved', sourceId: entry.sourceId }],
+    };
   const damaged =
-    target && state.units.some((u) => u.id === entry.sourceId)
+    target && source
       ? dealEffectDamage(
           state,
           {
@@ -168,7 +192,9 @@ export function resolveAttackDamage(
             playerId: entry.ownerId,
           },
           [target],
-          entry.amount,
+          entry.effect === 'might-damage'
+            ? effectiveMight(source, state)
+            : entry.amount,
         )
       : { ok: true as const, state, events: [] };
   const settled = settleLethalUnits(damaged.state);

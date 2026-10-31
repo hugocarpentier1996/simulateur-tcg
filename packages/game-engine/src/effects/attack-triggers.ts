@@ -62,6 +62,14 @@ export function queueAttackEffects(
         battlefieldId: combat.battlefieldId,
         amount: definition.onAttackDamage,
       });
+    if (definition?.onAttackTargetEffect)
+      targeted.push({
+        sourceId: u.id,
+        ownerId: u.ownerId,
+        battlefieldId: combat.battlefieldId,
+        amount: 0,
+        effect: definition.onAttackTargetEffect.type,
+      });
     if (definition?.onAttackDamageEnemiesHere !== undefined)
       entries.push({
         kind: 'attack',
