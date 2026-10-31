@@ -1140,3 +1140,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Cemetery Attendant (ogn-165) : à la mise en jeu, récupère une unité de son cimetière (`onPlayReturnUnit`, entrée `return-spell` généralisée avec `cardKind`).
 - Jinx (ogn-202, Chaos) : quand son propriétaire défausse (une fois par action), se redresse et gagne +1 Might ce tour (`onOwnerDiscard`, appliqué par `act`).
 - Vanguard Captain (ogn-218) : Legion — à la mise en jeu, deux jetons Recrue 1 ici (`onPlaySummonHereCount`, `onPlaySummonHereLegion`).
+- Herald of Scales (ogn-140) : les Dragons de son propriétaire coûtent 2 énergie de moins, minimum 1 (`dragonEnergyReduction`, tag imprimé Dragon, dans `unitCost`).

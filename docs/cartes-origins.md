@@ -202,3 +202,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Cemetery Attendant — ogn-165-298
 - [x] Jinx — ogn-202-298
 - [x] Vanguard Captain — ogn-218-298
+- [x] Herald of Scales — ogn-140-298

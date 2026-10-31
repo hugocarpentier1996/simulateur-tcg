@@ -72,6 +72,8 @@ export interface UnitDefinition extends PrintedMetadata {
   readonly legionEnergyReduction?: number;
   /** Énergie en moins par carte du cimetière de son propriétaire (plancher 0). */
   readonly energyReductionPerTrashCard?: number;
+  /** Les unités Dragon de son propriétaire coûtent autant d'énergie en moins (minimum 1). */
+  readonly dragonEnergyReduction?: number;
   /** Peut être joué sur un champ occupé par des unités ennemies (Showdown à l'arrivée). */
   readonly canPlayToOccupiedEnemyBattlefield?: boolean;
   /** Déplacement vers un champ : invoquer ce jeton ici via la pile, sans condition de contrôle. */

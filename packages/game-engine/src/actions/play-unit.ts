@@ -304,7 +304,26 @@ export function unitCost(
         ),
       ).length
     : 0;
-  return legion + trash
-    ? { ...cost, energy: Math.max(0, cost.energy - legion - trash) }
-    : cost;
+  const reduced =
+    legion + trash
+      ? { ...cost, energy: Math.max(0, cost.energy - legion - trash) }
+      : cost;
+  // Herald of Scales : Dragons moins chers, sans descendre sous 1.
+  const dragon = definition.tags?.includes('Dragon')
+    ? state.units.reduce(
+        (sum, u) =>
+          u.ownerId === playerId
+            ? sum +
+              (state.unitDefinitions?.find((d) => d.id === u.definitionId)
+                ?.dragonEnergyReduction ?? 0)
+            : sum,
+        0,
+      )
+    : 0;
+  return dragon
+    ? {
+        ...reduced,
+        energy: Math.min(reduced.energy, Math.max(1, reduced.energy - dragon)),
+      }
+    : reduced;
 }
