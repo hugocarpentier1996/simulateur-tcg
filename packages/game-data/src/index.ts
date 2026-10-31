@@ -171,3 +171,4 @@ export { sealOfFocus } from './ogn/seal-of-focus.js';
 export { sealOfInsight } from './ogn/seal-of-insight.js';
 export { sealOfStrength } from './ogn/seal-of-strength.js';
 export { sealOfDiscord } from './ogn/seal-of-discord.js';
+export { sealOfUnity } from './ogn/seal-of-unity.js';

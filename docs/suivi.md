@@ -1063,3 +1063,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Seal of Insight (ogn-120) : Tap, +1 Power Mind (capacité ADD de gear).
 - Seal of Strength (ogn-163) : Tap, +1 Power Body (capacité ADD de gear).
 - Seal of Discord (ogn-204) : Tap, +1 Power Chaos (capacité ADD de gear).
+- Seal of Unity (ogn-245) : Tap, +1 Power Order (capacité ADD de gear).
