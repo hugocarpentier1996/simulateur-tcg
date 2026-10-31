@@ -1065,3 +1065,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Seal of Discord (ogn-204) : Tap, +1 Power Chaos (capacité ADD de gear).
 - Seal of Unity (ogn-245) : Tap, +1 Power Order (capacité ADD de gear).
 - Energy Conduit (ogn-098) : Tap, +1 énergie (capacité ADD de gear).
+- Gears dans la table : un gear en main se pose via le panneau (« Poser en base »), les gears en jeu s'affichent dans leur zone comme des cartes couchées à 90° quand ils sont Tap, et un clic active un gear de ressource (Seals, Energy Conduit) ; les autres gears se sélectionnent pour afficher leurs options d'équipement. Journal : pose, équipement, ressource. Vérifié dans le navigateur (pose puis activation de Seal of Rage).

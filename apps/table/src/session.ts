@@ -152,6 +152,8 @@ const refusals: Record<string, string> = {
   ABILITY_WINDOW_CLOSED:
     'Tu ne peux pas utiliser cette rune maintenant : attends ta priorité.',
   INVALID_RUNE: 'Cette rune ne t’appartient pas ou n’est pas en jeu.',
+  GEAR_NOT_READY: 'Ce gear est déjà Tap.',
+  INVALID_GEAR: 'Ce gear ne t’appartient pas.',
   INVALID_MULLIGAN: 'Choisis au plus 2 cartes de ta main à remplacer.',
 };
 
@@ -161,7 +163,8 @@ function entityName(id: string, states: readonly GameState[]): string {
   for (const state of states) {
     const entity =
       state.units.find((u) => u.id === id) ??
-      state.cards.find((c) => c.id === id);
+      state.cards.find((c) => c.id === id) ??
+      state.gears?.find((g) => g.id === id);
     if (entity) return cardName(entity.definitionId);
   }
   return id;
@@ -175,6 +178,17 @@ function describe(
 ): string | null {
   const name = (id: string) => entityName(id, states);
   switch (event.type) {
+    case 'gear-played':
+      return `${playerName(event.playerId)} pose ${name(event.gearId)}.`;
+    case 'gear-equipped':
+      return `${playerName(event.playerId)} équipe ${name(event.gearId)} sur ${name(event.unitId)}.`;
+    case 'gear-resource-added':
+      return `${playerName(event.playerId)} utilise ${name(event.gearId)} : ${[
+        event.energy ? `+${event.energy} énergie` : '',
+        event.power ? `+1 Power ${domainName(event.power)}` : '',
+      ]
+        .filter(Boolean)
+        .join(', ')}.`;
     case 'mulligan-completed':
       return event.cardIds.length
         ? `${playerName(event.playerId)} remplace ${event.cardIds.length} carte(s) sous son deck.`
@@ -428,12 +442,16 @@ export function handPlayer(state: GameState): string {
 export function cardActions(session: Session, cardId: string): GameAction[] {
   const instance =
     session.state.cards.find((c) => c.id === cardId) ??
-    session.state.units.find((u) => u.id === cardId);
+    session.state.units.find((u) => u.id === cardId) ??
+    session.state.gears?.find((g) => g.id === cardId);
   if (!instance) return [];
   return getLegalActions(session.state, instance.ownerId).filter(
     (a) =>
-      ((a.type === 'cast-spell' || a.type === 'play-unit') &&
+      ((a.type === 'cast-spell' ||
+        a.type === 'play-unit' ||
+        a.type === 'play-gear') &&
         a.cardId === cardId) ||
+      (a.type === 'equip-gear' && a.gearId === cardId) ||
       (a.type === 'activate-spell-energy' && a.unitId === cardId),
   );
 }
@@ -708,4 +726,23 @@ export function discardFromHand(session: Session, cardId: string): Session {
     playerId: pending.playerId,
     cardId,
   });
+}
+
+/** Clic sur un gear à capacité de ressource -> Tap et ressource pour son propriétaire.
+ * Le moteur vérifie la fenêtre ; un refus ne change pas la partie. */
+export function useGear(session: Session, gearId: string): Session {
+  const gear = session.state.gears?.find((g) => g.id === gearId);
+  if (!gear) return { ...session, error: refusals.INVALID_GEAR! };
+  return dispatch(session, {
+    type: 'activate-gear',
+    playerId: gear.ownerId,
+    gearId,
+  });
+}
+
+/** Gear avec une capacité de ressource activable au clic ? */
+export function gearHasResource(state: GameState, gearId: string): boolean {
+  const gear = state.gears?.find((g) => g.id === gearId);
+  return !!state.gearDefinitions?.find((d) => d.id === gear?.definitionId)
+    ?.resourceAbility;
 }

@@ -14,6 +14,8 @@ import {
   startTargeting,
   confirmTargets,
   discardFromHand,
+  useGear,
+  gearHasResource,
   targetOptions,
   endTurn,
   endTurnRuneChoice,
@@ -224,6 +226,15 @@ root.addEventListener('click', (event) => {
   ) {
     session = discardFromHand(session, handCard);
     selection = null;
+    render();
+    return;
+  }
+  // Gear : capacité de ressource au clic, sinon sélection (options d'équipement au panneau).
+  const gearId = target.closest<HTMLElement>('[data-gear]')?.dataset.gear;
+  if (gearId && !moves.length) {
+    if (gearHasResource(session.state, gearId))
+      session = useGear(session, gearId);
+    else selection = { cardId: gearId };
     render();
     return;
   }

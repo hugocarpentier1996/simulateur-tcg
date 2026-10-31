@@ -92,11 +92,19 @@ function zone(
   picked: readonly string[] = [],
 ): string {
   const units = state.units.filter((u) => u.zoneId === zoneId);
+  const gears = (state.gears ?? []).filter((g) => g.zoneId === zoneId);
+  const gearCards = gears
+    .map((g) => {
+      const label = `${cardName(g.definitionId)} · ${playerName(g.ownerId)} · ${g.ready ? 'Ready' : 'Tap'}${g.attachedUnitId ? ' · équipé' : ''}`;
+      return `<div class="gear-slot"><button type="button" data-gear="${escape(g.id)}" class="gear-card ${g.ready ? 'ready' : 'tapped'}${g.attachedUnitId ? ' attached' : ''}" aria-label="${escape(label)}" title="${escape(label)}"><span class="gear-face">${art(g.definitionId, 'gear-art') || `<span class="unit-fallback">${escape(cardName(g.definitionId))}</span>`}</span></button></div>`;
+    })
+    .join('');
   return `<section data-zone="${escape(zoneId)}" class="zone ${destinations.includes(zoneId) ? 'drop-target' : ''}${picked.includes(zoneId) ? ' picked' : ''} ${battlefield ? 'battlefield' : 'base'}"><header><h3>${escape(title)}</h3><span>${escape(subtitle)}</span></header>
     ${battlefield ? art(state.battlefields.find((b) => b.zoneId === zoneId)?.definitionId ?? '', 'field-art') : ''}
     <div class="units">${
-      units.length
-        ? units
+      units.length || gears.length
+        ? gearCards +
+          units
             .map((u) => {
               const label = `${cardName(u.definitionId)} · ${playerName(u.ownerId)} · ${u.ready ? 'Ready' : 'Tap'} · Might ${effectiveMight(u, state)} · ${u.damage} dégât(s)`;
               return `<div class="unit-slot"><button type="button" id="unit-${escape(u.id)}" data-card="${escape(u.id)}" class="unit-card ${u.ready ? 'ready' : 'tapped'}${destinations.includes(u.id) ? ' targetable' : ''}${picked.includes(u.id) ? ' picked' : ''}" aria-label="${escape(label)}" title="${escape(label)}"><span class="unit-face">${art(u.definitionId, 'unit-art') || `<span class="unit-fallback">${escape(cardName(u.definitionId))}</span>`}</span><span class="unit-might">${effectiveMight(u, state)}</span></button></div>`;
@@ -401,6 +409,10 @@ function actionLabel(
           ? ' · Récupérer : ' + target(action.returnSpellId)
           : '')
       );
+    case 'play-gear':
+      return 'Poser en base';
+    case 'equip-gear':
+      return 'Équiper sur ' + target(action.unitId);
     case 'activate-spell-energy':
       return (
         'Épuiser ' +
@@ -537,7 +549,8 @@ function selectedCardPanel(session: Session, selection: Selection): string {
   const state = session.state;
   const card =
     state.cards.find((c) => c.id === selection.cardId) ??
-    state.units.find((c) => c.id === selection.cardId);
+    state.units.find((c) => c.id === selection.cardId) ??
+    state.gears?.find((g) => g.id === selection.cardId);
   if (!card)
     return '<p>Carte indisponible.</p><button data-action="cancel">Retour</button>';
   const all = cardActions(session, card.id).map((action, index) => ({
