@@ -217,3 +217,4 @@ export { jeweledColossus } from './ogn/jeweled-colossus.js';
 export { retreat } from './ogn/retreat.js';
 export { noxusHopeful } from './ogn/noxus-hopeful.js';
 export { scrapyardChampion } from './ogn/scrapyard-champion.js';
+export { dangerousDuo } from './ogn/dangerous-duo.js';

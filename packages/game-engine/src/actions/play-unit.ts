@@ -99,7 +99,13 @@ export function playUnit(
         ...(action.onPlayTargetId ? { targetId: action.onPlayTargetId } : {}),
       },
     });
-  if (definition.onPlayTargetEffect)
+  if (
+    definition.onPlayTargetEffect &&
+    !(
+      definition.onPlayTargetEffect.legion &&
+      !state.cardsPlayedThisTurn?.[action.playerId]
+    )
+  )
     entries.push({
       kind: 'play-effect',
       sourceId: card.id,

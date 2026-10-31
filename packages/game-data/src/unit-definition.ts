@@ -38,6 +38,8 @@ export interface UnitDefinition extends PrintedMetadata {
    * allegiance relative au joueur ; zone 'battlefield' exclut les bases ; excludeSelf exclut
    * l'unité jouée. Sans cible légale, la capacité reste sans effet. */
   readonly onPlayTargetEffect?: {
+    /** Legion : capacité seulement si une autre carte a été jouée ce tour. */
+    readonly legion?: boolean;
     readonly allegiance?: 'friendly' | 'enemy';
     readonly zone?: 'battlefield';
     readonly excludeSelf?: boolean;

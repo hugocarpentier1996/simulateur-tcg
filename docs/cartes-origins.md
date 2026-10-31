@@ -173,3 +173,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Retreat — ogn-104-298
 - [x] Noxus Hopeful — ogn-012-298
 - [x] Scrapyard Champion — ogn-020-298
+- [x] Dangerous Duo — ogn-016-298
