@@ -182,3 +182,4 @@ export { draven } from './ogn/draven.js';
 export { captainFarron } from './ogn/captain-farron.js';
 export { taric } from './ogn/taric.js';
 export { tastyFaefolk } from './ogn/tasty-faefolk.js';
+export { thousandTailedWatcher } from './ogn/thousand-tailed-watcher.js';

@@ -5,6 +5,7 @@ import { drawCardForPlayer } from '../turn/draw.js';
 import type { ActionResult, GameState, UnitBlueprint } from '../types.js';
 import { channelForPlayer } from '../turn/supplies.js';
 import { resolveTargetedPlay } from './targeted-play.js';
+import { effectiveMight } from './modifiers.js';
 /** Effet imprimé copié à l'empilement ; les réactions précèdent sa résolution. */
 export interface PlayEffectEntry {
   kind: 'play-effect';
@@ -89,6 +90,36 @@ export function resolvePlayEffect(
           u.id === targetId && u.id !== entry.sourceId
             ? { ...u, ready: true }
             : u,
+        ),
+      },
+      events: [{ type: 'unit-play-effect-resolved', sourceId: entry.sourceId }],
+    };
+  }
+  if (entry.effect.type === 'weaken-enemies') {
+    const { amount, minimum } = entry.effect;
+    return {
+      ok: true,
+      state: {
+        ...state,
+        units: state.units.map((u) =>
+          u.ownerId === entry.ownerId
+            ? u
+            : {
+                ...u,
+                temporaryEffects: [
+                  ...(u.temporaryEffects ?? []),
+                  {
+                    type: 'modify-might' as const,
+                    amount:
+                      minimum === undefined
+                        ? amount
+                        : Math.max(
+                            amount,
+                            Math.min(0, minimum - effectiveMight(u, state)),
+                          ),
+                  },
+                ],
+              },
         ),
       },
       events: [{ type: 'unit-play-effect-resolved', sourceId: entry.sourceId }],

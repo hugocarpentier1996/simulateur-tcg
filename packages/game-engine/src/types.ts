@@ -190,10 +190,17 @@ export interface UnitBlueprint {
   readonly onPlaySummonHere?: string;
   readonly spellEnergyReductionAtBattlefield?: number;
   /** Effet de mise en jeu, empilé avant résolution. */
-  readonly onPlayEffect?: {
-    readonly type: 'channel-exhausted' | 'draw';
-    readonly count: number;
-  };
+  readonly onPlayEffect?:
+    | {
+        readonly type: 'channel-exhausted' | 'draw';
+        readonly count: number;
+      }
+    /** Modificateur de Might jusqu'à la fin du tour à toutes les unités ennemies. */
+    | {
+        readonly type: 'weaken-enemies';
+        readonly amount: number;
+        readonly minimum?: number;
+      };
   /** En attaque avec un ennemi Ready ici : bonus temporaire via la pile, condition revérifiée. */
   readonly onAttackReadyEnemyMightBonus?: number;
   readonly onAttackDamage?: number;

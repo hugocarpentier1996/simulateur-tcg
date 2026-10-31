@@ -1075,3 +1075,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Captain Farron (ogn-015) : les autres unités alliées de sa zone ont Assault (`otherAlliesHereAssault`). Hypothèse documentée : un Assault accordé s'ajoute à l'Assault imprimé.
 - Taric (ogn-074) : Shield, Tank ; les autres unités alliées de sa zone ont Shield.
 - Tasty Faefolk (ogn-075) : Accelerate (Calm) ; Deathknell, canalise 2 runes Tap puis pioche 1 (option `draw` de l'effet de mort de canalisation).
+- Thousand-Tailed Watcher (ogn-116) : Accelerate (Mind) ; à la mise en jeu, -3 Might jusqu'à la fin du tour à toutes les unités ennemies, minimum 1 (effet de mise en jeu `weaken-enemies`).

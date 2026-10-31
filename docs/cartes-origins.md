@@ -138,3 +138,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Captain Farron — ogn-015-298
 - [x] Taric — ogn-074-298
 - [x] Tasty Faefolk — ogn-075-298
+- [x] Thousand-Tailed Watcher — ogn-116-298
