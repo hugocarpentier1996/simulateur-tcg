@@ -26,6 +26,8 @@ export interface UnitDefinition extends PrintedMetadata {
   readonly legionReady?: boolean;
   /** Ganking tant que l'unité est buffée (Bilgewater Bully). */
   readonly buffedGanking?: boolean;
+  /** Se buffe quand son propriétaire joue une autre unité (hypothèse : sans pile). */
+  readonly buffOnAllyPlayed?: boolean;
   /** Sur un champ : les autres unités alliées buffées de ce champ ont ce bonus (Lee Sin). */
   readonly otherBuffedAlliesHereMight?: number;
   /** Sur un champ : +Might par unité alliée buffée de ce champ, elle comprise (Sett). */

@@ -1131,3 +1131,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Peak Guardian (ogn-223) : se buffe puis, sur un champ, buffe les autres alliés de ce champ (`buff-self` avec `alliesHere`).
 - Sett (ogn-240, Order) : Tank ; +1 Might par unité alliée buffée de son champ (`mightPerBuffedAllyHere`).
 - Lee Sin (ogn-151, Body) : Accelerate ; les autres alliés buffés de son champ ont +2 Might (`otherBuffedAlliesHereMight`).
+- Cithria of Cloudfield (ogn-139) : se buffe quand son propriétaire joue une autre unité (`buffOnAllyPlayed`, sans pile).
