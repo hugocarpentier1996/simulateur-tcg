@@ -197,3 +197,4 @@ export { thermoBeam } from './ogn/thermo-beam.js';
 export { salvage } from './ogn/salvage.js';
 export { fallingStar } from './ogn/falling-star.js';
 export { windWall } from './ogn/wind-wall.js';
+export { defy } from './ogn/defy.js';

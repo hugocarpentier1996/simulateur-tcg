@@ -153,3 +153,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Salvage — ogn-224-298
 - [x] Falling Star — ogn-029-298
 - [x] Wind Wall — ogn-064-298
+- [x] Defy — ogn-045-298
