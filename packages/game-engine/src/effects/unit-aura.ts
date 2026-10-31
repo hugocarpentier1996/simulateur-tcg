@@ -34,10 +34,11 @@ export function selfScoreMightBonus(unit: UnitState, state: GameState): number {
         ),
       ).length
     : 0;
+  const buffed = unit.buffed ? (definition?.buffedExtraMight ?? 0) : 0;
   const perPoint = definition?.mightPerOwnPoint;
-  if (!perPoint) return trash;
+  if (!perPoint) return trash + buffed;
   const score = state.players.find((p) => p.id === unit.ownerId)?.score ?? 0;
-  return trash + perPoint * score;
+  return trash + buffed + perPoint * score;
 }
 
 /** Joueur -> vrai si une de ses unités en jeu fait entrer Ready ses autres unités. */

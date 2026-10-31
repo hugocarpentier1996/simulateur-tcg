@@ -26,6 +26,8 @@ export interface UnitDefinition extends PrintedMetadata {
   readonly legionReady?: boolean;
   /** Ganking tant que l'unité est buffée (Bilgewater Bully). */
   readonly buffedGanking?: boolean;
+  /** Might supplémentaire tant que l'unité est buffée (Wizened Elder). */
+  readonly buffedExtraMight?: number;
   /** +Might par carte du cimetière de son propriétaire (Dr. Mundo). */
   readonly mightPerTrashCard?: number;
   /** Au début de la Beginning de son propriétaire, recycle ce nombre de cartes de son

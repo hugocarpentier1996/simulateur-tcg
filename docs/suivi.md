@@ -1126,3 +1126,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Dr. Mundo (ogn-109) : +1 Might par carte de son cimetière (`mightPerTrashCard`) ; au début de sa Beginning, recycle ses 3 plus anciennes cartes de cimetière (`recycleTrashAtBeginning`, sans choix).
 - Pit Rookie (ogn-136) : à la mise en jeu, buffe une autre unité alliée. Nouveau mécanisme Buff : `buffed` sur l'unité (+1 Might permanent, au plus un), helpers `buffUnit` / `spendBuff` ; la table l'indique dans l'infobulle (avec Temporary).
 - Bilgewater Bully (ogn-125) : Ganking tant qu'il est buffé (`buffedGanking`).
+- Wizened Elder (ogn-065) : +1 Might supplémentaire tant qu'il est buffé (`buffedExtraMight`).
