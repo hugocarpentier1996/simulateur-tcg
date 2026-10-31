@@ -178,6 +178,9 @@ export interface UnitBlueprint {
   /** Legion : « when you play me, ready me » si une autre carte a été jouée ce tour.
    * Hypothèse de prototype : appliqué à l'entrée en jeu, sans passer par la pile. */
   readonly legionReady?: boolean;
+  /** Sur un champ en fin de tour de son propriétaire : redresse ce nombre de runes
+   * alliées (Tap d'abord, sans choix), via la pile (Sona). */
+  readonly readyRunesAtEndAtBattlefield?: number;
   /** Mots-clés tant que son propriétaire a défaussé une carte ce tour (Raging Soul). */
   readonly ifDiscardedThisTurn?: {
     readonly assault: number;

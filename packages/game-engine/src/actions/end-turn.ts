@@ -1,5 +1,6 @@
 import { endRuneLegend, runeIdsInPlay } from '../effects/end-runes.js';
 import type { ActionResult, GameAction, GameState } from '../types.js';
+import type { ReadyRunesEntry } from '../legend-types.js';
 import { startNextTurn } from '../turn/progression.js';
 
 /**
@@ -22,6 +23,7 @@ export function endTurn(
   if (state.showdown) {
     return { ok: false, reason: 'SHOWDOWN_IN_PROGRESS' };
   }
+  const entries: ReadyRunesEntry[] = [];
   const legend = endRuneLegend(state, action.playerId);
   if (legend) {
     const valid = runeIdsInPlay(state, action.playerId),
@@ -34,6 +36,37 @@ export function endTurn(
       ids.some((id) => !valid.includes(id))
     )
       return { ok: false, reason: 'INVALID_READY_RUNES' };
+    entries.push({
+      kind: 'legend-ready-runes',
+      sourceId: legend.card.id,
+      ownerId: action.playerId,
+      runeIds: [...ids],
+    });
+  }
+  // Sona : sur un champ, redresse jusqu'à N runes alliées, Tap d'abord (sans choix).
+  for (const unit of state.units) {
+    const count = state.unitDefinitions?.find(
+      (d) => d.id === unit.definitionId,
+    )?.readyRunesAtEndAtBattlefield;
+    if (
+      !count ||
+      unit.ownerId !== action.playerId ||
+      !state.battlefields.some((f) => f.zoneId === unit.zoneId)
+    )
+      continue;
+    const runes = runeIdsInPlay(state, action.playerId).sort(
+      (x, y) =>
+        Number(state.cards.find((c) => c.id === x)?.ready !== false) -
+        Number(state.cards.find((c) => c.id === y)?.ready !== false),
+    );
+    entries.push({
+      kind: 'legend-ready-runes',
+      sourceId: unit.id,
+      ownerId: action.playerId,
+      runeIds: runes.slice(0, count),
+    });
+  }
+  if (entries.length)
     return {
       ok: true,
       state: {
@@ -41,14 +74,7 @@ export function endTurn(
         phase: 'end',
         pendingTurnEnd: true,
         stack: {
-          entries: [
-            {
-              kind: 'legend-ready-runes',
-              sourceId: legend.card.id,
-              ownerId: action.playerId,
-              runeIds: [...ids],
-            },
-          ],
+          entries,
           initiatorId: action.playerId,
           priorityPlayerId: action.playerId,
           consecutivePasses: 0,
@@ -56,9 +82,11 @@ export function endTurn(
       },
       events: [
         { type: 'phase-started', playerId: action.playerId, phase: 'end' },
-        { type: 'legend-effect-queued', sourceId: legend.card.id },
+        ...entries.map((e) => ({
+          type: 'legend-effect-queued' as const,
+          sourceId: e.sourceId,
+        })),
       ],
     };
-  }
   return startNextTurn(state);
 }
