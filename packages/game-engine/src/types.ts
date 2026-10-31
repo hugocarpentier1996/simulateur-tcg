@@ -43,7 +43,14 @@ export interface GameState {
   /** État serveur privé : sommet connu uniquement du joueur de Vision. */
   pendingVision?: { playerId: string; sourceId: string; cardId: string } | null;
   /** Choix obligatoire pendant une résolution ; aucune réaction entre défausse et pioche. */
-  pendingDiscard?: { playerId: string; sourceId: string } | null;
+  /** Choix de défausse en attente. remaining absent : loot (1 défausse puis 1 pioche).
+   * Sinon : encore `remaining` cartes à défausser, puis `draw` pioches (0 par défaut). */
+  pendingDiscard?: {
+    playerId: string;
+    sourceId: string;
+    remaining?: number;
+    draw?: number;
+  } | null;
   activePlayerId: string;
   phase: TurnPhase;
   /** Second joueur : une rune supplémentaire à son premier Channel, puis null. */
@@ -202,6 +209,8 @@ export interface UnitBlueprint {
         readonly type: 'channel-exhausted' | 'draw';
         readonly count: number;
       }
+    /** Défausse `count` cartes choisies dans sa main (autant que possible), sans pioche. */
+    | { readonly type: 'discard'; readonly count: number }
     /** Modificateur de Might jusqu'à la fin du tour à toutes les unités ennemies. */
     | {
         readonly type: 'weaken-enemies';

@@ -61,6 +61,8 @@ export interface UnitDefinition extends PrintedMetadata {
         readonly type: 'channel-exhausted' | 'draw';
         readonly count: number;
       }
+    /** Défausse `count` cartes choisies dans sa main (autant que possible), sans pioche. */
+    | { readonly type: 'discard'; readonly count: number }
     /** Modificateur de Might jusqu'à la fin du tour à toutes les unités ennemies. */
     | {
         readonly type: 'weaken-enemies';

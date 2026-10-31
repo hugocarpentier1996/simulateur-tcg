@@ -1,3 +1,4 @@
+import { startDiscard } from './loot.js';
 import { summonHere } from './summon-here.js';
 import { startVision } from './vision.js';
 import { resolveFlash } from './flash.js';
@@ -93,6 +94,22 @@ export function resolvePlayEffect(
         ),
       },
       events: [{ type: 'unit-play-effect-resolved', sourceId: entry.sourceId }],
+    };
+  }
+  if (entry.effect.type === 'discard') {
+    const started = startDiscard(
+      state,
+      entry.ownerId,
+      entry.sourceId,
+      entry.effect.count,
+      0,
+    );
+    return {
+      ...started,
+      events: [
+        ...started.events,
+        { type: 'unit-play-effect-resolved', sourceId: entry.sourceId },
+      ],
     };
   }
   if (entry.effect.type === 'weaken-enemies') {

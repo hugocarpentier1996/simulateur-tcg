@@ -147,7 +147,9 @@ function paymentPanel(session: Session, selection: Selection | null): string {
     const heading = state.pendingVision
       ? 'Vision'
       : state.pendingDiscard
-        ? 'Choisir une carte à défausser'
+        ? (state.pendingDiscard.remaining ?? 1) > 1
+          ? `Choisir une carte à défausser (encore ${state.pendingDiscard.remaining})`
+          : 'Choisir une carte à défausser'
         : state.pendingDeaths
           ? 'Effets de mort'
           : state.pendingAttackChoices?.length
