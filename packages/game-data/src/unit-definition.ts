@@ -58,6 +58,11 @@ export interface UnitDefinition extends PrintedMetadata {
   /** En attaque avec un ennemi Ready ici : bonus temporaire via la pile, condition revérifiée. */
   readonly onAttackReadyEnemyMightBonus?: number;
   readonly onAttackDamage?: number;
+  /** En attaquant : dégâts de capacité à toutes les unités ennemies du champ, via la pile. */
+  readonly onAttackDamageEnemiesHere?: number;
+  /** En attaquant : tue toutes les unités ennemies blessées du champ, via la pile. */
+  readonly onAttackKillDamagedEnemiesHere?: boolean;
+
   readonly spellAbilityDamageBonus?: number;
   /** Capacité ADD : épuiser cette unité Ready pour produire cette énergie réservée aux sorts. */
   readonly spellEnergyAbility?: number;

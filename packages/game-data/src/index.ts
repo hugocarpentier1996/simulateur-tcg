@@ -173,3 +173,4 @@ export { sealOfStrength } from './ogn/seal-of-strength.js';
 export { sealOfDiscord } from './ogn/seal-of-discord.js';
 export { sealOfUnity } from './ogn/seal-of-unity.js';
 export { energyConduit } from './ogn/energy-conduit.js';
+export { anivia } from './ogn/anivia.js';

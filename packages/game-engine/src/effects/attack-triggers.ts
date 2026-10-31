@@ -1,5 +1,7 @@
 import type { AttackDamageTrigger } from './attack-targets.js';
 import type { ActionResult, GameEvent, GameState } from '../types.js';
+import { dealEffectDamage } from './effect-damage.js';
+import { settleLethalUnits } from './lethal-units.js';
 /** Condition « ennemi Ready ici » attachée au champ de l'attaque, vérifiée avant et après réactions. */
 export interface AttackEntry {
   kind: 'attack';
@@ -7,6 +9,9 @@ export interface AttackEntry {
   ownerId: string;
   battlefieldId: string;
   amount: number;
+  /** Absent : bonus si un ennemi est Ready (Dune Drake). Les autres effets visent les
+   * ennemis du champ à la résolution, que la source y soit encore ou non. */
+  mode?: 'damage-enemies-here' | 'kill-damaged-enemies-here';
 }
 function hasReadyEnemy(
   state: GameState,
@@ -57,6 +62,24 @@ export function queueAttackEffects(
         battlefieldId: combat.battlefieldId,
         amount: definition.onAttackDamage,
       });
+    if (definition?.onAttackDamageEnemiesHere !== undefined)
+      entries.push({
+        kind: 'attack',
+        sourceId: u.id,
+        ownerId: u.ownerId,
+        battlefieldId: combat.battlefieldId,
+        amount: definition.onAttackDamageEnemiesHere,
+        mode: 'damage-enemies-here',
+      });
+    if (definition?.onAttackKillDamagedEnemiesHere)
+      entries.push({
+        kind: 'attack',
+        sourceId: u.id,
+        ownerId: u.ownerId,
+        battlefieldId: combat.battlefieldId,
+        amount: 0,
+        mode: 'kill-damaged-enemies-here',
+      });
     if (
       definition?.onAttackReadyEnemyMightBonus !== undefined &&
       hasReadyEnemy(state, u.ownerId, combat.battlefieldId)
@@ -102,6 +125,38 @@ export function resolveAttackEffect(
   state: GameState,
   entry: AttackEntry,
 ): Extract<ActionResult, { ok: true }> {
+  const resolved = {
+    type: 'attack-effect-resolved' as const,
+    sourceId: entry.sourceId,
+  };
+  if (entry.mode) {
+    const enemies = state.units.filter(
+      (u) => u.ownerId !== entry.ownerId && u.zoneId === entry.battlefieldId,
+    );
+    if (entry.mode === 'kill-damaged-enemies-here') {
+      const killed = settleLethalUnits(
+        state,
+        new Set(enemies.filter((u) => u.damage > 0).map((u) => u.id)),
+      );
+      return {
+        ok: true,
+        state: killed.state,
+        events: [...killed.events, resolved],
+      };
+    }
+    const damaged = dealEffectDamage(
+      state,
+      { kind: 'ability', sourceId: entry.sourceId, playerId: entry.ownerId },
+      enemies,
+      entry.amount,
+    );
+    const settled = settleLethalUnits(damaged.state);
+    return {
+      ok: true,
+      state: settled.state,
+      events: [...damaged.events, ...settled.events, resolved],
+    };
+  }
   const combat = state.showdown;
   const valid =
     combat?.kind === 'combat' &&
