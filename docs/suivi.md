@@ -1057,3 +1057,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Watchful Sentry (ogn-096) : Deathknell, pioche 1. `DeathEffect` devient une union (jeton, pioche, canalisation Tap, jetons en base, dégâts sur le champ de la mort) ; seule l'invocation d'un jeton choisit une destination, les autres effets utilisent conventionnellement la base. La zone de la mort est conservée dans le déclenchement.
 - Soaring Scout (ogn-216) : Deathknell, canalise 1 rune Tap.
 - Machine Evangel (ogn-239) : Deathknell, trois Recrues de 1 Might dans la base du propriétaire.
+- Kog'Maw (ogn-190) : Deathknell, 4 dégâts de capacité à toutes les unités du champ où il est mort (aucun effet s'il meurt en base).
