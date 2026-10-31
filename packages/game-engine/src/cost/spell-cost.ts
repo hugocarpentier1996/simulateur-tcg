@@ -28,7 +28,10 @@ export function spellCost(
           )
         ? own.energy
         : 0;
-  const base = Math.max(0, printed.energy - ownReduction);
+  const base = Math.max(
+    0,
+    printed.energy - ownReduction - (state.nextSpellDiscount?.[playerId] ?? 0),
+  );
   const reduction = state.units.reduce(
     (sum, u) =>
       sum +

@@ -202,6 +202,14 @@ export function castSpell(
           }
         : {}),
       cards: paid.state.cards.filter((c) => c.id !== card.id),
+      ...(state.nextSpellDiscount?.[action.playerId]
+        ? {
+            nextSpellDiscount: {
+              ...state.nextSpellDiscount,
+              [action.playerId]: 0,
+            },
+          }
+        : {}),
       stack: {
         entries: [
           ...(state.stack?.entries ?? []),

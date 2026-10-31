@@ -97,6 +97,8 @@ export interface UnitDefinition extends PrintedMetadata {
     | { readonly type: 'draw-per-mighty' }
     /** Les adversaires ne peuvent plus jouer de carte jusqu'à la fin du tour. */
     | { readonly type: 'lock-opponents' }
+    /** Le prochain sort joué ce tour coûte `energy` de moins (plancher 0). */
+    | { readonly type: 'next-spell-discount'; readonly energy: number }
     /** Modificateur de Might jusqu'à la fin du tour à toutes les unités ennemies. */
     | {
         readonly type: 'weaken-enemies';

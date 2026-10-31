@@ -28,6 +28,7 @@ export function startNextTurn(
     ...(state.readyEntryPlayers ? { readyEntryPlayers: [] } : {}),
     ...(state.cardsPlayedThisTurn ? { cardsPlayedThisTurn: {} } : {}),
     ...(state.playLockedPlayers ? { playLockedPlayers: [] } : {}),
+    ...(state.nextSpellDiscount ? { nextSpellDiscount: {} } : {}),
     ...(state.pendingTurnEnd ? { pendingTurnEnd: false } : {}),
     units: end.state.units.map((current) => {
       const unit = { ...current, damage: 0, temporaryEffects: [] };

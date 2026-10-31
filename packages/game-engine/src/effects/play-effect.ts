@@ -96,6 +96,21 @@ export function resolvePlayEffect(
       events: [{ type: 'unit-play-effect-resolved', sourceId: entry.sourceId }],
     };
   }
+  if (entry.effect.type === 'next-spell-discount') {
+    return {
+      ok: true,
+      state: {
+        ...state,
+        nextSpellDiscount: {
+          ...state.nextSpellDiscount,
+          [entry.ownerId]:
+            (state.nextSpellDiscount?.[entry.ownerId] ?? 0) +
+            entry.effect.energy,
+        },
+      },
+      events: [{ type: 'unit-play-effect-resolved', sourceId: entry.sourceId }],
+    };
+  }
   if (entry.effect.type === 'lock-opponents') {
     const locked = state.players
       .map((p) => p.id)

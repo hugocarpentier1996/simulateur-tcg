@@ -38,6 +38,8 @@ export interface GameState {
   pendingAttackChoices?: AttackDamageTrigger[] | null;
   /** Joueurs dont les nouvelles unités entrent Ready jusqu’à la fin du tour courant. */
   readyEntryPlayers?: readonly string[];
+  /** Réduction d'énergie du prochain sort de chaque joueur ce tour (Raging Firebrand). */
+  nextSpellDiscount?: Readonly<Record<string, number>>;
   /** Joueurs qui ne peuvent plus jouer de carte ce tour (Brynhir Thundersong). */
   playLockedPlayers?: readonly string[];
   /** Cartes jouées (unités, sorts, gears) par joueur depuis le début du tour (Legion). */
@@ -247,6 +249,8 @@ export interface UnitBlueprint {
     | { readonly type: 'draw-per-mighty' }
     /** Les adversaires ne peuvent plus jouer de carte jusqu'à la fin du tour. */
     | { readonly type: 'lock-opponents' }
+    /** Le prochain sort joué ce tour coûte `energy` de moins (plancher 0). */
+    | { readonly type: 'next-spell-discount'; readonly energy: number }
     /** Modificateur de Might jusqu'à la fin du tour à toutes les unités ennemies. */
     | {
         readonly type: 'weaken-enemies';
