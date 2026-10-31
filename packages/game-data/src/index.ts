@@ -260,3 +260,4 @@ export { altarToUnity } from './ogn/altar-to-unity.js';
 export { aspirantsClimb } from './ogn/aspirants-climb.js';
 export { zaunWarrens } from './ogn/zaun-warrens.js';
 export { targonsPeak } from './ogn/targons-peak.js';
+export { theGrandPlaza } from './ogn/the-grand-plaza.js';

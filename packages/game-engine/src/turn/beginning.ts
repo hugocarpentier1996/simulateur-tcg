@@ -1,3 +1,4 @@
+import { battlefieldDefinition } from '../effects/battlefield.js';
 import { settleLethalUnits } from '../effects/lethal-units.js';
 import { queueHoldChannel, queueHoldDraw } from '../effects/hold-channel.js';
 import { queueHoldUnits } from '../effects/hold-units.js';
@@ -33,6 +34,18 @@ export function scoreHolding(
   let current = state;
   for (const field of fields) {
     if (current.result) break;
+    const needed = battlefieldDefinition(current, field.zoneId)?.holdWinUnits;
+    if (
+      needed !== undefined &&
+      current.units.filter(
+        (u) => u.ownerId === playerId && u.zoneId === field.zoneId,
+      ).length >= needed
+    ) {
+      const result = { winnerId: playerId, reason: 'GRAND_PLAZA' as const };
+      current = { ...current, result };
+      events.push({ type: 'game-ended', ...result });
+      break;
+    }
     const result = scoreBattlefield(current, playerId, field.zoneId, 'HOLD');
     current = queueHoldChannel(result.state, playerId, field.zoneId);
     current = queueHoldDraw(current, playerId, field.zoneId);

@@ -14,6 +14,8 @@ export interface BattlefieldDefinition extends PrintedMetadata {
   readonly holdDraw?: number;
   /** Conquête : le conquérant défausse 1 puis pioche 1, via la pile. */
   readonly conquerLoot?: boolean;
+  /** Tenue avec au moins ce nombre d'unités alliées ici : victoire immédiate. */
+  readonly holdWinUnits?: number;
   /** Conquête : le conquérant redressera ce nombre de runes à la fin du tour. */
   readonly conquerEndTurnReadyRunes?: number;
   /** Points supplémentaires nécessaires pour gagner tant qu'il est en jeu. */

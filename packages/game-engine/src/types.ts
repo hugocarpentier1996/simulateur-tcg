@@ -791,4 +791,6 @@ export type ActionResult =
 /** Victoire par seuil de points, ou défaite par épuisement avec perdant explicite. */
 export type GameResult =
   | { winnerId: string; reason: 'POINTS' }
+  /** The Grand Plaza : tenue avec 7 unités ou plus. */
+  | { winnerId: string; reason: 'GRAND_PLAZA' }
   | { winnerId: string; loserId: string; reason: 'DECK_EXHAUSTION' };
