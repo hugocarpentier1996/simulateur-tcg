@@ -146,6 +146,29 @@ export function resolveSpell(
       events.push(...damaged.events);
       continue;
     }
+    if (effect.type === 'modify-battlefield-sides') {
+      if (!validBattlefieldTarget(state, entry.targetId)) continue;
+      const { friendly, enemy, minimum } = effect;
+      state = {
+        ...state,
+        units: state.units.map((u) => {
+          if (u.zoneId !== entry.targetId) return u;
+          const base = u.ownerId === entry.casterId ? friendly : enemy;
+          const amount =
+            minimum === undefined || base >= 0
+              ? base
+              : Math.max(base, Math.min(0, minimum - effectiveMight(u, state)));
+          return {
+            ...u,
+            temporaryEffects: [
+              ...(u.temporaryEffects ?? []),
+              { type: 'modify-might' as const, amount },
+            ],
+          };
+        }),
+      };
+      continue;
+    }
     if (effect.type === 'exhaust-allies') {
       state = {
         ...state,

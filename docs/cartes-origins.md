@@ -147,3 +147,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Cleave — ogn-004-298
 - [x] Ride the Wind — ogn-173-298
 - [x] Charm — ogn-043-298
+- [x] Siphon Power — ogn-266-298

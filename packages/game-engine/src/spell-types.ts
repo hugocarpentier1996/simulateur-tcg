@@ -45,6 +45,14 @@ export interface SpellBlueprint {
     | { readonly type: 'damage-all-at-battlefields'; readonly amount: number }
     /** Épuise toutes les unités alliées du lanceur. */
     | { readonly type: 'exhaust-allies' }
+    /** Sur le champ ciblé : modificateurs jusqu'à la fin du tour aux alliés et aux ennemis
+     * du lanceur ; `minimum` borne la baisse des ennemis. */
+    | {
+        readonly type: 'modify-battlefield-sides';
+        readonly friendly: number;
+        readonly enemy: number;
+        readonly minimum?: number;
+      }
     /** Redresse l'unité ciblée (après un éventuel déplacement du même sort). */
     | { readonly type: 'ready-unit' }
     /** Assault temporaire (+amount en attaque) jusqu'à la fin du tour. */
