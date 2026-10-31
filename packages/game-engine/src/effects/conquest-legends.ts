@@ -1,3 +1,5 @@
+import type { MovementEntry } from './movement-triggers.js';
+import { battlefieldDefinition } from './battlefield.js';
 import type { GameState, GameEvent } from '../types.js';
 import type { LegendEntry } from '../legend-types.js';
 import { activeLegends } from './legends.js';
@@ -9,7 +11,7 @@ export function queueConquestLegends(
   events: readonly GameEvent[],
 ): { state: GameState; events: GameEvent[] } {
   if (state.result) return { state, events: [] };
-  const entries: LegendEntry[] = events.flatMap((e) =>
+  const entries: (LegendEntry | MovementEntry)[] = events.flatMap((e) =>
     e.type === 'battlefield-conquered'
       ? activeLegends(state, e.playerId).flatMap(({ card, definition }) =>
           definition.conquestDraw &&
@@ -47,6 +49,19 @@ export function queueConquestLegends(
             count,
           });
       }
+  // Champs « When you conquer here » (Zaun Warrens : loot du conquérant).
+  for (const e of events)
+    if (
+      e.type === 'battlefield-conquered' &&
+      battlefieldDefinition(state, e.battlefieldId)?.conquerLoot
+    )
+      entries.push({
+        kind: 'movement',
+        sourceId: e.battlefieldId,
+        ownerId: e.playerId,
+        destinationId: e.battlefieldId,
+        effect: { type: 'loot' },
+      });
   if (!entries.length) return { state, events: [] };
   return {
     state: {

@@ -1153,3 +1153,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Grove of the God-Willow (ogn-280) : champ ; le tenir fait piocher 1 via la pile (`holdDraw`, entrée `legend-draw`).
 - Altar to Unity (ogn-275) : champ ; le tenir joue une Recrue 1 dans la base du contrôleur via la pile (`holdSummonBase`, effet `summon-base`).
 - Aspirant's Climb (ogn-276) : champ ; il faut 1 point de plus pour gagner tant qu'il est en jeu (`victoryTargetBonus`, helper `victoryTarget` désormais utilisé par tous les calculs de victoire et par la table).
+- Zaun Warrens (ogn-298) : champ ; le conquérir fait défausser 1 puis piocher 1 via la pile (`conquerLoot`, entrée de loot existante).

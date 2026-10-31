@@ -258,3 +258,4 @@ export { backAlleyBar } from './ogn/back-alley-bar.js';
 export { groveOfTheGodWillow } from './ogn/grove-of-the-god-willow.js';
 export { altarToUnity } from './ogn/altar-to-unity.js';
 export { aspirantsClimb } from './ogn/aspirants-climb.js';
+export { zaunWarrens } from './ogn/zaun-warrens.js';
