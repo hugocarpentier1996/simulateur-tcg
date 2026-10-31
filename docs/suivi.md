@@ -1082,3 +1082,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Flurry of Blades (ogn-133) : Réaction, 1 dégât de sort à toutes les unités sur les champs (effet `damage-all-at-battlefields` ; ajout de `exhaust-allies` pour Unchecked Power).
 - Unchecked Power (ogn-123) : épuise les unités alliées puis 12 dégâts à toutes les unités sur les champs.
 - Cleave (ogn-004) : Assault 3 jusqu'à la fin du tour (modificateur temporaire `assault`, compté seulement en attaque).
+- Ride the Wind (ogn-173) : déplace une unité alliée (sans exiger Ready) puis la redresse (effet `ready-unit`).

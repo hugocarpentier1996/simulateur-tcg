@@ -231,6 +231,13 @@ export function resolveSpell(
             events.push(...drawn.events);
           }
       }
+    } else if (effect.type === 'ready-unit') {
+      state = {
+        ...state,
+        units: state.units.map((u) =>
+          u.id === target.id ? { ...u, ready: true } : u,
+        ),
+      };
     } else if (effect.type === 'move-unit') {
       if (!validDestination(state, target, entry.destinationId)) continue;
       const destinationId = entry.destinationId!;

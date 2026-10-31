@@ -33,6 +33,8 @@ export type SpellEffect =
   | { readonly type: 'damage-all-at-battlefields'; readonly amount: number }
   /** Épuise toutes les unités alliées du lanceur. */
   | { readonly type: 'exhaust-allies' }
+  /** Redresse l'unité ciblée (après un éventuel déplacement du même sort). */
+  | { readonly type: 'ready-unit' }
   /** Assault temporaire (+amount en attaque) jusqu'à la fin du tour. */
   | {
       readonly type: 'grant-assault';
