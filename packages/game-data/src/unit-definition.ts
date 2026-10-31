@@ -138,6 +138,7 @@ export interface UnitDefinition extends PrintedMetadata {
   readonly onDeath?:
     | { readonly type: 'summon-token'; readonly definitionId: string }
     | { readonly type: 'draw'; readonly count: number }
+    | { readonly type: 'recycle-self-ready-runes' }
     | {
         readonly type: 'discard-draw';
         readonly discard: number;

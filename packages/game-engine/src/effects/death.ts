@@ -157,6 +157,39 @@ export function resolveDeathEffect(
     }
     return { ok: true, state, events };
   }
+  if (effect.type === 'recycle-self-ready-runes') {
+    const card = state.cards.find(
+      (c) =>
+        c.id === entry.sourceId &&
+        state.zones.some((z) => z.id === c.zoneId && z.kind === 'graveyard'),
+    );
+    const deck = state.zones.find(
+      (z) => z.kind === 'deck' && z.ownerId === entry.ownerId,
+    );
+    if (!card || !deck) return { ok: true, state, events };
+    const runes = new Set(
+      state.zones
+        .filter((z) => z.kind === 'runes' && z.ownerId === entry.ownerId)
+        .map((z) => z.id),
+    );
+    return {
+      ok: true,
+      state: {
+        ...state,
+        cards: [
+          ...state.cards
+            .filter((c) => c.id !== card.id)
+            .map((c) =>
+              runes.has(c.zoneId) && c.ready === false
+                ? { ...c, ready: true }
+                : c,
+            ),
+          { ...card, zoneId: deck.id },
+        ],
+      },
+      events,
+    };
+  }
   if (effect.type === 'discard-draw') {
     const started = startDiscard(
       state,

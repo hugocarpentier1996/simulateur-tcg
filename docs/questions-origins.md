@@ -51,3 +51,4 @@ existantes ; seuls les nouveaux doutes utiles rejoindront le prochain lot de que
 - Darius (hypothèse) : Legion « ready me » est appliqué à l'entrée en jeu, sans passer par la pile ni ouvrir de fenêtre de réaction.
 - Falling Star / instructions multiples (hypothèse) : chaque instruction choisit sa cible au lancement ; la même unité peut être choisie plusieurs fois.
 - Contre (Wind Wall, Defy) : le sort contré va au cimetière de son propriétaire et n'est pas « joué » (aucun déclenchement de sort joué).
+- Ekko (hypothèse) : « Recycle me to ready your runes » est appliqué automatiquement (coût toujours accepté) tant que la carte est au cimetière.

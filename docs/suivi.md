@@ -1102,3 +1102,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Darius (ogn-243) : Legion (entre Ready si une autre carte a été jouée ce tour ; compteur `cardsPlayedThisTurn` tenu par `act`, remis à zéro au tour suivant) et +1 Might aux autres alliés de sa zone.
 - Jinx (ogn-030) : Accelerate, Assault 2 ; à la mise en jeu, défausse 2 cartes choisies (`onPlayEffect` `discard` ; `pendingDiscard` généralisé avec `remaining`/`draw`, le loot reste le cas par défaut).
 - Undercover Agent (ogn-178) : Deathknell — défausse 2 cartes choisies puis pioche 2 (DeathEffect `discard-draw`, via `startDiscard`).
+- Ekko (ogn-110) : Accelerate ; Deathknell — se recycle (cimetière -> sous le deck) pour redresser les runes de son propriétaire (DeathEffect `recycle-self-ready-runes`, appliqué automatiquement).

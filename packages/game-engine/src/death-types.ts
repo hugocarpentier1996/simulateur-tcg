@@ -17,6 +17,9 @@ export type DeathEffect =
     }
   /** Dégâts de capacité à toutes les unités du champ où l'unité est morte ; rien en base. */
   | { readonly type: 'damage-here'; readonly amount: number }
+  /** Recycle la carte morte (cimetière -> sous le deck) pour redresser les runes du
+   * propriétaire ; carte absente du cimetière : aucun effet. */
+  | { readonly type: 'recycle-self-ready-runes' }
   /** Défausse `discard` cartes choisies (autant que possible), puis pioche `draw`. */
   | {
       readonly type: 'discard-draw';
