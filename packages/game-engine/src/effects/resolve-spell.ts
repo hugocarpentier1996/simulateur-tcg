@@ -427,6 +427,18 @@ export function resolveSpell(
       const moved = moveUnit(state, mover, fieldId);
       state = moved.state;
       events.push(...moved.events);
+    } else if (effect.type === 'guillotine') {
+      if ((state.cardsPlayedThisTurn?.[entry.casterId] ?? 0) >= 2) {
+        const killed = settleLethalUnits(state, new Set([target.id]));
+        state = killed.state;
+        events.push(...killed.events);
+      } else
+        state = {
+          ...state,
+          units: state.units.map((u) =>
+            u.id === target.id ? { ...u, killOnDamageAbove: u.damage } : u,
+          ),
+        };
     } else if (effect.type === 'double-might-temporary') {
       const amount = effectiveMight(target, state);
       state = {

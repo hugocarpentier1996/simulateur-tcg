@@ -409,6 +409,8 @@ export interface UnitState {
   backline?: boolean;
   stunned?: boolean;
   cannotDealDamage?: boolean;
+  /** Noxian Guillotine : meurt dès que ses dégâts dépassent cette valeur (fin de tour : effacé). */
+  killOnDamageAbove?: number;
   /** Buff : +1 Might permanent tant qu'elle reste en jeu ; au plus un buff. */
   buffed?: boolean;
   /** Temporary : tuée au début de la Beginning de son contrôleur, avant le score. */

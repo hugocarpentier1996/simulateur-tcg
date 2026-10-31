@@ -204,3 +204,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Vanguard Captain — ogn-218-298
 - [x] Herald of Scales — ogn-140-298
 - [x] Imperial Decree — ogn-221-298
+- [x] Noxian Guillotine — ogn-254-298

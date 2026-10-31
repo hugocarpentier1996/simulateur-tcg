@@ -37,6 +37,7 @@ export function startNextTurn(
     units: end.state.units.map((current) => {
       const unit = { ...current, damage: 0, temporaryEffects: [] };
       delete unit.movesThisTurn;
+      delete unit.killOnDamageAbove;
       return unit;
     }),
     priorityPlayerId: nextPlayerId,

@@ -109,6 +109,11 @@ export function settleLethalUnits(
 export function isLethal(unit: UnitState, state: GameState): boolean {
   if (unit.damage <= 0) return false;
   if (
+    unit.killOnDamageAbove !== undefined &&
+    unit.damage > unit.killOnDamageAbove
+  )
+    return true;
+  if (
     state.damageBaseline &&
     unit.damage > (state.damageBaseline[unit.id] ?? 0)
   )

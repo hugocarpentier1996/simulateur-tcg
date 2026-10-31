@@ -69,6 +69,9 @@ export interface SpellBlueprint {
     | { readonly type: 'exhaust-allies' }
     /** Détruit tous les équipements en jeu (cimetière de leur propriétaire). */
     | { readonly type: 'kill-all-gear' }
+    /** La cible meurt la prochaine fois qu'elle subit des dégâts ce tour ; Legion (une autre
+     * carte jouée par le lanceur ce tour) : elle meurt aussitôt. */
+    | { readonly type: 'guillotine' }
     /** Jusqu'à la fin du tour, toute unité qui subit des dégâts est tuée. */
     | { readonly type: 'damage-kills-this-turn' }
     /** Empêche tous les dégâts de sort et de capacité jusqu'à la fin du tour. */

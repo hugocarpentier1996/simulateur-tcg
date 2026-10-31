@@ -1143,3 +1143,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Herald of Scales (ogn-140) : les Dragons de son propriétaire coûtent 2 énergie de moins, minimum 1 (`dragonEnergyReduction`, tag imprimé Dragon, dans `unitCost`).
 - Imperial Decree (ogn-221) : Action ; ce tour, toute unité qui subit des dégâts est tuée (`damageBaseline` relevé au décret, helper `isLethal` utilisé par les morts et le combat).
 - Correction des coûts hybrides (symbole de Power bicolore, cf. illustration) : Last Breath, Zenith Blade et Stormbringer coûtent 2 Power au choix parmi leurs deux domaines, Siphon Power 1 Power Mind ou Order (`powerChoice`).
+- Noxian Guillotine (ogn-254) : Action, Power hybride Fury/Order ; la cible meurt la prochaine fois qu'elle subit des dégâts ce tour (`killOnDamageAbove`, effacé en fin de tour), ou aussitôt avec Legion.
