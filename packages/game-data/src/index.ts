@@ -185,3 +185,4 @@ export { tastyFaefolk } from './ogn/tasty-faefolk.js';
 export { thousandTailedWatcher } from './ogn/thousand-tailed-watcher.js';
 export { leonaOrder } from './ogn/leona-order.js';
 export { yasuoCalm } from './ogn/yasuo-calm.js';
+export { kaiSaFury } from './ogn/kai-sa-fury.js';

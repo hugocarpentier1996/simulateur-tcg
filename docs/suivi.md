@@ -1078,3 +1078,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Thousand-Tailed Watcher (ogn-116) : Accelerate (Mind) ; à la mise en jeu, -3 Might jusqu'à la fin du tour à toutes les unités ennemies, minimum 1 (effet de mise en jeu `weaken-enemies`).
 - Leona (ogn-238) : Shield ; en attaquant, Stun d'une unité ennemie du champ choisie avant réactions (`onAttackTargetEffect`, choix d'attaque étendus aux effets stun et dégâts égaux à la Might).
 - Yasuo (ogn-076) : en attaquant, dégâts égaux à sa Might (à la résolution) à une unité ennemie du champ.
+- Kai'Sa (ogn-039) : Accelerate (Fury) ; « When I conquer », pioche 1 (`onConquerDraw`, capacité d'unité empilée après la conquête comme celles des légendes).

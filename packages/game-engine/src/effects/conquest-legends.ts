@@ -1,7 +1,7 @@
 import type { GameState, GameEvent } from '../types.js';
 import type { LegendEntry } from '../legend-types.js';
 import { activeLegends } from './legends.js';
-/** Événements de cette action -> capacités de conquête, après clôture et score.
+/** Événements de cette action -> capacités de conquête (légendes et unités), après clôture et score.
  * Vérifie le seuil à la conquête ; la résolution le vérifiera à nouveau. Victoire : aucun ajout.
  * Appelé une seule fois par act, pas lors d'une tenue ni d'un simple mouvement. */
 export function queueConquestLegends(
@@ -32,6 +32,21 @@ export function queueConquestLegends(
         )
       : [],
   );
+  // Capacités « When I conquer » des unités du conquérant présentes sur le champ conquis.
+  for (const e of events)
+    if (e.type === 'battlefield-conquered')
+      for (const u of state.units) {
+        const count = state.unitDefinitions?.find(
+          (d) => d.id === u.definitionId,
+        )?.onConquerDraw;
+        if (count && u.ownerId === e.playerId && u.zoneId === e.battlefieldId)
+          entries.push({
+            kind: 'legend-draw',
+            sourceId: u.id,
+            ownerId: e.playerId,
+            count,
+          });
+      }
   if (!entries.length) return { state, events: [] };
   return {
     state: {

@@ -204,6 +204,8 @@ export interface UnitBlueprint {
   /** En attaque avec un ennemi Ready ici : bonus temporaire via la pile, condition revérifiée. */
   readonly onAttackReadyEnemyMightBonus?: number;
   readonly onAttackDamage?: number;
+  /** « When I conquer » : son propriétaire pioche ce nombre de cartes, via la pile. */
+  readonly onConquerDraw?: number;
   /** En attaquant : effet sur une unité ennemie de ce champ, choisie avant réactions.
    * stun : Stun jusqu'à la fin du tour ; might-damage : dégâts égaux à la Might de la source
    * à la résolution. */
