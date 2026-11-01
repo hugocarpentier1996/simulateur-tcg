@@ -44,6 +44,8 @@ export interface PlayEffectEntry {
     | { type: 'spend-buffs-channel'; unitIds: readonly string[] }
     /** La prochaine unité jouée ce tour par le propriétaire arrive Ready (Legion vérifié). */
     | { type: 'next-unit-ready'; legion?: boolean }
+    /** Protection de rappel payante jusqu'à la fin du tour (Unlicensed Armory). */
+    | { type: 'grant-paid-recall'; targetId: string; power: string }
     /** Dazzling Aurora : révèle jusqu'à une unité, la joue gratuitement, recycle le reste. */
     | { type: 'reveal-play-unit' }
     /** Baited Hook : tue l'unité puis propose une unité gratuite du dessus du deck. */
@@ -150,6 +152,27 @@ export function resolvePlayEffect(
             (state.nextSpellBonusDamage?.[entry.ownerId] ?? 0) +
             entry.effect.amount,
         },
+      },
+      events: [{ type: 'unit-play-effect-resolved', sourceId: entry.sourceId }],
+    };
+  }
+  if (entry.effect.type === 'grant-paid-recall') {
+    const { targetId, power } = entry.effect;
+    return {
+      ok: true,
+      state: {
+        ...state,
+        units: state.units.map((u) =>
+          u.id === targetId
+            ? {
+                ...u,
+                temporaryEffects: [
+                  ...(u.temporaryEffects ?? []),
+                  { type: 'recall-on-death' as const, power },
+                ],
+              }
+            : u,
+        ),
       },
       events: [{ type: 'unit-play-effect-resolved', sourceId: entry.sourceId }],
     };

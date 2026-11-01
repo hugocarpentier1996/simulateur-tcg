@@ -166,6 +166,8 @@ export function tapAbilityTargets(
     ability.effect.type === 'buff-self'
   )
     return [];
+  if (ability.effect.type === 'paid-recall')
+    return state.units.filter((u) => u.ownerId === playerId).map((u) => u.id);
   if (ability.effect.type === 'hook')
     return state.units.filter((u) => u.ownerId === playerId).map((u) => u.id);
   if (ability.effect.type === 'move-to-or-from-base')
@@ -282,6 +284,30 @@ function activateTapAbility(
     action.payment ?? { energyRunes: [], powerRunes: [] },
   );
   if (!paid.ok) return paid;
+  if (ability.discardCost) {
+    const discarded = paid.state.cards.find(
+      (c) =>
+        c.id === action.discardCardId &&
+        paid.state.zones.some(
+          (z) =>
+            z.id === c.zoneId &&
+            z.kind === 'hand' &&
+            z.ownerId === action.playerId,
+        ),
+    );
+    const grave = paid.state.zones.find(
+      (z) => z.kind === 'graveyard' && z.ownerId === action.playerId,
+    );
+    if (!discarded || !grave)
+      return { ok: false, reason: 'INVALID_ADDITIONAL_COST' };
+    paid.state = {
+      ...paid.state,
+      cards: paid.state.cards.map((c) =>
+        c.id === discarded.id ? { ...c, zoneId: grave.id } : c,
+      ),
+    };
+  } else if (action.discardCardId !== undefined)
+    return { ok: false, reason: 'INVALID_ADDITIONAL_COST' };
   const trash = paid.state.cards.filter((c) =>
     paid.state.zones.some(
       (z) =>
@@ -333,38 +359,47 @@ function activateTapAbility(
               : ability.effect.type === 'bounce-friendly' ||
                   ability.effect.type === 'tag-to-hand'
                 ? { type: 'bounce', targetId: action.targetId! }
-                : ability.effect.type === 'hook'
+                : ability.effect.type === 'paid-recall'
                   ? {
-                      type: 'hook',
+                      type: 'grant-paid-recall',
                       targetId: action.targetId!,
-                      count: ability.effect.count,
+                      power: ability.effect.power,
                     }
-                  : ability.effect.type === 'buff-self'
-                    ? { type: 'buff-units', unitIds: [gear.id] }
-                    : ability.effect.type === 'recycle-trashes'
-                      ? { type: 'recycle-trashes', count: ability.effect.count }
-                      : ability.effect.type === 'next-spell-bonus-damage'
+                  : ability.effect.type === 'hook'
+                    ? {
+                        type: 'hook',
+                        targetId: action.targetId!,
+                        count: ability.effect.count,
+                      }
+                    : ability.effect.type === 'buff-self'
+                      ? { type: 'buff-units', unitIds: [gear.id] }
+                      : ability.effect.type === 'recycle-trashes'
                         ? {
-                            type: 'next-spell-bonus-damage',
-                            amount: ability.effect.amount,
+                            type: 'recycle-trashes',
+                            count: ability.effect.count,
                           }
-                        : ability.effect.type === 'next-unit-ready'
+                        : ability.effect.type === 'next-spell-bonus-damage'
                           ? {
-                              type: 'next-unit-ready',
-                              ...(ability.effect.legion
-                                ? { legion: true }
-                                : {}),
+                              type: 'next-spell-bonus-damage',
+                              amount: ability.effect.amount,
                             }
-                          : ability.effect.type === 'move-to-base'
+                          : ability.effect.type === 'next-unit-ready'
                             ? {
-                                type: 'move-to-base',
-                                targetId: action.targetId!,
+                                type: 'next-unit-ready',
+                                ...(ability.effect.legion
+                                  ? { legion: true }
+                                  : {}),
                               }
-                            : {
-                                type: 'targeted',
-                                targetId: action.targetId!,
-                                effect: ability.effect,
-                              },
+                            : ability.effect.type === 'move-to-base'
+                              ? {
+                                  type: 'move-to-base',
+                                  targetId: action.targetId!,
+                                }
+                              : {
+                                  type: 'targeted',
+                                  targetId: action.targetId!,
+                                  effect: ability.effect,
+                                },
   };
   if (ability.killSelfCost) paid.state = killGears(paid.state, [gear.id]).state;
   return {

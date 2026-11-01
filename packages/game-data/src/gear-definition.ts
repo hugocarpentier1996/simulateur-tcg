@@ -72,6 +72,8 @@ export interface GearTapAbility {
   readonly requiresBattlefield?: boolean;
   /** Capacité sans Tap (le gear reste Ready ; utilisable même Tap). */
   readonly noExhaust?: boolean;
+  /** Coût supplémentaire : défausser une carte de sa main (discardCardId). */
+  readonly discardCost?: boolean;
   /** Coût : détruire le gear source (« Kill this: »). */
   readonly killSelfCost?: boolean;
   /** Coût supplémentaire : recycler ce nombre de cartes de son cimetière (les plus anciennes,
@@ -117,7 +119,10 @@ export interface GearTapAbility {
     | { readonly type: 'buff-self' }
     /** Tue l'unité alliée ciblée puis regarde count cartes : peut jouer gratuitement une unité
      * de Might au plus 1 de plus (Baited Hook). */
-    | { readonly type: 'hook'; readonly count: number };
+    | { readonly type: 'hook'; readonly count: number }
+    /** La cible gagne ce tour une protection : à sa prochaine mort, rappel Tap contre 1 Power
+     * de cette couleur (Unlicensed Armory). */
+    | { readonly type: 'paid-recall'; readonly power: string };
 }
 
 /** Définition -> copie figée indépendante. RangeError si coût négatif/non fini,

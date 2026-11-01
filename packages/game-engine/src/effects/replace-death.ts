@@ -7,8 +7,15 @@ import type { GameEvent, GameState, UnitState } from '../types.js';
 export function payBossLegends(
   state: GameState,
   legendIds: readonly string[],
+  recallPayments: readonly { playerId: string; power: string }[] = [],
 ): GameState {
   let next = state;
+  for (const { playerId, power } of recallPayments) {
+    const cost = { energy: 0, power: { [power]: 1 } };
+    const plan = findPayment(next, playerId, cost);
+    const paid = plan && payCost(next, playerId, cost, plan);
+    if (paid && paid.ok) next = paid.state;
+  }
   for (const id of legendIds) {
     const card = next.cards.find((c) => c.id === id);
     if (!card) continue;
@@ -40,16 +47,32 @@ export function replaceDeaths(
   consumedGearIds: string[];
   /** Légendes The Boss utilisées : l'appelant les couche et fait payer 1 Power. */
   bossLegendIds: string[];
+  /** Rappels payants (Unlicensed Armory) : l'appelant fait payer ces Power. */
+  recallPayments: { playerId: string; power: string }[];
 } {
+  const recallPayments: { playerId: string; power: string }[] = [];
   const dead: UnitState[] = [];
   const events: GameEvent[] = [];
   const consumedGearIds: string[] = [];
   const bossLegendIds: string[] = [];
   const units = state.units.map((unit) => {
     if (!lethalIds.has(unit.id)) return unit;
+    // Protection gratuite, ou payante (Unlicensed Armory) si son Power est payable.
     const protection =
-      unit.temporaryEffects?.findIndex((e) => e.type === 'recall-on-death') ??
-      -1;
+      unit.temporaryEffects?.findIndex(
+        (e) =>
+          e.type === 'recall-on-death' &&
+          (!e.power ||
+            findPayment(state, unit.ownerId, {
+              energy: 0,
+              power: { [e.power]: 1 },
+            })),
+      ) ?? -1;
+    const protectionPower = (
+      unit.temporaryEffects?.[protection] as { power?: string } | undefined
+    )?.power;
+    if (protectionPower)
+      recallPayments.push({ playerId: unit.ownerId, power: protectionPower });
     const hourglass =
       protection < 0
         ? state.gears?.find(
@@ -99,5 +122,6 @@ export function replaceDeaths(
     events,
     consumedGearIds,
     bossLegendIds,
+    recallPayments,
   };
 }

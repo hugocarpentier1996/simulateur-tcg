@@ -80,8 +80,12 @@ export function resolveCombat(
     units: survivors.map((unit) => ({ ...unit, damage: 0 })),
     cards: [...state.cards, ...graveCards],
   };
-  if (replaced.bossLegendIds.length)
-    next = payBossLegends(next, replaced.bossLegendIds);
+  if (replaced.bossLegendIds.length || replaced.recallPayments.length)
+    next = payBossLegends(
+      next,
+      replaced.bossLegendIds,
+      replaced.recallPayments,
+    );
   if (replaced.consumedGearIds.length) {
     const broken = killGears(next, replaced.consumedGearIds);
     next = broken.state;

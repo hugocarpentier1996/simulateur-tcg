@@ -565,7 +565,7 @@ export interface UnitState {
     /** Tank accordé jusqu'à la fin du tour. */
     | { type: 'tank' }
     | { type: 'stun' }
-    | { type: 'recall-on-death' }
+    | { type: 'recall-on-death'; power?: string }
     /** Ganking accordé jusqu'à la fin du tour. */
     | { type: 'ganking' }
   )[];
@@ -711,6 +711,8 @@ export type GameAction =
       targetId?: string;
       /** Champ de destination d'un déplacement depuis la base (move-to-or-from-base). */
       destinationId?: string;
+      /** Carte de la main défaussée en coût (discardCost). */
+      discardCardId?: string;
       payment?: PaymentPlan;
     }
   /** Ressource manuelle : Tap d'une rune Ready pour 1 énergie dans la réserve. */

@@ -69,8 +69,12 @@ export function settleLethalUnits(
       cards,
       units: replaced.units.filter((u) => !ids.has(u.id)),
     };
-    if (replaced.bossLegendIds.length)
-      state = payBossLegends(state, replaced.bossLegendIds);
+    if (replaced.bossLegendIds.length || replaced.recallPayments.length)
+      state = payBossLegends(
+        state,
+        replaced.bossLegendIds,
+        replaced.recallPayments,
+      );
     if (replaced.consumedGearIds.length) {
       const broken = killGears(state, replaced.consumedGearIds);
       state = broken.state;

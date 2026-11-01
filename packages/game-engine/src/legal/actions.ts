@@ -229,14 +229,27 @@ function* candidates(
             ?.id
           ? state.battlefields.map((f) => f.zoneId)
           : [undefined])
-          yield {
-            type: 'activate-gear',
-            playerId,
-            gearId: gear.id,
-            ...(targetId ? { targetId } : {}),
-            ...(destinationId ? { destinationId } : {}),
-            payment,
-          };
+          for (const discardCardId of ability.discardCost
+            ? state.cards
+                .filter((c) =>
+                  state.zones.some(
+                    (z) =>
+                      z.id === c.zoneId &&
+                      z.kind === 'hand' &&
+                      z.ownerId === playerId,
+                  ),
+                )
+                .map((c) => c.id)
+            : [undefined])
+            yield {
+              type: 'activate-gear',
+              playerId,
+              gearId: gear.id,
+              ...(targetId ? { targetId } : {}),
+              ...(destinationId ? { destinationId } : {}),
+              ...(discardCardId ? { discardCardId } : {}),
+              payment,
+            };
     }
   }
   for (const unit of state.units)
