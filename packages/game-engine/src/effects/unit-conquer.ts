@@ -49,3 +49,31 @@ export function unitConquerEntries(
     return entries;
   });
 }
+
+/** Conquérant -> cartes de son cimetière à reprendre contre une défausse (Super Mega Death
+ * Rocket!), chacune comme choix facultatif sur la pile. */
+export function trashConquerEntries(
+  state: GameState,
+  playerId: string,
+): ModeChoiceEntry[] {
+  return state.cards
+    .filter(
+      (c) =>
+        c.ownerId === playerId &&
+        state.zones.some(
+          (z) =>
+            z.id === c.zoneId &&
+            z.kind === 'graveyard' &&
+            z.ownerId === playerId,
+        ) &&
+        state.spellDefinitions?.find((d) => d.id === c.definitionId)
+          ?.returnOnConquerDiscard,
+    )
+    .map((c) => ({
+      kind: 'mode-choice' as const,
+      sourceId: c.id,
+      ownerId: playerId,
+      modes: [],
+      discardReturn: true,
+    }));
+}

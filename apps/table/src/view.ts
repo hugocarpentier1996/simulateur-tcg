@@ -532,7 +532,11 @@ function actionLabel(
             ? 'Canaliser 1 rune Tap'
             : action.mode === 'skip'
               ? 'Ne rien faire'
-              : 'Détruire ' + target(action.mode.slice('kill-gear:'.length)))
+              : action.mode.startsWith('discard-return:')
+                ? 'Défausser ' +
+                  target(action.mode.slice('discard-return:'.length)) +
+                  ' pour reprendre la carte'
+                : 'Détruire ' + target(action.mode.slice('kill-gear:'.length)))
       );
     case 'choose-hold-channel':
       return (

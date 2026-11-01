@@ -321,3 +321,4 @@ export { sett } from './ogn/sett.js';
 export { adaptatron } from './ogn/adaptatron.js';
 export { overtOperation } from './ogn/overt-operation.js';
 export { albusFerros } from './ogn/albus-ferros.js';
+export { superMegaDeathRocket } from './ogn/super-mega-death-rocket.js';

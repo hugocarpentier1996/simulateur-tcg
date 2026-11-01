@@ -1218,3 +1218,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Adaptatron (ogn-056) : à la conquête, peut détruire un gear (choix à la résolution parmi les gears en jeu, ou rien) et, si oui, se buffe (`onConquerKillGearBuff`, modes `skip` / `kill-gear:<id>` du choix de mode).
 - Overt Operation (ogn-153) : Action ; chaque unité alliée Tap et buffée dépense son buff pour se redresser, puis toutes les unités alliées sont buffées (effet `spend-buffs-ready-then-buff-all`).
 - Albus Ferros (ogn-230) : à la mise en jeu, dépense les buffs des unités alliées choisies (sans ordre) et canalise 1 rune Tap par buff dépensé (`onPlaySpendBuffsChannel`, sélection `onPlaySelectedIds` généralisée).
+- Super Mega Death Rocket! (ogn-252) : inflige 5 à une unité ; au cimetière, quand son propriétaire conquiert, il peut défausser 1 carte pour la reprendre en main (`returnOnConquerDiscard`, choix de mode `discard-return:<id>` calculé à la résolution).

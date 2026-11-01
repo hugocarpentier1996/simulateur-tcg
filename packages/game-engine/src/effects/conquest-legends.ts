@@ -4,7 +4,7 @@ import { battlefieldDefinition } from './battlefield.js';
 import type { GameState, GameEvent } from '../types.js';
 import type { LegendEntry } from '../legend-types.js';
 import { activeLegends } from './legends.js';
-import { unitConquerEntries } from './unit-conquer.js';
+import { trashConquerEntries, unitConquerEntries } from './unit-conquer.js';
 import type { ModeChoiceEntry } from './mode-choice.js';
 /** Événements de cette action -> capacités de conquête (légendes et unités), après clôture et score.
  * Vérifie le seuil à la conquête ; la résolution le vérifiera à nouveau. Victoire : aucun ajout.
@@ -59,7 +59,10 @@ export function queueConquestLegends(
   // Capacités « When I conquer » des unités du conquérant présentes sur le champ conquis.
   for (const e of events)
     if (e.type === 'battlefield-conquered')
-      entries.push(...unitConquerEntries(state, e.playerId, e.battlefieldId));
+      entries.push(
+        ...unitConquerEntries(state, e.playerId, e.battlefieldId),
+        ...trashConquerEntries(state, e.playerId),
+      );
   // Monastery of Hirana : dépense d'un buff du conquérant pour piocher.
   for (const e of events)
     if (

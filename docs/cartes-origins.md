@@ -277,3 +277,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Adaptatron — ogn-056-298
 - [x] Overt Operation — ogn-153-298
 - [x] Albus Ferros — ogn-230-298
+- [x] Super Mega Death Rocket! — ogn-252-298

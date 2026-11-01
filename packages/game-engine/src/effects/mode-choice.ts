@@ -8,7 +8,11 @@ import { buffUnit } from './buff.js';
 /** Mode proposé par une capacité « X ou Y » : pioche 1, canalise 1 rune Tap, ne rien faire,
  * ou détruire un gear précis puis buffer la source (`kill-gear:<id>`, Adaptatron). */
 export type EffectMode =
-  'draw' | 'channel-exhausted' | 'skip' | `kill-gear:${string}`;
+  | 'draw'
+  | 'channel-exhausted'
+  | 'skip'
+  | `kill-gear:${string}`
+  | `discard-return:${string}`;
 
 export interface ModeChoiceEntry {
   kind: 'mode-choice';
@@ -17,6 +21,8 @@ export interface ModeChoiceEntry {
   modes: readonly EffectMode[];
   /** « You may kill a gear » : modes calculés à la résolution selon les gears en jeu. */
   killGearBuff?: boolean;
+  /** Retour depuis le cimetière contre une défausse : modes selon la main à la résolution. */
+  discardReturn?: boolean;
 }
 
 /** Capacité dépilée après réactions -> choix du mode par son propriétaire, sans fenêtre.
@@ -25,10 +31,27 @@ export function resolveModeChoice(
   state: GameState,
   entry: ModeChoiceEntry,
 ): Extract<ActionResult, { ok: true }> {
+  const inTrash = state.cards.some(
+    (c) =>
+      c.id === entry.sourceId &&
+      state.zones.some((z) => z.id === c.zoneId && z.kind === 'graveyard'),
+  );
+  const handIds = state.cards
+    .filter((c) =>
+      state.zones.some(
+        (z) =>
+          z.id === c.zoneId && z.kind === 'hand' && z.ownerId === entry.ownerId,
+      ),
+    )
+    .map((c) => c.id);
   const modes: readonly EffectMode[] = entry.killGearBuff
     ? ['skip', ...(state.gears ?? []).map((g) => `kill-gear:${g.id}` as const)]
-    : entry.modes;
-  if (modes.length <= 1 && entry.killGearBuff)
+    : entry.discardReturn
+      ? inTrash
+        ? ['skip', ...handIds.map((id) => `discard-return:${id}` as const)]
+        : []
+      : entry.modes;
+  if (modes.length <= 1 && (entry.killGearBuff || entry.discardReturn))
     return {
       ok: true,
       state,
@@ -70,6 +93,31 @@ function applyMode(
   if (mode === 'channel-exhausted')
     return channelForPlayer(state, pending.ownerId, 1);
   if (mode === 'skip') return { state, events: [] };
+  if (mode.startsWith('discard-return:')) {
+    const discardId = mode.slice('discard-return:'.length);
+    const zone = (kind: 'hand' | 'graveyard') =>
+      state.zones.find((z) => z.kind === kind && z.ownerId === pending.ownerId)
+        ?.id;
+    return {
+      state: {
+        ...state,
+        cards: state.cards.map((c) =>
+          c.id === discardId
+            ? { ...c, zoneId: zone('graveyard') ?? c.zoneId }
+            : c.id === pending.sourceId
+              ? { ...c, zoneId: zone('hand') ?? c.zoneId }
+              : c,
+        ),
+      },
+      events: [
+        {
+          type: 'card-discarded',
+          playerId: pending.ownerId,
+          cardId: discardId,
+        },
+      ],
+    };
+  }
   const killed = killGears(state, [mode.slice('kill-gear:'.length)]);
   return {
     state: killed.events.length

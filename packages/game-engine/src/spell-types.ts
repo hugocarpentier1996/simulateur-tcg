@@ -5,6 +5,8 @@ export interface SpellBlueprint {
   readonly id: string;
   readonly type: 'spell';
   readonly optionalExhaustAlly?: boolean;
+  /** Au cimetière, quand son propriétaire conquiert : défausser 1 pour la reprendre en main. */
+  readonly returnOnConquerDiscard?: boolean;
   /** Hidden : peut être caché pour 1 Power puis joué gratuitement plus tard (Réaction). */
   readonly hidden?: boolean;
   /** Coût supplémentaire facultatif : dépenser le buff d'une unité alliée pour ignorer le coût. */
