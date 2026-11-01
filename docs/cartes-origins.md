@@ -265,3 +265,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Block — ogn-057-298
 - [x] Sprite Call — ogn-094-298
 - [x] Teemo — ogn-197-298
+- [x] Blastcone Fae — ogn-097-298

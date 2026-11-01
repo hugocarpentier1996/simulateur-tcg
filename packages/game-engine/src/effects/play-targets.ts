@@ -1,3 +1,4 @@
+import { hiddenFree } from './hidden.js';
 import { withDeflect } from '../cost/deflect.js';
 import { findPayment } from '../legal/payment.js';
 import type { GameState, UnitBlueprint } from '../types.js';
@@ -8,15 +9,17 @@ export function playTargetChoices(
   definition: UnitBlueprint,
   destinationId?: string,
 ): (string | undefined)[] {
-  const playerId =
-    state.cards.find((c) => c.id === sourceId)?.ownerId ?? state.activePlayerId;
+  const card = state.cards.find((c) => c.id === sourceId);
+  const playerId = card?.ownerId ?? state.activePlayerId;
+  // Depuis Hidden, la carte est gratuite : seule la taxe Deflect compte.
+  const cost = hiddenFree(card, definition.cost);
   const payable = (ids: string[]): (string | undefined)[] => {
     const valid = ids.filter(
       (id) =>
         findPayment(
           state,
           playerId,
-          withDeflect(state, playerId, definition.cost, [id]),
+          withDeflect(state, playerId, cost, [id]),
         ) !== null,
     );
     return valid.length ? valid : [undefined];

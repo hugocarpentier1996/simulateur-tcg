@@ -1206,3 +1206,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Block (ogn-057) : Hidden ; Action ; une unité gagne Shield 3 et Tank jusqu'à la fin du tour (effet `grant-shield-tank`, effets temporaires `shield` / `tank`, helper `isTank`).
 - Sprite Call (ogn-094) : Hidden ; Action ; joue un jeton Sprite 3 Ready et Temporary (base ou champ contrôlé, via `summon-recruits`).
 - Teemo (Chaos, ogn-197) : Hidden ; à la mise en jeu, +3 Might jusqu'à la fin du tour (`onPlayEffect: self-might`).
+- Blastcone Fae (ogn-097) : Hidden ; à la mise en jeu, -2 Might à une unité jusqu'à la fin du tour (minimum 1). Correction Hidden : le choix de cible à la mise en jeu tient compte de la gratuité depuis facedown.

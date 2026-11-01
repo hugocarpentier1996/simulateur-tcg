@@ -309,3 +309,4 @@ export { hiddenBlade } from './ogn/hidden-blade.js';
 export { block } from './ogn/block.js';
 export { spriteCall } from './ogn/sprite-call.js';
 export { teemoChaos } from './ogn/teemo-chaos.js';
+export { blastconeFae } from './ogn/blastcone-fae.js';
