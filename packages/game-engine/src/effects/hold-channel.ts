@@ -1,3 +1,4 @@
+import { championReturnable, type ModeChoiceEntry } from './mode-choice.js';
 import { unitConquerEntries } from './unit-conquer.js';
 import type { GameState, ActionResult, GameAction } from '../types.js';
 import { battlefieldDefinition } from './battlefield.js';
@@ -85,6 +86,17 @@ export function queueHoldDraw(
   const conquerDraws = definition?.holdActivatesConquer
     ? unitConquerEntries(state, playerId, battlefieldId)
     : [];
+  const championBack: ModeChoiceEntry[] =
+    definition?.holdReturnChampion && championReturnable(state, playerId)
+      ? [
+          {
+            kind: 'mode-choice',
+            sourceId: battlefieldId,
+            ownerId: playerId,
+            modes: ['skip', 'return-champion'],
+          },
+        ]
+      : [];
   const buffTarget = definition?.holdBuffHere
     ? [...state.units]
         .filter((u) => u.ownerId === playerId && u.zoneId === battlefieldId)
@@ -92,7 +104,11 @@ export function queueHoldDraw(
     : undefined;
   if (
     state.result ||
-    (!count && !(token && base) && !buffTarget && !conquerDraws.length)
+    (!count &&
+      !(token && base) &&
+      !buffTarget &&
+      !conquerDraws.length &&
+      !championBack.length)
   )
     return state;
   return {
@@ -111,6 +127,7 @@ export function queueHoldDraw(
             ]
           : []),
         ...conquerDraws,
+        ...championBack,
         ...(buffTarget
           ? [
               {

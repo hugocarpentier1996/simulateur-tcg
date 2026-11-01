@@ -51,6 +51,8 @@ export interface GameState {
    * acquis par chaque sort lancé, par id de carte. */
   nextSpellBonusDamage?: Readonly<Record<string, number>>;
   spellBonusDamage?: Readonly<Record<string, number>>;
+  /** Chosen Champion de chaque joueur (carte placée en zone champion à la création). */
+  chosenChampions?: Readonly<Record<string, string>>;
   /** Joueurs dont la prochaine unité jouée ce tour arrive Ready (Sun Disc). */
   nextUnitReady?: readonly string[];
   /** Tours supplémentaires en attente, dans l'ordre (Time Warp). */

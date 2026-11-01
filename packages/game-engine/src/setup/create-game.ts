@@ -95,6 +95,9 @@ export function createGame(config: GameConfig): ActionResult {
     ),
     battlefields: [],
     scoredBattlefields: Object.fromEntries(playerIds.map((id) => [id, []])),
+    chosenChampions: Object.fromEntries(
+      config.players.map((p) => [p.id, p.champion.id]),
+    ),
     showdown: null,
     ...(config.randomState !== undefined
       ? { randomState: config.randomState }

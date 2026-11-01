@@ -27,7 +27,8 @@ export type EffectMode =
   | `recycle-opp:${string}`
   | `suffer:${string}`
   | 'let-draw'
-  | `recycle-any:${string}`;
+  | `recycle-any:${string}`
+  | 'return-champion';
 
 const ONE_ENERGY = { energy: 1, power: {} };
 
@@ -185,6 +186,22 @@ function applyMode(
           ...state.cards.filter((c) => c.id !== id),
           { ...card, zoneId: zone('deck') },
         ],
+      },
+      events: [],
+    };
+  }
+  if (mode === 'return-champion') {
+    const championId = championReturnable(state, pending.ownerId);
+    const zone = state.zones.find(
+      (z) => z.kind === 'champion' && z.ownerId === pending.ownerId,
+    );
+    if (!championId || !zone) return { state, events: [] };
+    return {
+      state: {
+        ...state,
+        cards: state.cards.map((c) =>
+          c.id === championId ? { ...c, zoneId: zone.id } : c,
+        ),
       },
       events: [],
     };
@@ -401,4 +418,26 @@ export function trashRecycleChoice(
     modes: ['skip', ...ids.map((id) => `recycle-any:${id}` as const)],
     recycleLeft: left,
   };
+}
+
+/** Chosen Champion du joueur au cimetière avec sa zone champion vide -> son id. */
+export function championReturnable(
+  state: GameState,
+  playerId: string,
+): string | undefined {
+  const championId = state.chosenChampions?.[playerId];
+  const zone = state.zones.find(
+    (z) => z.kind === 'champion' && z.ownerId === playerId,
+  );
+  const inTrash = state.cards.some(
+    (c) =>
+      c.id === championId &&
+      state.zones.some(
+        (z) =>
+          z.id === c.zoneId && z.kind === 'graveyard' && z.ownerId === playerId,
+      ),
+  );
+  if (!zone || !inTrash || state.cards.some((c) => c.zoneId === zone.id))
+    return undefined;
+  return championId;
 }

@@ -1249,3 +1249,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Mistfall (ogn-152) : gear ; quand une unité alliée Tap est buffée, payer 1 Power Body et coucher le gear la redresse (`readyOnAllyBuffed`).
 - Spirit's Refuge (ogn-063) : gear ; posé, buffe l'unité alliée choisie (`onPlayBuffAlly`, champ `targetId` de play-gear) ; les unités alliées buffées ont Deflect (`buffedAlliesDeflect`).
 - Forge of the Future (ogn-212) : gear ; posé, joue un jeton Recrue 1 dans sa base (`onPlaySummonBase`) ; « le détruire » (capacité sans Tap, coût `killSelfCost`) : recycle jusqu'à 4 cartes des cimetières, choisies une à une (mode `recycle-any:<id>` ou arrêt).
+- Hallowed Tomb (ogn-281) : champ ; à la tenue, son contrôleur peut ramener son Chosen Champion du cimetière dans sa zone champion vide (`holdReturnChampion`, mode `return-champion`, registre `chosenChampions` posé à la création de partie).

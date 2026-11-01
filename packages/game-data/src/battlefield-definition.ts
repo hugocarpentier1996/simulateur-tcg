@@ -16,6 +16,8 @@ export interface BattlefieldDefinition extends PrintedMetadata {
   readonly holdActivatesConquer?: boolean;
   /** Cartes Hidden supplémentaires pouvant être cachées ici (Bandle Tree). */
   readonly extraHiddenSlots?: number;
+  /** Tenue : peut ramener le Chosen Champion du cimetière dans sa zone champion vide. */
+  readonly holdReturnChampion?: boolean;
   /** Conquête : le conquérant défausse 1 puis pioche 1, via la pile. */
   readonly conquerLoot?: boolean;
   /** Conquête : dépenser un buff allié pour piocher 1 (automatique si possible), via la pile. */
