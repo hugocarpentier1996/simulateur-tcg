@@ -58,3 +58,5 @@ existantes ; seuls les nouveaux doutes utiles rejoindront le prochain lot de que
 - Dr. Mundo (hypothèse) : les 3 cartes recyclées sont les plus anciennes du cimetière, sans choix du joueur ; l'effet s'applique sans pile au début de la Beginning.
 - Navori Fighting Pit (hypothèse) : l'unité buffée est choisie automatiquement parmi les alliées présentes (non buffée d'abord) ; la carte dit « a unit here ».
 - Relentless Storm (hypothèse) : le « you may » est accepté automatiquement quand la légende est Ready ; Mighty évalué sur la Might imprimée de l'unité jouée.
+- Déclencheurs simples appliqués sans pile (hypothèse de prototype, à confirmer) : Cithria of Cloudfield, Jinx (Chaos), Eclipse Herald, Radiant Dawn, Solari Shrine, Scrapheap, Yasuo (Chaos), Back-Alley Bar, The Grand Plaza. Les « you may » de Solari Shrine et Relentless Storm sont acceptés automatiquement ; Radiant Dawn choisit l'unité buffée (sans buff d'abord).
+- Eclipse Herald / Radiant Dawn : l'étourdissement est attribué à l'adversaire du propriétaire de l'unité étourdie (le moteur ne trace pas encore la source du Stun).
