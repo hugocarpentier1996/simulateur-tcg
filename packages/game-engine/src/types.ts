@@ -51,6 +51,12 @@ export interface GameState {
    * acquis par chaque sort lancé, par id de carte. */
   nextSpellBonusDamage?: Readonly<Record<string, number>>;
   spellBonusDamage?: Readonly<Record<string, number>>;
+  /** Dégâts excédentaires assignés par l'attaquant au dernier combat (Tryndamere). */
+  combatExcess?: {
+    battlefieldId: string;
+    playerId: string;
+    amount: number;
+  } | null;
   /** Modes d'Udyr déjà choisis ce tour, par unité. */
   udyrModesUsed?: Readonly<Record<string, readonly string[]>>;
   /** Joueurs pour qui cacher une carte est gratuit ce tour (Guerilla Warfare). */
@@ -473,6 +479,9 @@ export interface UnitBlueprint {
   readonly unlimitedBuffs?: boolean;
   /** Les effets Deathknell de son propriétaire se déclenchent une fois de plus (Karthus). */
   readonly doubleDeathknell?: boolean;
+  /** Conquête après une attaque avec au moins ce total de dégâts excédentaires assignés aux
+   * ennemis : son propriétaire marque 1 point (Tryndamere). */
+  readonly conquerExcessScore?: number;
   /** « Recycle 1 from your trash » : +Might jusqu'à la fin du tour, via la pile (Vi). */
   readonly trashRecycleMight?: number;
   /** Coût supplémentaire obligatoire : tuer une unité alliée (sacrificeUnitId). */

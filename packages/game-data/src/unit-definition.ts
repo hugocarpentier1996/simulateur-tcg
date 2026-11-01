@@ -275,6 +275,9 @@ export interface UnitDefinition extends PrintedMetadata {
   readonly unlimitedBuffs?: boolean;
   /** Les effets Deathknell de son propriétaire se déclenchent une fois de plus (Karthus). */
   readonly doubleDeathknell?: boolean;
+  /** Conquête après une attaque avec au moins ce total de dégâts excédentaires assignés aux
+   * ennemis : son propriétaire marque 1 point (Tryndamere). */
+  readonly conquerExcessScore?: number;
   /** « Recycle 1 from your trash » : +Might jusqu'à la fin du tour, via la pile (Vi). */
   readonly trashRecycleMight?: number;
   /** Coût supplémentaire obligatoire : tuer une unité alliée à la mise en jeu. */

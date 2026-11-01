@@ -75,10 +75,26 @@ export function resolveCombat(
       zoneId: card.zoneId,
     })),
   );
+  // Dégâts excédentaires de l'attaquant : au-delà de ce qui était létal pour chaque cible.
+  const excess = (combat.assignments[combat.initiatorId] ?? []).reduce(
+    (sum, a) => {
+      const target = state.units.find((u) => u.id === a.targetId);
+      if (!target) return sum;
+      const left =
+        Math.max(1, effectiveMight(target, state)) - (target.damage ?? 0);
+      return sum + Math.max(0, a.amount - Math.max(0, left));
+    },
+    0,
+  );
   let next: GameState = {
     ...state,
     units: survivors.map((unit) => ({ ...unit, damage: 0 })),
     cards: [...state.cards, ...graveCards],
+    combatExcess: {
+      battlefieldId: combat.battlefieldId,
+      playerId: combat.initiatorId,
+      amount: excess,
+    },
   };
   if (replaced.bossLegendIds.length || replaced.recallPayments.length)
     next = payBossLegends(

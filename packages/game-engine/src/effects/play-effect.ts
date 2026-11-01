@@ -1,3 +1,4 @@
+import { awardPoints } from './hold-units.js';
 import { settleLethalUnits } from './lethal-units.js';
 import { moveUnit } from './resolve-spell.js';
 import { leaveBoard } from './leave-board.js';
@@ -44,6 +45,8 @@ export interface PlayEffectEntry {
     | { type: 'spend-buffs-channel'; unitIds: readonly string[] }
     /** La prochaine unité jouée ce tour par le propriétaire arrive Ready (Legion vérifié). */
     | { type: 'next-unit-ready'; legion?: boolean }
+    /** Son propriétaire marque des points d'effet de carte (Tryndamere). */
+    | { type: 'score-points'; amount: number }
     /** Protection de rappel payante jusqu'à la fin du tour (Unlicensed Armory). */
     | { type: 'grant-paid-recall'; targetId: string; power: string }
     /** Dazzling Aurora : révèle jusqu'à une unité, la joue gratuitement, recycle le reste. */
@@ -154,6 +157,22 @@ export function resolvePlayEffect(
         },
       },
       events: [{ type: 'unit-play-effect-resolved', sourceId: entry.sourceId }],
+    };
+  }
+  if (entry.effect.type === 'score-points') {
+    const scored = awardPoints(
+      state,
+      entry.ownerId,
+      entry.effect.amount,
+      entry.sourceId,
+    );
+    return {
+      ok: true,
+      state: scored.state,
+      events: [
+        ...scored.events,
+        { type: 'unit-play-effect-resolved', sourceId: entry.sourceId },
+      ],
     };
   }
   if (entry.effect.type === 'grant-paid-recall') {

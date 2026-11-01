@@ -24,6 +24,19 @@ export function unitConquerEntries(
         ownerId: playerId,
         count: definition.onConquerDraw,
       });
+    const threshold = definition?.conquerExcessScore;
+    if (
+      threshold !== undefined &&
+      state.combatExcess?.battlefieldId === battlefieldId &&
+      state.combatExcess.playerId === playerId &&
+      state.combatExcess.amount >= threshold
+    )
+      entries.push({
+        kind: 'play-effect',
+        sourceId: u.id,
+        ownerId: playerId,
+        effect: { type: 'score-points', amount: 1 },
+      });
     if (definition?.onConquerBuffSelf)
       entries.push({
         kind: 'play-effect',

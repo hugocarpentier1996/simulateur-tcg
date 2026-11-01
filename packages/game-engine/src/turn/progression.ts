@@ -39,6 +39,7 @@ export function startNextTurn(
     ...(state.nextUnitReady ? { nextUnitReady: [] } : {}),
     ...(state.freeHidePlayers ? { freeHidePlayers: [] } : {}),
     ...(state.udyrModesUsed ? { udyrModesUsed: {} } : {}),
+    ...(state.combatExcess ? { combatExcess: null } : {}),
     ...(state.nextSpellBonusDamage ? { nextSpellBonusDamage: {} } : {}),
     ...(state.spellBonusDamage ? { spellBonusDamage: {} } : {}),
     ...(state.extraTurns ? { extraTurns: laterExtras } : {}),
