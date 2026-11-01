@@ -409,6 +409,8 @@ export interface UnitBlueprint {
   readonly reactionTiming?: boolean;
   /** Premier déplacement du tour : peut redresser autre chose de Tap (Miss Fortune, pile). */
   readonly onFirstMoveReadyOther?: boolean;
+  /** Une unité alliée quitte sa zone en se déplaçant : peut la suivre (Stealthy Pursuer). */
+  readonly followsAllies?: boolean;
   /** Défaussée : peut être jouée depuis le cimetière en payant 1 Power de cette couleur
    * (Flame Chompers, capacité sur la pile). */
   readonly playOnDiscard?: { readonly power: string };

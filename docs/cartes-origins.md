@@ -322,3 +322,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Flame Chompers — ogn-006-298
 - [x] Immortal Phoenix — ogn-037-298
 - [x] Miss Fortune — ogn-162-298
+- [x] Stealthy Pursuer — ogn-177-298

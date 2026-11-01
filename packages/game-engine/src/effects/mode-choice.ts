@@ -1,3 +1,4 @@
+import { moveUnit } from './resolve-spell.js';
 import { playUnitFromTrash } from './play-from-trash.js';
 import { dealSpellDamage } from './spell-damage.js';
 import { settleLethalUnits } from './lethal-units.js';
@@ -39,7 +40,8 @@ export type EffectMode =
   | `arrange:${string}`
   | `reinforce:${string}`
   | 'pay-play'
-  | `ready:${string}`;
+  | `ready:${string}`
+  | 'follow';
 
 const ONE_ENERGY = { energy: 1, power: {} };
 
@@ -58,6 +60,8 @@ export interface ModeChoiceEntry {
   partnerId?: string;
   /** Joueurs suivants à choisir à leur tour ce qu'ils tuent (Cull the Weak). */
   nextChoosers?: readonly string[];
+  /** Zone où suivre l'unité alliée déplacée (Stealthy Pursuer). */
+  followTo?: string;
   /** Redresser autre chose de Tap (Miss Fortune) : modes calculés à la résolution. */
   readyOther?: boolean;
   /** Coût à payer pour jouer la source depuis le cimetière (Flame Chompers, Phoenix). */
@@ -472,6 +476,12 @@ function applyMode(
       events.push(...r.events);
     }
     return { state: next, events };
+  }
+  if (mode === 'follow' && pending.followTo) {
+    const pursuer = state.units.find((u) => u.id === pending.sourceId);
+    if (!pursuer || pursuer.zoneId === pending.followTo)
+      return { state, events: [] };
+    return moveUnit(state, pursuer, pending.followTo);
   }
   if (mode.startsWith('ready:')) {
     const id = mode.slice('ready:'.length);

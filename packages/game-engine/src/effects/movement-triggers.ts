@@ -37,6 +37,22 @@ export function queueMovementEffects(
     const definition = state.unitDefinitions?.find(
       (d) => d.id === unit.definitionId,
     );
+    // Stealthy Pursuer : poursuivants restés dans la zone de départ.
+    for (const pursuer of state.units)
+      if (
+        pursuer.id !== unit.id &&
+        pursuer.ownerId === unit.ownerId &&
+        pursuer.zoneId === unit.zoneId &&
+        state.unitDefinitions?.find((d) => d.id === pursuer.definitionId)
+          ?.followsAllies
+      )
+        entries.push({
+          kind: 'mode-choice',
+          sourceId: pursuer.id,
+          ownerId: pursuer.ownerId,
+          modes: ['skip', 'follow'],
+          followTo: destinationId,
+        });
     if (definition?.onFirstMoveReadyOther && !(unit.movesThisTurn ?? 0))
       entries.push({
         kind: 'mode-choice',

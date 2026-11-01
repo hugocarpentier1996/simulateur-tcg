@@ -1263,3 +1263,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Flame Chompers (ogn-006) : quand elle est défaussée, une capacité sur la pile permet de payer 1 Power Fury pour la jouer depuis le cimetière, dans la base (`playOnDiscard`, mode `pay-play` proposé seulement si payable).
 - Immortal Phoenix (ogn-037) : Assault 2 ; quand un sort de son propriétaire tue une unité, une capacité sur la pile permet de payer 1 énergie + 1 Power Fury pour la jouer depuis le cimetière (`playOnSpellKill`, coût générique `payPlayCost` du mode `pay-play`).
 - Miss Fortune (Body, ogn-162) : Accelerate, Ganking ; à son premier déplacement du tour, une capacité sur la pile permet de redresser une autre unité, un gear, une légende ou une rune Tap (`onFirstMoveReadyOther`, modes `ready:<id>`).
+- Stealthy Pursuer (ogn-177) : quand une unité alliée quitte sa zone en se déplaçant, une capacité sur la pile lui permet de la suivre (`followsAllies`, mode `follow`).
