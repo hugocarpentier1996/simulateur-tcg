@@ -355,3 +355,4 @@ export { forgeOfTheFuture } from './ogn/forge-of-the-future.js';
 export { hallowedTomb } from './ogn/hallowed-tomb.js';
 export { reaversRow } from './ogn/reavers-row.js';
 export { theCandlelitSanctum } from './ogn/the-candlelit-sanctum.js';
+export { reinforce } from './ogn/reinforce.js';

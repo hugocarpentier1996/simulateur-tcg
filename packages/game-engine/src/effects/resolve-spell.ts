@@ -1,5 +1,9 @@
 import { playUnitFromTrash } from './play-from-trash.js';
-import { nextKillChoice, opponentHandChoice } from './mode-choice.js';
+import {
+  lookPlayUnitChoice,
+  nextKillChoice,
+  opponentHandChoice,
+} from './mode-choice.js';
 import { startPick } from './pick.js';
 import { wardenAgainst } from './unit-aura.js';
 import { buffUnit, spendBuff } from './buff.js';
@@ -240,6 +244,17 @@ export function resolveSpell(
         entry.card.id,
         entry.casterId,
         effect.action,
+      );
+      if (choice) state = { ...state, pendingModeChoice: choice };
+      continue;
+    }
+    if (effect.type === 'look-play-unit') {
+      const choice = lookPlayUnitChoice(
+        state,
+        entry.card.id,
+        entry.casterId,
+        effect.count,
+        effect.energyReduction,
       );
       if (choice) state = { ...state, pendingModeChoice: choice };
       continue;

@@ -71,3 +71,4 @@ existantes ; seuls les nouveaux doutes utiles rejoindront le prochain lot de que
 - Pirate's Haven (hypothèses) : sans pile ; le redressement d'Awaken (début de tour) et l'entrée en jeu Ready ne comptent pas.
 - Mistfall (hypothèses) : sans pile ; le « you may » est accepté automatiquement dès que le gear est Ready et le Power payable (réserve ou runes).
 - Reaver's Row (hypothèse) : le renvoi en base n'est pas traité comme un déplacement (aucun déclencheur de mouvement).
+- Reinforce (hypothèses) : le reste du coût de l'unité est payé automatiquement (réserve puis runes) ; seules les unités payables sont proposées ; l'unité arrive dans la base, Tap, sans ses effets « when you play me ».

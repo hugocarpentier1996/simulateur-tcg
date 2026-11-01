@@ -35,6 +35,13 @@ export type SpellEffect =
   | { readonly type: 'exhaust-allies' }
   /** Détruit tous les équipements en jeu (cimetière de leur propriétaire). */
   | { readonly type: 'kill-all-gear' }
+  /** Regarde count cartes du dessus ; peut jouer une unité parmi elles, énergie réduite ;
+   * recycle le reste (Reinforce). */
+  | {
+      readonly type: 'look-play-unit';
+      readonly count: number;
+      readonly energyReduction: number;
+    }
   /** Bannit l'unité alliée ciblée puis la joue dans la base de son propriétaire (Portal Rescue). */
   | { readonly type: 'banish-replay' }
   /** Joue l'unité ciblée du cimetière du lanceur dans sa base, Tap ; son Power s'ajoute au

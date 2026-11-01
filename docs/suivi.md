@@ -1252,3 +1252,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Hallowed Tomb (ogn-281) : champ ; à la tenue, son contrôleur peut ramener son Chosen Champion du cimetière dans sa zone champion vide (`holdReturnChampion`, mode `return-champion`, registre `chosenChampions` posé à la création de partie).
 - Reaver's Row (ogn-285) : champ ; au début d'un combat où son contrôleur y défend, une capacité sur la pile lui permet de renvoyer une de ses unités d'ici dans sa base (`defendRetreat`, mode `retreat:<id>`).
 - The Candlelit Sanctum (ogn-291) : champ ; à la conquête ici, le conquérant regarde les 2 cartes du dessus de son deck, en recycle 0 à 2 et remet les autres dans l'ordre choisi (`conquerArrangeTop`, modes `arrange:<ids>`).
+- Reinforce (ogn-062) : regarde les 5 cartes du dessus ; peut jouer une unité parmi elles avec 5 énergie de moins, puis recycle le reste (effet `look-play-unit`, modes `reinforce:<id>` / `skip`).

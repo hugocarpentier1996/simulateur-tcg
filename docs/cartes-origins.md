@@ -311,3 +311,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Hallowed Tomb — ogn-281-298
 - [x] Reaver's Row — ogn-285-298
 - [x] The Candlelit Sanctum — ogn-291-298
+- [x] Reinforce — ogn-062-298

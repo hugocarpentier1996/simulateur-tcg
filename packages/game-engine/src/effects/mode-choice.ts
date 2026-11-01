@@ -3,7 +3,12 @@ import { settleLethalUnits } from './lethal-units.js';
 import { findPayment } from '../legal/payment.js';
 import { payCost } from '../cost/payment.js';
 import { leaveBoard } from './leave-board.js';
-import type { ActionResult, GameAction, GameState } from '../types.js';
+import type {
+  ActionResult,
+  GameAction,
+  GameState,
+  UnitBlueprint,
+} from '../types.js';
 import { drawCardForPlayer } from '../turn/draw.js';
 import { channelForPlayer } from '../turn/supplies.js';
 import { continueStack } from '../actions/continue-stack.js';
@@ -30,7 +35,8 @@ export type EffectMode =
   | `recycle-any:${string}`
   | 'return-champion'
   | `retreat:${string}`
-  | `arrange:${string}`;
+  | `arrange:${string}`
+  | `reinforce:${string}`;
 
 const ONE_ENERGY = { energy: 1, power: {} };
 
@@ -49,6 +55,9 @@ export interface ModeChoiceEntry {
   partnerId?: string;
   /** Joueurs suivants à choisir à leur tour ce qu'ils tuent (Cull the Weak). */
   nextChoosers?: readonly string[];
+  /** Reinforce : cartes regardées et réduction d'énergie de l'unité jouée. */
+  lookedIds?: readonly string[];
+  energyReduction?: number;
   /** Nombre de cartes du dessus du deck à arranger (The Candlelit Sanctum). */
   arrangeTop?: number;
   /** Champ dont les unités alliées peuvent être renvoyées en base (Reaver's Row). */
@@ -196,7 +205,7 @@ function applyMode(
   if (mode === 'draw') return drawCardForPlayer(state, pending.ownerId);
   if (mode === 'channel-exhausted')
     return channelForPlayer(state, pending.ownerId, 1);
-  if (mode === 'skip') return { state, events: [] };
+  if (mode === 'skip' && !pending.lookedIds) return { state, events: [] };
   if (mode.startsWith('discard-opp:') || mode.startsWith('recycle-opp:')) {
     const id = mode.slice(mode.indexOf(':') + 1);
     const card = state.cards.find((c) => c.id === id);
@@ -226,6 +235,63 @@ function applyMode(
       },
       events: [],
     };
+  }
+  if (pending.lookedIds) {
+    const chosen = mode.startsWith('reinforce:')
+      ? mode.slice('reinforce:'.length)
+      : undefined;
+    let next = state;
+    const events: Extract<ActionResult, { ok: true }>['events'] = [];
+    if (chosen) {
+      const card = next.cards.find((c) => c.id === chosen);
+      const unit = next.unitDefinitions?.find(
+        (d) => d.id === card?.definitionId,
+      );
+      const cost = unit && reducedCost(unit.cost, pending.energyReduction ?? 0);
+      const plan = cost && findPayment(next, pending.ownerId, cost);
+      const paid = plan && payCost(next, pending.ownerId, cost, plan);
+      const base = next.zones.find(
+        (z) => z.kind === 'base' && z.ownerId === pending.ownerId,
+      );
+      if (card && unit && base && paid && paid.ok) {
+        next = {
+          ...paid.state,
+          cards: paid.state.cards.filter((c) => c.id !== card.id),
+          units: [
+            ...paid.state.units,
+            {
+              id: card.id,
+              definitionId: card.definitionId,
+              ownerId: pending.ownerId,
+              zoneId: base.id,
+              ready: unit.entersReady === true,
+              might: unit.might,
+              ...(unit.tank ? { tank: true } : {}),
+              ...(unit.backline ? { backline: true } : {}),
+              damage: 0,
+            },
+          ],
+        };
+        events.push({
+          type: 'unit-played',
+          playerId: pending.ownerId,
+          unitId: card.id,
+          definitionId: unit.id,
+          zoneId: base.id,
+        });
+      }
+    }
+    const rest = pending.lookedIds.filter(
+      (id) => id !== chosen && next.cards.some((c) => c.id === id),
+    );
+    next = {
+      ...next,
+      cards: [
+        ...next.cards.filter((c) => !rest.includes(c.id)),
+        ...rest.map((id) => next.cards.find((c) => c.id === id)!),
+      ],
+    };
+    return { state: next, events };
   }
   if (mode.startsWith('arrange:')) {
     const kept = mode.slice('arrange:'.length).split('+').filter(Boolean);
@@ -565,5 +631,47 @@ export function sanctumEntry(
     ownerId: playerId,
     modes: [],
     arrangeTop: count,
+  };
+}
+
+/** Coût d'unité moins une réduction d'énergie (plancher 0). */
+function reducedCost(
+  cost: UnitBlueprint['cost'],
+  energy: number,
+): UnitBlueprint['cost'] {
+  return { ...cost, energy: Math.max(0, cost.energy - energy) };
+}
+
+/** Reinforce : cartes du dessus regardées -> choix d'une unité jouable (reste du coût
+ * payable) ou « skip » ; le reste sera recyclé. */
+export function lookPlayUnitChoice(
+  state: GameState,
+  sourceId: string,
+  playerId: string,
+  count: number,
+  energyReduction: number,
+): ModeChoiceEntry | undefined {
+  const looked = state.cards
+    .filter((c) =>
+      state.zones.some(
+        (z) => z.id === c.zoneId && z.kind === 'deck' && z.ownerId === playerId,
+      ),
+    )
+    .slice(0, count);
+  if (!looked.length) return undefined;
+  const playable = looked.filter((c) => {
+    const unit = state.unitDefinitions?.find((d) => d.id === c.definitionId);
+    return (
+      unit &&
+      findPayment(state, playerId, reducedCost(unit.cost, energyReduction))
+    );
+  });
+  return {
+    kind: 'mode-choice',
+    sourceId,
+    ownerId: playerId,
+    modes: ['skip', ...playable.map((c) => `reinforce:${c.id}` as const)],
+    lookedIds: looked.map((c) => c.id),
+    energyReduction,
   };
 }
