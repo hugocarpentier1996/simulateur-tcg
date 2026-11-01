@@ -1,4 +1,4 @@
-import { nextKillChoice } from './mode-choice.js';
+import { nextKillChoice, opponentHandChoice } from './mode-choice.js';
 import { startPick } from './pick.js';
 import { wardenAgainst } from './unit-aura.js';
 import { buffUnit, spendBuff } from './buff.js';
@@ -223,6 +223,16 @@ export function resolveSpell(
         entry.casterId,
       ];
       const choice = nextKillChoice(state, entry.card.id, 'return', order);
+      if (choice) state = { ...state, pendingModeChoice: choice };
+      continue;
+    }
+    if (effect.type === 'opponent-hand-pick') {
+      const choice = opponentHandChoice(
+        state,
+        entry.card.id,
+        entry.casterId,
+        effect.action,
+      );
       if (choice) state = { ...state, pendingModeChoice: choice };
       continue;
     }

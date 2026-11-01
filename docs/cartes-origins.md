@@ -285,3 +285,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Whirlwind — ogn-187-298
 - [x] King's Edict — ogn-237-298
 - [x] Mindsplitter — ogn-192-298
+- [x] Sabotage — ogn-156-298
