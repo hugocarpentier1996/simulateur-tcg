@@ -339,3 +339,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Tryndamere — ogn-034-298
 - [x] Nocturne — ogn-194-298
 - [x] Karma — ogn-235-298
+- [x] Ava Achiever — ogn-107-298

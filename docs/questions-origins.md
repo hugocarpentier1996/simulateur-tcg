@@ -81,3 +81,4 @@ existantes ; seuls les nouveaux doutes utiles rejoindront le prochain lot de que
 - Karthus (hypothèse) : il compte s'il est en jeu juste avant les morts, y compris s'il meurt en même temps.
 - Nocturne (limite) : seul le regard d'une Vision le déclenche pour l'instant (pas Reinforce, Baited Hook, The Candlelit Sanctum ni Stacked Deck).
 - Karma (hypothèses) : sans pile ; l'unité buffée est choisie automatiquement (sans buff d'abord) ; les recyclages internes au deck autres que la Vision (Reinforce, The Candlelit Sanctum…) ne sont pas encore détectés.
+- Ava Achiever (limite) : les sorts Hidden ne sont pas proposés (choix de cibles non géré dans ce cadre) ; l'unité jouée arrive Tap, sans ses effets « when you play me ».

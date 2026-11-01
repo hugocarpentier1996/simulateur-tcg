@@ -50,7 +50,8 @@ export type EffectMode =
   | `udyr-damage:${string}`
   | 'udyr-ready'
   | 'udyr-ganking'
-  | `hit:${string}`;
+  | `hit:${string}`
+  | `ava:${string}`;
 
 const ONE_ENERGY = { energy: 1, power: {} };
 
@@ -69,6 +70,9 @@ export interface ModeChoiceEntry {
   partnerId?: string;
   /** Joueurs suivants à choisir à leur tour ce qu'ils tuent (Cull the Weak). */
   nextChoosers?: readonly string[];
+  /** Ava Achiever : champ d'attaque et couleur du Power à payer. */
+  avaAt?: string;
+  avaPower?: string;
   /** Icathian Rain : instances restantes et dégâts de chacune (dégâts de sort). */
   hitsLeft?: number;
   hitAmount?: number;
@@ -203,59 +207,86 @@ export function resolveModeChoice(
   const atFields = state.units
     .filter((u) => state.battlefields.some((f) => f.zoneId === u.zoneId))
     .map((u) => u.id);
-  const modes: readonly EffectMode[] = entry.udyr
-    ? [
-        ...(used.includes('damage')
-          ? []
-          : atFields.map((id) => `udyr-damage:${id}` as const)),
-        ...(used.includes('stun')
-          ? []
-          : atFields.map((id) => `stun:${id}` as const)),
-        ...(used.includes('ready') ? [] : (['udyr-ready'] as const)),
-        ...(used.includes('ganking') ? [] : (['udyr-ganking'] as const)),
-      ]
-    : entry.splitDamageAt
-      ? splitModes(splitTargets, entry.splitAmount ?? 0)
-      : entry.readyOther
-        ? ['skip', ...exhausted]
-        : payPlayCost
-          ? (entry.fromDeck
-              ? state.cards.some(
-                  (c) =>
-                    c.id === entry.sourceId &&
-                    state.zones.some(
-                      (z) => z.id === c.zoneId && z.kind === 'deck',
-                    ),
+  const avaCards =
+    entry.avaAt &&
+    entry.avaPower &&
+    findPayment(state, entry.ownerId, {
+      energy: 0,
+      power: { [entry.avaPower]: 1 },
+    })
+      ? state.cards
+          .filter(
+            (c) =>
+              hasHidden(state, c.definitionId) &&
+              !state.spellDefinitions?.some((d) => d.id === c.definitionId) &&
+              state.zones.some(
+                (z) =>
+                  z.id === c.zoneId &&
+                  z.kind === 'hand' &&
+                  z.ownerId === entry.ownerId,
+              ),
+          )
+          .map((c) => `ava:${c.id}` as const)
+      : [];
+  const modes: readonly EffectMode[] = entry.avaAt
+    ? avaCards.length
+      ? ['skip', ...avaCards]
+      : []
+    : entry.udyr
+      ? [
+          ...(used.includes('damage')
+            ? []
+            : atFields.map((id) => `udyr-damage:${id}` as const)),
+          ...(used.includes('stun')
+            ? []
+            : atFields.map((id) => `stun:${id}` as const)),
+          ...(used.includes('ready') ? [] : (['udyr-ready'] as const)),
+          ...(used.includes('ganking') ? [] : (['udyr-ganking'] as const)),
+        ]
+      : entry.splitDamageAt
+        ? splitModes(splitTargets, entry.splitAmount ?? 0)
+        : entry.readyOther
+          ? ['skip', ...exhausted]
+          : payPlayCost
+            ? (entry.fromDeck
+                ? state.cards.some(
+                    (c) =>
+                      c.id === entry.sourceId &&
+                      state.zones.some(
+                        (z) => z.id === c.zoneId && z.kind === 'deck',
+                      ),
+                  )
+                : inTrash) && findPayment(state, entry.ownerId, payPlayCost)
+              ? ['skip', 'pay-play']
+              : []
+            : entry.arrangeTop
+              ? arrangements(top).map(
+                  (kept) => `arrange:${kept.join('+')}` as const,
                 )
-              : inTrash) && findPayment(state, entry.ownerId, payPlayCost)
-            ? ['skip', 'pay-play']
-            : []
-          : entry.arrangeTop
-            ? arrangements(top).map(
-                (kept) => `arrange:${kept.join('+')}` as const,
-              )
-            : entry.retreatFrom
-              ? ['skip', ...retreats]
-              : entry.killGearBuff
-                ? [
-                    'skip',
-                    ...(state.gears ?? []).map(
-                      (g) => `kill-gear:${g.id}` as const,
-                    ),
-                  ]
-                : entry.discardReturn
-                  ? inTrash
-                    ? [
-                        'skip',
-                        ...handIds.map((id) => `discard-return:${id}` as const),
-                      ]
-                    : []
-                  : entry.payReturn
-                    ? state.units.some((u) => u.id === entry.sourceId) &&
-                      findPayment(state, entry.ownerId, ONE_ENERGY)
-                      ? ['skip', 'pay-return']
+              : entry.retreatFrom
+                ? ['skip', ...retreats]
+                : entry.killGearBuff
+                  ? [
+                      'skip',
+                      ...(state.gears ?? []).map(
+                        (g) => `kill-gear:${g.id}` as const,
+                      ),
+                    ]
+                  : entry.discardReturn
+                    ? inTrash
+                      ? [
+                          'skip',
+                          ...handIds.map(
+                            (id) => `discard-return:${id}` as const,
+                          ),
+                        ]
                       : []
-                    : entry.modes;
+                    : entry.payReturn
+                      ? state.units.some((u) => u.id === entry.sourceId) &&
+                        findPayment(state, entry.ownerId, ONE_ENERGY)
+                        ? ['skip', 'pay-return']
+                        : []
+                      : entry.modes;
   if (
     modes.length <= 1 &&
     (entry.killGearBuff ||
@@ -266,7 +297,8 @@ export function resolveModeChoice(
       entry.payPlayCost ||
       entry.readyOther ||
       (entry.splitDamageAt && !modes.length) ||
-      (entry.udyr && !modes.length))
+      (entry.udyr && !modes.length) ||
+      (entry.avaAt && !modes.length))
   )
     return {
       ok: true,
@@ -602,6 +634,78 @@ function applyMode(
       events.push(...r.events);
     }
     return { state: next, events };
+  }
+  if (mode.startsWith('ava:') && pending.avaAt && pending.avaPower) {
+    const card = state.cards.find((c) => c.id === mode.slice('ava:'.length));
+    const cost = { energy: 0, power: { [pending.avaPower]: 1 } };
+    const plan = findPayment(state, pending.ownerId, cost);
+    const paid = plan && payCost(state, pending.ownerId, cost, plan);
+    if (!card || !paid || !paid.ok) return { state, events: [] };
+    const unit = paid.state.unitDefinitions?.find(
+      (d) => d.id === card.definitionId,
+    );
+    const gear = paid.state.gearDefinitions?.find(
+      (d) => d.id === card.definitionId,
+    );
+    const base = paid.state.zones.find(
+      (z) => z.kind === 'base' && z.ownerId === pending.ownerId,
+    );
+    if (unit)
+      return {
+        state: {
+          ...paid.state,
+          cards: paid.state.cards.filter((c) => c.id !== card.id),
+          units: [
+            ...paid.state.units,
+            {
+              id: card.id,
+              definitionId: card.definitionId,
+              ownerId: pending.ownerId,
+              zoneId: pending.avaAt,
+              ready: unit.entersReady === true,
+              might: unit.might,
+              ...(unit.tank ? { tank: true } : {}),
+              ...(unit.backline ? { backline: true } : {}),
+              damage: 0,
+            },
+          ],
+        },
+        events: [
+          {
+            type: 'unit-played',
+            playerId: pending.ownerId,
+            unitId: card.id,
+            definitionId: unit.id,
+            zoneId: pending.avaAt,
+          },
+        ],
+      };
+    if (gear && base)
+      return {
+        state: {
+          ...paid.state,
+          cards: paid.state.cards.filter((c) => c.id !== card.id),
+          gears: [
+            ...(paid.state.gears ?? []),
+            {
+              id: card.id,
+              definitionId: card.definitionId,
+              ownerId: pending.ownerId,
+              zoneId: base.id,
+              ready: !gear.entersExhausted,
+            },
+          ],
+        },
+        events: [
+          {
+            type: 'gear-played',
+            playerId: pending.ownerId,
+            gearId: card.id,
+            zoneId: base.id,
+          },
+        ],
+      };
+    return { state, events: [] };
   }
   if (mode.startsWith('hit:')) {
     const unit = state.units.find((u) => u.id === mode.slice('hit:'.length));

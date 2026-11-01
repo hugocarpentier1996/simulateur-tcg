@@ -282,6 +282,9 @@ export interface UnitDefinition extends PrintedMetadata {
   readonly playWhenSeen?: boolean;
   /** Son propriétaire recycle des cartes : une unité alliée est buffée (Karma, sans pile). */
   readonly buffOnRecycle?: boolean;
+  /** En attaquant : payer 1 Power de cette couleur pour jouer ici, gratuitement, une unité ou
+   * un gear Hidden de sa main (Ava Achiever). */
+  readonly onAttackPlayHidden?: { readonly power: string };
   /** « Recycle 1 from your trash » : +Might jusqu'à la fin du tour, via la pile (Vi). */
   readonly trashRecycleMight?: number;
   /** Coût supplémentaire obligatoire : tuer une unité alliée à la mise en jeu. */
