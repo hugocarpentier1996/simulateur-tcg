@@ -186,6 +186,9 @@ export interface UnitBlueprint {
   readonly canPlayToOpenBattlefield?: boolean;
   /** Tant qu'elle est en jeu, les unités alliées peuvent être jouées sur un champ libre. */
   readonly alliesCanPlayToOpenBattlefield?: boolean;
+  /** Sur un champ : adversaires limités à jouer leurs unités en base ; leurs unités ne
+   * peuvent pas être redressées par sorts et capacités (Mageseeker Warden). */
+  readonly wardenLockdown?: boolean;
   /** Tant qu'elle est Mighty (5+ Might) : Deflect, Ganking et Shield 1 (Fiora). */
   readonly mightyKeywords?: boolean;
   /** Ne subit aucun dégât après s'être déplacé au moins ce nombre de fois ce tour (Kayn). */

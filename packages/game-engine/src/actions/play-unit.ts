@@ -1,6 +1,6 @@
 import { activeLegends } from '../effects/legends.js';
 import { victoryTarget } from '../scoring/victory-target.js';
-import { alliesEnterReady } from '../effects/unit-aura.js';
+import { alliesEnterReady, wardenAgainst } from '../effects/unit-aura.js';
 import { withDeflect } from '../cost/deflect.js';
 import { playTargetChoices } from '../effects/play-targets.js';
 import type { PlayEffectEntry } from '../effects/play-effect.js';
@@ -51,6 +51,8 @@ export function playUnit(
   );
   if (!base) return { ok: false, reason: 'MISSING_BASE' };
   const destinationId = action.destinationId ?? base.id;
+  if (destinationId !== base.id && wardenAgainst(state, action.playerId))
+    return { ok: false, reason: 'INVALID_SUMMON_DESTINATION' };
   const openField =
     (definition.canPlayToOpenBattlefield ||
       state.units.some(

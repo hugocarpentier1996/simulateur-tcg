@@ -1,3 +1,4 @@
+import { wardenAgainst } from './unit-aura.js';
 import { summonToken } from './summon-token.js';
 import { buffUnit } from './buff.js';
 import { startDiscard } from './loot.js';
@@ -108,7 +109,9 @@ export function resolvePlayEffect(
       state: {
         ...state,
         units: state.units.map((u) =>
-          u.id === targetId && u.id !== entry.sourceId
+          u.id === targetId &&
+          u.id !== entry.sourceId &&
+          !(u.ownerId !== entry.ownerId && wardenAgainst(state, u.ownerId))
             ? { ...u, ready: true }
             : u,
         ),

@@ -63,3 +63,14 @@ export function alliesEnterReady(state: GameState, ownerId: string): boolean {
         ?.otherAlliesEnterReady,
   );
 }
+
+/** Mageseeker Warden : un adversaire de ce joueur a une telle unité sur un champ. */
+export function wardenAgainst(state: GameState, playerId: string): boolean {
+  return state.units.some(
+    (u) =>
+      u.ownerId !== playerId &&
+      state.battlefields.some((f) => f.zoneId === u.zoneId) &&
+      state.unitDefinitions?.find((d) => d.id === u.definitionId)
+        ?.wardenLockdown,
+  );
+}

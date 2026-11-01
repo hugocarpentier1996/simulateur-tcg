@@ -1,3 +1,4 @@
+import { wardenAgainst } from './unit-aura.js';
 import { buffUnit } from './buff.js';
 import { channelForPlayer } from '../turn/supplies.js';
 import { returnGraveyardCard } from './graveyard-card.js';
@@ -405,6 +406,11 @@ export function resolveSpell(
           }
       }
     } else if (effect.type === 'ready-unit') {
+      if (
+        target.ownerId !== entry.casterId &&
+        wardenAgainst(state, target.ownerId)
+      )
+        continue;
       state = {
         ...state,
         units: state.units.map((u) =>
