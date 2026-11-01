@@ -2,6 +2,7 @@ import { hiddenInTrash } from './hidden.js';
 import { playUnitFromTrash } from './play-from-trash.js';
 import {
   hitChoice,
+  judgmentStep,
   lookPlayUnitChoice,
   nextKillChoice,
   opponentHandChoice,
@@ -248,6 +249,22 @@ export function resolveSpell(
         effect.action,
       );
       if (choice) state = { ...state, pendingModeChoice: choice };
+      continue;
+    }
+    if (effect.type === 'divine-judgment') {
+      const order = [
+        entry.casterId,
+        ...state.players.map((p) => p.id).filter((id) => id !== entry.casterId),
+      ];
+      const categories = ['unit', 'gear', 'rune', 'hand'] as const;
+      state = judgmentStep(
+        state,
+        entry.card.id,
+        order.flatMap((playerId) =>
+          categories.map((category) => ({ playerId, category })),
+        ),
+        [],
+      );
       continue;
     }
     if (effect.type === 'damage-hits') {

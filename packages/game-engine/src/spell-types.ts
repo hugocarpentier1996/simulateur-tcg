@@ -79,6 +79,8 @@ export interface SpellBlueprint {
     | { readonly type: 'exhaust-allies' }
     /** Détruit tous les équipements en jeu (cimetière de leur propriétaire). */
     | { readonly type: 'kill-all-gear' }
+    /** Chaque joueur garde 2 unités, 2 gears, 2 runes, 2 cartes en main ; le reste est recyclé. */
+    | { readonly type: 'divine-judgment' }
     /** Révèle le dessus du deck adverse, la bannit puis la joue gratuitement (Blind Fury). */
     | { readonly type: 'steal-top-card' }
     /** Le lanceur prend le contrôle du sort ciblé sur la pile (Mystic Reversal). */

@@ -52,7 +52,8 @@ export type EffectMode =
   | 'udyr-ganking'
   | `hit:${string}`
   | `ava:${string}`
-  | `kaisa:${string}`;
+  | `kaisa:${string}`
+  | `keep:${string}`;
 
 const ONE_ENERGY = { energy: 1, power: {} };
 
@@ -71,6 +72,11 @@ export interface ModeChoiceEntry {
   partnerId?: string;
   /** Joueurs suivants à choisir à leur tour ce qu'ils tuent (Cull the Weak). */
   nextChoosers?: readonly string[];
+  /** Divine Judgment : étapes restantes (joueur, catégorie) et objets déjà gardés. */
+  judgment?: {
+    steps: readonly { playerId: string; category: JudgmentCategory }[];
+    kept: readonly string[];
+  };
   /** Kai'Sa (Mind) : sort du cimetière à rejouer, calculé à la résolution. */
   replaySpell?: boolean;
   /** Ava Achiever : champ d'attaque et couleur du Power à payer. */
@@ -359,6 +365,23 @@ export function chooseMode(
     return { ok: false, reason: 'NO_PRIORITY' };
   if (!pending.modes.includes(action.mode))
     return { ok: false, reason: 'INVALID_MODE' };
+  if (pending.judgment && action.mode.startsWith('keep:')) {
+    const kept = [
+      ...pending.judgment.kept,
+      ...action.mode.slice('keep:'.length).split('+'),
+    ];
+    const next = judgmentStep(
+      { ...state, pendingModeChoice: null },
+      pending.sourceId,
+      pending.judgment.steps,
+      kept,
+    );
+    return next.pendingModeChoice
+      ? { ok: true, state: next, events: [] }
+      : continueStack(next, [
+          { type: 'legend-effect-resolved', sourceId: pending.sourceId },
+        ]);
+  }
   const cleared: GameState = {
     ...state,
     pendingModeChoice: null,
@@ -1272,5 +1295,133 @@ export function hitChoice(
     modes: state.units.map((u) => `hit:${u.id}` as const),
     hitsLeft: left,
     hitAmount: amount,
+  };
+}
+
+export type JudgmentCategory = 'unit' | 'gear' | 'rune' | 'hand';
+
+/** Objets d'un joueur dans une catégorie de Divine Judgment. */
+function judgmentItems(
+  state: GameState,
+  playerId: string,
+  category: JudgmentCategory,
+): string[] {
+  if (category === 'unit')
+    return state.units.filter((u) => u.ownerId === playerId).map((u) => u.id);
+  if (category === 'gear')
+    return (state.gears ?? [])
+      .filter((g) => g.ownerId === playerId)
+      .map((g) => g.id);
+  const kind = category === 'rune' ? 'runes' : 'hand';
+  return state.cards
+    .filter((c) =>
+      state.zones.some(
+        (z) => z.id === c.zoneId && z.kind === kind && z.ownerId === playerId,
+      ),
+    )
+    .map((c) => c.id);
+}
+
+/** Divine Judgment : avance dans les étapes ; une catégorie de 2 objets ou moins est gardée
+ * d'office. Choix nécessaire : pendingModeChoice ; sinon le reste est recyclé. */
+export function judgmentStep(
+  state: GameState,
+  sourceId: string,
+  steps: readonly { playerId: string; category: JudgmentCategory }[],
+  kept: readonly string[],
+): GameState {
+  const keep = [...kept];
+  for (const [i, step] of steps.entries()) {
+    const items = judgmentItems(state, step.playerId, step.category);
+    if (items.length <= 2) {
+      keep.push(...items);
+      continue;
+    }
+    const pairs = items.flatMap((a, j) =>
+      items.slice(j + 1).map((b) => `keep:${a}+${b}` as const),
+    );
+    return {
+      ...state,
+      pendingModeChoice: {
+        kind: 'mode-choice',
+        sourceId,
+        ownerId: step.playerId,
+        modes: pairs,
+        judgment: { steps: steps.slice(i + 1), kept: keep },
+      },
+    };
+  }
+  return applyJudgment(state, keep);
+}
+
+/** Recycle tout ce qui n'est pas gardé : unités, gears et cartes en main sous le deck de leur
+ * propriétaire (jetons retirés), runes en jeu sous la pile de runes. */
+function applyJudgment(state: GameState, kept: readonly string[]): GameState {
+  const zone = (ownerId: string, kind: 'deck' | 'rune-pile') =>
+    state.zones.find((z) => z.kind === kind && z.ownerId === ownerId)?.id;
+  const goneUnits = state.units.filter((u) => !kept.includes(u.id));
+  const goneGears = (state.gears ?? []).filter((g) => !kept.includes(g.id));
+  const recycledCards = state.cards.filter(
+    (c) =>
+      !kept.includes(c.id) &&
+      state.zones.some(
+        (z) => z.id === c.zoneId && (z.kind === 'hand' || z.kind === 'runes'),
+      ),
+  );
+  const stay = state.cards.filter((c) => !recycledCards.includes(c));
+  const next: GameState = {
+    ...state,
+    units: state.units.filter((u) => kept.includes(u.id)),
+    ...(state.gears
+      ? {
+          gears: state.gears
+            .filter((g) => kept.includes(g.id))
+            .map((g) => {
+              if (!g.attachedUnitId || kept.includes(g.attachedUnitId))
+                return g;
+              const free = { ...g };
+              delete free.attachedUnitId;
+              return free;
+            }),
+        }
+      : {}),
+    cards: [
+      ...stay,
+      ...recycledCards.map((c) => {
+        const rune = state.zones.some(
+          (z) => z.id === c.zoneId && z.kind === 'runes',
+        );
+        return {
+          ...c,
+          zoneId: zone(c.ownerId, rune ? 'rune-pile' : 'deck') ?? c.zoneId,
+          ...(rune ? { ready: false } : {}),
+        };
+      }),
+      ...goneUnits
+        .filter((u) => !u.token)
+        .map((u) => ({
+          id: u.id,
+          definitionId: u.definitionId,
+          ownerId: u.cardOwnerId ?? u.ownerId,
+          zoneId: zone(u.cardOwnerId ?? u.ownerId, 'deck') ?? u.zoneId,
+        })),
+      ...goneGears.map((g) => ({
+        id: g.id,
+        definitionId: g.definitionId,
+        ownerId: g.ownerId,
+        zoneId: zone(g.ownerId, 'deck') ?? g.zoneId,
+      })),
+    ],
+  };
+  return {
+    ...next,
+    battlefields: next.battlefields.map((f) =>
+      f.zoneId !== next.showdown?.battlefieldId &&
+      !next.units.some(
+        (u) => u.zoneId === f.zoneId && u.ownerId === f.controllerId,
+      )
+        ? { ...f, controllerId: null }
+        : f,
+    ),
   };
 }

@@ -388,3 +388,4 @@ export { heimerdinger } from './ogn/heimerdinger.js';
 export { mysticReversal } from './ogn/mystic-reversal.js';
 export { blindFury } from './ogn/blind-fury.js';
 export { kaiSaMind } from './ogn/kai-sa-mind.js';
+export { divineJudgment } from './ogn/divine-judgment.js';
