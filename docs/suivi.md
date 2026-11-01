@@ -1170,3 +1170,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Herald of the Arcane (ogn-265) : légende ; 1 énergie + Tap — joue une Recrue 1 dans sa base (capacité Tap sans cible `summon-base`).
 - Hand of Noxus (ogn-253) : légende ; Tap — Réaction, Legion : ajoute 1 énergie, sans pile (`resourceAbility` de légende avec condition `legion`) ; cliquable dans la table comme un gear de ressource.
 - Loose Cannon (ogn-251) : légende ; au début de sa Beginning, pioche 1 via la pile s'il a 1 carte ou moins en main (`beginningDrawIfHandAtMost`).
+- Nine-Tailed Fox (ogn-255) : légende ; quand l'adversaire attaque un champ qu'il contrôle, les attaquants ont -1 Might ce tour, minimum 1, via la pile (`weakenAttackers`, mode d'attaque `weaken-enemies-here`).

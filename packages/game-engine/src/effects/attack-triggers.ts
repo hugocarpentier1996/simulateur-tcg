@@ -1,3 +1,5 @@
+import { activeLegends } from './legends.js';
+import { effectiveMight } from './modifiers.js';
 import type { AttackDamageTrigger } from './attack-targets.js';
 import type { ActionResult, GameEvent, GameState } from '../types.js';
 import { dealEffectDamage } from './effect-damage.js';
@@ -11,7 +13,11 @@ export interface AttackEntry {
   amount: number;
   /** Absent : bonus si un ennemi est Ready (Dune Drake). Les autres effets visent les
    * ennemis du champ à la résolution, que la source y soit encore ou non. */
-  mode?: 'damage-enemies-here' | 'kill-damaged-enemies-here';
+  mode?:
+    | 'damage-enemies-here'
+    | 'kill-damaged-enemies-here'
+    /** -amount Might ce tour (minimum 1) aux unités ennemies du champ (Nine-Tailed Fox). */
+    | 'weaken-enemies-here';
 }
 function hasReadyEnemy(
   state: GameState,
@@ -104,6 +110,22 @@ export function queueAttackEffects(
         amount: definition.onAttackReadyEnemyMightBonus,
       });
   }
+  // Nine-Tailed Fox : l'attaque d'un champ contrôlé par le défenseur affaiblit les attaquants.
+  if (begins && combat.defenderId)
+    for (const { card, definition } of activeLegends(state, combat.defenderId))
+      if (
+        definition.weakenAttackers &&
+        before.battlefields.find((f) => f.zoneId === combat.battlefieldId)
+          ?.controllerId === combat.defenderId
+      )
+        entries.push({
+          kind: 'attack',
+          sourceId: card.id,
+          ownerId: combat.defenderId,
+          battlefieldId: combat.battlefieldId,
+          amount: definition.weakenAttackers,
+          mode: 'weaken-enemies-here',
+        });
   // « When I defend » : défenseurs présents au début du combat (Ahri).
   if (begins)
     for (const u of state.units) {
@@ -163,6 +185,31 @@ export function resolveAttackEffect(
     const enemies = state.units.filter(
       (u) => u.ownerId !== entry.ownerId && u.zoneId === entry.battlefieldId,
     );
+    if (entry.mode === 'weaken-enemies-here')
+      return {
+        ok: true,
+        state: {
+          ...state,
+          units: state.units.map((u) =>
+            enemies.includes(u)
+              ? {
+                  ...u,
+                  temporaryEffects: [
+                    ...(u.temporaryEffects ?? []),
+                    {
+                      type: 'modify-might' as const,
+                      amount: Math.max(
+                        -entry.amount,
+                        Math.min(0, 1 - effectiveMight(u, state)),
+                      ),
+                    },
+                  ],
+                }
+              : u,
+          ),
+        },
+        events: [resolved],
+      };
     if (entry.mode === 'kill-damaged-enemies-here') {
       const killed = settleLethalUnits(
         state,
