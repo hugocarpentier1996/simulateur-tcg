@@ -57,8 +57,8 @@ export interface ModeChoiceEntry {
   partnerId?: string;
   /** Joueurs suivants à choisir à leur tour ce qu'ils tuent (Cull the Weak). */
   nextChoosers?: readonly string[];
-  /** Couleur du Power à payer pour jouer la source depuis le cimetière (Flame Chompers). */
-  payPlayPower?: string;
+  /** Coût à payer pour jouer la source depuis le cimetière (Flame Chompers, Phoenix). */
+  payPlayCost?: UnitBlueprint['cost'];
   /** Reinforce : cartes regardées et réduction d'énergie de l'unité jouée. */
   lookedIds?: readonly string[];
   energyReduction?: number;
@@ -114,9 +114,7 @@ export function resolveModeChoice(
         .slice(0, entry.arrangeTop)
         .map((c) => c.id)
     : [];
-  const payPlayCost = entry.payPlayPower
-    ? { energy: 0, power: { [entry.payPlayPower]: 1 } }
-    : undefined;
+  const payPlayCost = entry.payPlayCost;
   const modes: readonly EffectMode[] = payPlayCost
     ? inTrash && findPayment(state, entry.ownerId, payPlayCost)
       ? ['skip', 'pay-play']
@@ -150,7 +148,7 @@ export function resolveModeChoice(
       entry.payReturn ||
       entry.retreatFrom ||
       entry.arrangeTop ||
-      entry.payPlayPower)
+      entry.payPlayCost)
   )
     return {
       ok: true,
@@ -448,8 +446,8 @@ function applyMode(
     }
     return { state: next, events };
   }
-  if (mode === 'pay-play' && pending.payPlayPower) {
-    const cost = { energy: 0, power: { [pending.payPlayPower]: 1 } };
+  if (mode === 'pay-play' && pending.payPlayCost) {
+    const cost = pending.payPlayCost;
     const plan = findPayment(state, pending.ownerId, cost);
     const paid = plan && payCost(state, pending.ownerId, cost, plan);
     if (!paid || !paid.ok) return { state, events: [] };

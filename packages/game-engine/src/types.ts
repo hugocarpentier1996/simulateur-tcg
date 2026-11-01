@@ -410,6 +410,9 @@ export interface UnitBlueprint {
   /** Défaussée : peut être jouée depuis le cimetière en payant 1 Power de cette couleur
    * (Flame Chompers, capacité sur la pile). */
   readonly playOnDiscard?: { readonly power: string };
+  /** Un sort de son propriétaire tue une unité : peut payer ce coût pour la jouer depuis le
+   * cimetière (Immortal Phoenix, capacité sur la pile). */
+  readonly playOnSpellKill?: UnitBlueprint['cost'];
   /** Tant qu'elle est en jeu, les autres unités alliées ont Vision (Gemcraft Seer). */
   readonly alliesHaveVision?: boolean;
   /** À la mise en jeu, peut jouer une unité de son cimetière (returnSpellId) : gratuitement

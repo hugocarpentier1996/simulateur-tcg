@@ -1,3 +1,4 @@
+import type { ModeChoiceEntry } from './effects/mode-choice.js';
 import { payCost } from './cost/payment.js';
 import { findPayment } from './legal/payment.js';
 import {
@@ -478,7 +479,7 @@ export function act(state: GameState, action: GameAction): ActionResult {
       }
   }
   // Flame Chompers : carte défaussée -> capacité « payer pour la jouer » sur la pile.
-  const chompers = events.flatMap((e) => {
+  const chompers: ModeChoiceEntry[] = events.flatMap((e) => {
     if (e.type !== 'card-discarded') return [];
     const card = shrine.cards.find((c) => c.id === e.cardId);
     const rule = shrine.unitDefinitions?.find(
@@ -491,11 +492,34 @@ export function act(state: GameState, action: GameAction): ActionResult {
             sourceId: card.id,
             ownerId: card.ownerId,
             modes: [],
-            payPlayPower: rule.power,
+            payPlayCost: { energy: 0, power: { [rule.power]: 1 } },
           },
         ]
       : [];
   });
+  // Immortal Phoenix : un sort du joueur tue une unité -> payer pour la jouer du cimetière.
+  const spellKill =
+    events.some((e) => e.type === 'spell-resolved') &&
+    events.some((e) => e.type === 'unit-died' || e.type === 'token-removed');
+  const caster = events.find((e) => e.type === 'spell-resolved');
+  if (spellKill && caster?.type === 'spell-resolved')
+    for (const card of shrine.cards) {
+      const rule = shrine.unitDefinitions?.find(
+        (d) => d.id === card.definitionId,
+      )?.playOnSpellKill;
+      if (
+        rule &&
+        card.ownerId === caster.playerId &&
+        shrine.zones.some((z) => z.id === card.zoneId && z.kind === 'graveyard')
+      )
+        chompers.push({
+          kind: 'mode-choice',
+          sourceId: card.id,
+          ownerId: card.ownerId,
+          modes: [],
+          payPlayCost: rule,
+        });
+    }
   if (chompers.length)
     shrine = {
       ...shrine,
