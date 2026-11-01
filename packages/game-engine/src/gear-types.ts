@@ -70,6 +70,11 @@ export interface GearBlueprint {
   readonly mightOnAllyReadied?: number;
   /** Posé : buffe l'unité alliée choisie (targetId de play-gear, sans pile). */
   readonly onPlayBuffAlly?: boolean;
+  /** La prochaine fois qu'une unité alliée devrait mourir : ce gear est détruit à la place
+   * et l'unité est rappelée Tap dans sa base (Zhonya's Hourglass). */
+  readonly saveAllyFromDeath?: boolean;
+  /** Hidden : peut être caché pour 1 Power puis posé gratuitement plus tard. */
+  readonly hidden?: boolean;
   /** Posé : jeton de cette définition dans la base du propriétaire (sans pile). */
   readonly onPlaySummonBase?: string;
   /** Les unités alliées buffées ont Deflect (Spirit's Refuge). */

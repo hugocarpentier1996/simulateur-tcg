@@ -1,3 +1,5 @@
+import { hiddenFree, playableFacedown } from '../effects/hidden.js';
+import { canUseTiming } from './timing.js';
 import { summonToken } from '../effects/summon-token.js';
 import { buffUnit } from '../effects/buff.js';
 import type { ActionResult, GameAction, GameState } from '../types.js';
@@ -10,22 +12,31 @@ export function playGear(
   state: GameState,
   action: Extract<GameAction, { type: 'play-gear' }>,
 ): ActionResult {
+  // Hidden : posé depuis facedown à vitesse Réaction, gratuitement, dans la base.
+  const hidden = playableFacedown(
+    state,
+    state.cards.find((c) => c.id === action.cardId),
+    action.playerId,
+  );
   if (
-    state.phase !== 'main' ||
-    state.activePlayerId !== action.playerId ||
-    state.showdown
+    hidden
+      ? !canUseTiming(state, action.playerId, 'reaction')
+      : state.phase !== 'main' ||
+        state.activePlayerId !== action.playerId ||
+        state.showdown
   )
     return { ok: false, reason: 'PLAY_WINDOW_CLOSED' };
   const card = state.cards.find(
     (c) =>
       c.id === action.cardId &&
       c.ownerId === action.playerId &&
-      state.zones.some(
-        (z) =>
-          z.id === c.zoneId &&
-          z.kind === 'hand' &&
-          z.ownerId === action.playerId,
-      ),
+      (hidden ||
+        state.zones.some(
+          (z) =>
+            z.id === c.zoneId &&
+            z.kind === 'hand' &&
+            z.ownerId === action.playerId,
+        )),
   );
   if (!card) return { ok: false, reason: 'CARD_NOT_IN_HAND' };
   const definition = state.gearDefinitions?.find(
@@ -51,7 +62,7 @@ export function playGear(
   const charged = payCost(
     state,
     action.playerId,
-    definition.cost,
+    hiddenFree(card, definition.cost),
     action.payment,
   );
   if (!charged.ok) return charged;

@@ -1,3 +1,4 @@
+import { killGears } from './kill-gear.js';
 import type {
   ActionResult,
   GameState,
@@ -68,6 +69,11 @@ export function settleLethalUnits(
       cards,
       units: replaced.units.filter((u) => !ids.has(u.id)),
     };
+    if (replaced.consumedGearIds.length) {
+      const broken = killGears(state, replaced.consumedGearIds);
+      state = broken.state;
+      events.push(...broken.events);
+    }
     const combat = state.showdown;
     if (
       state.combatAftermath &&

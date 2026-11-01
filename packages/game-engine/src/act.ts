@@ -573,6 +573,14 @@ function dispatch(state: GameState, action: GameAction): ActionResult {
   if (
     state.stack &&
     !(
+      action.type === 'play-gear' &&
+      playableFacedown(
+        state,
+        state.cards.find((c) => c.id === action.cardId),
+        action.playerId,
+      )
+    ) &&
+    !(
       action.type === 'play-unit' &&
       (playableFacedown(
         state,

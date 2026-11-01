@@ -1,3 +1,4 @@
+import { killGears } from '../effects/kill-gear.js';
 import { isLethal } from '../effects/lethal-units.js';
 import type {
   ActionResult,
@@ -79,6 +80,11 @@ export function resolveCombat(
     units: survivors.map((unit) => ({ ...unit, damage: 0 })),
     cards: [...state.cards, ...graveCards],
   };
+  if (replaced.consumedGearIds.length) {
+    const broken = killGears(next, replaced.consumedGearIds);
+    next = broken.state;
+    events.push(...broken.events);
+  }
   const triggers = deathTriggers(state, dead);
   if (triggers.length) {
     const order = [

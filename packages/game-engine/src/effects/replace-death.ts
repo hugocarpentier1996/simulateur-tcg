@@ -11,18 +11,32 @@ export function replaceDeaths(
   units: UnitState[];
   dead: UnitState[];
   events: GameEvent[];
+  /** Gears sacrifiés à la place d'une unité (Zhonya's Hourglass), à détruire par l'appelant. */
+  consumedGearIds: string[];
 } {
   const dead: UnitState[] = [];
   const events: GameEvent[] = [];
+  const consumedGearIds: string[] = [];
   const units = state.units.map((unit) => {
     if (!lethalIds.has(unit.id)) return unit;
     const protection =
       unit.temporaryEffects?.findIndex((e) => e.type === 'recall-on-death') ??
       -1;
-    if (protection < 0) {
+    const hourglass =
+      protection < 0
+        ? state.gears?.find(
+            (g) =>
+              g.ownerId === unit.ownerId &&
+              !consumedGearIds.includes(g.id) &&
+              state.gearDefinitions?.find((d) => d.id === g.definitionId)
+                ?.saveAllyFromDeath,
+          )
+        : undefined;
+    if (protection < 0 && !hourglass) {
       dead.push(unit);
       return unit;
     }
+    if (hourglass) consumedGearIds.push(hourglass.id);
     const base = state.zones.find(
       (z) => z.kind === 'base' && z.ownerId === unit.ownerId,
     );
@@ -33,10 +47,10 @@ export function replaceDeaths(
       zoneId: base.id,
       ready: false,
       damage: 0,
-      temporaryEffects: unit.temporaryEffects!.filter(
+      temporaryEffects: (unit.temporaryEffects ?? []).filter(
         (_, i) => i !== protection,
       ),
     };
   });
-  return { units, dead, events };
+  return { units, dead, events, consumedGearIds };
 }

@@ -344,7 +344,7 @@ function* candidates(
     }
     const gear = state.gearDefinitions?.find((d) => d.id === card.definitionId);
     if (gear) {
-      const payment = findPayment(state, playerId, gear.cost);
+      const payment = findPayment(state, playerId, hiddenFree(card, gear.cost));
       if (payment)
         for (const targetId of gear.onPlayBuffAlly &&
         state.units.some((u) => u.ownerId === playerId)
