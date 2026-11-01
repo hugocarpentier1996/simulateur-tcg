@@ -39,6 +39,8 @@ export interface GearDefinition extends PrintedMetadata {
 /** Cible et effet d'une capacité Tap de gear (même vocabulaire que les effets de mise en jeu). */
 export interface GearTapAbility {
   readonly cost?: CardCost;
+  /** Unité source : capacité utilisable seulement si elle est sur un champ. */
+  readonly requiresBattlefield?: boolean;
   readonly target: {
     readonly allegiance?: 'friendly' | 'enemy';
     readonly zone?: 'battlefield';
@@ -53,6 +55,8 @@ export interface GearTapAbility {
       }
     | { readonly type: 'buff' }
     | { readonly type: 'grant-ganking' }
+    /** Dégâts égaux à la Might actuelle de la source (unité). */
+    | { readonly type: 'might-damage' }
     | { readonly type: 'move-to-base' }
     /** Sans cible : jeton de cette définition dans la base du propriétaire. */
     | { readonly type: 'summon-base'; readonly definitionId: string };

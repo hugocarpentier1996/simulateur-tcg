@@ -71,12 +71,15 @@ export function resolveTargetedPlay(
     const fought = resolveDuel(state, source, target);
     return { ok: true, state: fought.state, events: fought.events };
   }
-  if (effect.type === 'damage') {
+  if (effect.type === 'damage' || effect.type === 'might-damage') {
+    const source = state.units.find((u) => u.id === sourceId);
+    if (effect.type === 'might-damage' && !source)
+      return { ok: true, state, events: [] };
     const damaged = dealEffectDamage(
       state,
       { kind: 'ability', sourceId, playerId: ownerId },
       [target],
-      effect.amount,
+      effect.type === 'damage' ? effect.amount : effectiveMight(source!, state),
     );
     const settled = settleLethalUnits(damaged.state);
     return {

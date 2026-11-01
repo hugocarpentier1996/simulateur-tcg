@@ -21,6 +21,32 @@ export function activateGear(
     const legend = activeLegends(state, action.playerId).find(
       (l) => l.card.id === action.gearId,
     );
+    // Unité à capacité Tap (Caitlyn) : même action, identifiant de l'unité.
+    const unit = state.units.find(
+      (u) => u.id === action.gearId && u.ownerId === action.playerId,
+    );
+    const unitAbility = state.unitDefinitions?.find(
+      (d) => d.id === unit?.definitionId,
+    )?.tapAbility;
+    if (unit && unitAbility) {
+      if (
+        unitAbility.requiresBattlefield &&
+        !state.battlefields.some((f) => f.zoneId === unit.zoneId)
+      )
+        return { ok: false, reason: 'ABILITY_WINDOW_CLOSED' };
+      const used = activateTapAbility(state, action, unit, unitAbility);
+      return used.ok
+        ? {
+            ...used,
+            state: {
+              ...used.state,
+              units: used.state.units.map((u) =>
+                u.id === unit.id ? { ...u, ready: false } : u,
+              ),
+            },
+          }
+        : used;
+    }
     const resource = legend?.definition.resourceAbility;
     if (legend && resource) {
       if (legend.card.ready === false)

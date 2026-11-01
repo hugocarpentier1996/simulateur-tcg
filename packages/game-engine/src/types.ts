@@ -266,6 +266,10 @@ export interface UnitBlueprint {
   /** Après tout déplacement : défausser une carte disponible puis piocher, via la pile. */
   readonly onMoveLoot?: boolean;
   readonly tank?: boolean;
+  /** Reçoit les dégâts de combat en dernier. */
+  readonly backline?: boolean;
+  /** Capacité « Tap : effet » de l'unité (même action et vocabulaire que les gears). */
+  readonly tapAbility?: import('./gear-types.js').GearBlueprint['tapAbility'];
   readonly deflect?: boolean;
   /** Capacité « When you play me » visant une unité choisie à la mise en jeu, via la pile.
    * allegiance relative au joueur ; zone 'battlefield' exclut les bases ; excludeSelf exclut
@@ -302,6 +306,8 @@ export interface UnitBlueprint {
       | { readonly type: 'spend-buff-empower-self' }
       /** Déplace la cible vers le lieu de la source (Blitzcrank). */
       | { readonly type: 'pull-here' }
+      /** Dégâts de capacité égaux à la Might actuelle de la source. */
+      | { readonly type: 'might-damage' }
       | { readonly type: 'kill' }
       | { readonly type: 'return-to-hand' };
   };

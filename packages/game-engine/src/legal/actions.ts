@@ -107,6 +107,20 @@ function* candidates(
       ability: state.gearDefinitions?.find((d) => d.id === g.definitionId)
         ?.tapAbility,
     })),
+    ...state.units
+      .filter(
+        (u) =>
+          !state.unitDefinitions?.find((d) => d.id === u.definitionId)
+            ?.tapAbility?.requiresBattlefield ||
+          state.battlefields.some((f) => f.zoneId === u.zoneId),
+      )
+      .map((u) => ({
+        id: u.id,
+        ownerId: u.ownerId,
+        ready: u.ready,
+        ability: state.unitDefinitions?.find((d) => d.id === u.definitionId)
+          ?.tapAbility,
+      })),
     ...activeLegends(state, playerId).map((l) => ({
       id: l.card.id,
       ownerId: l.card.ownerId,

@@ -281,6 +281,7 @@ export function playUnit(
             !!state.readyEntryPlayers?.includes(card.ownerId),
           might: definition.might,
           ...(definition.tank ? { tank: true } : {}),
+          ...(definition.backline ? { backline: true } : {}),
           damage: 0,
         },
       ],
