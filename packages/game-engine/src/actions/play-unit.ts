@@ -1,3 +1,4 @@
+import { trashUnitChoices } from '../effects/play-from-trash.js';
 import { spendBuff } from '../effects/buff.js';
 import { canUseTiming } from './timing.js';
 import {
@@ -298,6 +299,24 @@ function playUnitCore(
       ownerId: card.ownerId,
       effect: definition.onPlayEffect,
     });
+  if (definition.onPlayFromTrash) {
+    if (
+      action.returnSpellId &&
+      !trashUnitChoices(
+        state,
+        action.playerId,
+        definition.onPlayFromTrash,
+      ).includes(action.returnSpellId)
+    )
+      return { ok: false, reason: 'INVALID_RETURN_SPELL' };
+    if (action.returnSpellId)
+      entries.push({
+        kind: 'play-effect',
+        sourceId: card.id,
+        ownerId: card.ownerId,
+        effect: { type: 'play-from-trash', cardId: action.returnSpellId },
+      });
+  }
   if (definition.onPlayReturnSpell || definition.onPlayReturnUnit) {
     const cardKind = definition.onPlayReturnUnit ? 'unit' : 'spell';
     const choices = recoverableSpells(state, action.playerId, cardKind);

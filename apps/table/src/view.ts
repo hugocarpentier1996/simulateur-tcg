@@ -455,7 +455,13 @@ function actionLabel(
           : '') +
         (action.optionalCost ? ' · Coût facultatif payé' : '') +
         (action.returnSpellId
-          ? ' · Récupérer : ' + target(action.returnSpellId)
+          ? (state.unitDefinitions?.find(
+              (d) =>
+                d.id ===
+                state.cards.find((c) => c.id === action.cardId)?.definitionId,
+            )?.onPlayFromTrash
+              ? ' · Jouer depuis le cimetière : '
+              : ' · Récupérer : ') + target(action.returnSpellId)
           : '')
       );
     case 'play-gear':

@@ -1,3 +1,4 @@
+import { trashUnitChoices } from '../effects/play-from-trash.js';
 import { hiddenFree } from '../effects/hidden.js';
 import { withTrashUnitPower } from '../cost/spell-cost.js';
 import { discardChoices } from '../actions/cast-spell.js';
@@ -269,20 +270,28 @@ function* candidates(
                     unit,
                     zone.id,
                   ))
-                    for (const returnSpellId of unit.onPlayReturnSpell ||
-                    unit.onPlayReturnUnit
-                      ? recoverableSpells(
-                          state,
-                          playerId,
-                          unit.onPlayReturnUnit ? 'unit' : 'spell',
-                        ).length
+                    for (const returnSpellId of unit.onPlayFromTrash
+                      ? [
+                          undefined,
+                          ...trashUnitChoices(
+                            state,
+                            playerId,
+                            unit.onPlayFromTrash,
+                          ),
+                        ]
+                      : unit.onPlayReturnSpell || unit.onPlayReturnUnit
                         ? recoverableSpells(
                             state,
                             playerId,
                             unit.onPlayReturnUnit ? 'unit' : 'spell',
-                          )
-                        : [undefined]
-                      : [undefined])
+                          ).length
+                          ? recoverableSpells(
+                              state,
+                              playerId,
+                              unit.onPlayReturnUnit ? 'unit' : 'spell',
+                            )
+                          : [undefined]
+                        : [undefined])
                       yield {
                         type: 'play-unit',
                         ...(onPlayTargetId ? { onPlayTargetId } : {}),

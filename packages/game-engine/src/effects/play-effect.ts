@@ -1,3 +1,4 @@
+import { playUnitFromTrash } from './play-from-trash.js';
 import { opponentHandChoice } from './mode-choice.js';
 import { killGears } from './kill-gear.js';
 import { wardenAgainst } from './unit-aura.js';
@@ -29,6 +30,8 @@ export interface PlayEffectEntry {
     /** Dépense le buff de chaque unité indiquée qui en a encore un, puis canalise
      * autant de runes Tap (Albus Ferros). */
     | { type: 'spend-buffs-channel'; unitIds: readonly string[] }
+    /** Joue l'unité indiquée du cimetière du propriétaire dans sa base. */
+    | { type: 'play-from-trash'; cardId: string }
     /** Buffe chacune des unités indiquées encore en jeu (Kinkou Monk). */
     | { type: 'buff-units'; unitIds: readonly string[] }
     /** Détruit le gear indiqué (capacité kill-self). */
@@ -108,6 +111,17 @@ export function resolvePlayEffect(
             }
           : state,
       events: [{ type: 'unit-play-effect-resolved', sourceId: entry.sourceId }],
+    };
+  }
+  if (entry.effect.type === 'play-from-trash') {
+    const played = playUnitFromTrash(state, entry.ownerId, entry.effect.cardId);
+    return {
+      ok: true,
+      state: played.state,
+      events: [
+        ...played.events,
+        { type: 'unit-play-effect-resolved', sourceId: entry.sourceId },
+      ],
     };
   }
   if (entry.effect.type === 'spend-buffs-channel') {

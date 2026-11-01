@@ -297,3 +297,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Time Warp — ogn-122-298
 - [x] Possession — ogn-203-298
 - [x] The Harrowing — ogn-198-298
+- [x] Spectral Matron — ogn-226-298

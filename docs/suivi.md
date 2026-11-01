@@ -1238,3 +1238,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Time Warp (ogn-122) : son lanceur joue un tour supplémentaire après celui-ci (`extraTurns`, prioritaire sur l'ordre normal) ; la carte est bannie à la résolution (`banishOnResolve`).
 - Possession (ogn-203) : Action ; prend le contrôle d'une unité ennemie sur un champ et la rappelle dans la base du lanceur (effet `steal-and-recall`) ; nouveau champ d'unité `cardOwnerId` : une unité contrôlée par un autre joueur retourne au cimetière / à la main de son propriétaire.
 - The Harrowing (ogn-198) : joue une unité de son cimetière dans sa base (Tap), sans son coût en énergie (effet `play-from-trash`).
+- Spectral Matron (ogn-226) : à la mise en jeu, peut jouer gratuitement dans sa base une unité de son cimetière coûtant au plus 3 énergie et 1 Power (`onPlayFromTrash`, choix via `returnSpellId`, helper `playUnitFromTrash` partagé avec The Harrowing).

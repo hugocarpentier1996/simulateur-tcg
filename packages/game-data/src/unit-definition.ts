@@ -215,6 +215,13 @@ export interface UnitDefinition extends PrintedMetadata {
   readonly reactionTiming?: boolean;
   /** Tant qu'elle est en jeu, les autres unités alliées ont Vision (Gemcraft Seer). */
   readonly alliesHaveVision?: boolean;
+  /** À la mise en jeu, peut jouer une unité de son cimetière (returnSpellId) : gratuitement
+   * sous les plafonds (Spectral Matron) ou en payant son Power (payPower, Soulgorger). */
+  readonly onPlayFromTrash?: {
+    readonly maxEnergy?: number;
+    readonly maxPower?: number;
+    readonly payPower?: boolean;
+  };
   /** Coût supplémentaire facultatif sur des unités alliées choisies (costUnitIds) : les tuer
    * (Commander Ledros) ou dépenser leur buff (Kraken Hunter), -1 Power de la couleur chacune. */
   readonly unitCostReduction?: {
