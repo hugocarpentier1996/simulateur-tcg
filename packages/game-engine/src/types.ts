@@ -225,6 +225,9 @@ export interface UnitBlueprint {
   /** Quand son propriétaire défausse (une fois par action) : bonus de Might ce tour et
    * redressement (Jinx Chaos ; hypothèse : sans pile). */
   readonly onOwnerDiscard?: { readonly might: number; readonly ready: boolean };
+  /** Quand une unité ennemie devient Stun (une fois par action) : bonus de Might ce tour et
+   * redressement (Eclipse Herald ; hypothèse : sans pile, l'étourdisseur est l'adversaire). */
+  readonly onEnemyStunned?: { readonly might: number; readonly ready: boolean };
   /** Se redresse quand son propriétaire joue un gear (hypothèse : sans passer par la pile). */
   readonly readyOnGearPlayed?: boolean;
   /** Entre Ready si un adversaire est à ce nombre de points ou moins de sa victoire. */

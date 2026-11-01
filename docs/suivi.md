@@ -1177,3 +1177,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Call to Glory (ogn-207) : Réaction ; +3 Might à une unité ce tour, gratuit en dépensant un buff allié (`spendBuffForFreeCast`).
 - Wildclaw Shaman (ogn-147) : à la mise en jeu, peut dépenser le buff d'une unité alliée pour se buffer et se redresser (`onPlayTargetEffect` avec filtres `buffed`/`optional`, effet `spend-buff-empower-self`).
 - Poro Herder (ogn-061) : à la mise en jeu, s'il contrôle un Poro, se buffe et pioche 1 (`buff-self` avec `ifControlTag` et `draw`).
+- Eclipse Herald (ogn-059) : quand son propriétaire étourdit une unité ennemie, se redresse et gagne +1 Might ce tour (`onEnemyStunned`, détecté par `act` sur les unités nouvellement Stun).

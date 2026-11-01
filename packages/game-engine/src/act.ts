@@ -1,3 +1,4 @@
+import { isStunned } from './effects/modifiers.js';
 import { drawCardForPlayer } from './turn/draw.js';
 import { battlefieldDefinition } from './effects/battlefield.js';
 import { awardPoints } from './effects/hold-units.js';
@@ -168,7 +169,38 @@ export function act(state: GameState, action: GameAction): ActionResult {
         }),
       }
     : counted;
-  const scrap = scrapheapDraws(afterDiscard, events);
+  // Eclipse Herald : unités ennemies nouvellement Stun -> déclencheurs de leurs adversaires.
+  const stunnedOwners = new Set(
+    afterDiscard.units
+      .filter(
+        (u) =>
+          isStunned(u) &&
+          !state.units.some((b) => b.id === u.id && isStunned(b)),
+      )
+      .map((u) => u.ownerId),
+  );
+  const afterStun = stunnedOwners.size
+    ? {
+        ...afterDiscard,
+        units: afterDiscard.units.map((u) => {
+          const trigger = [...stunnedOwners].some((o) => o !== u.ownerId)
+            ? afterDiscard.unitDefinitions?.find((d) => d.id === u.definitionId)
+                ?.onEnemyStunned
+            : undefined;
+          return trigger
+            ? {
+                ...u,
+                ready: u.ready || trigger.ready,
+                temporaryEffects: [
+                  ...(u.temporaryEffects ?? []),
+                  { type: 'modify-might' as const, amount: trigger.might },
+                ],
+              }
+            : u;
+        }),
+      }
+    : afterDiscard;
+  const scrap = scrapheapDraws(afterStun, events);
   events.push(...scrap.events);
   const scoredMoves = thirdMovePoints(entered, scrap.state);
   events.push(...scoredMoves.events);

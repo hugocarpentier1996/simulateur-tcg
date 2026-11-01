@@ -281,3 +281,4 @@ export { wallop } from './ogn/wallop.js';
 export { callToGlory } from './ogn/call-to-glory.js';
 export { wildclawShaman } from './ogn/wildclaw-shaman.js';
 export { poroHerder } from './ogn/poro-herder.js';
+export { eclipseHerald } from './ogn/eclipse-herald.js';
