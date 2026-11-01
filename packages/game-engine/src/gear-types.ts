@@ -12,6 +12,8 @@ export interface GearBlueprint {
     readonly energy?: number;
     readonly power?: string;
   };
+  /** Posé, défaussé ou détruit : son propriétaire pioche 1 (Scrapheap ; sans pile). */
+  readonly drawOnPlayDiscardOrKill?: boolean;
   readonly effects: readonly {
     readonly type: 'might-bonus';
     /** alone-in-combat : unité alliée seule de son camp au combat (Mask of Foresight). */

@@ -220,3 +220,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] The Arena's Greatest — ogn-290-298
 - [x] Obelisk of Power — ogn-284-298
 - [x] Navori Fighting Pit — ogn-283-298
+- [x] Scrapheap — ogn-182-298

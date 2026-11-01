@@ -26,6 +26,8 @@ export interface GearDefinition extends PrintedMetadata {
   readonly cost: CardCost;
   readonly equipCost?: CardCost;
   readonly effects: readonly GearEffect[];
+  /** Posé, défaussé ou détruit : son propriétaire pioche 1 (Scrapheap ; sans pile). */
+  readonly drawOnPlayDiscardOrKill?: boolean;
 }
 
 /** Définition -> copie figée indépendante. RangeError si coût négatif/non fini,

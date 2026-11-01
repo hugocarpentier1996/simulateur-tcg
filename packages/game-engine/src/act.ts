@@ -1,3 +1,4 @@
+import { drawCardForPlayer } from './turn/draw.js';
 import { battlefieldDefinition } from './effects/battlefield.js';
 import { awardPoints } from './effects/hold-units.js';
 import {
@@ -167,7 +168,9 @@ export function act(state: GameState, action: GameAction): ActionResult {
         }),
       }
     : counted;
-  const scoredMoves = thirdMovePoints(entered, afterDiscard);
+  const scrap = scrapheapDraws(afterDiscard, events);
+  events.push(...scrap.events);
+  const scoredMoves = thirdMovePoints(entered, scrap.state);
   events.push(...scoredMoves.events);
   const attacked = queueAttackEffects(state, scoredMoves.state, events);
   const next = queueDefenseShield(state, attacked.state, events);
@@ -383,4 +386,38 @@ function thirdMovePoints(
     }
   }
   return { state: next, events };
+}
+
+/** Scrapheap : gear posé, défaussé ou détruit -> son propriétaire pioche 1 par événement. */
+function scrapheapDraws(
+  state: GameState,
+  events: readonly GameEvent[],
+): { state: GameState; events: GameEvent[] } {
+  const drawing = (definitionId: string | undefined) =>
+    !!state.gearDefinitions?.find((d) => d.id === definitionId)
+      ?.drawOnPlayDiscardOrKill;
+  const owners = events.flatMap((e) => {
+    if (e.type === 'gear-played')
+      return drawing(state.gears?.find((g) => g.id === e.gearId)?.definitionId)
+        ? [e.playerId]
+        : [];
+    if (e.type === 'gear-killed' || e.type === 'card-discarded') {
+      const card = state.cards.find(
+        (c) => c.id === (e.type === 'gear-killed' ? e.gearId : e.cardId),
+      );
+      return drawing(card?.definitionId)
+        ? [e.type === 'gear-killed' ? e.ownerId : e.playerId]
+        : [];
+    }
+    return [];
+  });
+  let next = state;
+  const drawn: GameEvent[] = [];
+  for (const owner of owners) {
+    if (next.result) break;
+    const r = drawCardForPlayer(next, owner);
+    next = r.state;
+    drawn.push(...r.events);
+  }
+  return { state: next, events: drawn };
 }
