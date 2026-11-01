@@ -357,3 +357,4 @@ export { reaversRow } from './ogn/reavers-row.js';
 export { theCandlelitSanctum } from './ogn/the-candlelit-sanctum.js';
 export { reinforce } from './ogn/reinforce.js';
 export { zhonyasHourglass } from './ogn/zhonyas-hourglass.js';
+export { packOfWonders } from './ogn/pack-of-wonders.js';

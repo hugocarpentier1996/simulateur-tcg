@@ -1,3 +1,4 @@
+import { leaveBoard } from './leave-board.js';
 import { playUnitFromTrash } from './play-from-trash.js';
 import { opponentHandChoice, trashRecycleChoice } from './mode-choice.js';
 import { killGears } from './kill-gear.js';
@@ -32,6 +33,8 @@ export interface PlayEffectEntry {
     | { type: 'spend-buffs-channel'; unitIds: readonly string[] }
     /** La prochaine unité jouée ce tour par le propriétaire arrive Ready (Legion vérifié). */
     | { type: 'next-unit-ready'; legion?: boolean }
+    /** Renvoie en main l'unité, le gear ou la carte cachée indiqué (Pack of Wonders). */
+    | { type: 'bounce'; targetId: string }
     /** Recycle jusqu'à count cartes des cimetières, choisies une à une (choix de mode). */
     | { type: 'recycle-trashes'; count: number }
     /** Le prochain sort du propriétaire ce tour gagne des dégâts bonus. */
@@ -132,6 +135,51 @@ export function resolvePlayEffect(
         },
       },
       events: [{ type: 'unit-play-effect-resolved', sourceId: entry.sourceId }],
+    };
+  }
+  if (entry.effect.type === 'bounce') {
+    const id = entry.effect.targetId;
+    const done = [
+      { type: 'unit-play-effect-resolved' as const, sourceId: entry.sourceId },
+    ];
+    const unit = state.units.find((u) => u.id === id);
+    if (unit) {
+      const left = leaveBoard(state, unit, 'hand');
+      return { ok: true, state: left.state, events: [...left.events, ...done] };
+    }
+    const handOf = (ownerId: string) =>
+      state.zones.find((z) => z.kind === 'hand' && z.ownerId === ownerId)?.id;
+    const gear = state.gears?.find((g) => g.id === id);
+    if (gear)
+      return {
+        ok: true,
+        state: {
+          ...state,
+          gears: state.gears!.filter((g) => g.id !== id),
+          cards: [
+            ...state.cards,
+            {
+              id: gear.id,
+              definitionId: gear.definitionId,
+              ownerId: gear.ownerId,
+              zoneId: handOf(gear.ownerId) ?? gear.zoneId,
+            },
+          ],
+        },
+        events: done,
+      };
+    return {
+      ok: true,
+      state: {
+        ...state,
+        cards: state.cards.map((c) => {
+          if (c.id !== id || !c.facedown) return c;
+          const back = { ...c, zoneId: handOf(c.ownerId) ?? c.zoneId };
+          delete back.facedown;
+          return back;
+        }),
+      },
+      events: done,
     };
   }
   if (entry.effect.type === 'recycle-trashes') {

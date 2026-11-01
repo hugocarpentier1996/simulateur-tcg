@@ -1254,3 +1254,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - The Candlelit Sanctum (ogn-291) : champ ; à la conquête ici, le conquérant regarde les 2 cartes du dessus de son deck, en recycle 0 à 2 et remet les autres dans l'ordre choisi (`conquerArrangeTop`, modes `arrange:<ids>`).
 - Reinforce (ogn-062) : regarde les 5 cartes du dessus ; peut jouer une unité parmi elles avec 5 énergie de moins, puis recycle le reste (effet `look-play-unit`, modes `reinforce:<id>` / `skip`).
 - Zhonya's Hourglass (ogn-077) : gear Hidden ; la prochaine fois qu'une unité alliée devrait mourir, il est détruit à la place et l'unité est rappelée Tap dans sa base (`saveAllyFromDeath` dans `replaceDeaths`) ; les gears Hidden se posent depuis facedown (vitesse Réaction, gratuit, dans la base).
+- Pack of Wonders (ogn-181) : gear ; Tap — renvoie dans la main de son propriétaire une unité, un autre gear ou une carte cachée alliés (capacité Tap `bounce-friendly`).

@@ -191,7 +191,7 @@ function* candidates(
     ability.effect.type === 'next-spell-bonus-damage' ||
     ability.effect.type === 'recycle-trashes'
       ? [undefined]
-      : tapAbilityTargets(state, playerId, ability)) {
+      : tapAbilityTargets(state, playerId, ability, gear.id)) {
       const payment = findPayment(
         state,
         playerId,

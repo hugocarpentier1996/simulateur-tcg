@@ -313,3 +313,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] The Candlelit Sanctum — ogn-291-298
 - [x] Reinforce — ogn-062-298
 - [x] Zhonya's Hourglass — ogn-077-298
+- [x] Pack of Wonders — ogn-181-298

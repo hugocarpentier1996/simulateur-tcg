@@ -58,7 +58,9 @@ export interface GearBlueprint {
       /** Sans cible : le prochain sort joué ce tour inflige `amount` dégâts bonus par instance. */
       | { readonly type: 'next-spell-bonus-damage'; readonly amount: number }
       /** Sans cible : recycle jusqu'à `count` cartes des cimetières, choisies une à une. */
-      | { readonly type: 'recycle-trashes'; readonly count: number };
+      | { readonly type: 'recycle-trashes'; readonly count: number }
+      /** Renvoie en main une unité, un autre gear ou une carte cachée alliés (Pack of Wonders). */
+      | { readonly type: 'bounce-friendly' };
   };
   /** Posé, défaussé ou détruit : son propriétaire pioche 1 (Scrapheap ; sans pile). */
   readonly drawOnPlayDiscardOrKill?: boolean;

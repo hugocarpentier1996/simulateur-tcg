@@ -107,6 +107,7 @@ export function tapAbilityTargets(
   state: GameState,
   playerId: string,
   ability: TapAbility,
+  sourceId?: string,
 ): string[] {
   if (
     ability.effect.type === 'summon-base' ||
@@ -117,6 +118,16 @@ export function tapAbilityTargets(
     ability.effect.type === 'recycle-trashes'
   )
     return [];
+  if (ability.effect.type === 'bounce-friendly')
+    return [
+      ...state.units.filter((u) => u.ownerId === playerId).map((u) => u.id),
+      ...(state.gears ?? [])
+        .filter((g) => g.ownerId === playerId && g.id !== sourceId)
+        .map((g) => g.id),
+      ...state.cards
+        .filter((c) => c.facedown && c.ownerId === playerId)
+        .map((c) => c.id),
+    ];
   const { allegiance, zone, exhausted } = ability.target;
   const moveToBase = ability.effect.type === 'move-to-base';
   return state.units
@@ -161,7 +172,7 @@ function activateTapAbility(
     untargeted
       ? action.targetId !== undefined
       : !action.targetId ||
-        !tapAbilityTargets(state, action.playerId, ability).includes(
+        !tapAbilityTargets(state, action.playerId, ability, gear.id).includes(
           action.targetId,
         )
   )
@@ -222,25 +233,27 @@ function activateTapAbility(
           ? { type: 'kill-gear', gearId: gear.id }
           : ability.effect.type === 'draw'
             ? { type: 'draw', count: ability.effect.count }
-            : ability.effect.type === 'recycle-trashes'
-              ? { type: 'recycle-trashes', count: ability.effect.count }
-              : ability.effect.type === 'next-spell-bonus-damage'
-                ? {
-                    type: 'next-spell-bonus-damage',
-                    amount: ability.effect.amount,
-                  }
-                : ability.effect.type === 'next-unit-ready'
+            : ability.effect.type === 'bounce-friendly'
+              ? { type: 'bounce', targetId: action.targetId! }
+              : ability.effect.type === 'recycle-trashes'
+                ? { type: 'recycle-trashes', count: ability.effect.count }
+                : ability.effect.type === 'next-spell-bonus-damage'
                   ? {
-                      type: 'next-unit-ready',
-                      ...(ability.effect.legion ? { legion: true } : {}),
+                      type: 'next-spell-bonus-damage',
+                      amount: ability.effect.amount,
                     }
-                  : ability.effect.type === 'move-to-base'
-                    ? { type: 'move-to-base', targetId: action.targetId! }
-                    : {
-                        type: 'targeted',
-                        targetId: action.targetId!,
-                        effect: ability.effect,
-                      },
+                  : ability.effect.type === 'next-unit-ready'
+                    ? {
+                        type: 'next-unit-ready',
+                        ...(ability.effect.legion ? { legion: true } : {}),
+                      }
+                    : ability.effect.type === 'move-to-base'
+                      ? { type: 'move-to-base', targetId: action.targetId! }
+                      : {
+                          type: 'targeted',
+                          targetId: action.targetId!,
+                          effect: ability.effect,
+                        },
   };
   if (ability.killSelfCost) paid.state = killGears(paid.state, [gear.id]).state;
   return {
