@@ -1,3 +1,4 @@
+import { spellChosenUnits } from './cost/deflect.js';
 import { choosePick } from './effects/pick.js';
 import { summonToken } from './effects/summon-token.js';
 import { activeLegends } from './effects/legends.js';
@@ -260,6 +261,34 @@ export function act(state: GameState, action: GameAction): ActionResult {
         shrine = drawn.state;
         events.push(...drawn.events);
       }
+  }
+  // The Dreaming Tree : premier sort du tour qui choisit une unité alliée sur ce champ.
+  if (
+    action.type === 'cast-spell' &&
+    !shrine.dreamingTreeUsed?.includes(action.playerId)
+  ) {
+    const card = state.cards.find((c) => c.id === action.cardId);
+    const spell = state.spellDefinitions?.find(
+      (d) => d.id === card?.definitionId,
+    );
+    const chosen = spell ? spellChosenUnits(spell, action) : [];
+    if (
+      state.units.some(
+        (u) =>
+          chosen.includes(u.id) &&
+          u.ownerId === action.playerId &&
+          battlefieldDefinition(state, u.zoneId)
+            ?.drawOnFirstFriendlySpellChoice,
+      )
+    ) {
+      shrine = {
+        ...shrine,
+        dreamingTreeUsed: [...(shrine.dreamingTreeUsed ?? []), action.playerId],
+      };
+      const drawn = drawCardForPlayer(shrine, action.playerId);
+      shrine = drawn.state;
+      events.push(...drawn.events);
+    }
   }
   // Viktor (Mind) : carte jouée pendant le tour adverse -> Recrue dans la base.
   if (

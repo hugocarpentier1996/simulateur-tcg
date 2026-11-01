@@ -47,6 +47,8 @@ export interface GameState {
   effectDamagePrevented?: boolean;
   /** Joueurs dont au moins une unité ennemie est morte ce tour (Spoils of War). */
   enemyDeathsThisTurn?: readonly string[];
+  /** Joueurs ayant déjà pioché grâce à The Dreaming Tree ce tour. */
+  dreamingTreeUsed?: readonly string[];
   /** Joueurs dont une unité est déjà morte ce tour (Wraith of Echoes). */
   allyDeathThisTurn?: readonly string[];
   /** Joueurs ayant défaussé au moins une carte ce tour (événements card-discarded). */

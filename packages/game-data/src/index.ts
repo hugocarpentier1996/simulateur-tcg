@@ -294,3 +294,4 @@ export { blitzcrank } from './ogn/blitzcrank.js';
 export { caitlyn } from './ogn/caitlyn.js';
 export { stackedDeck } from './ogn/stacked-deck.js';
 export { sigilOfTheStorm } from './ogn/sigil-of-the-storm.js';
+export { theDreamingTree } from './ogn/the-dreaming-tree.js';

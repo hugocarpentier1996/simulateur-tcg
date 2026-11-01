@@ -31,6 +31,7 @@ export function startNextTurn(
     ...(state.endTurnReadyRunes ? { endTurnReadyRunes: {} } : {}),
     ...(state.discardedThisTurn ? { discardedThisTurn: [] } : {}),
     ...(state.allyDeathThisTurn ? { allyDeathThisTurn: [] } : {}),
+    ...(state.dreamingTreeUsed ? { dreamingTreeUsed: [] } : {}),
     ...(state.enemyDeathsThisTurn ? { enemyDeathsThisTurn: [] } : {}),
     ...(state.effectDamagePrevented ? { effectDamagePrevented: false } : {}),
     ...(state.damageBaseline ? { damageBaseline: null } : {}),
