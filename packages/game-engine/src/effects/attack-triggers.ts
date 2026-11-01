@@ -1,4 +1,4 @@
-import type { ModeChoiceEntry } from './mode-choice.js';
+import { revealDamageEntry, type ModeChoiceEntry } from './mode-choice.js';
 import { activeLegends } from './legends.js';
 import { effectiveMight } from './modifiers.js';
 import type { AttackDamageTrigger } from './attack-targets.js';
@@ -149,6 +149,13 @@ export function queueAttackEffects(
     for (const u of state.units) {
       if (u.ownerId !== combat.defenderId || u.zoneId !== combat.battlefieldId)
         continue;
+      const reveal = state.unitDefinitions?.find(
+        (d) => d.id === u.definitionId,
+      )?.hiddenRevealDamage;
+      if (reveal)
+        entries.push(
+          revealDamageEntry(u.id, u.ownerId, combat.battlefieldId, reveal),
+        );
       const effect = state.unitDefinitions?.find(
         (d) => d.id === u.definitionId,
       )?.onAttackTargetEffect;

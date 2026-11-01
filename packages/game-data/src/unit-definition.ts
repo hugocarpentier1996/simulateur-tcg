@@ -226,6 +226,9 @@ export interface UnitDefinition extends PrintedMetadata {
   readonly deflectAmount?: number;
   /** En attaquant : ces dégâts répartis entre les ennemis ici (Volibear, pile). */
   readonly onAttackSplitDamage?: number;
+  /** Quand il défend ou est joué depuis Hidden : révèle ce nombre de cartes du dessus, 1 dégât
+   * réparti entre les ennemis ici par carte Hidden révélée, puis les recycle (Teemo Mind). */
+  readonly hiddenRevealDamage?: number;
   /** Défaussée : peut être jouée depuis le cimetière en payant 1 Power de cette couleur
    * (Flame Chompers, capacité sur la pile). */
   readonly playOnDiscard?: { readonly power: string };

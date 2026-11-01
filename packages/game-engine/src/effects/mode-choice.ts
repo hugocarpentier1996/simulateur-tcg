@@ -1,3 +1,4 @@
+import { hasHidden } from './hidden.js';
 import { dealEffectDamage } from './effect-damage.js';
 import { moveUnit } from './resolve-spell.js';
 import { playUnitFromTrash } from './play-from-trash.js';
@@ -64,6 +65,8 @@ export interface ModeChoiceEntry {
   partnerId?: string;
   /** Joueurs suivants à choisir à leur tour ce qu'ils tuent (Cull the Weak). */
   nextChoosers?: readonly string[];
+  /** Teemo (Mind) : cartes du dessus à révéler ; leurs cartes Hidden fixent les dégâts. */
+  revealCount?: number;
   /** Volibear : dégâts à répartir entre les ennemis du champ, à la résolution. */
   splitDamageAt?: string;
   splitAmount?: number;
@@ -98,6 +101,28 @@ export function resolveModeChoice(
   entry: ModeChoiceEntry,
 ): Extract<ActionResult, { ok: true }> {
   if (entry.runeFateAt) return resolveRuneFate(state, entry, entry.runeFateAt);
+  if (entry.revealCount && entry.splitDamageAt) {
+    const looked = state.cards
+      .filter((c) =>
+        state.zones.some(
+          (z) =>
+            z.id === c.zoneId &&
+            z.kind === 'deck' &&
+            z.ownerId === entry.ownerId,
+        ),
+      )
+      .slice(0, entry.revealCount);
+    const hiddenCount = looked.filter((c) =>
+      hasHidden(state, c.definitionId),
+    ).length;
+    const recycled: GameState = {
+      ...state,
+      cards: [...state.cards.filter((c) => !looked.includes(c)), ...looked],
+    };
+    const rest: ModeChoiceEntry = { ...entry, splitAmount: hiddenCount };
+    delete rest.revealCount;
+    return resolveModeChoice(recycled, rest);
+  }
   const inTrash = state.cards.some(
     (c) =>
       c.id === entry.sourceId &&
@@ -204,7 +229,7 @@ export function resolveModeChoice(
       entry.arrangeTop ||
       entry.payPlayCost ||
       entry.readyOther ||
-      entry.splitDamageAt)
+      (entry.splitDamageAt && !modes.length))
   )
     return {
       ok: true,
@@ -910,4 +935,21 @@ function splitModes(ids: readonly string[], amount: number): EffectMode[] {
   };
   walk(0, amount, []);
   return result;
+}
+
+/** Capacité Teemo (Mind) : révélation puis dégâts répartis entre les ennemis du champ. */
+export function revealDamageEntry(
+  sourceId: string,
+  ownerId: string,
+  battlefieldId: string,
+  count: number,
+): ModeChoiceEntry {
+  return {
+    kind: 'mode-choice',
+    sourceId,
+    ownerId,
+    modes: [],
+    revealCount: count,
+    splitDamageAt: battlefieldId,
+  };
 }

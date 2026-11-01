@@ -1,4 +1,8 @@
 import {
+  revealDamageEntry,
+  type ModeChoiceEntry,
+} from '../effects/mode-choice.js';
+import {
   trashUnitChoices,
   withTrashPower,
 } from '../effects/play-from-trash.js';
@@ -192,7 +196,18 @@ function playUnitCore(
     !choicesHere(state, [action.onPlayTargetId], hiddenField)
   )
     return { ok: false, reason: 'INVALID_TARGET' };
-  const entries: (ReturnSpellEntry | UnitPlayEntry | PlayEffectEntry)[] = [];
+  const entries: (
+    ReturnSpellEntry | UnitPlayEntry | PlayEffectEntry | ModeChoiceEntry
+  )[] = [];
+  if (hiddenField && definition.hiddenRevealDamage)
+    entries.push(
+      revealDamageEntry(
+        card.id,
+        action.playerId,
+        hiddenField,
+        definition.hiddenRevealDamage,
+      ),
+    );
   if (
     !playTargetChoices(state, card.id, definition, destinationId).includes(
       action.onPlayTargetId,
