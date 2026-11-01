@@ -1,3 +1,4 @@
+import { summonToken } from './effects/summon-token.js';
 import { activeLegends } from './effects/legends.js';
 import { buffUnit } from './effects/buff.js';
 import { isStunned } from './effects/modifiers.js';
@@ -242,6 +243,36 @@ export function act(state: GameState, action: GameAction): ActionResult {
     shrineEvents.push(...drawn.events);
   }
   events.push(...shrineEvents);
+  // Viktor (Order) : chaque autre unité alliée non-Recrue morte -> Recrue dans la base.
+  for (const e of events) {
+    if (e.type !== 'unit-died' && e.type !== 'token-removed') continue;
+    const dead = state.units.find((u) => u.id === e.unitId);
+    if (
+      !dead ||
+      state.unitDefinitions
+        ?.find((d) => d.id === dead.definitionId)
+        ?.tags?.includes('Recruit')
+    )
+      continue;
+    const base = shrine.zones.find(
+      (z) => z.kind === 'base' && z.ownerId === dead.ownerId,
+    );
+    for (const viktor of shrine.units) {
+      const token = shrine.unitDefinitions?.find(
+        (d) => d.id === viktor.definitionId,
+      )?.recruitOnAllyDeath;
+      if (!token || !base || viktor.ownerId !== dead.ownerId) continue;
+      const summoned = summonToken(
+        shrine,
+        dead.ownerId,
+        base.id,
+        token,
+        'here',
+      );
+      shrine = summoned.state;
+      events.push(...summoned.events);
+    }
+  }
   // Wraith of Echoes : première mort alliée du tour -> pioche, une fois par joueur.
   const firstDeaths = [...new Set(deadOwners)].filter(
     (owner) => !shrine.allyDeathThisTurn?.includes(owner),

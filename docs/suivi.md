@@ -1181,3 +1181,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Radiant Dawn (ogn-261) : légende ; quand son propriétaire étourdit des ennemis, il buffe une unité alliée (choisie automatiquement, sans pile) (`buffOnEnemyStunned`).
 - Solari Shrine (ogn-072) : gear ; quand son propriétaire tue une unité ennemie Stun, il se couche (s'il est Ready) pour piocher 1 (`drawOnStunnedEnemyKill`, accepté automatiquement, sans pile).
 - Wraith of Echoes (ogn-118) : la première mort d'une unité alliée de chaque tour fait piocher 1 à son propriétaire (`drawOnFirstAllyDeath`, registre `allyDeathThisTurn`).
+- Viktor (ogn-246, Order) : quand une autre unité alliée non-Recrue meurt, joue une Recrue 1 dans la base (`recruitOnAllyDeath`, sans pile).

@@ -241,3 +241,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Radiant Dawn — ogn-261-298
 - [x] Solari Shrine — ogn-072-298
 - [x] Wraith of Echoes — ogn-118-298
+- [x] Viktor — ogn-246-298
