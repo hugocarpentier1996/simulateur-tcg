@@ -1203,3 +1203,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Consult the Past (ogn-083) : Hidden ; Réaction ; pioche 2.
 - Fight or Flight (ogn-168) : Hidden ; Action ; renvoie une unité d'un champ dans la base de son propriétaire (`move-unit` avec `baseOnly`).
 - Hidden Blade (ogn-213) : Hidden ; Action ; tue une unité sur un champ, son contrôleur pioche 2 (`kill-unit` avec `controllerDraws`).
+- Block (ogn-057) : Hidden ; Action ; une unité gagne Shield 3 et Tank jusqu'à la fin du tour (effet `grant-shield-tank`, effets temporaires `shield` / `tank`, helper `isTank`).

@@ -456,6 +456,22 @@ export function resolveSpell(
             events.push(...drawn.events);
           }
       }
+    } else if (effect.type === 'grant-shield-tank') {
+      state = {
+        ...state,
+        units: state.units.map((u) =>
+          u.id === target.id
+            ? {
+                ...u,
+                temporaryEffects: [
+                  ...(u.temporaryEffects ?? []),
+                  { type: 'shield' as const, amount: effect.shield },
+                  { type: 'tank' as const },
+                ],
+              }
+            : u,
+        ),
+      };
     } else if (effect.type === 'ready-unit') {
       if (
         target.ownerId !== entry.casterId &&

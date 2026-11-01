@@ -262,3 +262,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Consult the Past — ogn-083-298
 - [x] Fight or Flight — ogn-168-298
 - [x] Hidden Blade — ogn-213-298
+- [x] Block — ogn-057-298

@@ -56,12 +56,17 @@ export function validAllocation(
   return remaining === 0 || available.size === 0;
 }
 
+/** Tank imprimé ou accordé jusqu'à la fin du tour (Block). */
+export function isTank(unit: UnitState): boolean {
+  return !!unit.tank || !!unit.temporaryEffects?.some((e) => e.type === 'tank');
+}
+
 /** Cible + adversaires encore prioritaires -> respect de Tank et Backline. */
 function canTarget(
   target: UnitState,
   available: readonly UnitState[],
 ): boolean {
-  if (target.tank) return true;
-  if (available.some((unit) => unit.tank && !unit.backline)) return false;
+  if (isTank(target)) return true;
+  if (available.some((unit) => isTank(unit) && !unit.backline)) return false;
   return !target.backline || !available.some((unit) => !unit.backline);
 }

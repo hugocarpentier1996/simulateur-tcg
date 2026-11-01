@@ -462,6 +462,10 @@ export interface UnitState {
     | { type: 'modify-might'; amount: number }
     /** Assault accordé jusqu'à la fin du tour, compté seulement en attaque. */
     | { type: 'assault'; amount: number }
+    /** Shield accordé jusqu'à la fin du tour, compté seulement en défense. */
+    | { type: 'shield'; amount: number }
+    /** Tank accordé jusqu'à la fin du tour. */
+    | { type: 'tank' }
     | { type: 'stun' }
     | { type: 'recall-on-death' }
     /** Ganking accordé jusqu'à la fin du tour. */

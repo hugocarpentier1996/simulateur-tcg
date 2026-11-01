@@ -306,3 +306,4 @@ export { pakaaCub } from './ogn/pakaa-cub.js';
 export { consultThePast } from './ogn/consult-the-past.js';
 export { fightOrFlight } from './ogn/fight-or-flight.js';
 export { hiddenBlade } from './ogn/hidden-blade.js';
+export { block } from './ogn/block.js';

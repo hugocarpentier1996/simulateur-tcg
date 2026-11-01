@@ -35,6 +35,8 @@ export type SpellEffect =
   | { readonly type: 'exhaust-allies' }
   /** Détruit tous les équipements en jeu (cimetière de leur propriétaire). */
   | { readonly type: 'kill-all-gear' }
+  /** Shield temporaire (+shield en défense) et Tank jusqu'à la fin du tour (Block). */
+  | { readonly type: 'grant-shield-tank'; readonly shield: number }
   /** Défausse discardCardId (choisie au lancement) puis inflige à la cible son coût en énergie. */
   | { readonly type: 'discard-for-damage' }
   /** Regarde les `count` cartes du dessus de son deck, en garde 1 en main, recycle le reste. */
