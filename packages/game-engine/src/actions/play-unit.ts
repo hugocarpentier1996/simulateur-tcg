@@ -1,3 +1,4 @@
+import { effectiveMight } from '../effects/modifiers.js';
 import {
   revealDamageEntry,
   type ModeChoiceEntry,
@@ -363,9 +364,21 @@ function playUnitCore(
       ownerId: card.ownerId,
       amount: definition.onPlayBattlefieldDamage,
     });
-  // Relentless Storm : unité Mighty jouée -> légende Ready couchée, canalisation empilée.
+  // Relentless Storm : unité Mighty (Might réelle) jouée -> légende Ready couchée, canalisation empilée.
+  // Mighty mesuré sur la Might réelle de l'unité à son arrivée (auras comprises).
   const storm =
-    definition.might >= 5
+    effectiveMight(
+      {
+        id: card.id,
+        definitionId: card.definitionId,
+        ownerId: card.ownerId,
+        zoneId: destinationId,
+        ready: false,
+        might: definition.might,
+        damage: 0,
+      },
+      state,
+    ) >= 5
       ? activeLegends(state, action.playerId).find(
           (l) => l.definition.mightyPlayChannel && l.card.ready !== false,
         )
