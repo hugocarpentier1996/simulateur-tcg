@@ -116,20 +116,25 @@ function* candidates(
   ]) {
     const ability = gear.ability;
     if (!ability || gear.ownerId !== playerId || !gear.ready) continue;
-    for (const targetId of tapAbilityTargets(state, playerId, ability)) {
+    for (const targetId of ability.effect.type === 'summon-base'
+      ? [undefined]
+      : tapAbilityTargets(state, playerId, ability)) {
       const payment = findPayment(
         state,
         playerId,
-        withDeflect(state, playerId, ability.cost ?? { energy: 0, power: {} }, [
-          targetId,
-        ]),
+        withDeflect(
+          state,
+          playerId,
+          ability.cost ?? { energy: 0, power: {} },
+          targetId ? [targetId] : [],
+        ),
       );
       if (payment)
         yield {
           type: 'activate-gear',
           playerId,
           gearId: gear.id,
-          targetId,
+          ...(targetId ? { targetId } : {}),
           payment,
         };
     }

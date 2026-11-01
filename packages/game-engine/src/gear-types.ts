@@ -32,7 +32,9 @@ export interface GearBlueprint {
         }
       | { readonly type: 'buff' }
       | { readonly type: 'grant-ganking' }
-      | { readonly type: 'move-to-base' };
+      | { readonly type: 'move-to-base' }
+      /** Sans cible : jeton de cette définition dans la base du propriétaire. */
+      | { readonly type: 'summon-base'; readonly definitionId: string };
   };
   /** Posé, défaussé ou détruit : son propriétaire pioche 1 (Scrapheap ; sans pile). */
   readonly drawOnPlayDiscardOrKill?: boolean;

@@ -1167,3 +1167,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - The Syren (ogn-184) : gear ; 1 énergie + Tap — déplace une unité alliée d'un champ vers sa base (`tapAbility` avec coût et effet `move-to-base`).
 - Blind Monk (ogn-257) : légende ; 1 énergie + Tap — buffe une unité alliée. Les légendes peuvent désormais porter une `tapAbility` (même action `activate-gear`), cliquable dans la table et couchée quand elle est Tap.
 - Bounty Hunter (ogn-267) : légende ; Tap — une unité gagne Ganking ce tour (effet ciblé `grant-ganking`, effet temporaire `ganking`).
+- Herald of the Arcane (ogn-265) : légende ; 1 énergie + Tap — joue une Recrue 1 dans sa base (capacité Tap sans cible `summon-base`).

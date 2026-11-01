@@ -81,6 +81,7 @@ export function tapAbilityTargets(
   playerId: string,
   ability: TapAbility,
 ): string[] {
+  if (ability.effect.type === 'summon-base') return [];
   const { allegiance, zone, exhausted } = ability.target;
   const moveToBase = ability.effect.type === 'move-to-base';
   return state.units
@@ -113,13 +114,20 @@ function activateTapAbility(
   )
     return { ok: false, reason: 'ABILITY_WINDOW_CLOSED' };
   if (!gear.ready) return { ok: false, reason: 'GEAR_NOT_READY' };
+  const untargeted = ability.effect.type === 'summon-base';
   if (
-    !action.targetId ||
-    !tapAbilityTargets(state, action.playerId, ability).includes(
-      action.targetId,
-    )
+    untargeted
+      ? action.targetId !== undefined
+      : !action.targetId ||
+        !tapAbilityTargets(state, action.playerId, ability).includes(
+          action.targetId,
+        )
   )
     return { ok: false, reason: 'INVALID_TARGET' };
+  const base = state.zones.find(
+    (z) => z.kind === 'base' && z.ownerId === action.playerId,
+  );
+  if (untargeted && !base) return { ok: false, reason: 'MISSING_BASE' };
   const paid = payCost(
     state,
     action.playerId,
@@ -127,7 +135,7 @@ function activateTapAbility(
       state,
       action.playerId,
       ability.cost ?? { energy: 0, power: {} },
-      [action.targetId],
+      action.targetId ? [action.targetId] : [],
     ),
     action.payment ?? { energyRunes: [], powerRunes: [] },
   );
@@ -137,13 +145,19 @@ function activateTapAbility(
     sourceId: gear.id,
     ownerId: action.playerId,
     effect:
-      ability.effect.type === 'move-to-base'
-        ? { type: 'move-to-base', targetId: action.targetId }
-        : {
-            type: 'targeted',
-            targetId: action.targetId,
-            effect: ability.effect,
-          },
+      ability.effect.type === 'summon-base'
+        ? {
+            type: 'summon-base',
+            destinationId: base!.id,
+            definitionId: ability.effect.definitionId,
+          }
+        : ability.effect.type === 'move-to-base'
+          ? { type: 'move-to-base', targetId: action.targetId! }
+          : {
+              type: 'targeted',
+              targetId: action.targetId!,
+              effect: ability.effect,
+            },
   };
   return {
     ok: true,
