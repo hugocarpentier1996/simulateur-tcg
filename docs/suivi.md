@@ -1223,3 +1223,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Party Favors (ogn-071) : l'adversaire choisit Cartes (le lanceur et lui piochent 1) ou Runes (chacun canalise 1 rune Tap) (effet `party-favors`, choix de mode appartenant à l'adversaire, `partnerId`).
 - Cull the Weak (ogn-209) : chaque joueur, le lanceur d'abord, choisit et tue une de ses unités (effet `each-player-kills`, choix de mode `kill-own:<id>` enchaînés, joueur sans unité passé).
 - Acceptable Losses (ogn-179) : Action ; chaque joueur, le lanceur d'abord, détruit un de ses gears (`each-player-kills` sur les gears).
+- Whirlwind (ogn-187) : en commençant par l'adversaire, chaque joueur peut renvoyer une unité dans la main de son propriétaire (effet `each-player-may-return-unit`, modes `skip` / `return-unit:<id>`).

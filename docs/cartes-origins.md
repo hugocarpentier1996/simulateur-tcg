@@ -282,3 +282,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Party Favors — ogn-071-298
 - [x] Cull the Weak — ogn-209-298
 - [x] Acceptable Losses — ogn-179-298
+- [x] Whirlwind — ogn-187-298

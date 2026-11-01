@@ -538,14 +538,20 @@ function actionLabel(
                   ? 'Cartes (chacun pioche 1)'
                   : action.mode === 'favor-runes'
                     ? 'Runes (chacun canalise 1 rune Tap)'
-                    : action.mode.startsWith('kill-own:')
-                      ? 'Tuer ' + target(action.mode.slice('kill-own:'.length))
-                      : action.mode.startsWith('discard-return:')
-                        ? 'Défausser ' +
-                          target(action.mode.slice('discard-return:'.length)) +
-                          ' pour reprendre la carte'
-                        : 'Détruire ' +
-                          target(action.mode.slice('kill-gear:'.length)))
+                    : action.mode.startsWith('return-unit:')
+                      ? 'Renvoyer en main ' +
+                        target(action.mode.slice('return-unit:'.length))
+                      : action.mode.startsWith('kill-own:')
+                        ? 'Tuer ' +
+                          target(action.mode.slice('kill-own:'.length))
+                        : action.mode.startsWith('discard-return:')
+                          ? 'Défausser ' +
+                            target(
+                              action.mode.slice('discard-return:'.length),
+                            ) +
+                            ' pour reprendre la carte'
+                          : 'Détruire ' +
+                            target(action.mode.slice('kill-gear:'.length)))
       );
     case 'choose-hold-channel':
       return (

@@ -35,6 +35,8 @@ export type SpellEffect =
   | { readonly type: 'exhaust-allies' }
   /** Détruit tous les équipements en jeu (cimetière de leur propriétaire). */
   | { readonly type: 'kill-all-gear' }
+  /** En commençant par le joueur suivant, chacun peut renvoyer une unité en main (Whirlwind). */
+  | { readonly type: 'each-player-may-return-unit' }
   /** Chaque joueur, en commençant par le lanceur, tue une de ses unités ou un de ses gears. */
   | { readonly type: 'each-player-kills'; readonly what: 'unit' | 'gear' }
   /** L'adversaire choisit Cartes (lanceur et lui piochent 1) ou Runes (chacun canalise 1

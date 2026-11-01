@@ -217,6 +217,15 @@ export function resolveSpell(
       if (choice) state = { ...state, pendingModeChoice: choice };
       continue;
     }
+    if (effect.type === 'each-player-may-return-unit') {
+      const order = [
+        ...state.players.map((p) => p.id).filter((id) => id !== entry.casterId),
+        entry.casterId,
+      ];
+      const choice = nextKillChoice(state, entry.card.id, 'return', order);
+      if (choice) state = { ...state, pendingModeChoice: choice };
+      continue;
+    }
     if (effect.type === 'party-favors') {
       const opponent = state.players.find((p) => p.id !== entry.casterId);
       if (opponent)

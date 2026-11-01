@@ -20,7 +20,8 @@ export type EffectMode =
   | 'pay-return'
   | 'favor-cards'
   | 'favor-runes'
-  | `kill-own:${string}`;
+  | `kill-own:${string}`
+  | `return-unit:${string}`;
 
 const ONE_ENERGY = { energy: 1, power: {} };
 
@@ -39,8 +40,8 @@ export interface ModeChoiceEntry {
   partnerId?: string;
   /** Joueurs suivants à choisir à leur tour ce qu'ils tuent (Cull the Weak). */
   nextChoosers?: readonly string[];
-  /** Ce que chaque joueur tue (each-player-kills). */
-  killWhat?: 'unit' | 'gear';
+  /** Ce que chaque joueur tue (each-player-kills) ou renvoie en main (Whirlwind). */
+  killWhat?: 'unit' | 'gear' | 'return';
 }
 
 /** Capacité dépilée après réactions -> choix du mode par son propriétaire, sans fenêtre.
@@ -133,6 +134,12 @@ function applyMode(
   if (mode === 'channel-exhausted')
     return channelForPlayer(state, pending.ownerId, 1);
   if (mode === 'skip') return { state, events: [] };
+  if (mode.startsWith('return-unit:')) {
+    const unit = state.units.find(
+      (u) => u.id === mode.slice('return-unit:'.length),
+    );
+    return unit ? leaveBoard(state, unit, 'hand') : { state, events: [] };
+  }
   if (mode.startsWith('kill-own:')) {
     const id = mode.slice('kill-own:'.length);
     return pending.killWhat === 'gear'
@@ -201,10 +208,24 @@ function applyMode(
 export function nextKillChoice(
   state: GameState,
   sourceId: string,
-  what: 'unit' | 'gear',
+  what: 'unit' | 'gear' | 'return',
   players: readonly string[],
 ): ModeChoiceEntry | undefined {
   for (const [i, playerId] of players.entries()) {
+    if (what === 'return') {
+      if (!state.units.length) return undefined;
+      return {
+        kind: 'mode-choice',
+        sourceId,
+        ownerId: playerId,
+        modes: [
+          'skip',
+          ...state.units.map((u) => `return-unit:${u.id}` as const),
+        ],
+        killWhat: what,
+        nextChoosers: players.slice(i + 1),
+      };
+    }
     const ids = (what === 'unit' ? state.units : (state.gears ?? []))
       .filter((p) => p.ownerId === playerId)
       .map((p) => p.id);
