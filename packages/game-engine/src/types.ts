@@ -486,6 +486,8 @@ export interface UnitBlueprint {
   readonly playWhenSeen?: boolean;
   /** Son propriétaire recycle des cartes : une unité alliée est buffée (Karma, sans pile). */
   readonly buffOnRecycle?: boolean;
+  /** A les capacités Tap de toutes les légendes, unités et gears alliés (Heimerdinger). */
+  readonly copiesTapAbilities?: boolean;
   /** En attaquant : payer 1 Power de cette couleur pour jouer ici, gratuitement, une unité ou
    * un gear Hidden de sa main (Ava Achiever). */
   readonly onAttackPlayHidden?: { readonly power: string };
@@ -729,6 +731,8 @@ export type GameAction =
       destinationId?: string;
       /** Carte de la main défaussée en coût (discardCost). */
       discardCardId?: string;
+      /** Heimerdinger : source alliée dont la capacité Tap est empruntée. */
+      borrowFromId?: string;
       payment?: PaymentPlan;
     }
   /** Ressource manuelle : Tap d'une rune Ready pour 1 énergie dans la réserve. */

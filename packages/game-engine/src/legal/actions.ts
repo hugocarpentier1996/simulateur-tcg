@@ -1,3 +1,4 @@
+import type { GearBlueprint } from '../gear-types.js';
 import {
   trashUnitChoices,
   withTrashPower,
@@ -6,7 +7,10 @@ import { hiddenFree, hiddenInTrash } from '../effects/hidden.js';
 import { withTrashUnitPower } from '../cost/spell-cost.js';
 import { discardChoices } from '../actions/cast-spell.js';
 import { activeLegends } from '../effects/legends.js';
-import { tapAbilityTargets } from '../actions/activate-gear.js';
+import {
+  borrowedAbility,
+  tapAbilityTargets,
+} from '../actions/activate-gear.js';
 import {
   secondaryEnemyTarget,
   stackSpellTarget,
@@ -194,7 +198,41 @@ function* candidates(
       ready: l.card.ready !== false,
       ability: l.definition.tapAbility,
     })),
-  ]) {
+    // Heimerdinger : chaque capacité Tap alliée, utilisée en le couchant.
+    ...state.units
+      .filter(
+        (u) =>
+          u.ownerId === playerId &&
+          state.unitDefinitions?.find((d) => d.id === u.definitionId)
+            ?.copiesTapAbilities,
+      )
+      .flatMap((heimer) =>
+        [
+          ...(state.gears ?? []).map((g) => g.id),
+          ...state.units.filter((u) => u.id !== heimer.id).map((u) => u.id),
+          ...activeLegends(state, playerId).map((l) => l.card.id),
+        ].flatMap((sourceId) => {
+          const ability = borrowedAbility(state, playerId, sourceId);
+          return ability
+            ? [
+                {
+                  id: heimer.id,
+                  ownerId: heimer.ownerId,
+                  ready: heimer.ready,
+                  ability,
+                  borrowFromId: sourceId,
+                },
+              ]
+            : [];
+        }),
+      ),
+  ] as {
+    id: string;
+    ownerId: string;
+    ready: boolean;
+    ability: GearBlueprint['tapAbility'];
+    borrowFromId?: string;
+  }[]) {
     const ability = gear.ability;
     if (
       !ability ||
@@ -248,6 +286,7 @@ function* candidates(
               ...(targetId ? { targetId } : {}),
               ...(destinationId ? { destinationId } : {}),
               ...(discardCardId ? { discardCardId } : {}),
+              ...(gear.borrowFromId ? { borrowFromId: gear.borrowFromId } : {}),
               payment,
             };
     }

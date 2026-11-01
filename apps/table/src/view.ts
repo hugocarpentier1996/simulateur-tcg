@@ -478,6 +478,9 @@ function actionLabel(
         prefix +
         target(action.gearId) +
         (action.targetId ? ' → ' + target(action.targetId) : '') +
+        (action.borrowFromId
+          ? ' (capacité de ' + target(action.borrowFromId) + ')'
+          : '') +
         (action.destinationId ? ' vers ' + target(action.destinationId) : '') +
         (action.discardCardId
           ? ' · en défaussant ' + target(action.discardCardId)

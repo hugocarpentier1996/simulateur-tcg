@@ -27,9 +27,13 @@ export function activateGear(
     const unit = state.units.find(
       (u) => u.id === action.gearId && u.ownerId === action.playerId,
     );
-    const unitAbility = state.unitDefinitions?.find(
-      (d) => d.id === unit?.definitionId,
-    )?.tapAbility;
+    const unitAbility = action.borrowFromId
+      ? state.unitDefinitions?.find((d) => d.id === unit?.definitionId)
+          ?.copiesTapAbilities
+        ? borrowedAbility(state, action.playerId, action.borrowFromId)
+        : undefined
+      : state.unitDefinitions?.find((d) => d.id === unit?.definitionId)
+          ?.tapAbility;
     const sacrifice = state.unitDefinitions?.find(
       (d) => d.id === unit?.definitionId,
     )?.sacrificeResource;
@@ -469,4 +473,26 @@ function addResource(
       },
     ],
   };
+}
+
+/** Capacité Tap d'une autre source alliée (gear, unité, légende) empruntée par Heimerdinger. */
+export function borrowedAbility(
+  state: GameState,
+  playerId: string,
+  sourceId: string,
+): TapAbility | undefined {
+  const gear = state.gears?.find(
+    (g) => g.id === sourceId && g.ownerId === playerId,
+  );
+  if (gear)
+    return state.gearDefinitions?.find((d) => d.id === gear.definitionId)
+      ?.tapAbility;
+  const unit = state.units.find(
+    (u) => u.id === sourceId && u.ownerId === playerId,
+  );
+  if (unit)
+    return state.unitDefinitions?.find((d) => d.id === unit.definitionId)
+      ?.tapAbility;
+  return activeLegends(state, playerId).find((l) => l.card.id === sourceId)
+    ?.definition.tapAbility;
 }
