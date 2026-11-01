@@ -10,6 +10,8 @@ export interface BattlefieldBlueprint {
   readonly holdDraw?: number;
   /** Conquête : le conquérant défausse 1 puis pioche 1, via la pile. */
   readonly conquerLoot?: boolean;
+  /** Conquête : le conquérant recycle une de ses runes (Tap d'abord), via la pile. */
+  readonly conquerRecycleRune?: boolean;
   /** Tenue : buffe une unité alliée ici (sans buff de préférence, sans choix), via la pile. */
   readonly holdBuffHere?: boolean;
   /** Début de la première Beginning de chaque joueur : 1 point (The Arena's Greatest) ou

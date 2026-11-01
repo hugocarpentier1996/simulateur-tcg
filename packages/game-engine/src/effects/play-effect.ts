@@ -17,6 +17,8 @@ export interface PlayEffectEntry {
   ownerId: string;
   effect:
     | { type: 'summon-here'; destinationId: string; definitionId: string }
+    /** Recycle une rune en jeu du propriétaire sous sa pile de runes (Tap d'abord). */
+    | { type: 'recycle-rune' }
     /** Jeton dans la base indiquée, sans exiger que la source soit une unité en jeu. */
     | { type: 'summon-base'; destinationId: string; definitionId: string }
     | { type: 'vision' }
@@ -48,6 +50,31 @@ export function resolvePlayEffect(
         ...summoned.events,
         { type: 'unit-play-effect-resolved', sourceId: entry.sourceId },
       ],
+    };
+  }
+  if (entry.effect.type === 'recycle-rune') {
+    const runes = state.zones.find(
+      (z) => z.kind === 'runes' && z.ownerId === entry.ownerId,
+    );
+    const pile = state.zones.find(
+      (z) => z.kind === 'rune-pile' && z.ownerId === entry.ownerId,
+    );
+    const rune = [...state.cards]
+      .filter((c) => c.zoneId === runes?.id)
+      .sort((x, y) => Number(x.ready !== false) - Number(y.ready !== false))[0];
+    return {
+      ok: true,
+      state:
+        rune && pile
+          ? {
+              ...state,
+              cards: [
+                ...state.cards.filter((c) => c.id !== rune.id),
+                { ...rune, zoneId: pile.id, ready: false },
+              ],
+            }
+          : state,
+      events: [{ type: 'unit-play-effect-resolved', sourceId: entry.sourceId }],
     };
   }
   if (entry.effect.type === 'summon-base') {

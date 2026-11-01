@@ -1,3 +1,4 @@
+import type { PlayEffectEntry } from './play-effect.js';
 import type { MovementEntry } from './movement-triggers.js';
 import { battlefieldDefinition } from './battlefield.js';
 import type { GameState, GameEvent } from '../types.js';
@@ -28,29 +29,30 @@ export function queueConquestLegends(
           },
         };
     }
-  const entries: (LegendEntry | MovementEntry)[] = events.flatMap((e) =>
-    e.type === 'battlefield-conquered'
-      ? activeLegends(state, e.playerId).flatMap(({ card, definition }) =>
-          definition.conquestDraw &&
-          state.units.filter(
-            (u) => u.ownerId === e.playerId && u.zoneId === e.battlefieldId,
-          ).length >= definition.conquestDraw.minimumUnits
-            ? [
-                {
-                  kind: 'legend-draw' as const,
-                  sourceId: card.id,
-                  ownerId: e.playerId,
-                  count: definition.conquestDraw.count,
-                  battlefieldCondition: {
-                    battlefieldId: e.battlefieldId,
-                    minimumUnits: definition.conquestDraw.minimumUnits,
+  const entries: (LegendEntry | MovementEntry | PlayEffectEntry)[] =
+    events.flatMap((e) =>
+      e.type === 'battlefield-conquered'
+        ? activeLegends(state, e.playerId).flatMap(({ card, definition }) =>
+            definition.conquestDraw &&
+            state.units.filter(
+              (u) => u.ownerId === e.playerId && u.zoneId === e.battlefieldId,
+            ).length >= definition.conquestDraw.minimumUnits
+              ? [
+                  {
+                    kind: 'legend-draw' as const,
+                    sourceId: card.id,
+                    ownerId: e.playerId,
+                    count: definition.conquestDraw.count,
+                    battlefieldCondition: {
+                      battlefieldId: e.battlefieldId,
+                      minimumUnits: definition.conquestDraw.minimumUnits,
+                    },
                   },
-                },
-              ]
-            : [],
-        )
-      : [],
-  );
+                ]
+              : [],
+          )
+        : [],
+    );
   // Capacités « When I conquer » des unités du conquérant présentes sur le champ conquis.
   for (const e of events)
     if (e.type === 'battlefield-conquered')
@@ -66,6 +68,18 @@ export function queueConquestLegends(
             count,
           });
       }
+  // Sigil of the Storm : recyclage d'une rune du conquérant.
+  for (const e of events)
+    if (
+      e.type === 'battlefield-conquered' &&
+      battlefieldDefinition(state, e.battlefieldId)?.conquerRecycleRune
+    )
+      entries.push({
+        kind: 'play-effect',
+        sourceId: e.battlefieldId,
+        ownerId: e.playerId,
+        effect: { type: 'recycle-rune' },
+      });
   // Champs « When you conquer here » (Zaun Warrens : loot du conquérant).
   for (const e of events)
     if (

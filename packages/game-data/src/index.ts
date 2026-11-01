@@ -293,3 +293,4 @@ export { mageseekerWarden } from './ogn/mageseeker-warden.js';
 export { blitzcrank } from './ogn/blitzcrank.js';
 export { caitlyn } from './ogn/caitlyn.js';
 export { stackedDeck } from './ogn/stacked-deck.js';
+export { sigilOfTheStorm } from './ogn/sigil-of-the-storm.js';
