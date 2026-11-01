@@ -1184,3 +1184,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Viktor (ogn-246, Order) : quand une autre unité alliée non-Recrue meurt, joue une Recrue 1 dans la base (`recruitOnAllyDeath`, sans pile).
 - Viktor (ogn-117, Mind) : quand son propriétaire joue une carte pendant le tour adverse, joue une Recrue 1 dans sa base (`recruitOnOffTurnPlay`, sans pile).
 - Volibear (ogn-158, Body) : Shield 3, Tank ; quand une unité adverse se déplace vers un autre champ que le sien, son propriétaire pioche 1 (`drawOnEnemyMoveElsewhere`, sans pile).
+- Miss Fortune (ogn-193, Chaos) : peut être jouée sur un champ libre, et les unités alliées aussi tant qu'elle est en jeu (`alliesCanPlayToOpenBattlefield`).

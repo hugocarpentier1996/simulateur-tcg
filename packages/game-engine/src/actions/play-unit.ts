@@ -52,7 +52,13 @@ export function playUnit(
   if (!base) return { ok: false, reason: 'MISSING_BASE' };
   const destinationId = action.destinationId ?? base.id;
   const openField =
-    definition.canPlayToOpenBattlefield &&
+    (definition.canPlayToOpenBattlefield ||
+      state.units.some(
+        (u) =>
+          u.ownerId === action.playerId &&
+          state.unitDefinitions?.find((d) => d.id === u.definitionId)
+            ?.alliesCanPlayToOpenBattlefield,
+      )) &&
     state.battlefields.some((f) => f.zoneId === destinationId) &&
     state.zones.some(
       (z) => z.id === destinationId && z.kind === 'battlefield',

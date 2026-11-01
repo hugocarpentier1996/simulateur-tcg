@@ -244,3 +244,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Viktor — ogn-246-298
 - [x] Viktor — ogn-117-298
 - [x] Volibear — ogn-158-298
+- [x] Miss Fortune — ogn-193-298

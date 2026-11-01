@@ -17,6 +17,8 @@ export interface UnitDefinition extends PrintedMetadata {
   /** Bonus continu par instance de dégâts des sorts et capacités du propriétaire. */
   /** Exception de mise en jeu : champ entièrement vide en plus des destinations ordinaires. */
   readonly canPlayToOpenBattlefield?: boolean;
+  /** Tant qu'elle est en jeu, les unités alliées peuvent être jouées sur un champ libre. */
+  readonly alliesCanPlayToOpenBattlefield?: boolean;
   /** Tant qu'elle est Mighty (5+ Might) : Deflect, Ganking et Shield 1 (Fiora). */
   readonly mightyKeywords?: boolean;
   /** Ne subit aucun dégât après s'être déplacé au moins ce nombre de fois ce tour (Kayn). */
