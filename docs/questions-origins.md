@@ -88,3 +88,89 @@ existantes ; seuls les nouveaux doutes utiles rejoindront le prochain lot de que
 - Kai'Sa (Mind) (limite) : seuls les sorts sans cible individuelle sont proposés.
 - Divine Judgment (hypothèse) : ordre des choix = lanceur puis adversaire, chacun voit les choix précédents ; les gears attachés à une unité recyclée restent en jeu détachés ; les unités adverses contrôlées (`cardOwnerId`) retournent au deck de leur propriétaire.
 - Promising Future (hypothèse/limite) : une carte dont le Power est impayable, ou un sort à cibles, est recyclée sous le deck ; les unités jouées n'ont pas leurs effets « when you play me ».
+
+## Réponses du 1er novembre 2026 — à implémenter plus tard
+
+Réponses de l'utilisateur aux 29 questions de la quatrième fournée. Rien n'est encore
+implémenté ; chaque point deviendra une correction testée et commitée séparément.
+
+### Options d'ergonomie à créer (communes à toutes les cartes)
+
+- **Refus automatique des réactions** : case à cocher qui passe automatiquement toutes les
+  fenêtres de réaction (pour tous les déclencheurs, pas seulement ceux listés au point 7).
+- **« You may » sans coût** : acceptés automatiquement par défaut ; case à cocher commune
+  pour être consulté à chaque fois. Un « you may » avec un coût est **toujours** demandé.
+- **Deflect** : par défaut le coût Deflect est payé ; option (désactivée par défaut) pour
+  pouvoir refuser de le payer.
+- **Choix manuel de Sona** : option sur la carte pour choisir les runes à la main ; par défaut
+  automatique.
+
+### Réponses point par point
+
+1. **« Here » suit la carte** : si la source est déplacée (Flash, autre champ…), « here »
+   désigne sa nouvelle position (Noxian Drummer, Faithful Manufactor, Crackshot Corsair).
+2. **Traveling Merchant** : choix de la carte à défausser à la résolution (comportement actuel).
+3. **Get Excited!** : la carte à défausser est choisie à la **résolution**, pas au lancement.
+   La cible du sort, elle, est choisie au lancement.
+4. **Sorts à instructions multiples** : cibles choisies au lancement. La même cible peut être
+   choisie plusieurs fois, sauf texte contraire (Singularity : « up to 2 units » = 2 unités
+   distinctes, différent de « 2 times »).
+5. **Icathian Rain** : même réponse que pour le point 4 → cibles choisies au lancement
+   (corriger le choix à la résolution actuel). Répartition du coût Power : non tranchée, à
+   revérifier sur la carte.
+6. **Divine Judgment** : confirmé. Précision : les gears attachés qui restent sur le terrain
+   **comptent** dans les 2 gears gardés.
+7. **Déclencheurs** : tous passent par la pile et ouvrent une fenêtre de réaction (supprimer
+   les applications immédiates : Darius, Pit Crew, Ekko, Dr. Mundo, Cithria, Jinx Chaos,
+   Eclipse Herald, Radiant Dawn, Solari Shrine, Scrapheap, Yasuo Chaos, Back-Alley Bar,
+   The Grand Plaza, Vanguard Helm, Pirate's Haven, Mistfall, Karma, The Boss…).
+   Darius Fury : l'effet fonctionne aussi s'il est lui-même la deuxième carte jouée.
+8. **« You may »** : voir options ci-dessus (auto sans coût, toujours demandé avec coût).
+9. **Sona** : automatique par défaut, option de choix manuel.
+10. **Dr. Mundo / Garbage Grabber** : le joueur choisit les cartes recyclées.
+11. **Navori Fighting Pit, Radiant Dawn, Vanguard Helm, Karma** : le joueur choisit l'unité
+    buffée.
+12. **Reinforce** : confirmé (paiement auto, seules les unités payables proposées).
+13. **Unité jouée par un effet** : elle est bel et bien **jouée** et déclenche ses effets
+    « when you play me » (The Harrowing, Soulgorger, Spectral Matron, Portal Rescue,
+    Reinforce, Ava Achiever, Promising Future, Blind Fury…). Revoir aussi l'état Tap imposé.
+14. **Assault / Shield** : cumulables (Assault + Assault = Assault 2). Confirmé.
+15. **Sorts contrés** : confirmé (cimetière, pas « joués »).
+16. **Stun** : tracer le **joueur** qui a étourdi (pas l'unité) ; Eclipse Herald / Radiant
+    Dawn utilisent ce joueur.
+17. **Mighty** : évalué sur la Might **réelle** (bonus compris), pas imprimée.
+18. **Hidden** :
+    - une carte cachée par champ, et seulement sur un champ que le joueur contrôle ;
+    - le contrôle d'un champ n'est perdu qu'à la fin du showdown s'il y en a un, sinon quand
+      il ne reste aucune carte visible du joueur sur le champ **en état ouvert** (ex. : un
+      Deathknell qui réinvoque une unité sur place empêche la perte, même si le champ a été
+      vide un instant) ;
+    - jouer depuis facedown ignore le coût imprimé, mais **pas** Deflect, et applique les
+      effets « here » sur ce champ, sauf texte contraire (Tide Turner vise explicitement un
+      autre champ) ;
+    - gears cachés posés en base : confirmé, sauf instruction contraire.
+19. **Reaver's Row** : à la fin d'un combat à égalité ou d'un effet Zhonya, le retour en base
+    n'est pas un déplacement ; mais le joueur ne peut pas revenir **manuellement** en base
+    depuis ce champ.
+20. **Immortal Phoenix** : l'unité doit mourir **des dégâts du sort** (Stupefy sur une unité
+    déjà blessée : ce ne sont pas les dégâts de Stupefy qui la tuent → ne compte pas).
+    Le Phoenix peut se ressusciter lui-même s'il est l'unité alliée tuée par le sort
+    (ex. Cull the Weak).
+21. **Malzahar** : peut se sacrifier lui-même pour payer sa capacité, l'effet se résout
+    normalement.
+22. **Karthus** : confirmé (compte s'il meurt en même temps).
+23. **Deflect** : si le coût Deflect ne peut pas ou ne veut pas être payé, seul l'effet qui
+    cible cette unité fizzle. Par défaut on paie ; option de refus désactivée par défaut.
+24. **Nocturne / Karma** : tous les effets qui regardent ou recyclent le deck les déclenchent
+    (Vision, Reinforce, Baited Hook, Candlelit Sanctum, Stacked Deck…). Karma : une seule
+    fois par effet.
+25. **Heimerdinger** : peut copier les capacités ADD ; il ne peut simplement pas copier une
+    rune.
+26. **Mystic Reversal** : le sort volé peut être relancé avec de nouveaux choix, tant qu'ils
+    sont valides.
+27. **Blind Fury** : n'importe quelle carte révélée est jouable (gears, sorts à cibles…).
+28. **Kai'Sa (Mind), Ava Achiever, Promising Future** : tous les sorts et unités sont
+    jouables ; les cibles sont choisies à la mise sur la pile (pas à la résolution).
+29. **Légendes 299-310** : mêmes cartes que les légendes de même nom, avec un autre visuel
+    (images locales présentes) → à gérer plus tard comme **skin alternatif** lors de la
+    création du deck, pas comme cartes distinctes.
