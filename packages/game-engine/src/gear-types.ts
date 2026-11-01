@@ -69,4 +69,6 @@ export interface GearState {
   zoneId: string;
   ready: boolean;
   attachedUnitId?: string;
+  /** Temporary : détruit au début de la Beginning de son propriétaire, avant le score. */
+  temporary?: boolean;
 }

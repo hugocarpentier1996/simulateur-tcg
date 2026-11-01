@@ -1230,3 +1230,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Shen (ogn-241) : unité Réaction (jouable avec la priorité pendant une pile, un Showdown ou le tour adverse, `reactionTiming`), Shield 2, Tank.
 - Mushroom Pouch (ogn-101) : gear ; au début de la Beginning de son propriétaire, s'il a une carte cachée sur un champ, il pioche 1 via la pile (`beginningDrawIfFacedown`).
 - Shakedown (ogn-033) : Réaction ; le contrôleur de l'unité ennemie choisie choisit qu'elle subisse 6 ou que le lanceur pioche 2 (effet `damage-unless-draw`, choix de mode `suffer:<id>` / `let-draw`).
+- Fading Memories (ogn-180) : une unité sur un champ ou un gear gagne Temporary (cible `battlefield-unit-or-gear`, effet `grant-temporary`) ; les gears Temporary sont détruits au début de la Beginning de leur propriétaire.

@@ -198,3 +198,18 @@ export function validMightBundle(
     units.reduce((sum, u) => sum + effectiveMight(u!, state), 0) <= maximum
   );
 }
+
+/** Cible « unité sur un champ ou gear » (Fading Memories). */
+export function battlefieldUnitOrGear(
+  state: GameState,
+  targetId: string | undefined,
+): boolean {
+  return (
+    !!state.gears?.some((g) => g.id === targetId) ||
+    state.units.some(
+      (u) =>
+        u.id === targetId &&
+        state.battlefields.some((f) => f.zoneId === u.zoneId),
+    )
+  );
+}

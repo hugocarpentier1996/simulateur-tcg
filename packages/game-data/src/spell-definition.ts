@@ -35,6 +35,8 @@ export type SpellEffect =
   | { readonly type: 'exhaust-allies' }
   /** Détruit tous les équipements en jeu (cimetière de leur propriétaire). */
   | { readonly type: 'kill-all-gear' }
+  /** La cible (unité ou gear) gagne Temporary. */
+  | { readonly type: 'grant-temporary' }
   /** Le contrôleur de la cible choisit : elle subit amount, ou le lanceur pioche draw. */
   | {
       readonly type: 'damage-unless-draw';
@@ -217,6 +219,8 @@ export interface SpellDefinition extends PrintedMetadata {
     | { readonly kind: 'caster' }
     /** Un équipement en jeu, ou le lanceur lui-même pour renoncer (« you may »). */
     | { readonly kind: 'optional-gear' }
+    /** Une unité sur un champ ou un gear en jeu. */
+    | { readonly kind: 'battlefield-unit-or-gear' }
     /** Un sort sur la pile ; maxEnergy / maxPower plafonnent son coût imprimé. */
     | {
         readonly kind: 'stack-spell';

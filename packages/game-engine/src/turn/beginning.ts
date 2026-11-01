@@ -1,3 +1,4 @@
+import { killGears } from '../effects/kill-gear.js';
 import { activeLegends } from '../effects/legends.js';
 import { handSize } from '../effects/loot.js';
 import { channelForPlayer } from './supplies.js';
@@ -30,6 +31,14 @@ export function scoreHolding(
     ? settleLethalUnits(state, temporary)
     : { state, events: [] as GameEvent[] };
   state = killed.state;
+  const fadingGears = killGears(
+    state,
+    (state.gears ?? [])
+      .filter((g) => g.ownerId === playerId && g.temporary)
+      .map((g) => g.id),
+  );
+  state = fadingGears.state;
+  killed.events.push(...fadingGears.events);
   state = queueBeginningLegends(state, playerId);
   const scored = state.scoredBattlefields[playerId] ?? [];
   const fields = state.battlefields.filter(

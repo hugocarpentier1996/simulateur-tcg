@@ -6,6 +6,7 @@ import {
   secondaryEnemyTarget,
   stackSpellTarget,
   allyToMove,
+  battlefieldUnitOrGear,
   validMightBundle,
   enemyHere,
   otherAlly,
@@ -313,9 +314,13 @@ function* candidates(
                       ? [{ id: e.card.id }]
                       : [],
                   )
-                : spell.target.kind === 'optional-gear'
-                  ? [{ id: playerId }, ...(state.gears ?? [])]
-                  : state.units) {
+                : spell.target.kind === 'battlefield-unit-or-gear'
+                  ? [...state.units, ...(state.gears ?? [])].filter((t) =>
+                      battlefieldUnitOrGear(state, t.id),
+                    )
+                  : spell.target.kind === 'optional-gear'
+                    ? [{ id: playerId }, ...(state.gears ?? [])]
+                    : state.units) {
           const base = {
             type: 'cast-spell' as const,
             playerId,

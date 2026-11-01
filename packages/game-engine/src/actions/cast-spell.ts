@@ -18,6 +18,7 @@ import {
   secondaryEnemyTarget,
   stackSpellTarget,
   allyToMove,
+  battlefieldUnitOrGear,
   validMightBundle,
   enemyHere,
   otherAlly,
@@ -157,10 +158,12 @@ export function castSpell(
           ? action.targetId !== action.playerId
           : definition.target.kind === 'stack-spell'
             ? !stackSpellTarget(state, definition, action.targetId)
-            : definition.target.kind === 'optional-gear'
-              ? action.targetId !== action.playerId &&
-                !state.gears?.some((g) => g.id === action.targetId)
-              : !target
+            : definition.target.kind === 'battlefield-unit-or-gear'
+              ? !battlefieldUnitOrGear(state, action.targetId)
+              : definition.target.kind === 'optional-gear'
+                ? action.targetId !== action.playerId &&
+                  !state.gears?.some((g) => g.id === action.targetId)
+                : !target
   )
     return { ok: false, reason: 'INVALID_TARGET' };
   if (

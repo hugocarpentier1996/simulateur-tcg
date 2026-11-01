@@ -24,6 +24,7 @@ import {
   stackSpellTarget,
   allyToMove,
   enemyHere,
+  battlefieldUnitOrGear,
   validMightBundle,
   otherAlly,
   destinationFoe,
@@ -348,6 +349,23 @@ export function resolveSpell(
           state = drawn.state;
           events.push(...drawn.events);
         }
+      continue;
+    }
+    if (effect.type === 'grant-temporary') {
+      if (!battlefieldUnitOrGear(state, entry.targetId)) continue;
+      state = {
+        ...state,
+        units: state.units.map((u) =>
+          u.id === entry.targetId ? { ...u, temporary: true } : u,
+        ),
+        ...(state.gears
+          ? {
+              gears: state.gears.map((g) =>
+                g.id === entry.targetId ? { ...g, temporary: true } : g,
+              ),
+            }
+          : {}),
+      };
       continue;
     }
     if (effect.type === 'kill-target-gear') {
