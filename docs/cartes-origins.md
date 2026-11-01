@@ -288,3 +288,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Sabotage — ogn-156-298
 - [x] Shen — ogn-241-298
 - [x] Mushroom Pouch — ogn-101-298
+- [x] Shakedown — ogn-033-298

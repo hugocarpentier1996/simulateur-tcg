@@ -332,3 +332,4 @@ export { mindsplitter } from './ogn/mindsplitter.js';
 export { sabotage } from './ogn/sabotage.js';
 export { shen } from './ogn/shen.js';
 export { mushroomPouch } from './ogn/mushroom-pouch.js';
+export { shakedown } from './ogn/shakedown.js';

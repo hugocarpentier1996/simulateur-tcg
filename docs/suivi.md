@@ -1229,3 +1229,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Sabotage (ogn-156) : la main adverse est révélée et le lanceur y choisit une carte non-unité, recyclée sous le deck de son propriétaire (`opponent-hand-pick`, modes `recycle-opp:<id>`).
 - Shen (ogn-241) : unité Réaction (jouable avec la priorité pendant une pile, un Showdown ou le tour adverse, `reactionTiming`), Shield 2, Tank.
 - Mushroom Pouch (ogn-101) : gear ; au début de la Beginning de son propriétaire, s'il a une carte cachée sur un champ, il pioche 1 via la pile (`beginningDrawIfFacedown`).
+- Shakedown (ogn-033) : Réaction ; le contrôleur de l'unité ennemie choisie choisit qu'elle subisse 6 ou que le lanceur pioche 2 (effet `damage-unless-draw`, choix de mode `suffer:<id>` / `let-draw`).

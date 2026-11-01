@@ -1,3 +1,4 @@
+import { dealSpellDamage } from './spell-damage.js';
 import { settleLethalUnits } from './lethal-units.js';
 import { findPayment } from '../legal/payment.js';
 import { payCost } from '../cost/payment.js';
@@ -23,7 +24,9 @@ export type EffectMode =
   | `kill-own:${string}`
   | `return-unit:${string}`
   | `discard-opp:${string}`
-  | `recycle-opp:${string}`;
+  | `recycle-opp:${string}`
+  | `suffer:${string}`
+  | 'let-draw';
 
 const ONE_ENERGY = { energy: 1, power: {} };
 
@@ -42,6 +45,9 @@ export interface ModeChoiceEntry {
   partnerId?: string;
   /** Joueurs suivants à choisir à leur tour ce qu'ils tuent (Cull the Weak). */
   nextChoosers?: readonly string[];
+  /** Shakedown : dégâts si l'unité est choisie, pioches du partenaire sinon. */
+  sufferAmount?: number;
+  partnerDraws?: number;
   /** Ce que chaque joueur tue (each-player-kills) ou renvoie en main (Whirlwind). */
   killWhat?: 'unit' | 'gear' | 'return';
 }
@@ -165,6 +171,35 @@ function applyMode(
       },
       events: [],
     };
+  }
+  if (mode.startsWith('suffer:')) {
+    const unit = state.units.find((u) => u.id === mode.slice('suffer:'.length));
+    if (!unit) return { state, events: [] };
+    const damaged = dealSpellDamage(
+      state,
+      pending.sourceId,
+      pending.partnerId ?? pending.ownerId,
+      [unit],
+      pending.sufferAmount ?? 0,
+    );
+    const settled = settleLethalUnits(damaged.state);
+    return {
+      state: settled.state,
+      events: [...damaged.events, ...settled.events],
+    };
+  }
+  if (mode === 'let-draw') {
+    let next = state;
+    const events: Extract<ActionResult, { ok: true }>['events'] = [];
+    for (let i = 0; i < (pending.partnerDraws ?? 0) && !next.result; i++) {
+      const drawn = drawCardForPlayer(
+        next,
+        pending.partnerId ?? pending.ownerId,
+      );
+      next = drawn.state;
+      events.push(...drawn.events);
+    }
+    return { state: next, events };
   }
   if (mode.startsWith('return-unit:')) {
     const unit = state.units.find(

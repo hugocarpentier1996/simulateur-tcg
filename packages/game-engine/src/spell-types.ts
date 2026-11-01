@@ -75,6 +75,12 @@ export interface SpellBlueprint {
     | { readonly type: 'exhaust-allies' }
     /** Détruit tous les équipements en jeu (cimetière de leur propriétaire). */
     | { readonly type: 'kill-all-gear' }
+    /** Le contrôleur de la cible choisit : elle subit amount, ou le lanceur pioche draw. */
+    | {
+        readonly type: 'damage-unless-draw';
+        readonly amount: number;
+        readonly draw: number;
+      }
     /** Main adverse révélée ; le lanceur y choisit une carte défaussée ou recyclée (hors unités). */
     | {
         readonly type: 'opponent-hand-pick';

@@ -543,6 +543,19 @@ export function resolveSpell(
             events.push(...drawn.events);
           }
       }
+    } else if (effect.type === 'damage-unless-draw') {
+      state = {
+        ...state,
+        pendingModeChoice: {
+          kind: 'mode-choice',
+          sourceId: entry.card.id,
+          ownerId: target.ownerId,
+          partnerId: entry.casterId,
+          sufferAmount: effect.amount,
+          partnerDraws: effect.draw,
+          modes: [`suffer:${target.id}`, 'let-draw'],
+        },
+      };
     } else if (effect.type === 'grant-shield-tank') {
       state = {
         ...state,
