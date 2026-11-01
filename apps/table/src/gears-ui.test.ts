@@ -4,6 +4,7 @@ import {
   incinerate,
   ironBallista,
   blindMonk,
+  handOfNoxus,
   salvage,
   sealOfRage,
 } from '../../../packages/game-data/src/index.js';
@@ -12,6 +13,7 @@ import {
   submitCardAction,
   targetOptions,
   useGear,
+  gearHasResource,
   type Session,
 } from './session.js';
 import { renderTable } from './view.js';
@@ -121,4 +123,24 @@ it('Blind Monk : la légende est cliquable et propose sa capacité Tap', () => {
       targetId: 'ally',
     }),
   );
+});
+
+it('Hand of Noxus : la légende de ressource se couche au clic (Legion remplie)', () => {
+  const state = spellScenario(incinerate);
+  state.legendDefinitions = [handOfNoxus];
+  state.zones.push({ id: 'legend-a', kind: 'legend', ownerId: 'a' });
+  state.cards.push({
+    id: 'noxus',
+    definitionId: handOfNoxus.id,
+    ownerId: 'a',
+    zoneId: 'legend-a',
+    ready: true,
+  });
+  state.cardsPlayedThisTurn = { a: 1 };
+  const s: Session = { state, history: [], log: [], error: null };
+  expect(renderTable(s, null)).toContain('data-gear="noxus"');
+  expect(gearHasResource(s.state, 'noxus')).toBe(true);
+  const used = useGear(s, 'noxus');
+  expect(used.error).toBeNull();
+  expect(used.state.cards.find((c) => c.id === 'noxus')?.ready).toBe(false);
 });

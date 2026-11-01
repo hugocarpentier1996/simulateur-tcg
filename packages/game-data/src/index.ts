@@ -272,3 +272,4 @@ export { theSyren } from './ogn/the-syren.js';
 export { blindMonk } from './ogn/blind-monk.js';
 export { bountyHunter } from './ogn/bounty-hunter.js';
 export { heraldOfTheArcane } from './ogn/herald-of-the-arcane.js';
+export { handOfNoxus } from './ogn/hand-of-noxus.js';

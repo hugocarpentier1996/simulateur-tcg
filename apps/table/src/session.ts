@@ -768,7 +768,9 @@ export function discardFromHand(session: Session, cardId: string): Session {
 /** Clic sur un gear à capacité de ressource -> Tap et ressource pour son propriétaire.
  * Le moteur vérifie la fenêtre ; un refus ne change pas la partie. */
 export function useGear(session: Session, gearId: string): Session {
-  const gear = session.state.gears?.find((g) => g.id === gearId);
+  const gear =
+    session.state.gears?.find((g) => g.id === gearId) ??
+    session.state.cards.find((c) => c.id === gearId);
   if (!gear) return { ...session, error: refusals.INVALID_GEAR! };
   return dispatch(session, {
     type: 'activate-gear',
@@ -779,7 +781,13 @@ export function useGear(session: Session, gearId: string): Session {
 
 /** Gear avec une capacité de ressource activable au clic ? */
 export function gearHasResource(state: GameState, gearId: string): boolean {
-  const gear = state.gears?.find((g) => g.id === gearId);
-  return !!state.gearDefinitions?.find((d) => d.id === gear?.definitionId)
-    ?.resourceAbility;
+  const gear =
+    state.gears?.find((g) => g.id === gearId) ??
+    state.cards.find((c) => c.id === gearId);
+  return !!(
+    state.gearDefinitions?.find((d) => d.id === gear?.definitionId)
+      ?.resourceAbility ??
+    state.legendDefinitions?.find((d) => d.id === gear?.definitionId)
+      ?.resourceAbility
+  );
 }

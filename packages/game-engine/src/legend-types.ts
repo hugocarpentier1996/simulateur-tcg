@@ -16,6 +16,12 @@ export interface LegendBlueprint {
   };
   /** Capacité « Tap : effet » ciblée, comme celle des gears (action activate-gear). */
   readonly tapAbility?: GearBlueprint['tapAbility'];
+  /** Capacité ADD « Tap : ajoute » ; legion : seulement si une carte a été jouée ce tour. */
+  readonly resourceAbility?: {
+    readonly energy?: number;
+    readonly power?: string;
+    readonly legion?: boolean;
+  };
 }
 
 /** Déclenchement de pioche indépendant de la source, après une fenêtre de réaction. */

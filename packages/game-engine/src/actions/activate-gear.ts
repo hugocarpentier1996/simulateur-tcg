@@ -21,6 +21,26 @@ export function activateGear(
     const legend = activeLegends(state, action.playerId).find(
       (l) => l.card.id === action.gearId,
     );
+    const resource = legend?.definition.resourceAbility;
+    if (legend && resource) {
+      if (legend.card.ready === false)
+        return { ok: false, reason: 'GEAR_NOT_READY' };
+      if (resource.legion && !state.cardsPlayedThisTurn?.[action.playerId])
+        return { ok: false, reason: 'LEGION_REQUIRED' };
+      if (!canUseTiming(state, action.playerId, 'reaction'))
+        return { ok: false, reason: 'ABILITY_WINDOW_CLOSED' };
+      return addResource(
+        {
+          ...state,
+          cards: state.cards.map((c) =>
+            c.id === legend.card.id ? { ...c, ready: false } : c,
+          ),
+        },
+        action.playerId,
+        legend.card.id,
+        resource,
+      );
+    }
     return legend?.definition.tapAbility
       ? activateTapAbility(
           state,
@@ -40,37 +60,17 @@ export function activateGear(
   if (!gear.ready) return { ok: false, reason: 'GEAR_NOT_READY' };
   if (!canUseTiming(state, action.playerId, 'reaction'))
     return { ok: false, reason: 'ABILITY_WINDOW_CLOSED' };
-  const previous = state.resources[action.playerId] ?? { energy: 0, power: {} };
-  const energy = ability.energy ?? 0;
-  const color = ability.power;
-  return {
-    ok: true,
-    state: {
+  return addResource(
+    {
       ...state,
       gears: state.gears!.map((g) =>
         g.id === gear.id ? { ...g, ready: false } : g,
       ),
-      resources: {
-        ...state.resources,
-        [action.playerId]: {
-          ...previous,
-          energy: previous.energy + energy,
-          power: color
-            ? { ...previous.power, [color]: (previous.power[color] ?? 0) + 1 }
-            : previous.power,
-        },
-      },
     },
-    events: [
-      {
-        type: 'gear-resource-added',
-        playerId: action.playerId,
-        gearId: gear.id,
-        energy,
-        power: color ?? null,
-      },
-    ],
-  };
+    action.playerId,
+    gear.id,
+    ability,
+  );
 }
 
 type TapAbility = NonNullable<GearBlueprint['tapAbility']>;
@@ -181,5 +181,42 @@ function activateTapAbility(
       },
     },
     events: [{ type: 'unit-play-effect-queued', sourceId: gear.id }],
+  };
+}
+
+/** Ressource ajoutée à la réserve flottante du joueur (source déjà couchée). */
+function addResource(
+  state: GameState,
+  playerId: string,
+  sourceId: string,
+  ability: { readonly energy?: number; readonly power?: string },
+): ActionResult {
+  const previous = state.resources[playerId] ?? { energy: 0, power: {} };
+  const energy = ability.energy ?? 0;
+  const color = ability.power;
+  return {
+    ok: true,
+    state: {
+      ...state,
+      resources: {
+        ...state.resources,
+        [playerId]: {
+          ...previous,
+          energy: previous.energy + energy,
+          power: color
+            ? { ...previous.power, [color]: (previous.power[color] ?? 0) + 1 }
+            : previous.power,
+        },
+      },
+    },
+    events: [
+      {
+        type: 'gear-resource-added',
+        playerId,
+        gearId: sourceId,
+        energy,
+        power: color ?? null,
+      },
+    ],
   };
 }

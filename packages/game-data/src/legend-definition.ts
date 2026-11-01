@@ -20,6 +20,12 @@ export interface LegendDefinition extends PrintedMetadata {
   };
   /** Capacité « Tap : effet » ciblée, comme celle des gears (action activate-gear). */
   readonly tapAbility?: GearTapAbility;
+  /** Capacité ADD « Tap : ajoute » ; legion : seulement si une carte a été jouée ce tour. */
+  readonly resourceAbility?: {
+    readonly energy?: number;
+    readonly power?: string;
+    readonly legion?: boolean;
+  };
 }
 /** Définition de confiance -> copie figée, dont les couleurs. */
 export function defineLegend(input: LegendDefinition): LegendDefinition {
