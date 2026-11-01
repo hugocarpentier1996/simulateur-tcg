@@ -234,3 +234,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Relentless Storm — ogn-249-298
 - [x] Clockwork Keeper — ogn-044-298
 - [x] Wallop — ogn-146-298
+- [x] Call to Glory — ogn-207-298
