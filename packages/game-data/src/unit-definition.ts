@@ -32,6 +32,8 @@ export interface UnitDefinition extends PrintedMetadata {
   readonly recruitOnAllyDeath?: string;
   /** Carte jouée par son propriétaire pendant le tour adverse : jeton dans sa base. */
   readonly recruitOnOffTurnPlay?: string;
+  /** Une unité adverse se déplace vers un autre champ que le sien : pioche 1 (sans pile). */
+  readonly drawOnEnemyMoveElsewhere?: boolean;
   /** Ganking tant que l'unité est buffée (Bilgewater Bully). */
   readonly buffedGanking?: boolean;
   /** Se buffe quand son propriétaire joue une autre unité (hypothèse : sans pile). */

@@ -243,6 +243,23 @@ export function act(state: GameState, action: GameAction): ActionResult {
     shrineEvents.push(...drawn.events);
   }
   events.push(...shrineEvents);
+  // Volibear (Body) : déplacement adverse vers un autre champ -> pioche.
+  for (const e of events) {
+    if (e.type !== 'unit-moved' || e.from === e.to) continue;
+    const mover = state.units.find((u) => u.id === e.unitId);
+    if (!mover || !shrine.battlefields.some((f) => f.zoneId === e.to)) continue;
+    for (const bear of shrine.units)
+      if (
+        bear.ownerId !== mover.ownerId &&
+        bear.zoneId !== e.to &&
+        shrine.unitDefinitions?.find((d) => d.id === bear.definitionId)
+          ?.drawOnEnemyMoveElsewhere
+      ) {
+        const drawn = drawCardForPlayer(shrine, bear.ownerId);
+        shrine = drawn.state;
+        events.push(...drawn.events);
+      }
+  }
   // Viktor (Mind) : carte jouée pendant le tour adverse -> Recrue dans la base.
   if (
     (action.type === 'play-unit' ||

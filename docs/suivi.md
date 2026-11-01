@@ -1183,3 +1183,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Wraith of Echoes (ogn-118) : la première mort d'une unité alliée de chaque tour fait piocher 1 à son propriétaire (`drawOnFirstAllyDeath`, registre `allyDeathThisTurn`).
 - Viktor (ogn-246, Order) : quand une autre unité alliée non-Recrue meurt, joue une Recrue 1 dans la base (`recruitOnAllyDeath`, sans pile).
 - Viktor (ogn-117, Mind) : quand son propriétaire joue une carte pendant le tour adverse, joue une Recrue 1 dans sa base (`recruitOnOffTurnPlay`, sans pile).
+- Volibear (ogn-158, Body) : Shield 3, Tank ; quand une unité adverse se déplace vers un autre champ que le sien, son propriétaire pioche 1 (`drawOnEnemyMoveElsewhere`, sans pile).

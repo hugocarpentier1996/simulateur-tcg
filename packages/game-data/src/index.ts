@@ -287,3 +287,4 @@ export { solariShrine } from './ogn/solari-shrine.js';
 export { wraithOfEchoes } from './ogn/wraith-of-echoes.js';
 export { viktorOrder } from './ogn/viktor-order.js';
 export { viktorMind } from './ogn/viktor-mind.js';
+export { volibearBody } from './ogn/volibear-body.js';
