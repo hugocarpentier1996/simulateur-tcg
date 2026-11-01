@@ -375,3 +375,4 @@ export { malzahar } from './ogn/malzahar.js';
 export { udyr } from './ogn/udyr.js';
 export { leeSin } from './ogn/lee-sin.js';
 export { icathianRain } from './ogn/icathian-rain.js';
+export { baitedHook } from './ogn/baited-hook.js';

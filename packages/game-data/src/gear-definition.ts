@@ -111,7 +111,10 @@ export interface GearTapAbility {
     /** Unité alliée : d'un champ vers sa base, ou de sa base vers le champ destinationId. */
     | { readonly type: 'move-to-or-from-base' }
     /** Sans cible : l'unité source se buffe (Lee Sin). */
-    | { readonly type: 'buff-self' };
+    | { readonly type: 'buff-self' }
+    /** Tue l'unité alliée ciblée puis regarde count cartes : peut jouer gratuitement une unité
+     * de Might au plus 1 de plus (Baited Hook). */
+    | { readonly type: 'hook'; readonly count: number };
 }
 
 /** Définition -> copie figée indépendante. RangeError si coût négatif/non fini,

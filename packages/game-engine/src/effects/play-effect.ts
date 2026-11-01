@@ -1,7 +1,12 @@
+import { settleLethalUnits } from './lethal-units.js';
 import { moveUnit } from './resolve-spell.js';
 import { leaveBoard } from './leave-board.js';
 import { playUnitFromTrash } from './play-from-trash.js';
-import { opponentHandChoice, trashRecycleChoice } from './mode-choice.js';
+import {
+  lookPlayUnitChoice,
+  opponentHandChoice,
+  trashRecycleChoice,
+} from './mode-choice.js';
 import { killGears } from './kill-gear.js';
 import { wardenAgainst } from './unit-aura.js';
 import { summonToken } from './summon-token.js';
@@ -34,6 +39,8 @@ export interface PlayEffectEntry {
     | { type: 'spend-buffs-channel'; unitIds: readonly string[] }
     /** La prochaine unité jouée ce tour par le propriétaire arrive Ready (Legion vérifié). */
     | { type: 'next-unit-ready'; legion?: boolean }
+    /** Baited Hook : tue l'unité puis propose une unité gratuite du dessus du deck. */
+    | { type: 'hook'; targetId: string; count: number }
     /** Renvoie en main l'unité, le gear ou la carte cachée indiqué (Pack of Wonders). */
     | { type: 'bounce'; targetId: string }
     /** Recycle jusqu'à count cartes des cimetières, choisies une à une (choix de mode). */
@@ -138,6 +145,31 @@ export function resolvePlayEffect(
         },
       },
       events: [{ type: 'unit-play-effect-resolved', sourceId: entry.sourceId }],
+    };
+  }
+  if (entry.effect.type === 'hook') {
+    const { targetId, count } = entry.effect;
+    const victim = state.units.find((u) => u.id === targetId);
+    const done = [
+      { type: 'unit-play-effect-resolved' as const, sourceId: entry.sourceId },
+    ];
+    if (!victim) return { ok: true, state, events: done };
+    const might = effectiveMight(victim, state);
+    const killed = settleLethalUnits(state, new Set([victim.id]));
+    const choice = lookPlayUnitChoice(
+      killed.state,
+      entry.sourceId,
+      entry.ownerId,
+      count,
+      0,
+      { maxMight: might + 1, free: true },
+    );
+    return {
+      ok: true,
+      state: choice
+        ? { ...killed.state, pendingModeChoice: choice }
+        : killed.state,
+      events: [...killed.events, ...done],
     };
   }
   if (entry.effect.type === 'bounce') {

@@ -87,6 +87,8 @@ export interface ModeChoiceEntry {
   readyOther?: boolean;
   /** Coût à payer pour jouer la source depuis le cimetière (Flame Chompers, Phoenix). */
   payPlayCost?: UnitBlueprint['cost'];
+  /** Baited Hook : l'unité choisie est jouée sans payer son coût. */
+  freePlay?: boolean;
   /** Reinforce : cartes regardées et réduction d'énergie de l'unité jouée. */
   lookedIds?: readonly string[];
   energyReduction?: number;
@@ -401,7 +403,11 @@ function applyMode(
       const unit = next.unitDefinitions?.find(
         (d) => d.id === card?.definitionId,
       );
-      const cost = unit && reducedCost(unit.cost, pending.energyReduction ?? 0);
+      const cost =
+        unit &&
+        (pending.freePlay
+          ? { energy: 0, power: {} }
+          : reducedCost(unit.cost, pending.energyReduction ?? 0));
       const plan = cost && findPayment(next, pending.ownerId, cost);
       const paid = plan && payCost(next, pending.ownerId, cost, plan);
       const base = next.zones.find(
@@ -958,6 +964,7 @@ export function lookPlayUnitChoice(
   playerId: string,
   count: number,
   energyReduction: number,
+  options: { maxMight?: number; free?: boolean } = {},
 ): ModeChoiceEntry | undefined {
   const looked = state.cards
     .filter((c) =>
@@ -971,7 +978,9 @@ export function lookPlayUnitChoice(
     const unit = state.unitDefinitions?.find((d) => d.id === c.definitionId);
     return (
       unit &&
-      findPayment(state, playerId, reducedCost(unit.cost, energyReduction))
+      (options.maxMight === undefined || unit.might <= options.maxMight) &&
+      (options.free ||
+        findPayment(state, playerId, reducedCost(unit.cost, energyReduction)))
     );
   });
   return {
@@ -981,6 +990,7 @@ export function lookPlayUnitChoice(
     modes: ['skip', ...playable.map((c) => `reinforce:${c.id}` as const)],
     lookedIds: looked.map((c) => c.id),
     energyReduction,
+    ...(options.free ? { freePlay: true } : {}),
   };
 }
 
