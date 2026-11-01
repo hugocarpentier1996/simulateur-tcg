@@ -1,3 +1,4 @@
+import { hiddenInTrash } from './hidden.js';
 import { playUnitFromTrash } from './play-from-trash.js';
 import {
   lookPlayUnitChoice,
@@ -278,6 +279,22 @@ export function resolveSpell(
       state = {
         ...state,
         extraTurns: [...(state.extraTurns ?? []), entry.casterId],
+      };
+      continue;
+    }
+    if (effect.type === 'return-hidden-free-hide') {
+      const hand = state.zones.find(
+        (z) => z.kind === 'hand' && z.ownerId === entry.casterId,
+      );
+      const valid = hiddenInTrash(state, entry.casterId);
+      state = {
+        ...state,
+        cards: state.cards.map((c) =>
+          hand && entry.selectedUnitIds?.includes(c.id) && valid.includes(c.id)
+            ? { ...c, zoneId: hand.id }
+            : c,
+        ),
+        freeHidePlayers: [...(state.freeHidePlayers ?? []), entry.casterId],
       };
       continue;
     }

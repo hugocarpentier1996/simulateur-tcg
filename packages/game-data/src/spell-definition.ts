@@ -35,6 +35,9 @@ export type SpellEffect =
   | { readonly type: 'exhaust-allies' }
   /** Détruit tous les équipements en jeu (cimetière de leur propriétaire). */
   | { readonly type: 'kill-all-gear' }
+  /** Reprend en main les cartes Hidden choisies du cimetière (selectedUnitIds, au plus
+   * maximum) ; cacher est gratuit pour le lanceur ce tour (Guerilla Warfare). */
+  | { readonly type: 'return-hidden-free-hide'; readonly maximum: number }
   /** Regarde count cartes du dessus ; peut jouer une unité parmi elles, énergie réduite ;
    * recycle le reste (Reinforce). */
   | {

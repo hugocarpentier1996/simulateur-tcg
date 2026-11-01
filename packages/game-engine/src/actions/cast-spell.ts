@@ -1,6 +1,7 @@
 import {
   choicesHere,
   hiddenFree,
+  hiddenInTrash,
   playableFacedown,
 } from '../effects/hidden.js';
 import { withDeflect, spellChosenUnits } from '../cost/deflect.js';
@@ -114,6 +115,19 @@ export function castSpell(
       new Set(action.selectedUnitIds).size !== action.selectedUnitIds.length ||
       action.selectedUnitIds.some(
         (id) => !state.units.some((u) => u.id === id),
+      ))
+  )
+    return { ok: false, reason: 'INVALID_TARGET' };
+  const retrieval = definition.effects.find(
+    (e) => e.type === 'return-hidden-free-hide',
+  );
+  if (
+    retrieval &&
+    (!action.selectedUnitIds ||
+      action.selectedUnitIds.length > retrieval.maximum ||
+      new Set(action.selectedUnitIds).size !== action.selectedUnitIds.length ||
+      action.selectedUnitIds.some(
+        (id) => !hiddenInTrash(state, action.playerId).includes(id),
       ))
   )
     return { ok: false, reason: 'INVALID_TARGET' };

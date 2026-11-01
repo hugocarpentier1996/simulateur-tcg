@@ -50,7 +50,7 @@ export function choicesHere(
 }
 
 /** Définition d'une carte de la main portant Hidden (unité, sort ou gear). */
-function hasHidden(state: GameState, definitionId: string): boolean {
+export function hasHidden(state: GameState, definitionId: string): boolean {
   return [
     ...(state.unitDefinitions ?? []),
     ...(state.spellDefinitions ?? []),
@@ -100,7 +100,9 @@ export function hideCard(
   const paid = payCost(
     state,
     action.playerId,
-    { energy: 0, power: {}, genericPower: 1 },
+    state.freeHidePlayers?.includes(action.playerId)
+      ? { energy: 0, power: {} }
+      : { energy: 0, power: {}, genericPower: 1 },
     action.payment,
   );
   if (!paid.ok) return paid;
@@ -171,4 +173,20 @@ export function trashLostFacedown(state: GameState): {
       cardId: c.id,
     })),
   };
+}
+
+/** Cartes Hidden du cimetière du joueur (Guerilla Warfare). */
+export function hiddenInTrash(state: GameState, playerId: string): string[] {
+  return state.cards
+    .filter(
+      (c) =>
+        hasHidden(state, c.definitionId) &&
+        state.zones.some(
+          (z) =>
+            z.id === c.zoneId &&
+            z.kind === 'graveyard' &&
+            z.ownerId === playerId,
+        ),
+    )
+    .map((c) => c.id);
 }

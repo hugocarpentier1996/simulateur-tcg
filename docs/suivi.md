@@ -1255,3 +1255,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Reinforce (ogn-062) : regarde les 5 cartes du dessus ; peut jouer une unité parmi elles avec 5 énergie de moins, puis recycle le reste (effet `look-play-unit`, modes `reinforce:<id>` / `skip`).
 - Zhonya's Hourglass (ogn-077) : gear Hidden ; la prochaine fois qu'une unité alliée devrait mourir, il est détruit à la place et l'unité est rappelée Tap dans sa base (`saveAllyFromDeath` dans `replaceDeaths`) ; les gears Hidden se posent depuis facedown (vitesse Réaction, gratuit, dans la base).
 - Pack of Wonders (ogn-181) : gear ; Tap — renvoie dans la main de son propriétaire une unité, un autre gear ou une carte cachée alliés (capacité Tap `bounce-friendly`).
+- Guerilla Warfare (ogn-264) : reprend jusqu'à 2 cartes Hidden de son cimetière (sélection `selectedUnitIds`) ; cacher des cartes est gratuit pour le lanceur ce tour (`freeHidePlayers`).

@@ -2,7 +2,7 @@ import {
   trashUnitChoices,
   withTrashPower,
 } from '../effects/play-from-trash.js';
-import { hiddenFree } from '../effects/hidden.js';
+import { hiddenFree, hiddenInTrash } from '../effects/hidden.js';
 import { withTrashUnitPower } from '../cost/spell-cost.js';
 import { discardChoices } from '../actions/cast-spell.js';
 import { activeLegends } from '../effects/legends.js';
@@ -221,11 +221,13 @@ function* candidates(
         destinationId: destination.id,
       };
   // Hidden : chaque carte Hidden de la main peut être cachée sur un champ contrôlé.
-  const hidePayment = findPayment(state, playerId, {
-    energy: 0,
-    power: {},
-    genericPower: 1,
-  });
+  const hidePayment = findPayment(
+    state,
+    playerId,
+    state.freeHidePlayers?.includes(playerId)
+      ? { energy: 0, power: {} }
+      : { energy: 0, power: {}, genericPower: 1 },
+  );
   if (hidePayment)
     for (const card of state.cards.filter((c) => c.ownerId === playerId))
       for (const field of state.battlefields)
@@ -433,6 +435,16 @@ function* candidates(
                   spell.effects.some((e) => e.type === 'damage-selected-units'),
               )
               .map((u) => u.id);
+            yield { ...base, selectedUnitIds: [] };
+            for (const [i, id] of ids.entries()) {
+              yield { ...base, selectedUnitIds: [id] };
+              for (const second of ids.slice(i + 1))
+                yield { ...base, selectedUnitIds: [id, second] };
+            }
+          } else if (
+            spell.effects.some((e) => e.type === 'return-hidden-free-hide')
+          ) {
+            const ids = hiddenInTrash(state, playerId);
             yield { ...base, selectedUnitIds: [] };
             for (const [i, id] of ids.entries()) {
               yield { ...base, selectedUnitIds: [id] };
