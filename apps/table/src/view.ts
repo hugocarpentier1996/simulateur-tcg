@@ -526,6 +526,14 @@ function actionLabel(
     }
     case 'choose-defense-shield':
       return prefix + 'Shield 2 → ' + unit(action.targetId);
+    case 'trash-recycle-ability':
+      return (
+        prefix +
+        'Recycler ' +
+        target(action.cardId) +
+        ' : +1 Might à ' +
+        target(action.unitId)
+      );
     case 'spend-buff-ability':
       return prefix + 'Dépenser le buff de ' + target(action.unitId);
     case 'hide-card':

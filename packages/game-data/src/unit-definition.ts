@@ -243,6 +243,8 @@ export interface UnitDefinition extends PrintedMetadata {
   readonly onConquerKillGearBuff?: boolean;
   /** « Spend my buff » : +Might jusqu'à la fin du tour, via la pile (Sett). */
   readonly buffSpendMight?: number;
+  /** « Recycle 1 from your trash » : +Might jusqu'à la fin du tour, via la pile (Vi). */
+  readonly trashRecycleMight?: number;
   /** Coût supplémentaire obligatoire : tuer une unité alliée à la mise en jeu. */
   readonly sacrificeCost?: boolean;
   /** « When I conquer » : son propriétaire choisit l'un de ces modes à la résolution. */

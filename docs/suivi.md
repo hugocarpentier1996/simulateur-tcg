@@ -1241,3 +1241,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Spectral Matron (ogn-226) : à la mise en jeu, peut jouer gratuitement dans sa base une unité de son cimetière coûtant au plus 3 énergie et 1 Power (`onPlayFromTrash`, choix via `returnSpellId`, helper `playUnitFromTrash` partagé avec The Harrowing).
 - Soulgorger (ogn-196) : à la mise en jeu, peut jouer une unité de son cimetière sans son coût en énergie ; le Power de cette unité s'ajoute au coût de Soulgorger (`onPlayFromTrash.payPower`, helper `withTrashPower`).
 - Portal Rescue (ogn-102) : Action ; bannit une unité alliée puis la rejoue dans sa base, gratuitement, avec un état remis à neuf (effet `banish-replay` ; un jeton banni disparaît).
+- Vi (ogn-036) : Ganking ; recycler une carte de son cimetière : +1 Might ce tour via la pile (action `trash-recycle-ability`, `trashRecycleMight`).

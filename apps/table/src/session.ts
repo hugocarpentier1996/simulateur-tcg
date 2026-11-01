@@ -466,6 +466,7 @@ export function cardActions(session: Session, cardId: string): GameAction[] {
         a.cardId === cardId) ||
       (a.type === 'hide-card' && a.cardId === cardId) ||
       (a.type === 'spend-buff-ability' && a.unitId === cardId) ||
+      (a.type === 'trash-recycle-ability' && a.unitId === cardId) ||
       (a.type === 'equip-gear' && a.gearId === cardId) ||
       (a.type === 'activate-gear' && a.gearId === cardId) ||
       (a.type === 'activate-spell-energy' && a.unitId === cardId),

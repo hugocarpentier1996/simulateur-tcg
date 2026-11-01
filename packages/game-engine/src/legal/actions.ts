@@ -129,6 +129,25 @@ function* candidates(
     yield { type: 'activate-spell-energy', playerId, unitId: unit.id };
     if (unit.buffed && unit.ownerId === playerId)
       yield { type: 'spend-buff-ability', playerId, unitId: unit.id };
+    if (
+      unit.ownerId === playerId &&
+      state.unitDefinitions?.find((d) => d.id === unit.definitionId)
+        ?.trashRecycleMight
+    )
+      for (const card of state.cards.filter((c) =>
+        state.zones.some(
+          (z) =>
+            z.id === c.zoneId &&
+            z.kind === 'graveyard' &&
+            z.ownerId === playerId,
+        ),
+      ))
+        yield {
+          type: 'trash-recycle-ability',
+          playerId,
+          unitId: unit.id,
+          cardId: card.id,
+        };
   }
   // Capacités Tap ciblées des gears et de la légende du joueur.
   for (const gear of [

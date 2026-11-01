@@ -1,4 +1,7 @@
-import { spendBuffAbility } from './actions/spend-buff-ability.js';
+import {
+  spendBuffAbility,
+  trashRecycleAbility,
+} from './actions/spend-buff-ability.js';
 import {
   hideCard,
   playableFacedown,
@@ -506,6 +509,8 @@ function dispatch(state: GameState, action: GameAction): ActionResult {
   if (action.type === 'hide-card') return hideCard(state, action);
   if (action.type === 'spend-buff-ability')
     return spendBuffAbility(state, action);
+  if (action.type === 'trash-recycle-ability')
+    return trashRecycleAbility(state, action);
   if (
     state.stack &&
     !(
