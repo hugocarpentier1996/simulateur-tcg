@@ -257,3 +257,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Cruel Patron — ogn-208-298
 - [x] Get Excited! — ogn-008-298
 - [x] Brazen Buccaneer — ogn-002-298
+- [x] Treasure Trove — ogn-186-298

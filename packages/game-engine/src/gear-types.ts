@@ -40,10 +40,15 @@ export interface GearBlueprint {
       | { readonly type: 'might-damage' }
       | { readonly type: 'move-to-base' }
       /** Sans cible : jeton de cette définition dans la base du propriétaire. */
-      | { readonly type: 'summon-base'; readonly definitionId: string };
+      | { readonly type: 'summon-base'; readonly definitionId: string }
+      /** Sans cible : le gear source se détruit (Treasure Trove). */
+      | { readonly type: 'kill-self' };
   };
   /** Posé, défaussé ou détruit : son propriétaire pioche 1 (Scrapheap ; sans pile). */
   readonly drawOnPlayDiscardOrKill?: boolean;
+  /** Quitte le terrain (détruit) : son propriétaire pioche 1 puis canalise 1 rune Tap
+   * (Treasure Trove ; sans pile, comme Scrapheap). */
+  readonly onLeaveDrawChannel?: boolean;
   readonly effects: readonly {
     readonly type: 'might-bonus';
     /** alone-in-combat : unité alliée seule de son camp au combat (Mask of Foresight). */

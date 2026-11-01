@@ -28,6 +28,9 @@ export interface GearDefinition extends PrintedMetadata {
   readonly effects: readonly GearEffect[];
   /** Posé, défaussé ou détruit : son propriétaire pioche 1 (Scrapheap ; sans pile). */
   readonly drawOnPlayDiscardOrKill?: boolean;
+  /** Quitte le terrain (détruit) : son propriétaire pioche 1 puis canalise 1 rune Tap
+   * (Treasure Trove ; sans pile, comme Scrapheap). */
+  readonly onLeaveDrawChannel?: boolean;
   /** Ennemi Stun tué : le gear Ready se couche et son propriétaire pioche 1 (sans pile). */
   readonly drawOnStunnedEnemyKill?: boolean;
   /** Le gear entre en jeu Tap. */
@@ -59,7 +62,9 @@ export interface GearTapAbility {
     | { readonly type: 'might-damage' }
     | { readonly type: 'move-to-base' }
     /** Sans cible : jeton de cette définition dans la base du propriétaire. */
-    | { readonly type: 'summon-base'; readonly definitionId: string };
+    | { readonly type: 'summon-base'; readonly definitionId: string }
+    /** Sans cible : le gear source se détruit (Treasure Trove). */
+    | { readonly type: 'kill-self' };
 }
 
 /** Définition -> copie figée indépendante. RangeError si coût négatif/non fini,

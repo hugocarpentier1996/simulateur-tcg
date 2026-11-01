@@ -1,3 +1,4 @@
+import { channelForPlayer } from './turn/supplies.js';
 import { chooseMode } from './effects/mode-choice.js';
 import { spellChosenUnits } from './cost/deflect.js';
 import { choosePick } from './effects/pick.js';
@@ -370,7 +371,9 @@ export function act(state: GameState, action: GameAction): ActionResult {
         events.push(...drawn.events);
       }
   }
-  const scrap = scrapheapDraws(shrine, events);
+  const scrapped = scrapheapDraws(shrine, events);
+  events.push(...scrapped.events);
+  const scrap = treasureTroves(scrapped.state, events);
   events.push(...scrap.events);
   const scoredMoves = thirdMovePoints(entered, scrap.state);
   events.push(...scoredMoves.events);
@@ -593,6 +596,33 @@ function thirdMovePoints(
     }
   }
   return { state: next, events };
+}
+
+/** Treasure Trove : gear détruit (onLeaveDrawChannel) -> son propriétaire pioche 1 puis
+ * canalise 1 rune Tap, par événement, sans pile. */
+function treasureTroves(
+  state: GameState,
+  events: readonly GameEvent[],
+): { state: GameState; events: GameEvent[] } {
+  let next = state;
+  const added: GameEvent[] = [];
+  for (const e of events) {
+    if (e.type !== 'gear-killed' || next.result) continue;
+    const definitionId = next.cards.find(
+      (c) => c.id === e.gearId,
+    )?.definitionId;
+    if (
+      !next.gearDefinitions?.find((d) => d.id === definitionId)
+        ?.onLeaveDrawChannel
+    )
+      continue;
+    const drawn = drawCardForPlayer(next, e.ownerId);
+    added.push(...drawn.events);
+    const channeled = channelForPlayer(drawn.state, e.ownerId, 1);
+    next = channeled.state;
+    added.push(...channeled.events);
+  }
+  return { state: next, events: added };
 }
 
 /** Scrapheap : gear posé, défaussé ou détruit -> son propriétaire pioche 1 par événement. */

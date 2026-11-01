@@ -143,7 +143,8 @@ function* candidates(
   ]) {
     const ability = gear.ability;
     if (!ability || gear.ownerId !== playerId || !gear.ready) continue;
-    for (const targetId of ability.effect.type === 'summon-base'
+    for (const targetId of ability.effect.type === 'summon-base' ||
+    ability.effect.type === 'kill-self'
       ? [undefined]
       : tapAbilityTargets(state, playerId, ability)) {
       const payment = findPayment(

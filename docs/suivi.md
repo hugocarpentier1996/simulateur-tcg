@@ -1198,3 +1198,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Cruel Patron (ogn-208) : coût supplémentaire obligatoire, tuer une unité alliée (`sacrificeCost`, champ d'action `sacrificeUnitId`, une option par unité sacrifiable ; la mort suit la mise en jeu, effets de mort compris).
 - Get Excited! (ogn-008) : Action ; défausse une carte de la main (choisie au lancement, hypothèse documentée : champ `discardCardId`) et inflige son coût en énergie à une unité sur un champ (effet `discard-for-damage`).
 - Brazen Buccaneer (ogn-002) : coût supplémentaire facultatif, défausser une autre carte de sa main pour 2 énergie de moins (`discardDiscount`, champ d'action `discardCardId` de play-unit).
+- Treasure Trove (ogn-186) : gear ; 1 Power Chaos + Tap : se détruit (capacité Tap sans cible `kill-self`) ; quand il est détruit, son propriétaire pioche 1 puis canalise 1 rune Tap (`onLeaveDrawChannel`, sans pile comme Scrapheap).

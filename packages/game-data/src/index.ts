@@ -301,3 +301,4 @@ export { qiyana } from './ogn/qiyana.js';
 export { cruelPatron } from './ogn/cruel-patron.js';
 export { getExcited } from './ogn/get-excited.js';
 export { brazenBuccaneer } from './ogn/brazen-buccaneer.js';
+export { treasureTrove } from './ogn/treasure-trove.js';

@@ -1,3 +1,4 @@
+import { killGears } from './kill-gear.js';
 import { wardenAgainst } from './unit-aura.js';
 import { summonToken } from './summon-token.js';
 import { buffUnit, spendBuff } from './buff.js';
@@ -24,6 +25,8 @@ export interface PlayEffectEntry {
     /** Jeton dans la base indiquée, sans exiger que la source soit une unité en jeu. */
     | { type: 'summon-base'; destinationId: string; definitionId: string }
     | { type: 'vision' }
+    /** Détruit le gear indiqué (capacité kill-self). */
+    | { type: 'kill-gear'; gearId: string }
     | NonNullable<UnitBlueprint['onPlayEffect']>
     | { type: 'ready-other'; targetId?: string }
     | {
@@ -99,6 +102,17 @@ export function resolvePlayEffect(
             }
           : state,
       events: [{ type: 'unit-play-effect-resolved', sourceId: entry.sourceId }],
+    };
+  }
+  if (entry.effect.type === 'kill-gear') {
+    const killed = killGears(state, [entry.effect.gearId]);
+    return {
+      ok: true,
+      state: killed.state,
+      events: [
+        ...killed.events,
+        { type: 'unit-play-effect-resolved', sourceId: entry.sourceId },
+      ],
     };
   }
   if (entry.effect.type === 'summon-base') {
