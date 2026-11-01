@@ -378,6 +378,24 @@ export function act(state: GameState, action: GameAction): ActionResult {
       events.push(...summoned.events);
     }
   }
+  // Vanguard Helm : alliée buffée morte -> une autre alliée est buffée, par gear.
+  for (const e of events) {
+    if (e.type !== 'unit-died' && e.type !== 'token-removed') continue;
+    const dead = state.units.find((u) => u.id === e.unitId);
+    if (!dead?.buffed) continue;
+    for (const helm of shrine.gears ?? []) {
+      if (
+        helm.ownerId !== dead.ownerId ||
+        !shrine.gearDefinitions?.find((d) => d.id === helm.definitionId)
+          ?.buffOnBuffedAllyDeath
+      )
+        continue;
+      const recipient = [...shrine.units]
+        .filter((u) => u.ownerId === dead.ownerId)
+        .sort((x, y) => Number(!!x.buffed) - Number(!!y.buffed))[0];
+      if (recipient) shrine = buffUnit(shrine, recipient.id);
+    }
+  }
   // Wraith of Echoes : première mort alliée du tour -> pioche, une fois par joueur.
   const firstDeaths = [...new Set(deadOwners)].filter(
     (owner) => !shrine.allyDeathThisTurn?.includes(owner),

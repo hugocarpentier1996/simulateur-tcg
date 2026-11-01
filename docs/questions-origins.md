@@ -63,3 +63,4 @@ existantes ; seuls les nouveaux doutes utiles rejoindront le prochain lot de que
 - Get Excited! (hypothèse) : la carte à défausser est choisie au lancement du sort, puis défaussée à la résolution (aucun effet si elle a quitté la main entre-temps).
 - Hidden (hypothèses) : une seule carte cachée par champ (tous joueurs confondus) ; le nettoyage d'un champ perdu est appliqué après chaque action plutôt qu'au Cleanup ; jouer depuis facedown ignore tout le coût imprimé (énergie et Power), les coûts supplémentaires (Deflect…) restent dus.
 - Overt Operation (hypothèse) : le « you may » est accepté automatiquement pour chaque unité alliée Tap et buffée (jamais pour une unité déjà Ready).
+- Vanguard Helm (hypothèse) : sans pile ; l'unité buffée est choisie automatiquement (sans buff d'abord).

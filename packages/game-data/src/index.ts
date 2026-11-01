@@ -334,3 +334,4 @@ export { shen } from './ogn/shen.js';
 export { mushroomPouch } from './ogn/mushroom-pouch.js';
 export { shakedown } from './ogn/shakedown.js';
 export { fadingMemories } from './ogn/fading-memories.js';
+export { vanguardHelm } from './ogn/vanguard-helm.js';

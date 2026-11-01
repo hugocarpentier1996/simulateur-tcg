@@ -49,6 +49,9 @@ export interface GearBlueprint {
   /** Quitte le terrain (détruit) : son propriétaire pioche 1 puis canalise 1 rune Tap
    * (Treasure Trove ; sans pile, comme Scrapheap). */
   readonly onLeaveDrawChannel?: boolean;
+  /** Une unité alliée buffée meurt : une autre unité alliée (sans buff d'abord) est buffée
+   * (Vanguard Helm ; sans pile). */
+  readonly buffOnBuffedAllyDeath?: boolean;
   /** Début de la Beginning de son propriétaire : pioche 1 (pile) s'il contrôle une carte
    * cachée sur un champ (Mushroom Pouch). */
   readonly beginningDrawIfFacedown?: boolean;
