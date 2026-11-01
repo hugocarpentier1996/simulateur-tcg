@@ -1192,3 +1192,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Sigil of the Storm (ogn-287) : champ ; le conquérant recycle une de ses runes (Tap d'abord, sans choix) via la pile (`conquerRecycleRune`, effet `recycle-rune`).
 - Correction Deflect : toute seconde cible (frappe, duel, Dragon's Rage, Convergent Mutation, Zenith Blade…) et toute sélection d'unités d'un sort sont comptées pour la taxe Deflect (`spellChosenUnits` générique).
 - The Dreaming Tree (ogn-292) : champ ; la première fois du tour qu'un joueur choisit avec un sort une unité alliée présente ici, il pioche 1 (`drawOnFirstFriendlySpellChoice`, registre `dreamingTreeUsed`, sans pile).
+- Monastery of Hirana (ogn-282) : champ ; le conquérant dépense un buff allié (s'il en a, automatiquement) pour piocher 1 via la pile (`conquerSpendBuffDraw`, effet `spend-buff-draw`).

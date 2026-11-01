@@ -1,6 +1,6 @@
 import { wardenAgainst } from './unit-aura.js';
 import { summonToken } from './summon-token.js';
-import { buffUnit } from './buff.js';
+import { buffUnit, spendBuff } from './buff.js';
 import { startDiscard } from './loot.js';
 import { summonHere } from './summon-here.js';
 import { startVision } from './vision.js';
@@ -17,6 +17,8 @@ export interface PlayEffectEntry {
   ownerId: string;
   effect:
     | { type: 'summon-here'; destinationId: string; definitionId: string }
+    /** Dépense le buff d'une unité alliée (s'il y en a) pour piocher 1. */
+    | { type: 'spend-buff-draw' }
     /** Recycle une rune en jeu du propriétaire sous sa pile de runes (Tap d'abord). */
     | { type: 'recycle-rune' }
     /** Jeton dans la base indiquée, sans exiger que la source soit une unité en jeu. */
@@ -48,6 +50,28 @@ export function resolvePlayEffect(
       ...summoned,
       events: [
         ...summoned.events,
+        { type: 'unit-play-effect-resolved', sourceId: entry.sourceId },
+      ],
+    };
+  }
+  if (entry.effect.type === 'spend-buff-draw') {
+    const buffed = state.units.find(
+      (u) => u.ownerId === entry.ownerId && u.buffed,
+    );
+    const spent = buffed ? spendBuff(state, buffed.id) : null;
+    if (!spent)
+      return {
+        ok: true,
+        state,
+        events: [
+          { type: 'unit-play-effect-resolved', sourceId: entry.sourceId },
+        ],
+      };
+    const drawn = drawCardForPlayer(spent, entry.ownerId);
+    return {
+      ...drawn,
+      events: [
+        ...drawn.events,
         { type: 'unit-play-effect-resolved', sourceId: entry.sourceId },
       ],
     };

@@ -68,6 +68,19 @@ export function queueConquestLegends(
             count,
           });
       }
+  // Monastery of Hirana : dépense d'un buff du conquérant pour piocher.
+  for (const e of events)
+    if (
+      e.type === 'battlefield-conquered' &&
+      battlefieldDefinition(state, e.battlefieldId)?.conquerSpendBuffDraw &&
+      state.units.some((u) => u.ownerId === e.playerId && u.buffed)
+    )
+      entries.push({
+        kind: 'play-effect',
+        sourceId: e.battlefieldId,
+        ownerId: e.playerId,
+        effect: { type: 'spend-buff-draw' },
+      });
   // Sigil of the Storm : recyclage d'une rune du conquérant.
   for (const e of events)
     if (

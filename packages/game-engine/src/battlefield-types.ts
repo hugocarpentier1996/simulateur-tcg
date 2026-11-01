@@ -10,6 +10,8 @@ export interface BattlefieldBlueprint {
   readonly holdDraw?: number;
   /** Conquête : le conquérant défausse 1 puis pioche 1, via la pile. */
   readonly conquerLoot?: boolean;
+  /** Conquête : dépenser un buff allié pour piocher 1 (automatique si possible), via la pile. */
+  readonly conquerSpendBuffDraw?: boolean;
   /** Premier choix du tour d'une unité alliée présente ici par un sort : pioche 1 (sans pile). */
   readonly drawOnFirstFriendlySpellChoice?: boolean;
   /** Conquête : le conquérant recycle une de ses runes (Tap d'abord), via la pile. */
