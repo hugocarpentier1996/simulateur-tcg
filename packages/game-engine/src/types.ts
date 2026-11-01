@@ -47,6 +47,8 @@ export interface GameState {
   effectDamagePrevented?: boolean;
   /** Joueurs dont au moins une unité ennemie est morte ce tour (Spoils of War). */
   enemyDeathsThisTurn?: readonly string[];
+  /** Might supplémentaire donnée ce tour par les buffs des unités de chaque joueur. */
+  buffBonus?: Readonly<Record<string, number>>;
   /** Joueurs ayant déjà pioché grâce à The Dreaming Tree ce tour. */
   dreamingTreeUsed?: readonly string[];
   /** Joueurs dont une unité est déjà morte ce tour (Wraith of Echoes). */

@@ -1209,3 +1209,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Blastcone Fae (ogn-097) : Hidden ; à la mise en jeu, -2 Might à une unité jusqu'à la fin du tour (minimum 1). Correction Hidden : le choix de cible à la mise en jeu tient compte de la gratuité depuis facedown.
 - Facebreaker (ogn-220) : Hidden ; Action ; étourdit une unité alliée et une unité ennemie du même champ (effet `stun-with-enemy-here`, helper `enemyHere`).
 - Fox-Fire (ogn-256) : Hidden ; Action ; tue des unités d'un même champ dont la Might totale est au plus 4 (effet `kill-selected-total-might`, sélection revérifiée à la résolution).
+- Stand United (ogn-053) : Hidden ; Action ; buffe une unité alliée ; ce tour, les buffs des unités du lanceur donnent +1 Might de plus (effet `empower-buffs`, registre `buffBonus` vidé en fin de tour).

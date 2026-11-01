@@ -185,6 +185,17 @@ export function resolveSpell(
       };
       continue;
     }
+    if (effect.type === 'empower-buffs') {
+      state = {
+        ...state,
+        buffBonus: {
+          ...state.buffBonus,
+          [entry.casterId]:
+            (state.buffBonus?.[entry.casterId] ?? 0) + effect.amount,
+        },
+      };
+      continue;
+    }
     if (effect.type === 'kill-selected-total-might') {
       if (!validMightBundle(state, entry.selectedUnitIds, effect.maximum))
         continue;

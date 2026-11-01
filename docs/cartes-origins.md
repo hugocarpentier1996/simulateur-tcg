@@ -268,3 +268,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Blastcone Fae — ogn-097-298
 - [x] Facebreaker — ogn-220-298
 - [x] Fox-Fire — ogn-256-298
+- [x] Stand United — ogn-053-298

@@ -73,6 +73,8 @@ export interface SpellBlueprint {
     | { readonly type: 'exhaust-allies' }
     /** Détruit tous les équipements en jeu (cimetière de leur propriétaire). */
     | { readonly type: 'kill-all-gear' }
+    /** Ce tour, les buffs des unités du lanceur donnent `amount` Might de plus (Stand United). */
+    | { readonly type: 'empower-buffs'; readonly amount: number }
     /** Tue les unités selectedUnitIds (au moins une), toutes sur un même champ, de Might totale
      * au plus `maximum` (Fox-Fire ; revérifié à la résolution). */
     | { readonly type: 'kill-selected-total-might'; readonly maximum: number }
