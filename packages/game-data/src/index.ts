@@ -351,3 +351,4 @@ export { ravenbornTome } from './ogn/ravenborn-tome.js';
 export { piratesHaven } from './ogn/pirates-haven.js';
 export { mistfall } from './ogn/mistfall.js';
 export { spiritsRefuge } from './ogn/spirits-refuge.js';
+export { forgeOfTheFuture } from './ogn/forge-of-the-future.js';

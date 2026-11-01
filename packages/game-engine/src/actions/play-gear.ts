@@ -1,3 +1,4 @@
+import { summonToken } from '../effects/summon-token.js';
 import { buffUnit } from '../effects/buff.js';
 import type { ActionResult, GameAction, GameState } from '../types.js';
 import { payCost } from '../cost/payment.js';
@@ -54,9 +55,19 @@ export function playGear(
     action.payment,
   );
   if (!charged.ok) return charged;
-  const paid = buffTarget
+  const buffed = buffTarget
     ? { ...charged, state: buffUnit(charged.state, buffTarget.id) }
     : charged;
+  const summoned = definition.onPlaySummonBase
+    ? summonToken(
+        buffed.state,
+        action.playerId,
+        base.id,
+        definition.onPlaySummonBase,
+        'here',
+      )
+    : undefined;
+  const paid = summoned ? { ...buffed, state: summoned.state } : buffed;
   return {
     ok: true,
     state: {

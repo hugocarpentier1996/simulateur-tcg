@@ -1,5 +1,5 @@
 import { playUnitFromTrash } from './play-from-trash.js';
-import { opponentHandChoice } from './mode-choice.js';
+import { opponentHandChoice, trashRecycleChoice } from './mode-choice.js';
 import { killGears } from './kill-gear.js';
 import { wardenAgainst } from './unit-aura.js';
 import { summonToken } from './summon-token.js';
@@ -32,6 +32,8 @@ export interface PlayEffectEntry {
     | { type: 'spend-buffs-channel'; unitIds: readonly string[] }
     /** La prochaine unité jouée ce tour par le propriétaire arrive Ready (Legion vérifié). */
     | { type: 'next-unit-ready'; legion?: boolean }
+    /** Recycle jusqu'à count cartes des cimetières, choisies une à une (choix de mode). */
+    | { type: 'recycle-trashes'; count: number }
     /** Le prochain sort du propriétaire ce tour gagne des dégâts bonus. */
     | { type: 'next-spell-bonus-damage'; amount: number }
     /** Joue l'unité indiquée du cimetière du propriétaire dans sa base. */
@@ -129,6 +131,19 @@ export function resolvePlayEffect(
             entry.effect.amount,
         },
       },
+      events: [{ type: 'unit-play-effect-resolved', sourceId: entry.sourceId }],
+    };
+  }
+  if (entry.effect.type === 'recycle-trashes') {
+    const choice = trashRecycleChoice(
+      state,
+      entry.sourceId,
+      entry.ownerId,
+      entry.effect.count,
+    );
+    return {
+      ok: true,
+      state: choice ? { ...state, pendingModeChoice: choice } : state,
       events: [{ type: 'unit-play-effect-resolved', sourceId: entry.sourceId }],
     };
   }

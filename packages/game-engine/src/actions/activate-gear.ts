@@ -1,3 +1,4 @@
+import { killGears } from '../effects/kill-gear.js';
 import { activeLegends } from '../effects/legends.js';
 import type { ActionResult, GameAction, GameState } from '../types.js';
 import type { GearBlueprint, GearState } from '../gear-types.js';
@@ -112,7 +113,8 @@ export function tapAbilityTargets(
     ability.effect.type === 'kill-self' ||
     ability.effect.type === 'draw' ||
     ability.effect.type === 'next-unit-ready' ||
-    ability.effect.type === 'next-spell-bonus-damage'
+    ability.effect.type === 'next-spell-bonus-damage' ||
+    ability.effect.type === 'recycle-trashes'
   )
     return [];
   const { allegiance, zone, exhausted } = ability.target;
@@ -146,13 +148,15 @@ function activateTapAbility(
     state.showdown
   )
     return { ok: false, reason: 'ABILITY_WINDOW_CLOSED' };
-  if (!gear.ready) return { ok: false, reason: 'GEAR_NOT_READY' };
+  if (!gear.ready && !ability.noExhaust)
+    return { ok: false, reason: 'GEAR_NOT_READY' };
   const untargeted =
     ability.effect.type === 'summon-base' ||
     ability.effect.type === 'kill-self' ||
     ability.effect.type === 'draw' ||
     ability.effect.type === 'next-unit-ready' ||
-    ability.effect.type === 'next-spell-bonus-damage';
+    ability.effect.type === 'next-spell-bonus-damage' ||
+    ability.effect.type === 'recycle-trashes';
   if (
     untargeted
       ? action.targetId !== undefined
@@ -218,29 +222,32 @@ function activateTapAbility(
           ? { type: 'kill-gear', gearId: gear.id }
           : ability.effect.type === 'draw'
             ? { type: 'draw', count: ability.effect.count }
-            : ability.effect.type === 'next-spell-bonus-damage'
-              ? {
-                  type: 'next-spell-bonus-damage',
-                  amount: ability.effect.amount,
-                }
-              : ability.effect.type === 'next-unit-ready'
+            : ability.effect.type === 'recycle-trashes'
+              ? { type: 'recycle-trashes', count: ability.effect.count }
+              : ability.effect.type === 'next-spell-bonus-damage'
                 ? {
-                    type: 'next-unit-ready',
-                    ...(ability.effect.legion ? { legion: true } : {}),
+                    type: 'next-spell-bonus-damage',
+                    amount: ability.effect.amount,
                   }
-                : ability.effect.type === 'move-to-base'
-                  ? { type: 'move-to-base', targetId: action.targetId! }
-                  : {
-                      type: 'targeted',
-                      targetId: action.targetId!,
-                      effect: ability.effect,
-                    },
+                : ability.effect.type === 'next-unit-ready'
+                  ? {
+                      type: 'next-unit-ready',
+                      ...(ability.effect.legion ? { legion: true } : {}),
+                    }
+                  : ability.effect.type === 'move-to-base'
+                    ? { type: 'move-to-base', targetId: action.targetId! }
+                    : {
+                        type: 'targeted',
+                        targetId: action.targetId!,
+                        effect: ability.effect,
+                      },
   };
+  if (ability.killSelfCost) paid.state = killGears(paid.state, [gear.id]).state;
   return {
     ok: true,
     state: {
       ...paid.state,
-      ...(paid.state.gears
+      ...(paid.state.gears && !ability.noExhaust
         ? {
             gears: paid.state.gears.map((g) =>
               g.id === gear.id ? { ...g, ready: false } : g,

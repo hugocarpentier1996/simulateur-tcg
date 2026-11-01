@@ -36,6 +36,8 @@ export interface GearDefinition extends PrintedMetadata {
   readonly mightOnAllyReadied?: number;
   /** Posé : buffe l'unité alliée choisie (targetId de play-gear, sans pile). */
   readonly onPlayBuffAlly?: boolean;
+  /** Posé : jeton de cette définition dans la base du propriétaire (sans pile). */
+  readonly onPlaySummonBase?: string;
   /** Les unités alliées buffées ont Deflect (Spirit's Refuge). */
   readonly buffedAlliesDeflect?: boolean;
   /** Une unité alliée Tap vient d'être buffée : payer 1 Power de cette couleur et coucher
@@ -60,6 +62,10 @@ export interface GearTapAbility {
   readonly cost?: CardCost;
   /** Unité source : capacité utilisable seulement si elle est sur un champ. */
   readonly requiresBattlefield?: boolean;
+  /** Capacité sans Tap (le gear reste Ready ; utilisable même Tap). */
+  readonly noExhaust?: boolean;
+  /** Coût : détruire le gear source (« Kill this: »). */
+  readonly killSelfCost?: boolean;
   /** Coût supplémentaire : recycler ce nombre de cartes de son cimetière (les plus anciennes,
    * hypothèse) sous son deck. */
   readonly recycleTrash?: number;
@@ -90,7 +96,9 @@ export interface GearTapAbility {
      * carte a déjà été jouée ce tour (vérifié à la résolution). */
     | { readonly type: 'next-unit-ready'; readonly legion?: boolean }
     /** Sans cible : le prochain sort joué ce tour inflige `amount` dégâts bonus par instance. */
-    | { readonly type: 'next-spell-bonus-damage'; readonly amount: number };
+    | { readonly type: 'next-spell-bonus-damage'; readonly amount: number }
+    /** Sans cible : recycle jusqu'à `count` cartes des cimetières, choisies une à une. */
+    | { readonly type: 'recycle-trashes'; readonly count: number };
 }
 
 /** Définition -> copie figée indépendante. RangeError si coût négatif/non fini,

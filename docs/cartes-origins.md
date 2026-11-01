@@ -307,3 +307,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Pirate's Haven — ogn-143-298
 - [x] Mistfall — ogn-152-298
 - [x] Spirit's Refuge — ogn-063-298
+- [x] Forge of the Future — ogn-212-298

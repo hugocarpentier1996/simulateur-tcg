@@ -26,7 +26,8 @@ export type EffectMode =
   | `discard-opp:${string}`
   | `recycle-opp:${string}`
   | `suffer:${string}`
-  | 'let-draw';
+  | 'let-draw'
+  | `recycle-any:${string}`;
 
 const ONE_ENERGY = { energy: 1, power: {} };
 
@@ -45,6 +46,8 @@ export interface ModeChoiceEntry {
   partnerId?: string;
   /** Joueurs suivants à choisir à leur tour ce qu'ils tuent (Cull the Weak). */
   nextChoosers?: readonly string[];
+  /** Recyclages restant à choisir dans les cimetières (Forge of the Future). */
+  recycleLeft?: number;
   /** Shakedown : dégâts si l'unité est choisie, pioches du partenaire sinon. */
   sufferAmount?: number;
   partnerDraws?: number;
@@ -113,6 +116,20 @@ export function chooseMode(
     return { ok: false, reason: 'INVALID_MODE' };
   const cleared = { ...state, pendingModeChoice: null };
   const applied = applyMode(cleared, pending, action.mode);
+  if (pending.recycleLeft && action.mode.startsWith('recycle-any:')) {
+    const next = trashRecycleChoice(
+      applied.state,
+      pending.sourceId,
+      pending.ownerId,
+      pending.recycleLeft - 1,
+    );
+    if (next)
+      return {
+        ok: true,
+        state: { ...applied.state, pendingModeChoice: next },
+        events: applied.events,
+      };
+  }
   if (pending.killWhat) {
     const next = nextKillChoice(
       applied.state,
@@ -167,6 +184,25 @@ function applyMode(
         cards: [
           ...state.cards.filter((c) => c.id !== id),
           { ...card, zoneId: zone('deck') },
+        ],
+      },
+      events: [],
+    };
+  }
+  if (mode.startsWith('recycle-any:')) {
+    const card = state.cards.find(
+      (c) => c.id === mode.slice('recycle-any:'.length),
+    );
+    const deck = state.zones.find(
+      (z) => z.kind === 'deck' && z.ownerId === card?.ownerId,
+    );
+    if (!card || !deck) return { state, events: [] };
+    return {
+      state: {
+        ...state,
+        cards: [
+          ...state.cards.filter((c) => c.id !== card.id),
+          { ...card, zoneId: deck.id },
         ],
       },
       events: [],
@@ -341,5 +377,28 @@ export function opponentHandChoice(
         ? (`discard-opp:${id}` as const)
         : (`recycle-opp:${id}` as const),
     ),
+  };
+}
+
+/** Recyclage au choix dans tous les cimetières : « skip » ou une carte ; rien à recycler ou
+ * plus de recyclage : undefined. */
+export function trashRecycleChoice(
+  state: GameState,
+  sourceId: string,
+  playerId: string,
+  left: number,
+): ModeChoiceEntry | undefined {
+  const ids = state.cards
+    .filter((c) =>
+      state.zones.some((z) => z.id === c.zoneId && z.kind === 'graveyard'),
+    )
+    .map((c) => c.id);
+  if (left <= 0 || !ids.length) return undefined;
+  return {
+    kind: 'mode-choice',
+    sourceId,
+    ownerId: playerId,
+    modes: ['skip', ...ids.map((id) => `recycle-any:${id}` as const)],
+    recycleLeft: left,
   };
 }
