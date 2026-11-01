@@ -37,6 +37,14 @@ export function unitConquerEntries(
         ownerId: playerId,
         effect: { type: 'score-points', amount: 1 },
       });
+    if (definition?.onConquerReplaySpell)
+      entries.push({
+        kind: 'mode-choice',
+        sourceId: u.id,
+        ownerId: playerId,
+        modes: [],
+        replaySpell: true,
+      });
     if (definition?.onConquerBuffSelf)
       entries.push({
         kind: 'play-effect',

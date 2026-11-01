@@ -271,6 +271,8 @@ export interface SpellEntry {
   targetId: string;
   /** Flash : sélection de 0 à 2 unités alliées, copiée au lancement. */
   selectedUnitIds?: readonly string[];
+  /** Après résolution, la carte est recyclée sous le deck (Kai'Sa Mind). */
+  recycleOnResolve?: boolean;
   /** Carte de la main à défausser à la résolution (discard-for-damage). */
   discardCardId?: string;
   /** Adversaire du duel choisi au lancement ; requis pour l'effet duel. */

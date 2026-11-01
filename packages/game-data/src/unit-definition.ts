@@ -284,6 +284,9 @@ export interface UnitDefinition extends PrintedMetadata {
   readonly buffOnRecycle?: boolean;
   /** A les capacités Tap de toutes les légendes, unités et gears alliés (Heimerdinger). */
   readonly copiesTapAbilities?: boolean;
+  /** À la conquête : rejouer un sort du cimetière (énergie < points) sans son énergie, puis le
+   * recycler (Kai'Sa Mind). */
+  readonly onConquerReplaySpell?: boolean;
   /** En attaquant : payer 1 Power de cette couleur pour jouer ici, gratuitement, une unité ou
    * un gear Hidden de sa main (Ava Achiever). */
   readonly onAttackPlayHidden?: { readonly power: string };

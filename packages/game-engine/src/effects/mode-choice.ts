@@ -51,7 +51,8 @@ export type EffectMode =
   | 'udyr-ready'
   | 'udyr-ganking'
   | `hit:${string}`
-  | `ava:${string}`;
+  | `ava:${string}`
+  | `kaisa:${string}`;
 
 const ONE_ENERGY = { energy: 1, power: {} };
 
@@ -70,6 +71,8 @@ export interface ModeChoiceEntry {
   partnerId?: string;
   /** Joueurs suivants à choisir à leur tour ce qu'ils tuent (Cull the Weak). */
   nextChoosers?: readonly string[];
+  /** Kai'Sa (Mind) : sort du cimetière à rejouer, calculé à la résolution. */
+  replaySpell?: boolean;
   /** Ava Achiever : champ d'attaque et couleur du Power à payer. */
   avaAt?: string;
   avaPower?: string;
@@ -228,65 +231,96 @@ export function resolveModeChoice(
           )
           .map((c) => `ava:${c.id}` as const)
       : [];
-  const modes: readonly EffectMode[] = entry.avaAt
-    ? avaCards.length
-      ? ['skip', ...avaCards]
+  const score = state.players.find((p) => p.id === entry.ownerId)?.score ?? 0;
+  const replayable = entry.replaySpell
+    ? state.cards
+        .filter((c) => {
+          const spell = state.spellDefinitions?.find(
+            (d) => d.id === c.definitionId,
+          );
+          return (
+            spell &&
+            spell.target.kind === 'caster' &&
+            spell.cost.energy < score &&
+            state.zones.some(
+              (z) =>
+                z.id === c.zoneId &&
+                z.kind === 'graveyard' &&
+                z.ownerId === entry.ownerId,
+            ) &&
+            findPayment(
+              state,
+              entry.ownerId,
+              { ...spell.cost, energy: 0 },
+              'spell',
+            )
+          );
+        })
+        .map((c) => `kaisa:${c.id}` as const)
+    : [];
+  const modes: readonly EffectMode[] = entry.replaySpell
+    ? replayable.length
+      ? ['skip', ...replayable]
       : []
-    : entry.udyr
-      ? [
-          ...(used.includes('damage')
-            ? []
-            : atFields.map((id) => `udyr-damage:${id}` as const)),
-          ...(used.includes('stun')
-            ? []
-            : atFields.map((id) => `stun:${id}` as const)),
-          ...(used.includes('ready') ? [] : (['udyr-ready'] as const)),
-          ...(used.includes('ganking') ? [] : (['udyr-ganking'] as const)),
-        ]
-      : entry.splitDamageAt
-        ? splitModes(splitTargets, entry.splitAmount ?? 0)
-        : entry.readyOther
-          ? ['skip', ...exhausted]
-          : payPlayCost
-            ? (entry.fromDeck
-                ? state.cards.some(
-                    (c) =>
-                      c.id === entry.sourceId &&
-                      state.zones.some(
-                        (z) => z.id === c.zoneId && z.kind === 'deck',
-                      ),
+    : entry.avaAt
+      ? avaCards.length
+        ? ['skip', ...avaCards]
+        : []
+      : entry.udyr
+        ? [
+            ...(used.includes('damage')
+              ? []
+              : atFields.map((id) => `udyr-damage:${id}` as const)),
+            ...(used.includes('stun')
+              ? []
+              : atFields.map((id) => `stun:${id}` as const)),
+            ...(used.includes('ready') ? [] : (['udyr-ready'] as const)),
+            ...(used.includes('ganking') ? [] : (['udyr-ganking'] as const)),
+          ]
+        : entry.splitDamageAt
+          ? splitModes(splitTargets, entry.splitAmount ?? 0)
+          : entry.readyOther
+            ? ['skip', ...exhausted]
+            : payPlayCost
+              ? (entry.fromDeck
+                  ? state.cards.some(
+                      (c) =>
+                        c.id === entry.sourceId &&
+                        state.zones.some(
+                          (z) => z.id === c.zoneId && z.kind === 'deck',
+                        ),
+                    )
+                  : inTrash) && findPayment(state, entry.ownerId, payPlayCost)
+                ? ['skip', 'pay-play']
+                : []
+              : entry.arrangeTop
+                ? arrangements(top).map(
+                    (kept) => `arrange:${kept.join('+')}` as const,
                   )
-                : inTrash) && findPayment(state, entry.ownerId, payPlayCost)
-              ? ['skip', 'pay-play']
-              : []
-            : entry.arrangeTop
-              ? arrangements(top).map(
-                  (kept) => `arrange:${kept.join('+')}` as const,
-                )
-              : entry.retreatFrom
-                ? ['skip', ...retreats]
-                : entry.killGearBuff
-                  ? [
-                      'skip',
-                      ...(state.gears ?? []).map(
-                        (g) => `kill-gear:${g.id}` as const,
-                      ),
-                    ]
-                  : entry.discardReturn
-                    ? inTrash
-                      ? [
-                          'skip',
-                          ...handIds.map(
-                            (id) => `discard-return:${id}` as const,
-                          ),
-                        ]
-                      : []
-                    : entry.payReturn
-                      ? state.units.some((u) => u.id === entry.sourceId) &&
-                        findPayment(state, entry.ownerId, ONE_ENERGY)
-                        ? ['skip', 'pay-return']
+                : entry.retreatFrom
+                  ? ['skip', ...retreats]
+                  : entry.killGearBuff
+                    ? [
+                        'skip',
+                        ...(state.gears ?? []).map(
+                          (g) => `kill-gear:${g.id}` as const,
+                        ),
+                      ]
+                    : entry.discardReturn
+                      ? inTrash
+                        ? [
+                            'skip',
+                            ...handIds.map(
+                              (id) => `discard-return:${id}` as const,
+                            ),
+                          ]
                         : []
-                      : entry.modes;
+                      : entry.payReturn
+                        ? state.units.some((u) => u.id === entry.sourceId) &&
+                          findPayment(state, entry.ownerId, ONE_ENERGY)
+                          ? ['skip', 'pay-return']
+                          : []
+                        : entry.modes;
   if (
     modes.length <= 1 &&
     (entry.killGearBuff ||
@@ -298,7 +332,8 @@ export function resolveModeChoice(
       entry.readyOther ||
       (entry.splitDamageAt && !modes.length) ||
       (entry.udyr && !modes.length) ||
-      (entry.avaAt && !modes.length))
+      (entry.avaAt && !modes.length) ||
+      (entry.replaySpell && !modes.length))
   )
     return {
       ok: true,
@@ -634,6 +669,37 @@ function applyMode(
       events.push(...r.events);
     }
     return { state: next, events };
+  }
+  if (mode.startsWith('kaisa:')) {
+    const card = state.cards.find((c) => c.id === mode.slice('kaisa:'.length));
+    const spell = state.spellDefinitions?.find(
+      (d) => d.id === card?.definitionId,
+    );
+    if (!card || !spell || !state.stack) return { state, events: [] };
+    const cost = { ...spell.cost, energy: 0 };
+    const plan = findPayment(state, pending.ownerId, cost, 'spell');
+    const paid = plan && payCost(state, pending.ownerId, cost, plan, 'spell');
+    if (!paid || !paid.ok || !paid.state.stack) return { state, events: [] };
+    return {
+      state: {
+        ...paid.state,
+        cards: paid.state.cards.filter((c) => c.id !== card.id),
+        stack: {
+          ...paid.state.stack,
+          entries: [
+            ...paid.state.stack.entries,
+            {
+              card,
+              definition: spell,
+              casterId: pending.ownerId,
+              targetId: pending.ownerId,
+              recycleOnResolve: true,
+            },
+          ],
+        },
+      },
+      events: [],
+    };
   }
   if (mode.startsWith('ava:') && pending.avaAt && pending.avaPower) {
     const card = state.cards.find((c) => c.id === mode.slice('ava:'.length));

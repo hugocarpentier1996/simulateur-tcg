@@ -85,3 +85,4 @@ existantes ; seuls les nouveaux doutes utiles rejoindront le prochain lot de que
 - Heimerdinger (limite) : seules les capacités Tap à effet sont copiées, pas les capacités ADD de ressource.
 - Mystic Reversal (limite) : « you may make new choices » n'est pas proposé, les choix d'origine sont conservés.
 - Blind Fury (limite) : un gear ou un sort à cibles révélé reste banni sans être joué.
+- Kai'Sa (Mind) (limite) : seuls les sorts sans cible individuelle sont proposés.

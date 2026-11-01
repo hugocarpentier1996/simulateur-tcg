@@ -992,7 +992,12 @@ export function resolveSpell(
   const grave = state.zones.find(
     (z) =>
       z.ownerId === entry.card.ownerId &&
-      z.kind === (entry.definition.banishOnResolve ? 'banished' : 'graveyard'),
+      z.kind ===
+        (entry.recycleOnResolve
+          ? 'deck'
+          : entry.definition.banishOnResolve
+            ? 'banished'
+            : 'graveyard'),
   );
   if (!grave) throw new Error('Cimetière absent pour le sort résolu.');
   state = {

@@ -343,3 +343,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Heimerdinger — ogn-111-298
 - [x] Mystic Reversal — ogn-080-298
 - [x] Blind Fury — ogn-025-298
+- [x] Kai'Sa — ogn-112-298
