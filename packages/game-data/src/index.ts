@@ -345,3 +345,4 @@ export { spectralMatron } from './ogn/spectral-matron.js';
 export { soulgorger } from './ogn/soulgorger.js';
 export { portalRescue } from './ogn/portal-rescue.js';
 export { vi } from './ogn/vi.js';
+export { garbageGrabber } from './ogn/garbage-grabber.js';

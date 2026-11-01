@@ -109,7 +109,8 @@ export function tapAbilityTargets(
 ): string[] {
   if (
     ability.effect.type === 'summon-base' ||
-    ability.effect.type === 'kill-self'
+    ability.effect.type === 'kill-self' ||
+    ability.effect.type === 'draw'
   )
     return [];
   const { allegiance, zone, exhausted } = ability.target;
@@ -146,7 +147,8 @@ function activateTapAbility(
   if (!gear.ready) return { ok: false, reason: 'GEAR_NOT_READY' };
   const untargeted =
     ability.effect.type === 'summon-base' ||
-    ability.effect.type === 'kill-self';
+    ability.effect.type === 'kill-self' ||
+    ability.effect.type === 'draw';
   if (
     untargeted
       ? action.targetId !== undefined
@@ -172,6 +174,31 @@ function activateTapAbility(
     action.payment ?? { energyRunes: [], powerRunes: [] },
   );
   if (!paid.ok) return paid;
+  const trash = paid.state.cards.filter((c) =>
+    paid.state.zones.some(
+      (z) =>
+        z.id === c.zoneId &&
+        z.kind === 'graveyard' &&
+        z.ownerId === action.playerId,
+    ),
+  );
+  const deck = paid.state.zones.find(
+    (z) => z.kind === 'deck' && z.ownerId === action.playerId,
+  );
+  const recycled = trash.slice(0, ability.recycleTrash ?? 0);
+  if (
+    recycled.length < (ability.recycleTrash ?? 0) ||
+    (recycled.length && !deck)
+  )
+    return { ok: false, reason: 'INVALID_ADDITIONAL_COST' };
+  if (recycled.length)
+    paid.state = {
+      ...paid.state,
+      cards: [
+        ...paid.state.cards.filter((c) => !recycled.includes(c)),
+        ...recycled.map((c) => ({ ...c, zoneId: deck!.id })),
+      ],
+    };
   const entry: PlayEffectEntry = {
     kind: 'play-effect',
     sourceId: gear.id,
@@ -185,13 +212,15 @@ function activateTapAbility(
           }
         : ability.effect.type === 'kill-self'
           ? { type: 'kill-gear', gearId: gear.id }
-          : ability.effect.type === 'move-to-base'
-            ? { type: 'move-to-base', targetId: action.targetId! }
-            : {
-                type: 'targeted',
-                targetId: action.targetId!,
-                effect: ability.effect,
-              },
+          : ability.effect.type === 'draw'
+            ? { type: 'draw', count: ability.effect.count }
+            : ability.effect.type === 'move-to-base'
+              ? { type: 'move-to-base', targetId: action.targetId! }
+              : {
+                  type: 'targeted',
+                  targetId: action.targetId!,
+                  effect: ability.effect,
+                },
   };
   return {
     ok: true,

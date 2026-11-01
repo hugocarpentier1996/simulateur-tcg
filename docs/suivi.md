@@ -1242,3 +1242,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Soulgorger (ogn-196) : à la mise en jeu, peut jouer une unité de son cimetière sans son coût en énergie ; le Power de cette unité s'ajoute au coût de Soulgorger (`onPlayFromTrash.payPower`, helper `withTrashPower`).
 - Portal Rescue (ogn-102) : Action ; bannit une unité alliée puis la rejoue dans sa base, gratuitement, avec un état remis à neuf (effet `banish-replay` ; un jeton banni disparaît).
 - Vi (ogn-036) : Ganking ; recycler une carte de son cimetière : +1 Might ce tour via la pile (action `trash-recycle-ability`, `trashRecycleMight`).
+- Garbage Grabber (ogn-099) : gear ; recycler 3 cartes de son cimetière, 1 énergie, Tap : pioche 1 (capacité Tap sans cible `draw`, coût `recycleTrash`).

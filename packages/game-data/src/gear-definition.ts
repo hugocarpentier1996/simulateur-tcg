@@ -50,6 +50,9 @@ export interface GearTapAbility {
   readonly cost?: CardCost;
   /** Unité source : capacité utilisable seulement si elle est sur un champ. */
   readonly requiresBattlefield?: boolean;
+  /** Coût supplémentaire : recycler ce nombre de cartes de son cimetière (les plus anciennes,
+   * hypothèse) sous son deck. */
+  readonly recycleTrash?: number;
   readonly target: {
     readonly allegiance?: 'friendly' | 'enemy';
     readonly zone?: 'battlefield';
@@ -70,7 +73,9 @@ export interface GearTapAbility {
     /** Sans cible : jeton de cette définition dans la base du propriétaire. */
     | { readonly type: 'summon-base'; readonly definitionId: string }
     /** Sans cible : le gear source se détruit (Treasure Trove). */
-    | { readonly type: 'kill-self' };
+    | { readonly type: 'kill-self' }
+    /** Sans cible : son propriétaire pioche count cartes. */
+    | { readonly type: 'draw'; readonly count: number };
 }
 
 /** Définition -> copie figée indépendante. RangeError si coût négatif/non fini,

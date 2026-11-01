@@ -301,3 +301,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Soulgorger — ogn-196-298
 - [x] Portal Rescue — ogn-102-298
 - [x] Vi — ogn-036-298
+- [x] Garbage Grabber — ogn-099-298
