@@ -35,6 +35,8 @@ export type SpellEffect =
   | { readonly type: 'exhaust-allies' }
   /** Détruit tous les équipements en jeu (cimetière de leur propriétaire). */
   | { readonly type: 'kill-all-gear' }
+  /** Le lanceur joue un tour supplémentaire après celui en cours (Time Warp). */
+  | { readonly type: 'extra-turn' }
   /** La cible (unité ou gear) gagne Temporary. */
   | { readonly type: 'grant-temporary' }
   /** Le contrôleur de la cible choisit : elle subit amount, ou le lanceur pioche draw. */
@@ -193,6 +195,8 @@ export interface SpellDefinition extends PrintedMetadata {
   readonly name: string;
   readonly type: 'spell';
   readonly optionalExhaustAlly?: boolean;
+  /** Après résolution, la carte est bannie au lieu d'aller au cimetière. */
+  readonly banishOnResolve?: boolean;
   /** Au cimetière, quand son propriétaire conquiert : défausser 1 pour la reprendre en main. */
   readonly returnOnConquerDiscard?: boolean;
   /** Hidden : peut être caché pour 1 Power puis joué gratuitement plus tard (Réaction). */

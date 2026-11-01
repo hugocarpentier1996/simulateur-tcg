@@ -19,7 +19,9 @@ import { clearResources } from './resources.js';
 export function startNextTurn(
   state: GameState,
 ): Extract<ActionResult, { ok: true }> {
-  const nextPlayerId = getNextPlayerId(state);
+  // Time Warp : un tour supplémentaire en attente passe avant l'ordre normal.
+  const [extra, ...laterExtras] = state.extraTurns ?? [];
+  const nextPlayerId = extra ?? getNextPlayerId(state);
   const end =
     state.phase === 'end'
       ? clearResources(state, 'end')
@@ -34,6 +36,7 @@ export function startNextTurn(
     ...(state.allyDeathThisTurn ? { allyDeathThisTurn: [] } : {}),
     ...(state.dreamingTreeUsed ? { dreamingTreeUsed: [] } : {}),
     ...(state.buffBonus ? { buffBonus: {} } : {}),
+    ...(state.extraTurns ? { extraTurns: laterExtras } : {}),
     ...(state.enemyDeathsThisTurn ? { enemyDeathsThisTurn: [] } : {}),
     ...(state.effectDamagePrevented ? { effectDamagePrevented: false } : {}),
     ...(state.damageBaseline ? { damageBaseline: null } : {}),

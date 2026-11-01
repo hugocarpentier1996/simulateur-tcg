@@ -252,6 +252,13 @@ export function resolveSpell(
         };
       continue;
     }
+    if (effect.type === 'extra-turn') {
+      state = {
+        ...state,
+        extraTurns: [...(state.extraTurns ?? []), entry.casterId],
+      };
+      continue;
+    }
     if (effect.type === 'empower-buffs') {
       state = {
         ...state,
@@ -778,7 +785,9 @@ export function resolveSpell(
     }
   }
   const grave = state.zones.find(
-    (z) => z.ownerId === entry.card.ownerId && z.kind === 'graveyard',
+    (z) =>
+      z.ownerId === entry.card.ownerId &&
+      z.kind === (entry.definition.banishOnResolve ? 'banished' : 'graveyard'),
   );
   if (!grave) throw new Error('Cimetière absent pour le sort résolu.');
   state = {
