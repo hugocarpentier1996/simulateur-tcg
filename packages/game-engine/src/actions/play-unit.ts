@@ -376,6 +376,10 @@ function playUnitCore(
           ready:
             definition.entersReady === true ||
             alliesEnterReady(state, card.ownerId) ||
+            (definition.entersReadyIfOpponentControls === true &&
+              state.battlefields.some(
+                (f) => f.controllerId && f.controllerId !== card.ownerId,
+              )) ||
             (definition.entersReadyIfOpponentWithin !== undefined &&
               state.players.some(
                 (p) =>

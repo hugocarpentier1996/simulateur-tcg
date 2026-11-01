@@ -31,6 +31,14 @@ export function unitConquerEntries(
         ownerId: playerId,
         effect: { type: 'buff-units', unitIds: [u.id] },
       });
+    if (definition?.onConquerPayReturn)
+      entries.push({
+        kind: 'mode-choice',
+        sourceId: u.id,
+        ownerId: playerId,
+        modes: [],
+        payReturn: true,
+      });
     if (definition?.onConquerKillGearBuff)
       entries.push({
         kind: 'mode-choice',

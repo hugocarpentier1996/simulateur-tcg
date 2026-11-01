@@ -209,6 +209,10 @@ export interface UnitDefinition extends PrintedMetadata {
   readonly onPlayBuffOthers?: number;
   /** « When I conquer » : se buffe, via la pile (Sett). */
   readonly onConquerBuffSelf?: boolean;
+  /** Entre Ready si un adversaire contrôle un champ (Vayne). */
+  readonly entersReadyIfOpponentControls?: boolean;
+  /** « When I conquer, you may pay 1 énergie to return me to my owner's hand » (Vayne). */
+  readonly onConquerPayReturn?: boolean;
   /** À la mise en jeu : dépense les buffs des unités choisies (onPlaySelectedIds) et
    * canalise 1 rune Tap par buff dépensé (Albus Ferros). */
   readonly onPlaySpendBuffsChannel?: boolean;

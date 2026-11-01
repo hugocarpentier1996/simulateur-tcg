@@ -1,3 +1,6 @@
+import { findPayment } from '../legal/payment.js';
+import { payCost } from '../cost/payment.js';
+import { leaveBoard } from './leave-board.js';
 import type { ActionResult, GameAction, GameState } from '../types.js';
 import { drawCardForPlayer } from '../turn/draw.js';
 import { channelForPlayer } from '../turn/supplies.js';
@@ -12,7 +15,10 @@ export type EffectMode =
   | 'channel-exhausted'
   | 'skip'
   | `kill-gear:${string}`
-  | `discard-return:${string}`;
+  | `discard-return:${string}`
+  | 'pay-return';
+
+const ONE_ENERGY = { energy: 1, power: {} };
 
 export interface ModeChoiceEntry {
   kind: 'mode-choice';
@@ -23,6 +29,8 @@ export interface ModeChoiceEntry {
   killGearBuff?: boolean;
   /** Retour depuis le cimetière contre une défausse : modes selon la main à la résolution. */
   discardReturn?: boolean;
+  /** Payer 1 énergie pour renvoyer la source en main (proposé seulement si payable). */
+  payReturn?: boolean;
 }
 
 /** Capacité dépilée après réactions -> choix du mode par son propriétaire, sans fenêtre.
@@ -50,8 +58,16 @@ export function resolveModeChoice(
       ? inTrash
         ? ['skip', ...handIds.map((id) => `discard-return:${id}` as const)]
         : []
-      : entry.modes;
-  if (modes.length <= 1 && (entry.killGearBuff || entry.discardReturn))
+      : entry.payReturn
+        ? state.units.some((u) => u.id === entry.sourceId) &&
+          findPayment(state, entry.ownerId, ONE_ENERGY)
+          ? ['skip', 'pay-return']
+          : []
+        : entry.modes;
+  if (
+    modes.length <= 1 &&
+    (entry.killGearBuff || entry.discardReturn || entry.payReturn)
+  )
     return {
       ok: true,
       state,
@@ -93,6 +109,15 @@ function applyMode(
   if (mode === 'channel-exhausted')
     return channelForPlayer(state, pending.ownerId, 1);
   if (mode === 'skip') return { state, events: [] };
+  if (mode === 'pay-return') {
+    const unit = state.units.find((u) => u.id === pending.sourceId);
+    const payment = findPayment(state, pending.ownerId, ONE_ENERGY);
+    const paid =
+      payment && payCost(state, pending.ownerId, ONE_ENERGY, payment);
+    if (!unit || !paid || !paid.ok) return { state, events: [] };
+    const left = leaveBoard(paid.state, unit, 'hand');
+    return { state: left.state, events: left.events };
+  }
   if (mode.startsWith('discard-return:')) {
     const discardId = mode.slice('discard-return:'.length);
     const zone = (kind: 'hand' | 'graveyard') =>
