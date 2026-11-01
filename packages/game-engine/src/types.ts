@@ -373,6 +373,8 @@ export interface UnitBlueprint {
   readonly onAttackDamage?: number;
   /** « When I conquer » : son propriétaire pioche ce nombre de cartes, via la pile. */
   readonly onConquerDraw?: number;
+  /** Coût supplémentaire facultatif : défausser 1 carte pour cette énergie en moins. */
+  readonly discardDiscount?: number;
   /** Coût supplémentaire obligatoire : tuer une unité alliée (sacrificeUnitId). */
   readonly sacrificeCost?: boolean;
   /** « When I conquer » : son propriétaire choisit l'un de ces modes à la résolution. */
@@ -634,6 +636,8 @@ export type GameAction =
       accelerate?: boolean;
       /** Paie le coût supplémentaire facultatif de l'unité (optionalCost). */
       optionalCost?: boolean;
+      /** Carte de la main défaussée en coût supplémentaire (discardDiscount). */
+      discardCardId?: string;
       /** Unité alliée tuée comme coût supplémentaire (sacrificeCost, Cruel Patron). */
       sacrificeUnitId?: string;
       /** Annie Chaos : sort choisi avant les réactions ; requis si un sort est récupérable. */

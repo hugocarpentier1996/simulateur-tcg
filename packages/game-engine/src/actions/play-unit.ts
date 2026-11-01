@@ -41,7 +41,38 @@ export function playUnit(
     return { ok: false, reason: 'INVALID_ADDITIONAL_COST' };
   if (definition?.sacrificeCost && !sacrifice)
     return { ok: false, reason: 'INVALID_ADDITIONAL_COST' };
-  const played = playUnitCore(state, action);
+  if (
+    action.discardCardId !== undefined &&
+    (!definition?.discardDiscount ||
+      !handCards(state, action.playerId, action.cardId).includes(
+        action.discardCardId,
+      ))
+  )
+    return { ok: false, reason: 'INVALID_ADDITIONAL_COST' };
+  let played = playUnitCore(state, action);
+  if (played.ok && action.discardCardId) {
+    const grave = played.state.zones.find(
+      (z) => z.kind === 'graveyard' && z.ownerId === action.playerId,
+    );
+    if (!grave) return { ok: false, reason: 'MISSING_GRAVEYARD' };
+    played = {
+      ok: true,
+      state: {
+        ...played.state,
+        cards: played.state.cards.map((c) =>
+          c.id === action.discardCardId ? { ...c, zoneId: grave.id } : c,
+        ),
+      },
+      events: [
+        ...played.events,
+        {
+          type: 'card-discarded',
+          playerId: action.playerId,
+          cardId: action.discardCardId,
+        },
+      ],
+    };
+  }
   if (!played.ok || !sacrifice) return played;
   // Coût supplémentaire payé avec le reste : l'unité sacrifiée meurt (effets de mort compris).
   const killed = settleLethalUnits(played.state, new Set([sacrifice.id]));
@@ -250,6 +281,7 @@ function playUnitCore(
       definition,
       action.accelerate === true,
       action.optionalCost === true,
+      action.discardCardId !== undefined,
     ),
     action.onPlayTargetId ? [action.onPlayTargetId] : [],
   );
@@ -363,6 +395,7 @@ export function unitCost(
   definition: UnitBlueprint,
   accelerate: boolean,
   optional = false,
+  discard = false,
 ): UnitBlueprint['cost'] {
   const base = accelerate ? acceleratedCost(definition) : definition.cost;
   const extra = optional ? definition.optionalCost?.power : undefined;
@@ -387,9 +420,13 @@ export function unitCost(
         ),
       ).length
     : 0;
+  const discount = discard ? (definition.discardDiscount ?? 0) : 0;
   const reduced =
-    legion + trash
-      ? { ...cost, energy: Math.max(0, cost.energy - legion - trash) }
+    legion + trash + discount
+      ? {
+          ...cost,
+          energy: Math.max(0, cost.energy - legion - trash - discount),
+        }
       : cost;
   // Herald of Scales : Dragons moins chers, sans descendre sous 1.
   const dragon = definition.tags?.includes('Dragon')
@@ -409,4 +446,22 @@ export function unitCost(
         energy: Math.min(reduced.energy, Math.max(1, reduced.energy - dragon)),
       }
     : reduced;
+}
+
+/** Autres cartes de la main du joueur (coûts de défausse), la carte jouée exceptée. */
+export function handCards(
+  state: GameState,
+  playerId: string,
+  exceptId: string,
+): string[] {
+  return state.cards
+    .filter(
+      (c) =>
+        c.id !== exceptId &&
+        state.zones.some(
+          (z) =>
+            z.id === c.zoneId && z.kind === 'hand' && z.ownerId === playerId,
+        ),
+    )
+    .map((c) => c.id);
 }

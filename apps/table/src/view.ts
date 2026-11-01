@@ -429,6 +429,9 @@ function actionLabel(
         (action.sacrificeUnitId
           ? ' · en tuant ' + unit(action.sacrificeUnitId)
           : '') +
+        (action.discardCardId
+          ? ' · en défaussant ' + target(action.discardCardId)
+          : '') +
         (action.optionalCost ? ' · Coût facultatif payé' : '') +
         (action.returnSpellId
           ? ' · Récupérer : ' + target(action.returnSpellId)

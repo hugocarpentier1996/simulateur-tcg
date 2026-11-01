@@ -195,6 +195,8 @@ export interface UnitDefinition extends PrintedMetadata {
   readonly onAttackDamage?: number;
   /** « When I conquer » : son propriétaire pioche ce nombre de cartes, via la pile. */
   readonly onConquerDraw?: number;
+  /** Coût supplémentaire facultatif : défausser 1 carte pour cette énergie en moins. */
+  readonly discardDiscount?: number;
   /** Coût supplémentaire obligatoire : tuer une unité alliée à la mise en jeu. */
   readonly sacrificeCost?: boolean;
   /** « When I conquer » : son propriétaire choisit l'un de ces modes à la résolution. */

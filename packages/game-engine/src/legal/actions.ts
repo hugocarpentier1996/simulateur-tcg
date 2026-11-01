@@ -18,7 +18,7 @@ import type { GameAction, GameState } from '../types.js';
 import { act } from '../act.js';
 import { canSummonAt } from '../actions/unit-destination.js';
 import { recoverableSpells } from '../effects/return-spell.js';
-import { unitCost } from '../actions/play-unit.js';
+import { unitCost, handCards } from '../actions/play-unit.js';
 import { findPayment } from './payment.js';
 import { resolutionChoices, setupChoices } from './choices.js';
 
@@ -177,50 +177,61 @@ function* candidates(
   for (const card of state.cards.filter((c) => c.ownerId === playerId)) {
     const unit = state.unitDefinitions?.find((d) => d.id === card.definitionId);
     if (unit) {
-      for (const [accelerate, optionalCost] of [
+      for (const [accelerate, optionalCost, discard] of [
         [false, false],
         ...(unit.accelerate ? [[true, false]] : []),
         ...(unit.optionalCost ? [[false, true]] : []),
         ...(unit.accelerate && unit.optionalCost ? [[true, true]] : []),
-      ] as [boolean, boolean][]) {
+      ].flatMap(([a, o]) =>
+        unit.discardDiscount
+          ? [
+              [a, o, false],
+              [a, o, true],
+            ]
+          : [[a, o, false]],
+      ) as [boolean, boolean, boolean][]) {
         const payment = findPayment(
           state,
           playerId,
-          unitCost(state, playerId, unit, accelerate, optionalCost),
+          unitCost(state, playerId, unit, accelerate, optionalCost, discard),
         );
         if (payment)
-          for (const zone of destinations)
-            for (const onPlayTargetId of playTargetChoices(
-              state,
-              card.id,
-              unit,
-              zone.id,
-            ))
-              for (const returnSpellId of unit.onPlayReturnSpell ||
-              unit.onPlayReturnUnit
-                ? recoverableSpells(
-                    state,
-                    playerId,
-                    unit.onPlayReturnUnit ? 'unit' : 'spell',
-                  ).length
+          for (const discardCardId of discard
+            ? handCards(state, playerId, card.id)
+            : [undefined])
+            for (const zone of destinations)
+              for (const onPlayTargetId of playTargetChoices(
+                state,
+                card.id,
+                unit,
+                zone.id,
+              ))
+                for (const returnSpellId of unit.onPlayReturnSpell ||
+                unit.onPlayReturnUnit
                   ? recoverableSpells(
                       state,
                       playerId,
                       unit.onPlayReturnUnit ? 'unit' : 'spell',
-                    )
-                  : [undefined]
-                : [undefined])
-                yield {
-                  type: 'play-unit',
-                  ...(onPlayTargetId ? { onPlayTargetId } : {}),
-                  ...(accelerate ? { accelerate } : {}),
-                  ...(optionalCost ? { optionalCost } : {}),
-                  ...(returnSpellId ? { returnSpellId } : {}),
-                  playerId,
-                  cardId: card.id,
-                  destinationId: zone.id,
-                  payment,
-                };
+                    ).length
+                    ? recoverableSpells(
+                        state,
+                        playerId,
+                        unit.onPlayReturnUnit ? 'unit' : 'spell',
+                      )
+                    : [undefined]
+                  : [undefined])
+                  yield {
+                    type: 'play-unit',
+                    ...(onPlayTargetId ? { onPlayTargetId } : {}),
+                    ...(accelerate ? { accelerate } : {}),
+                    ...(optionalCost ? { optionalCost } : {}),
+                    ...(discardCardId ? { discardCardId } : {}),
+                    ...(returnSpellId ? { returnSpellId } : {}),
+                    playerId,
+                    cardId: card.id,
+                    destinationId: zone.id,
+                    payment,
+                  };
       }
     }
     const gear = state.gearDefinitions?.find((d) => d.id === card.definitionId);
@@ -492,6 +503,8 @@ function targetPayment(state: GameState, action: GameAction): GameAction[] {
                 definition,
                 action.type === 'play-unit' && action.accelerate === true,
                 action.type === 'play-unit' && action.optionalCost === true,
+                action.type === 'play-unit' &&
+                  action.discardCardId !== undefined,
               )
             : definition.cost,
           action.type === 'play-unit' && action.onPlayTargetId
