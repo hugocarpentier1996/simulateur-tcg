@@ -26,6 +26,8 @@ export interface UnitDefinition extends PrintedMetadata {
   /** Legion : « when you play me, ready me » si une autre carte a été jouée ce tour.
    * Hypothèse de prototype : appliqué à l'entrée en jeu, sans passer par la pile. */
   readonly legionReady?: boolean;
+  /** Première mort d'une unité alliée du tour : son propriétaire pioche 1 (sans pile). */
+  readonly drawOnFirstAllyDeath?: boolean;
   /** Ganking tant que l'unité est buffée (Bilgewater Bully). */
   readonly buffedGanking?: boolean;
   /** Se buffe quand son propriétaire joue une autre unité (hypothèse : sans pile). */

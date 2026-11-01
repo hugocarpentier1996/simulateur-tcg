@@ -1180,3 +1180,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Eclipse Herald (ogn-059) : quand son propriétaire étourdit une unité ennemie, se redresse et gagne +1 Might ce tour (`onEnemyStunned`, détecté par `act` sur les unités nouvellement Stun).
 - Radiant Dawn (ogn-261) : légende ; quand son propriétaire étourdit des ennemis, il buffe une unité alliée (choisie automatiquement, sans pile) (`buffOnEnemyStunned`).
 - Solari Shrine (ogn-072) : gear ; quand son propriétaire tue une unité ennemie Stun, il se couche (s'il est Ready) pour piocher 1 (`drawOnStunnedEnemyKill`, accepté automatiquement, sans pile).
+- Wraith of Echoes (ogn-118) : la première mort d'une unité alliée de chaque tour fait piocher 1 à son propriétaire (`drawOnFirstAllyDeath`, registre `allyDeathThisTurn`).

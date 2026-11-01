@@ -47,6 +47,8 @@ export interface GameState {
   effectDamagePrevented?: boolean;
   /** Joueurs dont au moins une unité ennemie est morte ce tour (Spoils of War). */
   enemyDeathsThisTurn?: readonly string[];
+  /** Joueurs dont une unité est déjà morte ce tour (Wraith of Echoes). */
+  allyDeathThisTurn?: readonly string[];
   /** Joueurs ayant défaussé au moins une carte ce tour (événements card-discarded). */
   discardedThisTurn?: readonly string[];
   /** Runes à redresser en fin de tour par joueur (Targon's Peak), via la pile. */
@@ -191,6 +193,8 @@ export interface UnitBlueprint {
   /** Legion : « when you play me, ready me » si une autre carte a été jouée ce tour.
    * Hypothèse de prototype : appliqué à l'entrée en jeu, sans passer par la pile. */
   readonly legionReady?: boolean;
+  /** Première mort d'une unité alliée du tour : son propriétaire pioche 1 (sans pile). */
+  readonly drawOnFirstAllyDeath?: boolean;
   /** Ganking tant que l'unité est buffée (Bilgewater Bully). */
   readonly buffedGanking?: boolean;
   /** Se buffe quand son propriétaire joue une autre unité (hypothèse : sans pile). */

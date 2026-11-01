@@ -30,6 +30,7 @@ export function startNextTurn(
     ...(state.playLockedPlayers ? { playLockedPlayers: [] } : {}),
     ...(state.endTurnReadyRunes ? { endTurnReadyRunes: {} } : {}),
     ...(state.discardedThisTurn ? { discardedThisTurn: [] } : {}),
+    ...(state.allyDeathThisTurn ? { allyDeathThisTurn: [] } : {}),
     ...(state.enemyDeathsThisTurn ? { enemyDeathsThisTurn: [] } : {}),
     ...(state.effectDamagePrevented ? { effectDamagePrevented: false } : {}),
     ...(state.damageBaseline ? { damageBaseline: null } : {}),

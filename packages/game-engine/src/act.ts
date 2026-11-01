@@ -242,6 +242,29 @@ export function act(state: GameState, action: GameAction): ActionResult {
     shrineEvents.push(...drawn.events);
   }
   events.push(...shrineEvents);
+  // Wraith of Echoes : première mort alliée du tour -> pioche, une fois par joueur.
+  const firstDeaths = [...new Set(deadOwners)].filter(
+    (owner) => !shrine.allyDeathThisTurn?.includes(owner),
+  );
+  if (firstDeaths.length) {
+    shrine = {
+      ...shrine,
+      allyDeathThisTurn: [...(shrine.allyDeathThisTurn ?? []), ...firstDeaths],
+    };
+    for (const owner of firstDeaths)
+      if (
+        shrine.units.some(
+          (u) =>
+            u.ownerId === owner &&
+            shrine.unitDefinitions?.find((d) => d.id === u.definitionId)
+              ?.drawOnFirstAllyDeath,
+        )
+      ) {
+        const drawn = drawCardForPlayer(shrine, owner);
+        shrine = drawn.state;
+        events.push(...drawn.events);
+      }
+  }
   const scrap = scrapheapDraws(shrine, events);
   events.push(...scrap.events);
   const scoredMoves = thirdMovePoints(entered, scrap.state);
