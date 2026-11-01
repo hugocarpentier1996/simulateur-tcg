@@ -81,12 +81,33 @@ export function queueHoldDraw(
   const base = state.zones.find(
     (z) => z.kind === 'base' && z.ownerId === playerId,
   );
+  const conquerDraws = definition?.holdActivatesConquer
+    ? state.units.flatMap((u) => {
+        const count = state.unitDefinitions?.find(
+          (d) => d.id === u.definitionId,
+        )?.onConquerDraw;
+        return count && u.ownerId === playerId && u.zoneId === battlefieldId
+          ? [
+              {
+                kind: 'legend-draw' as const,
+                sourceId: u.id,
+                ownerId: playerId,
+                count,
+              },
+            ]
+          : [];
+      })
+    : [];
   const buffTarget = definition?.holdBuffHere
     ? [...state.units]
         .filter((u) => u.ownerId === playerId && u.zoneId === battlefieldId)
         .sort((x, y) => Number(!!x.buffed) - Number(!!y.buffed))[0]?.id
     : undefined;
-  if (state.result || (!count && !(token && base) && !buffTarget)) return state;
+  if (
+    state.result ||
+    (!count && !(token && base) && !buffTarget && !conquerDraws.length)
+  )
+    return state;
   return {
     ...state,
     stack: {
@@ -102,6 +123,7 @@ export function queueHoldDraw(
               },
             ]
           : []),
+        ...conquerDraws,
         ...(buffTarget
           ? [
               {

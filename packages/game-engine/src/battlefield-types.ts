@@ -8,6 +8,8 @@ export interface BattlefieldBlueprint {
   readonly holdChannel?: number;
   /** Tenue : son contrôleur pioche ce nombre de cartes via la pile. */
   readonly holdDraw?: number;
+  /** Tenue : déclenche les effets de conquête (onConquerDraw) des unités alliées présentes. */
+  readonly holdActivatesConquer?: boolean;
   /** Conquête : le conquérant défausse 1 puis pioche 1, via la pile. */
   readonly conquerLoot?: boolean;
   /** Conquête : dépenser un buff allié pour piocher 1 (automatique si possible), via la pile. */
