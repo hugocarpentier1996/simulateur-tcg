@@ -374,3 +374,4 @@ export { teemoMind } from './ogn/teemo-mind.js';
 export { malzahar } from './ogn/malzahar.js';
 export { udyr } from './ogn/udyr.js';
 export { leeSin } from './ogn/lee-sin.js';
+export { icathianRain } from './ogn/icathian-rain.js';

@@ -79,6 +79,13 @@ export interface SpellBlueprint {
     | { readonly type: 'exhaust-allies' }
     /** Détruit tous les équipements en jeu (cimetière de leur propriétaire). */
     | { readonly type: 'kill-all-gear' }
+    /** count instructions « inflige amount à une unité », cibles choisies une à une à la
+     * résolution (Icathian Rain). */
+    | {
+        readonly type: 'damage-hits';
+        readonly count: number;
+        readonly amount: number;
+      }
     /** Reprend en main les cartes Hidden choisies du cimetière (selectedUnitIds, au plus
      * maximum) ; cacher est gratuit pour le lanceur ce tour (Guerilla Warfare). */
     | { readonly type: 'return-hidden-free-hide'; readonly maximum: number }

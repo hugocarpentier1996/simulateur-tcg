@@ -1271,3 +1271,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Malzahar (ogn-113) : tuer une autre unité alliée ou un gear allié et se coucher : Action — ajoute 2 Power de n'importe quel domaine (`sacrificeResource`, réserve `anyPower` consommée après la réserve des sorts par `payCost` / `findPayment`).
 - Udyr (ogn-157) : dépenser son buff ouvre un choix parmi les modes pas encore choisis ce tour : 2 dégâts à une unité sur un champ, étourdir une unité sur un champ, se redresser, gagner Ganking ce tour (`buffSpendModes`, registre `udyrModesUsed`).
 - Lee Sin (Calm, ogn-078) : Shield ; Tap : se buffe (capacité Tap `buff-self`) ; peut avoir un nombre quelconque de buffs (`unlimitedBuffs`, compteur `extraBuffs` ; chaque buff compte pour la Might et Stand United).
+- Icathian Rain (ogn-248) : six instructions « inflige 2 à une unité », chaque cible choisie à la résolution (effet `damage-hits`, modes `hit:<id>` enchaînés).

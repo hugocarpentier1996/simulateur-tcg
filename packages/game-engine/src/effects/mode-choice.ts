@@ -49,7 +49,8 @@ export type EffectMode =
   | `split:${string}`
   | `udyr-damage:${string}`
   | 'udyr-ready'
-  | 'udyr-ganking';
+  | 'udyr-ganking'
+  | `hit:${string}`;
 
 const ONE_ENERGY = { energy: 1, power: {} };
 
@@ -68,6 +69,9 @@ export interface ModeChoiceEntry {
   partnerId?: string;
   /** Joueurs suivants à choisir à leur tour ce qu'ils tuent (Cull the Weak). */
   nextChoosers?: readonly string[];
+  /** Icathian Rain : instances restantes et dégâts de chacune (dégâts de sort). */
+  hitsLeft?: number;
+  hitAmount?: number;
   /** Udyr : modes non encore choisis ce tour, calculés à la résolution. */
   udyr?: boolean;
   /** Teemo (Mind) : cartes du dessus à révéler ; leurs cartes Hidden fixent les dégâts. */
@@ -298,6 +302,21 @@ export function chooseMode(
       : {}),
   };
   const applied = applyMode(cleared, pending, action.mode);
+  if (pending.hitsLeft && pending.hitsLeft > 1) {
+    const next = hitChoice(
+      applied.state,
+      pending.sourceId,
+      pending.ownerId,
+      pending.hitsLeft - 1,
+      pending.hitAmount ?? 0,
+    );
+    if (next)
+      return {
+        ok: true,
+        state: { ...applied.state, pendingModeChoice: next },
+        events: applied.events,
+      };
+  }
   if (pending.recycleLeft && action.mode.startsWith('recycle-any:')) {
     const next = trashRecycleChoice(
       applied.state,
@@ -567,6 +586,17 @@ function applyMode(
       events.push(...r.events);
     }
     return { state: next, events };
+  }
+  if (mode.startsWith('hit:')) {
+    const unit = state.units.find((u) => u.id === mode.slice('hit:'.length));
+    if (!unit) return { state, events: [] };
+    return dealSpellDamage(
+      state,
+      pending.sourceId,
+      pending.ownerId,
+      [unit],
+      pending.hitAmount ?? 0,
+    );
   }
   if (mode.startsWith('udyr-damage:')) {
     const unit = state.units.find(
@@ -1033,5 +1063,24 @@ export function revealDamageEntry(
     modes: [],
     revealCount: count,
     splitDamageAt: battlefieldId,
+  };
+}
+
+/** Icathian Rain : prochaine instance de dégâts à attribuer à une unité en jeu. */
+export function hitChoice(
+  state: GameState,
+  sourceId: string,
+  playerId: string,
+  left: number,
+  amount: number,
+): ModeChoiceEntry | undefined {
+  if (left <= 0 || !state.units.length) return undefined;
+  return {
+    kind: 'mode-choice',
+    sourceId,
+    ownerId: playerId,
+    modes: state.units.map((u) => `hit:${u.id}` as const),
+    hitsLeft: left,
+    hitAmount: amount,
   };
 }

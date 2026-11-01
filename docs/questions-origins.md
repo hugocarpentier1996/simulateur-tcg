@@ -77,3 +77,4 @@ existantes ; seuls les nouveaux doutes utiles rejoindront le prochain lot de que
 - Légendes surnuméraires OGN-299 à OGN-310 (versions alternatives des légendes 247 à 269) : non ajoutées comme cartes distinctes (pas d'image locale) ; à confirmer si elles doivent l'être.
 - Immortal Phoenix (hypothèse) : « tuer avec un sort » = au moins une unité meurt pendant l'action où un sort du joueur se résout (dégâts ou destruction).
 - Malzahar (hypothèse) : il ne peut pas se tuer lui-même pour payer sa propre capacité.
+- Icathian Rain (hypothèses) : les six cibles sont choisies une à une à la résolution (et non au lancement) ; la répartition du coût en Power (3) entre Fury et Mind n'est pas dans les données : 2 Fury + 1 Mind retenus.

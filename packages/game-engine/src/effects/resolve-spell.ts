@@ -1,6 +1,7 @@
 import { hiddenInTrash } from './hidden.js';
 import { playUnitFromTrash } from './play-from-trash.js';
 import {
+  hitChoice,
   lookPlayUnitChoice,
   nextKillChoice,
   opponentHandChoice,
@@ -245,6 +246,17 @@ export function resolveSpell(
         entry.card.id,
         entry.casterId,
         effect.action,
+      );
+      if (choice) state = { ...state, pendingModeChoice: choice };
+      continue;
+    }
+    if (effect.type === 'damage-hits') {
+      const choice = hitChoice(
+        state,
+        entry.card.id,
+        entry.casterId,
+        effect.count,
+        effect.amount,
       );
       if (choice) state = { ...state, pendingModeChoice: choice };
       continue;
