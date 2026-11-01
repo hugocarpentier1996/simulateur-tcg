@@ -471,6 +471,8 @@ export interface UnitBlueprint {
   readonly buffSpendModes?: boolean;
   /** Peut avoir un nombre quelconque de buffs (Lee Sin ; buffs en plus dans extraBuffs). */
   readonly unlimitedBuffs?: boolean;
+  /** Les effets Deathknell de son propriétaire se déclenchent une fois de plus (Karthus). */
+  readonly doubleDeathknell?: boolean;
   /** « Recycle 1 from your trash » : +Might jusqu'à la fin du tour, via la pile (Vi). */
   readonly trashRecycleMight?: number;
   /** Coût supplémentaire obligatoire : tuer une unité alliée (sacrificeUnitId). */

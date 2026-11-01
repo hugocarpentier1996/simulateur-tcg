@@ -1274,3 +1274,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Icathian Rain (ogn-248) : six instructions « inflige 2 à une unité », chaque cible choisie à la résolution (effet `damage-hits`, modes `hit:<id>` enchaînés).
 - Baited Hook (ogn-242) : gear ; 1 énergie + 1 Power Order, Tap : tue une unité alliée, puis regarde les 5 cartes du dessus et peut jouer gratuitement une unité de Might au plus égale à celle de la victime + 1 ; recycle le reste (capacité Tap `hook`, choix `reinforce:<id>` avec `freePlay`).
 - Dazzling Aurora (ogn-160) : gear ; à la fin du tour de son propriétaire, une capacité sur la pile révèle des cartes du dessus jusqu'à une unité, la joue gratuitement dans sa base (Tap) et recycle le reste (`endTurnRevealUnit`).
+- Karthus (ogn-236) : les effets Deathknell de son propriétaire se déclenchent une fois de plus (`doubleDeathknell` ; déclenchement supplémentaire à identifiant suffixé « + », ordonné comme les autres).

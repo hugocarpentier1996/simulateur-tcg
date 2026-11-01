@@ -46,16 +46,27 @@ export function deathTriggers(
     const effect = state.unitDefinitions?.find(
       (d) => d.id === unit.definitionId,
     )?.onDeath;
-    return effect
-      ? [
-          {
-            sourceId: unit.id,
-            ownerId: unit.ownerId,
-            effect,
-            zoneId: unit.zoneId,
-          },
-        ]
-      : [];
+    if (!effect) return [];
+    const trigger = {
+      sourceId: unit.id,
+      ownerId: unit.ownerId,
+      effect,
+      zoneId: unit.zoneId,
+    };
+    // Karthus (en jeu avant ces morts) : un déclenchement de plus, identifiant suffixé.
+    const extra = state.units.filter(
+      (u) =>
+        u.ownerId === unit.ownerId &&
+        state.unitDefinitions?.find((d) => d.id === u.definitionId)
+          ?.doubleDeathknell,
+    ).length;
+    return [
+      trigger,
+      ...Array.from({ length: extra }, (_, i) => ({
+        ...trigger,
+        sourceId: `${unit.id}${'+'.repeat(i + 1)}`,
+      })),
+    ];
   });
 }
 

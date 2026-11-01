@@ -372,7 +372,9 @@ function actionLabel(
       ? `${cardName(u.definitionId)} (${playerName(u.ownerId)}, ${u.id})`
       : id;
   };
-  const target = (id: string): string => {
+  const target = (raw: string): string => {
+    // Déclenchement supplémentaire (Karthus) : identifiant suffixé par « + ».
+    const id = raw.replace(/\++$/, '');
     const u = state.units.find((u) => u.id === id);
     if (u) return unit(id);
     const g = state.gears?.find((g) => g.id === id);

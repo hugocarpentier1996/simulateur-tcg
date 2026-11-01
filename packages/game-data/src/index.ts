@@ -377,3 +377,4 @@ export { leeSin } from './ogn/lee-sin.js';
 export { icathianRain } from './ogn/icathian-rain.js';
 export { baitedHook } from './ogn/baited-hook.js';
 export { dazzlingAurora } from './ogn/dazzling-aurora.js';
+export { karthus } from './ogn/karthus.js';
