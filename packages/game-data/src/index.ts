@@ -304,3 +304,4 @@ export { brazenBuccaneer } from './ogn/brazen-buccaneer.js';
 export { treasureTrove } from './ogn/treasure-trove.js';
 export { pakaaCub } from './ogn/pakaa-cub.js';
 export { consultThePast } from './ogn/consult-the-past.js';
+export { fightOrFlight } from './ogn/fight-or-flight.js';

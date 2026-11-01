@@ -71,11 +71,12 @@ export function validDestination(
   state: GameState,
   unit: UnitState,
   destinationId?: string,
+  baseOnly = false,
 ): boolean {
   return state.zones.some(
     (z) =>
       z.id === destinationId &&
-      (z.kind === 'battlefield' ||
+      ((!baseOnly && z.kind === 'battlefield') ||
         (z.kind === 'base' &&
           z.ownerId === unit.ownerId &&
           !battlefieldDefinition(state, unit.zoneId)?.noMoveToBase)),

@@ -160,6 +160,8 @@ export interface SpellBlueprint {
         readonly type: 'move-unit';
         readonly requiresReady: false;
         readonly exhaustsUnit: false;
+        /** Seule destination : la base du propriétaire de l'unité. */
+        readonly baseOnly?: boolean;
       }
     | {
         readonly type: 'modify-might';

@@ -260,3 +260,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Treasure Trove — ogn-186-298
 - [x] Pakaa Cub — ogn-135-298
 - [x] Consult the Past — ogn-083-298
+- [x] Fight or Flight — ogn-168-298

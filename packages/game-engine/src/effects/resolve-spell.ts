@@ -570,7 +570,10 @@ export function resolveSpell(
       state = moved.state;
       events.push(...moved.events);
     } else if (effect.type === 'move-unit') {
-      if (!validDestination(state, target, entry.destinationId)) continue;
+      if (
+        !validDestination(state, target, entry.destinationId, effect.baseOnly)
+      )
+        continue;
       const moved = moveUnit(state, target, entry.destinationId!);
       state = moved.state;
       events.push(...moved.events);

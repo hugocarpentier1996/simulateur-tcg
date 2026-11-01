@@ -203,7 +203,13 @@ export function castSpell(
     return { ok: false, reason: 'UNSUPPORTED_DESTINATION' };
   if (
     definition.effects.some((e) => e.type === 'move-unit') &&
-    (!target || !validDestination(state, target, action.destinationId))
+    (!target ||
+      !validDestination(
+        state,
+        target,
+        action.destinationId,
+        definition.effects.some((e) => e.type === 'move-unit' && e.baseOnly),
+      ))
   )
     return { ok: false, reason: 'UNSUPPORTED_DESTINATION' };
   if (
