@@ -270,6 +270,8 @@ export interface UnitBlueprint {
       | { readonly type: 'kill-if-stunned-else-stun' }
       /** Buffe la cible (+1 Might permanent si elle n'a pas déjà de buff). */
       | { readonly type: 'buff' }
+      /** Ganking jusqu'à la fin du tour. */
+      | { readonly type: 'grant-ganking' }
       | { readonly type: 'kill' }
       | { readonly type: 'return-to-hand' };
   };
@@ -401,6 +403,8 @@ export interface UnitState {
     | { type: 'assault'; amount: number }
     | { type: 'stun' }
     | { type: 'recall-on-death' }
+    /** Ganking accordé jusqu'à la fin du tour. */
+    | { type: 'ganking' }
   )[];
   id: string;
   ownerId: string;

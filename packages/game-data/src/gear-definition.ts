@@ -50,6 +50,7 @@ export interface GearTapAbility {
         readonly minimum?: number;
       }
     | { readonly type: 'buff' }
+    | { readonly type: 'grant-ganking' }
     | { readonly type: 'move-to-base' };
 }
 

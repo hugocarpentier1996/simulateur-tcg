@@ -226,3 +226,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Arena Bar — ogn-124-298
 - [x] The Syren — ogn-184-298
 - [x] Blind Monk — ogn-257-298
+- [x] Bounty Hunter — ogn-267-298

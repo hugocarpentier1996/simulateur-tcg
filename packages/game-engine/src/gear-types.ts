@@ -31,6 +31,7 @@ export interface GearBlueprint {
           readonly minimum?: number;
         }
       | { readonly type: 'buff' }
+      | { readonly type: 'grant-ganking' }
       | { readonly type: 'move-to-base' };
   };
   /** Posé, défaussé ou détruit : son propriétaire pioche 1 (Scrapheap ; sans pile). */

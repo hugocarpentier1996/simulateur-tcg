@@ -105,6 +105,8 @@ export interface UnitDefinition extends PrintedMetadata {
       | { readonly type: 'kill-if-stunned-else-stun' }
       /** Buffe la cible (+1 Might permanent si elle n'a pas déjà de buff). */
       | { readonly type: 'buff' }
+      /** Ganking jusqu'à la fin du tour. */
+      | { readonly type: 'grant-ganking' }
       | { readonly type: 'kill' }
       | { readonly type: 'return-to-hand' };
   };

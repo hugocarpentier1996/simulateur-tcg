@@ -74,6 +74,11 @@ export function hasKeyword(
     battlefieldDefinition(state, unit.zoneId)?.grantsGanking
   )
     return true;
+  if (
+    key === 'ganking' &&
+    unit.temporaryEffects?.some((e) => e.type === 'ganking')
+  )
+    return true;
   if (key === 'ganking' && definition?.buffedGanking && unit.buffed)
     return true;
   if (

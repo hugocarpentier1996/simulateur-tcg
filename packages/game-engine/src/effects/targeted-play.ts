@@ -22,6 +22,25 @@ export function resolveTargetedPlay(
 ): Extract<ActionResult, { ok: true }> {
   const target = state.units.find((u) => u.id === targetId);
   if (!target) return { ok: true, state, events: [] };
+  if (effect.type === 'grant-ganking')
+    return {
+      ok: true,
+      state: {
+        ...state,
+        units: state.units.map((u) =>
+          u.id === target.id
+            ? {
+                ...u,
+                temporaryEffects: [
+                  ...(u.temporaryEffects ?? []),
+                  { type: 'ganking' as const },
+                ],
+              }
+            : u,
+        ),
+      },
+      events: [],
+    };
   if (effect.type === 'buff')
     return { ok: true, state: buffUnit(state, target.id), events: [] };
   if (effect.type === 'fight') {

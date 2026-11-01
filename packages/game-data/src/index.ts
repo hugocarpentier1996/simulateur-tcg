@@ -270,3 +270,4 @@ export { orbOfRegret } from './ogn/orb-of-regret.js';
 export { arenaBar } from './ogn/arena-bar.js';
 export { theSyren } from './ogn/the-syren.js';
 export { blindMonk } from './ogn/blind-monk.js';
+export { bountyHunter } from './ogn/bounty-hunter.js';
