@@ -38,7 +38,7 @@ export function castSpell(
     (c) =>
       c.id === action.cardId &&
       c.ownerId === action.playerId &&
-      (playableFacedown(c, action.playerId) ||
+      (playableFacedown(state, c, action.playerId) ||
         state.zones.some(
           (z) =>
             z.id === c.zoneId &&
@@ -52,7 +52,7 @@ export function castSpell(
   );
   if (!definition) return { ok: false, reason: 'UNKNOWN_SPELL_DEFINITION' };
   // Hidden : joué depuis facedown à vitesse Réaction, gratuit, choix limités à son champ.
-  const hiddenField = playableFacedown(card, action.playerId);
+  const hiddenField = playableFacedown(state, card, action.playerId);
   if (
     !canUseTiming(
       state,

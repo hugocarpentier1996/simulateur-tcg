@@ -490,6 +490,7 @@ function dispatch(state: GameState, action: GameAction): ActionResult {
     !(
       action.type === 'play-unit' &&
       playableFacedown(
+        state,
         state.cards.find((c) => c.id === action.cardId),
         action.playerId,
       )

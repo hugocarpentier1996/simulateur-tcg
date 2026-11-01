@@ -203,6 +203,8 @@ export interface UnitDefinition extends PrintedMetadata {
   readonly hidden?: boolean;
   /** Son propriétaire joue une carte depuis Hidden : +Might ce tour (Ember Monk, sans pile). */
   readonly mightOnHiddenPlay?: number;
+  /** Les cartes cachées des adversaires sur son champ ne peuvent pas être jouées. */
+  readonly blocksEnemyHidden?: boolean;
   /** Coût supplémentaire obligatoire : tuer une unité alliée à la mise en jeu. */
   readonly sacrificeCost?: boolean;
   /** « When I conquer » : son propriétaire choisit l'un de ces modes à la résolution. */

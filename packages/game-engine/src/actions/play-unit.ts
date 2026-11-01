@@ -95,7 +95,7 @@ function playUnitCore(
 ): ActionResult {
   const card = state.cards.find((c) => c.id === action.cardId);
   // Hidden : jouée depuis facedown à vitesse Réaction, gratuite, sur son champ.
-  const hiddenField = playableFacedown(card, action.playerId);
+  const hiddenField = playableFacedown(state, card, action.playerId);
   if (
     hiddenField
       ? !canUseTiming(state, action.playerId, 'reaction')

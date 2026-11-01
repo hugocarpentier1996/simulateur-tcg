@@ -9,15 +9,23 @@ import type {
 } from '../types.js';
 import { payCost } from '../cost/payment.js';
 
-/** Carte facedown jouable par ce joueur : posée lors d'un tour précédent (pas « fresh »).
- * Renvoie le champ où elle est cachée. */
+/** Carte facedown jouable par ce joueur : posée lors d'un tour précédent (pas « fresh »),
+ * sans Noxus Saboteur adverse sur son champ. Renvoie le champ où elle est cachée. */
 export function playableFacedown(
+  state: GameState,
   card: CardInstance | undefined,
   playerId: string,
 ): string | undefined {
-  return card?.facedown && !card.facedown.fresh && card.ownerId === playerId
-    ? card.zoneId
-    : undefined;
+  if (!card?.facedown || card.facedown.fresh || card.ownerId !== playerId)
+    return undefined;
+  const blocked = state.units.some(
+    (u) =>
+      u.zoneId === card.zoneId &&
+      u.ownerId !== playerId &&
+      state.unitDefinitions?.find((d) => d.id === u.definitionId)
+        ?.blocksEnemyHidden,
+  );
+  return blocked ? undefined : card.zoneId;
 }
 
 /** Coût d'une carte jouée depuis facedown : ignoré (0), coûts supplémentaires à part. */

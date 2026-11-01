@@ -1212,3 +1212,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Stand United (ogn-053) : Hidden ; Action ; buffe une unité alliée ; ce tour, les buffs des unités du lanceur donnent +1 Might de plus (effet `empower-buffs`, registre `buffBonus` vidé en fin de tour).
 - Ember Monk (ogn-167) : quand son propriétaire joue une carte depuis Hidden, +2 Might ce tour (`mightOnHiddenPlay`, sans pile comme les autres déclencheurs simples).
 - Bandle Tree (ogn-278) : champ ; une carte Hidden supplémentaire peut y être cachée (`extraHiddenSlots`).
+- Noxus Saboteur (ogn-018) : les cartes cachées des adversaires sur son champ ne peuvent pas être jouées (`blocksEnemyHidden`).
