@@ -38,7 +38,12 @@ export type SpellEffect =
   /** En commençant par le joueur suivant, chacun peut renvoyer une unité en main (Whirlwind). */
   | { readonly type: 'each-player-may-return-unit' }
   /** Chaque joueur, en commençant par le lanceur, tue une de ses unités ou un de ses gears. */
-  | { readonly type: 'each-player-kills'; readonly what: 'unit' | 'gear' }
+  | {
+      readonly type: 'each-player-kills';
+      readonly what: 'unit' | 'gear';
+      /** Seuls les adversaires choisissent (King's Edict en 1v1). */
+      readonly opponentsOnly?: boolean;
+    }
   /** L'adversaire choisit Cartes (lanceur et lui piochent 1) ou Runes (chacun canalise 1
    * rune Tap), via un choix de mode (Party Favors, 1v1). */
   | { readonly type: 'party-favors' }

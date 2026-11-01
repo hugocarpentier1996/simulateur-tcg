@@ -1224,3 +1224,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Cull the Weak (ogn-209) : chaque joueur, le lanceur d'abord, choisit et tue une de ses unités (effet `each-player-kills`, choix de mode `kill-own:<id>` enchaînés, joueur sans unité passé).
 - Acceptable Losses (ogn-179) : Action ; chaque joueur, le lanceur d'abord, détruit un de ses gears (`each-player-kills` sur les gears).
 - Whirlwind (ogn-187) : en commençant par l'adversaire, chaque joueur peut renvoyer une unité dans la main de son propriétaire (effet `each-player-may-return-unit`, modes `skip` / `return-unit:<id>`).
+- King's Edict (ogn-237) : l'adversaire choisit une de ses unités (non contrôlée par le lanceur), qui meurt (`each-player-kills` avec `opponentsOnly`).

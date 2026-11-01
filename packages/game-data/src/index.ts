@@ -327,3 +327,4 @@ export { partyFavors } from './ogn/party-favors.js';
 export { cullTheWeak } from './ogn/cull-the-weak.js';
 export { acceptableLosses } from './ogn/acceptable-losses.js';
 export { whirlwind } from './ogn/whirlwind.js';
+export { kingsEdict } from './ogn/kings-edict.js';

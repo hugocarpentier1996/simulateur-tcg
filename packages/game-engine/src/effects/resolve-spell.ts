@@ -210,7 +210,7 @@ export function resolveSpell(
     }
     if (effect.type === 'each-player-kills') {
       const order = [
-        entry.casterId,
+        ...(effect.opponentsOnly ? [] : [entry.casterId]),
         ...state.players.map((p) => p.id).filter((id) => id !== entry.casterId),
       ];
       const choice = nextKillChoice(state, entry.card.id, effect.what, order);
