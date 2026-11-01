@@ -203,13 +203,21 @@ function* candidates(
         ),
       );
       if (payment)
-        yield {
-          type: 'activate-gear',
-          playerId,
-          gearId: gear.id,
-          ...(targetId ? { targetId } : {}),
-          payment,
-        };
+        for (const destinationId of ability.effect.type ===
+          'move-to-or-from-base' &&
+        state.units.find((u) => u.id === targetId)?.zoneId ===
+          state.zones.find((z) => z.kind === 'base' && z.ownerId === playerId)
+            ?.id
+          ? state.battlefields.map((f) => f.zoneId)
+          : [undefined])
+          yield {
+            type: 'activate-gear',
+            playerId,
+            gearId: gear.id,
+            ...(targetId ? { targetId } : {}),
+            ...(destinationId ? { destinationId } : {}),
+            payment,
+          };
     }
   }
   for (const unit of state.units)

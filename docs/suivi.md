@@ -1258,3 +1258,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Guerilla Warfare (ogn-264) : reprend jusqu'à 2 cartes Hidden de son cimetière (sélection `selectedUnitIds`) ; cacher des cartes est gratuit pour le lanceur ce tour (`freeHidePlayers`).
 - Swift Scout (ogn-263) : légende ; cacher peut se payer 1 énergie au lieu d'1 Power (`hideWithEnergy`, champ `payWithEnergy` de hide-card) ; 1 énergie, Tap : met en main un Teemo à soi depuis la zone champion ou le plateau (capacité Tap `tag-to-hand`).
 - Daughter of the Void (ogn-247) : légende ; Tap — ajoute 1 Power de n'importe quel domaine utilisable seulement pour les sorts (réserve `spellPower`, consommée par `payCost` en paiement de sort et prise en compte par `findPayment`).
+- Unforgiven (ogn-259) : légende ; 2 énergie, Tap — déplace une unité alliée d'un champ vers sa base, ou de sa base vers un champ (capacité Tap `move-to-or-from-base`, champ `destinationId` d'activate-gear).

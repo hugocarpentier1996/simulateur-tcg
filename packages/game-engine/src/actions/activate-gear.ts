@@ -118,6 +118,8 @@ export function tapAbilityTargets(
     ability.effect.type === 'recycle-trashes'
   )
     return [];
+  if (ability.effect.type === 'move-to-or-from-base')
+    return state.units.filter((u) => u.ownerId === playerId).map((u) => u.id);
   if (ability.effect.type === 'tag-to-hand') {
     const tag = ability.effect.tag;
     const tagged = (definitionId: string) =>
@@ -205,6 +207,18 @@ function activateTapAbility(
     (z) => z.kind === 'base' && z.ownerId === action.playerId,
   );
   if (untargeted && !base) return { ok: false, reason: 'MISSING_BASE' };
+  // Unforgiven : depuis la base, un champ est requis ; depuis un champ, aucune destination.
+  if (ability.effect.type === 'move-to-or-from-base') {
+    const fromBase =
+      state.units.find((u) => u.id === action.targetId)?.zoneId === base?.id;
+    if (
+      fromBase
+        ? !state.battlefields.some((f) => f.zoneId === action.destinationId)
+        : action.destinationId !== undefined
+    )
+      return { ok: false, reason: 'UNSUPPORTED_DESTINATION' };
+  } else if (action.destinationId !== undefined)
+    return { ok: false, reason: 'UNSUPPORTED_DESTINATION' };
   const paid = payCost(
     state,
     action.playerId,
@@ -257,28 +271,36 @@ function activateTapAbility(
           ? { type: 'kill-gear', gearId: gear.id }
           : ability.effect.type === 'draw'
             ? { type: 'draw', count: ability.effect.count }
-            : ability.effect.type === 'bounce-friendly' ||
-                ability.effect.type === 'tag-to-hand'
-              ? { type: 'bounce', targetId: action.targetId! }
-              : ability.effect.type === 'recycle-trashes'
-                ? { type: 'recycle-trashes', count: ability.effect.count }
-                : ability.effect.type === 'next-spell-bonus-damage'
-                  ? {
-                      type: 'next-spell-bonus-damage',
-                      amount: ability.effect.amount,
-                    }
-                  : ability.effect.type === 'next-unit-ready'
+            : ability.effect.type === 'move-to-or-from-base'
+              ? action.destinationId
+                ? {
+                    type: 'move-to-field',
+                    targetId: action.targetId!,
+                    destinationId: action.destinationId,
+                  }
+                : { type: 'move-to-base', targetId: action.targetId! }
+              : ability.effect.type === 'bounce-friendly' ||
+                  ability.effect.type === 'tag-to-hand'
+                ? { type: 'bounce', targetId: action.targetId! }
+                : ability.effect.type === 'recycle-trashes'
+                  ? { type: 'recycle-trashes', count: ability.effect.count }
+                  : ability.effect.type === 'next-spell-bonus-damage'
                     ? {
-                        type: 'next-unit-ready',
-                        ...(ability.effect.legion ? { legion: true } : {}),
+                        type: 'next-spell-bonus-damage',
+                        amount: ability.effect.amount,
                       }
-                    : ability.effect.type === 'move-to-base'
-                      ? { type: 'move-to-base', targetId: action.targetId! }
-                      : {
-                          type: 'targeted',
-                          targetId: action.targetId!,
-                          effect: ability.effect,
-                        },
+                    : ability.effect.type === 'next-unit-ready'
+                      ? {
+                          type: 'next-unit-ready',
+                          ...(ability.effect.legion ? { legion: true } : {}),
+                        }
+                      : ability.effect.type === 'move-to-base'
+                        ? { type: 'move-to-base', targetId: action.targetId! }
+                        : {
+                            type: 'targeted',
+                            targetId: action.targetId!,
+                            effect: ability.effect,
+                          },
   };
   if (ability.killSelfCost) paid.state = killGears(paid.state, [gear.id]).state;
   return {

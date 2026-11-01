@@ -475,7 +475,8 @@ function actionLabel(
       return (
         prefix +
         target(action.gearId) +
-        (action.targetId ? ' → ' + target(action.targetId) : '')
+        (action.targetId ? ' → ' + target(action.targetId) : '') +
+        (action.destinationId ? ' vers ' + target(action.destinationId) : '')
       );
     case 'activate-spell-energy':
       return (

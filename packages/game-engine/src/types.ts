@@ -671,6 +671,8 @@ export type GameAction =
       gearId: string;
       /** Capacité Tap ciblée (tapAbility) : unité choisie et paiement du coût éventuel. */
       targetId?: string;
+      /** Champ de destination d'un déplacement depuis la base (move-to-or-from-base). */
+      destinationId?: string;
       payment?: PaymentPlan;
     }
   /** Ressource manuelle : Tap d'une rune Ready pour 1 énergie dans la réserve. */

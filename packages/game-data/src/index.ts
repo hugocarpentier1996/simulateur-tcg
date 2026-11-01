@@ -361,3 +361,4 @@ export { packOfWonders } from './ogn/pack-of-wonders.js';
 export { guerillaWarfare } from './ogn/guerilla-warfare.js';
 export { swiftScout } from './ogn/swift-scout.js';
 export { daughterOfTheVoid } from './ogn/daughter-of-the-void.js';
+export { unforgiven } from './ogn/unforgiven.js';

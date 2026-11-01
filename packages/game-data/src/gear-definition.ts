@@ -107,7 +107,9 @@ export interface GearTapAbility {
     /** Renvoie en main une unité, un autre gear ou une carte cachée alliés (Pack of Wonders). */
     | { readonly type: 'bounce-friendly' }
     /** Met en main une unité à soi portant ce tag, depuis la zone champion ou le plateau. */
-    | { readonly type: 'tag-to-hand'; readonly tag: string };
+    | { readonly type: 'tag-to-hand'; readonly tag: string }
+    /** Unité alliée : d'un champ vers sa base, ou de sa base vers le champ destinationId. */
+    | { readonly type: 'move-to-or-from-base' };
 }
 
 /** Définition -> copie figée indépendante. RangeError si coût négatif/non fini,

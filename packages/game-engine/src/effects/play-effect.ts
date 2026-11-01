@@ -1,3 +1,4 @@
+import { moveUnit } from './resolve-spell.js';
 import { leaveBoard } from './leave-board.js';
 import { playUnitFromTrash } from './play-from-trash.js';
 import { opponentHandChoice, trashRecycleChoice } from './mode-choice.js';
@@ -52,7 +53,9 @@ export interface PlayEffectEntry {
         targetId?: string;
         effect: NonNullable<UnitBlueprint['onPlayTargetEffect']>['effect'];
       }
-    | { type: 'move-to-base'; targetId?: string };
+    | { type: 'move-to-base'; targetId?: string }
+    /** Déplace l'unité indiquée de sa base vers un champ (Unforgiven). */
+    | { type: 'move-to-field'; targetId: string; destinationId: string };
 }
 /** Capacité de mise en jeu -> opération commune, indépendante de la survie de la source. */
 export function resolvePlayEffect(
@@ -300,6 +303,16 @@ export function resolvePlayEffect(
   }
   if (entry.effect.type === 'vision')
     return startVision(state, entry.ownerId, entry.sourceId);
+  if (entry.effect.type === 'move-to-field') {
+    const { targetId, destinationId } = entry.effect;
+    const unit = state.units.find((u) => u.id === targetId);
+    const done = [
+      { type: 'unit-play-effect-resolved' as const, sourceId: entry.sourceId },
+    ];
+    if (!unit) return { ok: true, state, events: done };
+    const moved = moveUnit(state, unit, destinationId);
+    return { ok: true, state: moved.state, events: [...moved.events, ...done] };
+  }
   if (entry.effect.type === 'move-to-base') {
     const targetId = entry.effect.targetId;
     const unit = state.units.find(
