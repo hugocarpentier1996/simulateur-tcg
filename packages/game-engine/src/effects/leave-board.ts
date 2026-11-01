@@ -9,7 +9,7 @@ export function leaveBoard(
   kind: 'hand' | 'graveyard' | 'banished',
 ): Extract<ActionResult, { ok: true }> {
   const zone = state.zones.find(
-    (z) => z.kind === kind && z.ownerId === unit.ownerId,
+    (z) => z.kind === kind && z.ownerId === (unit.cardOwnerId ?? unit.ownerId),
   );
   if (!zone) throw new Error('Zone de sortie absente.');
   const units = state.units.filter((u) => u.id !== unit.id);
@@ -23,7 +23,7 @@ export function leaveBoard(
           {
             id: unit.id,
             definitionId: unit.definitionId,
-            ownerId: unit.ownerId,
+            ownerId: unit.cardOwnerId ?? unit.ownerId,
             zoneId: zone.id,
           },
         ],

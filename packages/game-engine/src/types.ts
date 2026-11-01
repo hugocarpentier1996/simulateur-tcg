@@ -519,6 +519,8 @@ export interface UnitState {
   definitionId: string;
   might: number;
   damage: number;
+  /** Propriétaire de la carte quand un autre joueur la contrôle (ownerId = contrôleur). */
+  cardOwnerId?: string;
   tank?: boolean;
   backline?: boolean;
   stunned?: boolean;

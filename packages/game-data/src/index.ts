@@ -339,3 +339,4 @@ export { gemcraftSeer } from './ogn/gemcraft-seer.js';
 export { commanderLedros } from './ogn/commander-ledros.js';
 export { krakenHunter } from './ogn/kraken-hunter.js';
 export { timeWarp } from './ogn/time-warp.js';
+export { possession } from './ogn/possession.js';

@@ -35,6 +35,8 @@ export type SpellEffect =
   | { readonly type: 'exhaust-allies' }
   /** Détruit tous les équipements en jeu (cimetière de leur propriétaire). */
   | { readonly type: 'kill-all-gear' }
+  /** Le lanceur prend le contrôle de la cible et la rappelle dans sa base (Possession). */
+  | { readonly type: 'steal-and-recall' }
   /** Le lanceur joue un tour supplémentaire après celui en cours (Time Warp). */
   | { readonly type: 'extra-turn' }
   /** La cible (unité ou gear) gagne Temporary. */

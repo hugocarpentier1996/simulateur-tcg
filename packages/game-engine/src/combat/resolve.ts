@@ -106,7 +106,9 @@ export function resolveCombat(
 /** Unité morte -> instance de carte au cimetière, débarrassée de son état de combat. */
 function toGraveyard(state: GameState, unit: UnitState): CardInstance {
   const grave = state.zones.find(
-    (zone) => zone.kind === 'graveyard' && zone.ownerId === unit.ownerId,
+    (zone) =>
+      zone.kind === 'graveyard' &&
+      zone.ownerId === (unit.cardOwnerId ?? unit.ownerId),
   );
   if (!grave || !unit.definitionId)
     throw new Error(
@@ -115,7 +117,7 @@ function toGraveyard(state: GameState, unit: UnitState): CardInstance {
   return {
     id: unit.id,
     definitionId: unit.definitionId,
-    ownerId: unit.ownerId,
+    ownerId: unit.cardOwnerId ?? unit.ownerId,
     zoneId: grave.id,
   };
 }

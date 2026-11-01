@@ -581,6 +581,33 @@ export function resolveSpell(
           modes: [`suffer:${target.id}`, 'let-draw'],
         },
       };
+    } else if (effect.type === 'steal-and-recall') {
+      const base = state.zones.find(
+        (z) => z.kind === 'base' && z.ownerId === entry.casterId,
+      );
+      if (!base) continue;
+      const units = state.units.map((u) =>
+        u.id === target.id
+          ? {
+              ...u,
+              cardOwnerId: u.cardOwnerId ?? u.ownerId,
+              ownerId: entry.casterId,
+              zoneId: base.id,
+            }
+          : u,
+      );
+      state = {
+        ...state,
+        units,
+        battlefields: state.battlefields.map((f) =>
+          f.zoneId !== state.showdown?.battlefieldId &&
+          !units.some(
+            (u) => u.zoneId === f.zoneId && u.ownerId === f.controllerId,
+          )
+            ? { ...f, controllerId: null }
+            : f,
+        ),
+      };
     } else if (effect.type === 'grant-shield-tank') {
       state = {
         ...state,

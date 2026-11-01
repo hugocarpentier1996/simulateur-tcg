@@ -49,13 +49,15 @@ export function settleLethalUnits(
         events.push({ type: 'token-removed', unitId: unit.id });
       } else {
         const grave = state.zones.find(
-          (z) => z.kind === 'graveyard' && z.ownerId === unit.ownerId,
+          (z) =>
+            z.kind === 'graveyard' &&
+            z.ownerId === (unit.cardOwnerId ?? unit.ownerId),
         );
         if (!grave) throw new Error('Cimetière absent pour une unité morte.');
         cards.push({
           id: unit.id,
           definitionId: unit.definitionId,
-          ownerId: unit.ownerId,
+          ownerId: unit.cardOwnerId ?? unit.ownerId,
           zoneId: grave.id,
         });
         events.push({ type: 'unit-died', unitId: unit.id, zoneId: grave.id });
