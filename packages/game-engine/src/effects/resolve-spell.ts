@@ -1,3 +1,4 @@
+import { startPick } from './pick.js';
 import { wardenAgainst } from './unit-aura.js';
 import { buffUnit } from './buff.js';
 import { channelForPlayer } from '../turn/supplies.js';
@@ -266,6 +267,10 @@ export function resolveSpell(
       const killed = killGears(state, [entry.targetId]);
       state = killed.state;
       events.push(...killed.events);
+      continue;
+    }
+    if (effect.type === 'look-pick') {
+      state = startPick(state, entry.casterId, entry.card.id, effect.count);
       continue;
     }
     if (effect.type === 'damage-kills-this-turn') {

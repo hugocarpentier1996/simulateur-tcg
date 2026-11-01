@@ -71,6 +71,8 @@ export interface SpellBlueprint {
     | { readonly type: 'exhaust-allies' }
     /** Détruit tous les équipements en jeu (cimetière de leur propriétaire). */
     | { readonly type: 'kill-all-gear' }
+    /** Regarde les `count` cartes du dessus de son deck, en garde 1 en main, recycle le reste. */
+    | { readonly type: 'look-pick'; readonly count: number }
     /** Buffe la cible. */
     | { readonly type: 'buff-unit' }
     /** Déplace la cible vers le champ destinationId (jamais vers une base). */

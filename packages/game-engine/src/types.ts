@@ -59,6 +59,12 @@ export interface GameState {
   playLockedPlayers?: readonly string[];
   /** Cartes jouées (unités, sorts, gears) par joueur depuis le début du tour (Legion). */
   cardsPlayedThisTurn?: Readonly<Record<string, number>>;
+  /** Choix privé : cartes regardées du dessus du deck, une seule ira en main (Stacked Deck). */
+  pendingPick?: {
+    playerId: string;
+    sourceId: string;
+    cardIds: string[];
+  } | null;
   /** État serveur privé : sommet connu uniquement du joueur de Vision. */
   pendingVision?: { playerId: string; sourceId: string; cardId: string } | null;
   /** Choix obligatoire pendant une résolution ; aucune réaction entre défausse et pioche. */
@@ -547,6 +553,8 @@ export type GameAction =
     }
   | { type: 'choose-vision'; playerId: string; recycle: boolean }
   | { type: 'choose-discard'; playerId: string; cardId: string }
+  /** Carte gardée parmi celles regardées (pendingPick). */
+  | { type: 'choose-pick'; playerId: string; cardId: string }
   | { type: 'activate-spell-energy'; playerId: string; unitId: string }
   /** Capacité ADD d'un gear Ready : Tap et ressource dans la réserve flottante. */
   | {
@@ -832,6 +840,7 @@ export type GameEvent =
  * SHOWDOWN_IN_PROGRESS : terminer le Showdown avant de terminer le tour.
  * PLAY_WINDOW_CLOSED / CARD_NOT_IN_HAND / UNKNOWN_UNIT_DEFINITION / MISSING_BASE : mise en jeu impossible.
  * PLAY_LOCKED : le joueur ne peut plus jouer de carte ce tour (Brynhir Thundersong).
+ * PICK_CHOICE_REQUIRED / NO_PICK_CHOICE : choix de carte regardée en attente ou absent.
  * DUPLICATE_RUNE / INVALID_RUNE / RUNE_NOT_READY / MISSING_RUNE_PILE : plan de paiement invalide.
  * INSUFFICIENT_RESOURCES : coût non couvert, aucun paiement partiel.
  * DAMAGE_ASSIGNMENT_REQUIRED / NO_DAMAGE_WINDOW : mauvaise fenêtre de combat.

@@ -60,6 +60,12 @@ function* candidates(
     yield* defenseShieldActions(state, playerId);
     return;
   }
+  if (state.pendingPick) {
+    if (state.pendingPick.playerId === playerId)
+      for (const cardId of state.pendingPick.cardIds)
+        yield { type: 'choose-pick', playerId, cardId };
+    return;
+  }
   if (state.pendingVision) {
     if (state.pendingVision.playerId === playerId) {
       yield { type: 'choose-vision', playerId, recycle: false };

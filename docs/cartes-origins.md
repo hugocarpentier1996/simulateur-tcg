@@ -248,3 +248,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Mageseeker Warden — ogn-070-298
 - [x] Blitzcrank — ogn-067-298
 - [x] Caitlyn — ogn-068-298
+- [x] Stacked Deck — ogn-183-298

@@ -18,6 +18,7 @@ export function continueStack(
     next.pendingDeaths ||
     next.pendingDiscard ||
     next.pendingVision ||
+    next.pendingPick ||
     next.pendingAttackChoices?.length
   )
     return {

@@ -136,6 +136,7 @@ function paymentPanel(session: Session, selection: Selection | null): string {
     (!selection &&
       choices.some((a) => a.type === 'end-turn' || a.type === 'pass')) ||
     state.pendingVision ||
+    state.pendingPick ||
     state.pendingDiscard ||
     state.pendingDeaths ||
     state.pendingAttackChoices?.length ||
@@ -145,32 +146,34 @@ function paymentPanel(session: Session, selection: Selection | null): string {
     state.pendingHoldChannel ||
     state.showdown
   ) {
-    const heading = state.pendingVision
-      ? 'Vision'
-      : state.pendingDiscard
-        ? (state.pendingDiscard.remaining ?? 1) > 1
-          ? `Choisir une carte à défausser (encore ${state.pendingDiscard.remaining})`
-          : 'Choisir une carte à défausser'
-        : state.pendingDeaths
-          ? 'Effets de mort'
-          : state.pendingAttackChoices?.length
-            ? 'Capacités d’attaque'
-            : state.pendingDefenseShield
-              ? 'Choisir une unité · Shield 2'
-              : state.pendingHoldChannel
-                ? 'Startipped Peak'
-                : state.setup
-                  ? 'Choisir les champs · BO3'
-                  : state.stack
-                    ? 'Réactions'
-                    : state.showdown?.kind === 'combat' &&
-                        state.showdown.stage === 'damage'
-                      ? 'Répartir les dégâts'
-                      : state.showdown
-                        ? 'Combat Showdown'
-                        : choices.some((a) => a.type === 'end-turn')
-                          ? 'Fin de tour · Dark Child'
-                          : 'Rendre la priorité';
+    const heading = state.pendingPick
+      ? 'Choisir la carte à garder'
+      : state.pendingVision
+        ? 'Vision'
+        : state.pendingDiscard
+          ? (state.pendingDiscard.remaining ?? 1) > 1
+            ? `Choisir une carte à défausser (encore ${state.pendingDiscard.remaining})`
+            : 'Choisir une carte à défausser'
+          : state.pendingDeaths
+            ? 'Effets de mort'
+            : state.pendingAttackChoices?.length
+              ? 'Capacités d’attaque'
+              : state.pendingDefenseShield
+                ? 'Choisir une unité · Shield 2'
+                : state.pendingHoldChannel
+                  ? 'Startipped Peak'
+                  : state.setup
+                    ? 'Choisir les champs · BO3'
+                    : state.stack
+                      ? 'Réactions'
+                      : state.showdown?.kind === 'combat' &&
+                          state.showdown.stage === 'damage'
+                        ? 'Répartir les dégâts'
+                        : state.showdown
+                          ? 'Combat Showdown'
+                          : choices.some((a) => a.type === 'end-turn')
+                            ? 'Fin de tour · Dark Child'
+                            : 'Rendre la priorité';
     if (state.showdown) {
       const show = state.showdown;
       const priority = state.stack?.priorityPlayerId ?? show.priorityPlayerId;
@@ -441,6 +444,8 @@ function actionLabel(
       );
     case 'choose-discard':
       return prefix + 'Défausser ' + target(action.cardId);
+    case 'choose-pick':
+      return prefix + 'Garder ' + target(action.cardId);
     case 'choose-vision':
       return (
         prefix +

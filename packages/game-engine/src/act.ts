@@ -1,3 +1,4 @@
+import { choosePick } from './effects/pick.js';
 import { summonToken } from './effects/summon-token.js';
 import { activeLegends } from './effects/legends.js';
 import { buffUnit } from './effects/buff.js';
@@ -391,6 +392,8 @@ function dispatch(state: GameState, action: GameAction): ActionResult {
   if (action.type === 'choose-vision') return chooseVision(state, action);
   if (state.pendingVision)
     return { ok: false, reason: 'VISION_CHOICE_REQUIRED' };
+  if (action.type === 'choose-pick') return choosePick(state, action);
+  if (state.pendingPick) return { ok: false, reason: 'PICK_CHOICE_REQUIRED' };
   if (action.type === 'choose-discard') return chooseDiscard(state, action);
   if (state.pendingDiscard)
     return { ok: false, reason: 'DISCARD_CHOICE_REQUIRED' };

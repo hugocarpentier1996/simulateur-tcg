@@ -292,3 +292,4 @@ export { missFortuneChaos } from './ogn/miss-fortune-chaos.js';
 export { mageseekerWarden } from './ogn/mageseeker-warden.js';
 export { blitzcrank } from './ogn/blitzcrank.js';
 export { caitlyn } from './ogn/caitlyn.js';
+export { stackedDeck } from './ogn/stacked-deck.js';

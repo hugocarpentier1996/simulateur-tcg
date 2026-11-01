@@ -435,6 +435,7 @@ export function handPlayer(state: GameState): string {
     mulliganPlayer(state) ??
     state.pendingDiscard?.playerId ??
     state.pendingVision?.playerId ??
+    state.pendingPick?.playerId ??
     state.pendingDeaths?.playerOrder[0] ??
     state.pendingAttackChoices?.[0]?.ownerId ??
     state.stack?.priorityPlayerId ??
