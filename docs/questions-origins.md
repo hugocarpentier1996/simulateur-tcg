@@ -84,3 +84,4 @@ existantes ; seuls les nouveaux doutes utiles rejoindront le prochain lot de que
 - Ava Achiever (limite) : les sorts Hidden ne sont pas proposés (choix de cibles non géré dans ce cadre) ; l'unité jouée arrive Tap, sans ses effets « when you play me ».
 - Heimerdinger (limite) : seules les capacités Tap à effet sont copiées, pas les capacités ADD de ressource.
 - Mystic Reversal (limite) : « you may make new choices » n'est pas proposé, les choix d'origine sont conservés.
+- Blind Fury (limite) : un gear ou un sort à cibles révélé reste banni sans être joué.

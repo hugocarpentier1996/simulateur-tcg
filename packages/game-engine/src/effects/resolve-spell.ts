@@ -345,6 +345,82 @@ export function resolveSpell(
       }
       continue;
     }
+    if (effect.type === 'steal-top-card') {
+      const opponent = state.players.find((p) => p.id !== entry.casterId);
+      const top = state.cards.find((c) =>
+        state.zones.some(
+          (z) =>
+            z.id === c.zoneId &&
+            z.kind === 'deck' &&
+            z.ownerId === opponent?.id,
+        ),
+      );
+      const banished = state.zones.find(
+        (z) => z.kind === 'banished' && z.ownerId === top?.ownerId,
+      );
+      if (!top || !banished) continue;
+      state = {
+        ...state,
+        cards: state.cards.map((c) =>
+          c.id === top.id ? { ...c, zoneId: banished.id } : c,
+        ),
+      };
+      const unit = state.unitDefinitions?.find(
+        (d) => d.id === top.definitionId,
+      );
+      const spell = state.spellDefinitions?.find(
+        (d) => d.id === top.definitionId,
+      );
+      const base = state.zones.find(
+        (z) => z.kind === 'base' && z.ownerId === entry.casterId,
+      );
+      if (unit && base) {
+        state = {
+          ...state,
+          cards: state.cards.filter((c) => c.id !== top.id),
+          units: [
+            ...state.units,
+            {
+              id: top.id,
+              definitionId: top.definitionId,
+              ownerId: entry.casterId,
+              cardOwnerId: top.ownerId,
+              zoneId: base.id,
+              ready: unit.entersReady === true,
+              might: unit.might,
+              ...(unit.tank ? { tank: true } : {}),
+              ...(unit.backline ? { backline: true } : {}),
+              damage: 0,
+            },
+          ],
+        };
+        events.push({
+          type: 'unit-played',
+          playerId: entry.casterId,
+          unitId: top.id,
+          definitionId: unit.id,
+          zoneId: base.id,
+        });
+      } else if (spell?.target.kind === 'caster' && state.stack) {
+        state = {
+          ...state,
+          cards: state.cards.filter((c) => c.id !== top.id),
+          stack: {
+            ...state.stack,
+            entries: [
+              ...state.stack.entries,
+              {
+                card: { ...top, zoneId: banished.id },
+                definition: spell,
+                casterId: entry.casterId,
+                targetId: entry.casterId,
+              },
+            ],
+          },
+        };
+      }
+      continue;
+    }
     if (effect.type === 'steal-spell') {
       const stolen = stackSpellTarget(state, entry.definition, entry.targetId);
       if (!stolen || !state.stack) continue;

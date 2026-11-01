@@ -79,6 +79,8 @@ export interface SpellBlueprint {
     | { readonly type: 'exhaust-allies' }
     /** Détruit tous les équipements en jeu (cimetière de leur propriétaire). */
     | { readonly type: 'kill-all-gear' }
+    /** Révèle le dessus du deck adverse, la bannit puis la joue gratuitement (Blind Fury). */
+    | { readonly type: 'steal-top-card' }
     /** Le lanceur prend le contrôle du sort ciblé sur la pile (Mystic Reversal). */
     | { readonly type: 'steal-spell' }
     /** count instructions « inflige amount à une unité », cibles choisies une à une à la
