@@ -9,7 +9,13 @@ export function playUnitFromTrash(
   cardId: string | undefined,
 ): { state: GameState; events: GameEvent[] } {
   const card = cardId
-    ? graveyardCard(state, playerId, cardId, 'unit')
+    ? (graveyardCard(state, playerId, cardId, 'unit') ??
+      state.cards.find(
+        (c) =>
+          c.id === cardId &&
+          c.ownerId === playerId &&
+          state.zones.some((z) => z.id === c.zoneId && z.kind === 'deck'),
+      ))
     : undefined;
   const unit = state.unitDefinitions?.find((d) => d.id === card?.definitionId);
   const base = state.zones.find(

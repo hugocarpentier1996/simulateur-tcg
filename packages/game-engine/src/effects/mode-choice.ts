@@ -85,6 +85,8 @@ export interface ModeChoiceEntry {
   followTo?: string;
   /** Redresser autre chose de Tap (Miss Fortune) : modes calculés à la résolution. */
   readyOther?: boolean;
+  /** La source à jouer est dans le deck (Nocturne), pas au cimetière. */
+  fromDeck?: boolean;
   /** Coût à payer pour jouer la source depuis le cimetière (Flame Chompers, Phoenix). */
   payPlayCost?: UnitBlueprint['cost'];
   /** Baited Hook : l'unité choisie est jouée sans payer son coût. */
@@ -217,7 +219,15 @@ export function resolveModeChoice(
       : entry.readyOther
         ? ['skip', ...exhausted]
         : payPlayCost
-          ? inTrash && findPayment(state, entry.ownerId, payPlayCost)
+          ? (entry.fromDeck
+              ? state.cards.some(
+                  (c) =>
+                    c.id === entry.sourceId &&
+                    state.zones.some(
+                      (z) => z.id === c.zoneId && z.kind === 'deck',
+                    ),
+                )
+              : inTrash) && findPayment(state, entry.ownerId, payPlayCost)
             ? ['skip', 'pay-play']
             : []
           : entry.arrangeTop

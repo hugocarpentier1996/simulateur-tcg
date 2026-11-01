@@ -381,3 +381,4 @@ export { karthus } from './ogn/karthus.js';
 export { unlicensedArmory } from './ogn/unlicensed-armory.js';
 export { symbolOfTheSolari } from './ogn/symbol-of-the-solari.js';
 export { tryndamere } from './ogn/tryndamere.js';
+export { nocturne } from './ogn/nocturne.js';

@@ -337,3 +337,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Unlicensed Armory — ogn-023-298
 - [x] Symbol of the Solari — ogn-227-298
 - [x] Tryndamere — ogn-034-298
+- [x] Nocturne — ogn-194-298

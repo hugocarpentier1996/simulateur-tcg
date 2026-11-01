@@ -38,14 +38,37 @@ export function chooseVision(
   const card = topCard(state, action.playerId);
   if (card?.id !== pending.cardId)
     return { ok: false, reason: 'INVALID_TARGET' };
+  const placed: GameState = {
+    ...state,
+    pendingVision: null,
+    cards: action.recycle
+      ? [...state.cards.filter((c) => c.id !== card.id), card]
+      : state.cards,
+  };
+  // Nocturne vu : capacité « le jouer pour 1 Power » sur la pile.
+  const seen = state.unitDefinitions?.find(
+    (d) => d.id === card.definitionId,
+  )?.playWhenSeen;
   return continueStack(
-    {
-      ...state,
-      pendingVision: null,
-      cards: action.recycle
-        ? [...state.cards.filter((c) => c.id !== card.id), card]
-        : state.cards,
-    },
+    seen && placed.stack
+      ? {
+          ...placed,
+          stack: {
+            ...placed.stack,
+            entries: [
+              ...placed.stack.entries,
+              {
+                kind: 'mode-choice',
+                sourceId: card.id,
+                ownerId: action.playerId,
+                modes: [],
+                payPlayCost: { energy: 0, power: {}, genericPower: 1 },
+                fromDeck: true,
+              },
+            ],
+          },
+        }
+      : placed,
     [{ type: 'unit-play-effect-resolved', sourceId: pending.sourceId }],
   );
 }

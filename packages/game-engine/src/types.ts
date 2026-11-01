@@ -482,6 +482,8 @@ export interface UnitBlueprint {
   /** Conquête après une attaque avec au moins ce total de dégâts excédentaires assignés aux
    * ennemis : son propriétaire marque 1 point (Tryndamere). */
   readonly conquerExcessScore?: number;
+  /** Vu au dessus du deck (Vision) : peut être joué pour 1 Power quelconque (Nocturne). */
+  readonly playWhenSeen?: boolean;
   /** « Recycle 1 from your trash » : +Might jusqu'à la fin du tour, via la pile (Vi). */
   readonly trashRecycleMight?: number;
   /** Coût supplémentaire obligatoire : tuer une unité alliée (sacrificeUnitId). */
