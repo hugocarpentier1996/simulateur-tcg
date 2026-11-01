@@ -222,3 +222,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Navori Fighting Pit — ogn-283-298
 - [x] Scrapheap — ogn-182-298
 - [x] Iron Ballista — ogn-017-298
+- [x] Orb of Regret — ogn-090-298
