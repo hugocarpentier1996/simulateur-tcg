@@ -1233,3 +1233,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Fading Memories (ogn-180) : une unité sur un champ ou un gear gagne Temporary (cible `battlefield-unit-or-gear`, effet `grant-temporary`) ; les gears Temporary sont détruits au début de la Beginning de leur propriétaire.
 - Vanguard Helm (ogn-228) : gear ; quand une unité alliée buffée meurt, une autre unité alliée est buffée (`buffOnBuffedAllyDeath`).
 - Gemcraft Seer (ogn-100) : Vision ; tant qu'elle est en jeu, les autres unités alliées jouées ont Vision (`alliesHaveVision`).
+- Commander Ledros (ogn-231) : Deflect, Ganking ; peut tuer des unités alliées en coût supplémentaire, chacune retirant 1 Power Order (`unitCostReduction` kind sacrifice, champ d'action `costUnitIds`).

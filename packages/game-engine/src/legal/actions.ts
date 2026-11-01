@@ -24,6 +24,7 @@ import { canSummonAt } from '../actions/unit-destination.js';
 import { recoverableSpells } from '../effects/return-spell.js';
 import {
   unitCost,
+  costUnitChoices,
   buffOthersChoices,
   handCards,
 } from '../actions/play-unit.js';
@@ -226,52 +227,78 @@ function* candidates(
             unitCost(state, playerId, unit, accelerate, optionalCost, discard),
           ),
         );
-        if (payment)
-          for (const discardCardId of discard
-            ? handCards(state, playerId, card.id)
-            : [undefined])
-            for (const zone of destinations)
-              for (const onPlaySelectedIds of buffOthersChoices(
+        for (const costUnitIds of costUnitChoices(
+          state,
+          playerId,
+          card.id,
+          unit,
+        )) {
+          const reducedPayment = costUnitIds.length
+            ? findPayment(
                 state,
                 playerId,
-                card.id,
-                unit,
-              ))
-                for (const onPlayTargetId of playTargetChoices(
+                hiddenFree(
+                  card,
+                  unitCost(
+                    state,
+                    playerId,
+                    unit,
+                    accelerate,
+                    optionalCost,
+                    discard,
+                    costUnitIds.length,
+                  ),
+                ),
+              )
+            : payment;
+          if (reducedPayment)
+            for (const discardCardId of discard
+              ? handCards(state, playerId, card.id)
+              : [undefined])
+              for (const zone of destinations)
+                for (const onPlaySelectedIds of buffOthersChoices(
                   state,
+                  playerId,
                   card.id,
                   unit,
-                  zone.id,
                 ))
-                  for (const returnSpellId of unit.onPlayReturnSpell ||
-                  unit.onPlayReturnUnit
-                    ? recoverableSpells(
-                        state,
-                        playerId,
-                        unit.onPlayReturnUnit ? 'unit' : 'spell',
-                      ).length
+                  for (const onPlayTargetId of playTargetChoices(
+                    state,
+                    card.id,
+                    unit,
+                    zone.id,
+                  ))
+                    for (const returnSpellId of unit.onPlayReturnSpell ||
+                    unit.onPlayReturnUnit
                       ? recoverableSpells(
                           state,
                           playerId,
                           unit.onPlayReturnUnit ? 'unit' : 'spell',
-                        )
-                      : [undefined]
-                    : [undefined])
-                    yield {
-                      type: 'play-unit',
-                      ...(onPlayTargetId ? { onPlayTargetId } : {}),
-                      ...(onPlaySelectedIds.length
-                        ? { onPlaySelectedIds }
-                        : {}),
-                      ...(accelerate ? { accelerate } : {}),
-                      ...(optionalCost ? { optionalCost } : {}),
-                      ...(discardCardId ? { discardCardId } : {}),
-                      ...(returnSpellId ? { returnSpellId } : {}),
-                      playerId,
-                      cardId: card.id,
-                      destinationId: zone.id,
-                      payment,
-                    };
+                        ).length
+                        ? recoverableSpells(
+                            state,
+                            playerId,
+                            unit.onPlayReturnUnit ? 'unit' : 'spell',
+                          )
+                        : [undefined]
+                      : [undefined])
+                      yield {
+                        type: 'play-unit',
+                        ...(onPlayTargetId ? { onPlayTargetId } : {}),
+                        ...(onPlaySelectedIds.length
+                          ? { onPlaySelectedIds }
+                          : {}),
+                        ...(accelerate ? { accelerate } : {}),
+                        ...(optionalCost ? { optionalCost } : {}),
+                        ...(discardCardId ? { discardCardId } : {}),
+                        ...(costUnitIds.length ? { costUnitIds } : {}),
+                        ...(returnSpellId ? { returnSpellId } : {}),
+                        playerId,
+                        cardId: card.id,
+                        destinationId: zone.id,
+                        payment: reducedPayment,
+                      };
+        }
       }
     }
     const gear = state.gearDefinitions?.find((d) => d.id === card.definitionId);
@@ -578,6 +605,9 @@ function targetPayment(state: GameState, action: GameAction): GameAction[] {
                   action.type === 'play-unit' && action.optionalCost === true,
                   action.type === 'play-unit' &&
                     action.discardCardId !== undefined,
+                  action.type === 'play-unit'
+                    ? (action.costUnitIds?.length ?? 0)
+                    : 0,
                 ),
               )
             : definition.cost,

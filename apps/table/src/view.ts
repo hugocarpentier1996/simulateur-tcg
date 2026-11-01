@@ -447,6 +447,9 @@ function actionLabel(
         (action.sacrificeUnitId
           ? ' · en tuant ' + unit(action.sacrificeUnitId)
           : '') +
+        (action.costUnitIds
+          ? ' · coût payé avec ' + action.costUnitIds.map(target).join(' + ')
+          : '') +
         (action.discardCardId
           ? ' · en défaussant ' + target(action.discardCardId)
           : '') +

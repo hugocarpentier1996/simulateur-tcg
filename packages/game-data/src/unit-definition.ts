@@ -215,6 +215,12 @@ export interface UnitDefinition extends PrintedMetadata {
   readonly reactionTiming?: boolean;
   /** Tant qu'elle est en jeu, les autres unités alliées ont Vision (Gemcraft Seer). */
   readonly alliesHaveVision?: boolean;
+  /** Coût supplémentaire facultatif sur des unités alliées choisies (costUnitIds) : les tuer
+   * (Commander Ledros) ou dépenser leur buff (Kraken Hunter), -1 Power de la couleur chacune. */
+  readonly unitCostReduction?: {
+    readonly kind: 'sacrifice' | 'spend-buff';
+    readonly power: string;
+  };
   /** À la mise en jeu : buffe jusqu'à ce nombre d'autres unités alliées (onPlaySelectedIds). */
   readonly onPlayBuffOthers?: number;
   /** « When I conquer » : se buffe, via la pile (Sett). */

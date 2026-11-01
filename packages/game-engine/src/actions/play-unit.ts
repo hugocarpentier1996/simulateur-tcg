@@ -1,3 +1,4 @@
+import { spendBuff } from '../effects/buff.js';
 import { canUseTiming } from './timing.js';
 import {
   choicesHere,
@@ -55,7 +56,29 @@ export function playUnit(
       ))
   )
     return { ok: false, reason: 'INVALID_ADDITIONAL_COST' };
+  const costUnits = action.costUnitIds ?? [];
+  if (
+    costUnits.length &&
+    !costUnitChoices(state, action.playerId, action.cardId, definition).some(
+      (choice) => sameIds(choice, costUnits),
+    )
+  )
+    return { ok: false, reason: 'INVALID_ADDITIONAL_COST' };
   let played = playUnitCore(state, action);
+  if (played.ok && costUnits.length) {
+    if (definition?.unitCostReduction?.kind === 'spend-buff') {
+      let next = played.state;
+      for (const id of costUnits) next = spendBuff(next, id) ?? next;
+      played = { ...played, state: next };
+    } else {
+      const killed = settleLethalUnits(played.state, new Set(costUnits));
+      played = {
+        ok: true,
+        state: killed.state,
+        events: [...played.events, ...killed.events],
+      };
+    }
+  }
   if (played.ok && action.discardCardId) {
     const grave = played.state.zones.find(
       (z) => z.kind === 'graveyard' && z.ownerId === action.playerId,
@@ -339,6 +362,7 @@ function playUnitCore(
         action.accelerate === true,
         action.optionalCost === true,
         action.discardCardId !== undefined,
+        action.costUnitIds?.length ?? 0,
       ),
     ),
     action.onPlayTargetId ? [action.onPlayTargetId] : [],
@@ -458,8 +482,23 @@ export function unitCost(
   accelerate: boolean,
   optional = false,
   discard = false,
+  costUnits = 0,
 ): UnitBlueprint['cost'] {
-  const base = accelerate ? acceleratedCost(definition) : definition.cost;
+  const printed = accelerate ? acceleratedCost(definition) : definition.cost;
+  const reducedColor = definition.unitCostReduction?.power;
+  const base =
+    reducedColor && costUnits
+      ? {
+          ...printed,
+          power: {
+            ...printed.power,
+            [reducedColor]: Math.max(
+              0,
+              (printed.power[reducedColor] ?? 0) - costUnits,
+            ),
+          },
+        }
+      : printed;
   const extra = optional ? definition.optionalCost?.power : undefined;
   const cost = extra
     ? {
@@ -558,4 +597,36 @@ export function buffOthersChoices(
 
 function sameIds(a: readonly string[], b: readonly string[]): boolean {
   return a.length === b.length && a.every((id) => b.includes(id));
+}
+
+/** Coûts sur unités alliées (unitCostReduction) : sous-ensembles, vide compris, d'au plus
+ * autant d'unités que de Power réductible ; spend-buff : alliées buffées seulement. */
+export function costUnitChoices(
+  state: GameState,
+  playerId: string,
+  cardId: string,
+  definition: UnitBlueprint | undefined,
+): string[][] {
+  const reduction = definition?.unitCostReduction;
+  if (!reduction) return [[]];
+  const max = definition.cost.power[reduction.power] ?? 0;
+  const ids = state.units
+    .filter(
+      (u) =>
+        u.ownerId === playerId &&
+        u.id !== cardId &&
+        (reduction.kind !== 'spend-buff' || u.buffed),
+    )
+    .map((u) => u.id);
+  const pick = (from: number, size: number): string[][] =>
+    size === 0
+      ? [[]]
+      : ids
+          .slice(from)
+          .flatMap((id, i) =>
+            pick(from + i + 1, size - 1).map((rest) => [id, ...rest]),
+          );
+  return Array.from({ length: Math.min(max, ids.length) + 1 }, (_, size) =>
+    pick(0, size),
+  ).flat();
 }
