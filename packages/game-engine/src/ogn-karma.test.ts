@@ -4,6 +4,7 @@ import {
   step,
   resolveTop,
   noRunes,
+  passUntilChoice,
 } from './origins-test-fixtures.js';
 import { karma, stupefy } from '../../game-data/src/index.js';
 
@@ -27,7 +28,11 @@ it('Karma : recycler des cartes (ici par sa Vision) buffe une unité alliée', (
   );
   expect(s.pendingVision).toBeTruthy();
   s = step(s, { type: 'choose-vision', playerId: 'a', recycle: true });
-  expect(s.units.filter((u) => u.ownerId === 'a' && u.buffed)).toHaveLength(1);
+  s = passUntilChoice(s);
+  expect(s.pendingModeChoice?.modes).toEqual(['buff:ally', 'buff:karma']);
+  s = step(s, { type: 'choose-mode', playerId: 'a', mode: 'buff:karma' });
+  expect(s.units.find((u) => u.id === 'karma')?.buffed).toBe(true);
+  expect(s.units.find((u) => u.id === 'ally')?.buffed).toBeFalsy();
 });
 
 it('Karma : garder la carte au sommet ne buffe rien', () => {

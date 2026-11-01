@@ -11,12 +11,11 @@ import {
   trashLostFacedown,
 } from './effects/hidden.js';
 import { channelForPlayer } from './turn/supplies.js';
-import { chooseMode } from './effects/mode-choice.js';
+import { buffChoiceEntry, chooseMode } from './effects/mode-choice.js';
 import { spellChosenUnits } from './cost/deflect.js';
 import { choosePick } from './effects/pick.js';
 import { summonToken } from './effects/summon-token.js';
 import { activeLegends } from './effects/legends.js';
-import { buffUnit } from './effects/buff.js';
 import { isStunned } from './effects/modifiers.js';
 import { drawCardForPlayer } from './turn/draw.js';
 import { battlefieldDefinition } from './effects/battlefield.js';
@@ -230,19 +229,13 @@ export function act(state: GameState, action: GameAction): ActionResult {
         }),
       }
     : afterDiscard;
-  let dawn = afterStun;
+  const dawn = afterStun;
+  // Radiant Dawn : capacité sur la pile, l'unité buffée est choisie à la résolution.
+  const buffEntries: ModeChoiceEntry[] = [];
   for (const player of dawn.players)
-    if (
-      stunners.has(player.id) &&
-      activeLegends(dawn, player.id).some(
-        (l) => l.definition.buffOnEnemyStunned,
-      )
-    ) {
-      const pick = [...dawn.units]
-        .filter((u) => u.ownerId === player.id)
-        .sort((x, y) => Number(!!x.buffed) - Number(!!y.buffed))[0];
-      if (pick) dawn = buffUnit(dawn, pick.id);
-    }
+    for (const legend of activeLegends(dawn, player.id))
+      if (stunners.has(player.id) && legend.definition.buffOnEnemyStunned)
+        buffEntries.push(buffChoiceEntry(legend.card.id, player.id));
   // Solari Shrine : ennemi Stun mort -> gear Ready couché, pioche de son propriétaire.
   const stunnedDead = events.flatMap((e) =>
     e.type === 'unit-died' || e.type === 'token-removed'
@@ -462,37 +455,29 @@ export function act(state: GameState, action: GameAction): ActionResult {
       )
       .map((c) => c.ownerId),
   ]);
-  for (const owner of recyclers) {
-    const karmas = shrine.units.filter(
-      (u) =>
-        u.ownerId === owner &&
-        shrine.unitDefinitions?.find((d) => d.id === u.definitionId)
-          ?.buffOnRecycle,
-    ).length;
-    for (let i = 0; i < karmas; i++) {
-      const recipient = [...shrine.units]
-        .filter((u) => u.ownerId === owner)
-        .sort((x, y) => Number(!!x.buffed) - Number(!!y.buffed))[0];
-      if (recipient) shrine = buffUnit(shrine, recipient.id);
-    }
-  }
-  // Vanguard Helm : alliée buffée morte -> une autre alliée est buffée, par gear.
+  for (const owner of recyclers)
+    for (const karma of shrine.units)
+      if (
+        karma.ownerId === owner &&
+        shrine.unitDefinitions?.find((d) => d.id === karma.definitionId)
+          ?.buffOnRecycle
+      )
+        buffEntries.push(buffChoiceEntry(karma.id, owner));
+  // Vanguard Helm : alliée buffée morte -> une autre alliée est buffée, par gear (pile).
   for (const e of events) {
     if (e.type !== 'unit-died' && e.type !== 'token-removed') continue;
     const dead = state.units.find((u) => u.id === e.unitId);
     if (!dead?.buffed) continue;
-    for (const helm of shrine.gears ?? []) {
+    for (const helm of shrine.gears ?? [])
       if (
-        helm.ownerId !== dead.ownerId ||
-        !shrine.gearDefinitions?.find((d) => d.id === helm.definitionId)
+        helm.ownerId === dead.ownerId &&
+        shrine.gearDefinitions?.find((d) => d.id === helm.definitionId)
           ?.buffOnBuffedAllyDeath
       )
-        continue;
-      const recipient = [...shrine.units]
-        .filter((u) => u.ownerId === dead.ownerId)
-        .sort((x, y) => Number(!!x.buffed) - Number(!!y.buffed))[0];
-      if (recipient) shrine = buffUnit(shrine, recipient.id);
-    }
+        buffEntries.push({
+          ...buffChoiceEntry(helm.id, dead.ownerId),
+          excludeId: dead.id,
+        });
   }
   // Wraith of Echoes : première mort alliée du tour -> pioche, une fois par joueur.
   const firstDeaths = [...new Set(deadOwners)].filter(
@@ -518,24 +503,26 @@ export function act(state: GameState, action: GameAction): ActionResult {
       }
   }
   // Flame Chompers : carte défaussée -> capacité « payer pour la jouer » sur la pile.
-  const chompers: ModeChoiceEntry[] = events.flatMap((e) => {
-    if (e.type !== 'card-discarded') return [];
-    const card = shrine.cards.find((c) => c.id === e.cardId);
-    const rule = shrine.unitDefinitions?.find(
-      (d) => d.id === card?.definitionId,
-    )?.playOnDiscard;
-    return card && rule
-      ? [
-          {
-            kind: 'mode-choice' as const,
-            sourceId: card.id,
-            ownerId: card.ownerId,
-            modes: [],
-            payPlayCost: { energy: 0, power: { [rule.power]: 1 } },
-          },
-        ]
-      : [];
-  });
+  const chompers: ModeChoiceEntry[] = buffEntries.concat(
+    events.flatMap((e) => {
+      if (e.type !== 'card-discarded') return [];
+      const card = shrine.cards.find((c) => c.id === e.cardId);
+      const rule = shrine.unitDefinitions?.find(
+        (d) => d.id === card?.definitionId,
+      )?.playOnDiscard;
+      return card && rule
+        ? [
+            {
+              kind: 'mode-choice' as const,
+              sourceId: card.id,
+              ownerId: card.ownerId,
+              modes: [],
+              payPlayCost: { energy: 0, power: { [rule.power]: 1 } },
+            },
+          ]
+        : [];
+    }),
+  );
   // Immortal Phoenix : un sort du joueur tue une unité -> payer pour la jouer du cimetière.
   const spellKill =
     events.some((e) => e.type === 'spell-resolved') &&

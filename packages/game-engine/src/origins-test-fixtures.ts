@@ -81,3 +81,25 @@ export function resolveTop(state: GameState) {
   });
   return step(state, { type: 'pass', playerId: state.stack!.priorityPlayerId });
 }
+
+/** Vide la pile en passant ; aux choix de mode, prend le premier mode de `picks` proposé. */
+export function drain(state: GameState, picks: readonly string[] = []) {
+  let s = state;
+  for (let i = 0; i < 50 && (s.stack || s.pendingModeChoice); i++) {
+    const pending = s.pendingModeChoice;
+    if (pending) {
+      const mode =
+        pending.modes.find((m) => picks.includes(m)) ?? pending.modes[0]!;
+      s = step(s, { type: 'choose-mode', playerId: pending.ownerId, mode });
+    } else s = step(s, { type: 'pass', playerId: s.stack!.priorityPlayerId });
+  }
+  return s;
+}
+
+/** Passe la priorité jusqu'au prochain choix de mode (ou pile vide). */
+export function passUntilChoice(state: GameState) {
+  let s = state;
+  while (s.stack && !s.pendingModeChoice)
+    s = step(s, { type: 'pass', playerId: s.stack.priorityPlayerId });
+  return s;
+}

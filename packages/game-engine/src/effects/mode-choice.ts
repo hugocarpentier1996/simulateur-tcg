@@ -56,7 +56,8 @@ export type EffectMode =
   | `ava:${string}`
   | `kaisa:${string}`
   | `keep:${string}`
-  | `future:${string}`;
+  | `future:${string}`
+  | `buff:${string}`;
 
 const ONE_ENERGY = { energy: 1, power: {} };
 
@@ -118,6 +119,11 @@ export interface ModeChoiceEntry {
   retreatFrom?: string;
   /** Recyclages restant à choisir dans les cimetières (Forge of the Future). */
   recycleLeft?: number;
+  /** Unité exclue d'un choix (Vanguard Helm : l'alliée morte). */
+  excludeId?: string;
+  /** Buff d'une unité alliée choisie à la résolution ; buffHere limite au champ indiqué
+   * (Navori Fighting Pit, Radiant Dawn, Vanguard Helm, Karma). */
+  buffChoice?: { here?: string };
   /** Recyclage : seulement son propre cimetière, sans « skip » (Dr. Mundo, Garbage Grabber). */
   recycleOwn?: boolean;
   recycleMandatory?: boolean;
@@ -139,6 +145,37 @@ export function resolveModeChoice(
   entry: ModeChoiceEntry,
 ): Extract<ActionResult, { ok: true }> {
   if (entry.runeFateAt) return resolveRuneFate(state, entry, entry.runeFateAt);
+  if (entry.buffChoice) {
+    const here = entry.buffChoice.here;
+    const ids = state.units
+      .filter(
+        (u) =>
+          u.ownerId === entry.ownerId &&
+          u.id !== entry.excludeId &&
+          (!here || u.zoneId === here),
+      )
+      .map((u) => u.id);
+    const done = [
+      { type: 'legend-effect-resolved' as const, sourceId: entry.sourceId },
+    ];
+    if (ids.length <= 1)
+      return {
+        ok: true,
+        state: ids[0] ? buffUnit(state, ids[0]) : state,
+        events: done,
+      };
+    return {
+      ok: true,
+      state: {
+        ...state,
+        pendingModeChoice: {
+          ...entry,
+          modes: ids.map((id) => `buff:${id}` as const),
+        },
+      },
+      events: [],
+    };
+  }
   if (entry.recycleCompute) {
     const choice = trashRecycleChoice(
       state,
@@ -689,6 +726,8 @@ function applyMode(
       events: [],
     };
   }
+  if (mode.startsWith('buff:'))
+    return { state: buffUnit(state, mode.slice('buff:'.length)), events: [] };
   if (mode.startsWith('recycle-any:')) {
     const card = state.cards.find(
       (c) => c.id === mode.slice('recycle-any:'.length),
@@ -1509,5 +1548,20 @@ function applyJudgment(state: GameState, kept: readonly string[]): GameState {
         ? { ...f, controllerId: null }
         : f,
     ),
+  };
+}
+
+/** Entrée de pile : buff d'une unité alliée choisie à la résolution. */
+export function buffChoiceEntry(
+  sourceId: string,
+  ownerId: string,
+  here?: string,
+): ModeChoiceEntry {
+  return {
+    kind: 'mode-choice',
+    sourceId,
+    ownerId,
+    modes: [],
+    buffChoice: here ? { here } : {},
   };
 }

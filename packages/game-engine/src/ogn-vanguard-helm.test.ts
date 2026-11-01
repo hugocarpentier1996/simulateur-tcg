@@ -4,6 +4,7 @@ import {
   step,
   resolveTop,
   noRunes,
+  drain,
 } from './origins-test-fixtures.js';
 import { vanguardHelm, hextechRay } from '../../game-data/src/index.js';
 
@@ -27,14 +28,16 @@ it('Vanguard Helm : quand une alliée buffée meurt, une autre alliée est buff�
     zoneId: 'base-b',
   });
   s.resources.a = { energy: 1, power: { rouge: 1 } };
-  const after = resolveTop(
-    step(s, {
-      type: 'cast-spell',
-      playerId: 'a',
-      cardId: 'spell',
-      targetId: 'enemy',
-      payment: noRunes,
-    }),
+  const after = drain(
+    resolveTop(
+      step(s, {
+        type: 'cast-spell',
+        playerId: 'a',
+        cardId: 'spell',
+        targetId: 'enemy',
+        payment: noRunes,
+      }),
+    ),
   );
   expect(after.units.some((u) => u.id === 'enemy')).toBe(false);
   expect(after.units.find((u) => u.id === 'enemy2')?.buffed).toBe(true);

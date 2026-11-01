@@ -1,4 +1,8 @@
-import { championReturnable, type ModeChoiceEntry } from './mode-choice.js';
+import {
+  buffChoiceEntry,
+  championReturnable,
+  type ModeChoiceEntry,
+} from './mode-choice.js';
 import { unitConquerEntries } from './unit-conquer.js';
 import type { GameState, ActionResult, GameAction } from '../types.js';
 import { battlefieldDefinition } from './battlefield.js';
@@ -97,11 +101,7 @@ export function queueHoldDraw(
           },
         ]
       : [];
-  const buffTarget = definition?.holdBuffHere
-    ? [...state.units]
-        .filter((u) => u.ownerId === playerId && u.zoneId === battlefieldId)
-        .sort((x, y) => Number(!!x.buffed) - Number(!!y.buffed))[0]?.id
-    : undefined;
+  const buffTarget = definition?.holdBuffHere;
   if (
     state.result ||
     (!count &&
@@ -129,18 +129,7 @@ export function queueHoldDraw(
         ...conquerDraws,
         ...championBack,
         ...(buffTarget
-          ? [
-              {
-                kind: 'play-effect' as const,
-                sourceId: battlefieldId,
-                ownerId: playerId,
-                effect: {
-                  type: 'targeted' as const,
-                  targetId: buffTarget,
-                  effect: { type: 'buff' as const },
-                },
-              },
-            ]
+          ? [buffChoiceEntry(battlefieldId, playerId, battlefieldId)]
           : []),
         ...(token && base
           ? [
