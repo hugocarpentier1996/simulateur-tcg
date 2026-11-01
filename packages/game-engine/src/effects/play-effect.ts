@@ -25,6 +25,8 @@ export interface PlayEffectEntry {
     /** Jeton dans la base indiquée, sans exiger que la source soit une unité en jeu. */
     | { type: 'summon-base'; destinationId: string; definitionId: string }
     | { type: 'vision' }
+    /** Buffe chacune des unités indiquées encore en jeu (Kinkou Monk). */
+    | { type: 'buff-units'; unitIds: readonly string[] }
     /** Détruit le gear indiqué (capacité kill-self). */
     | { type: 'kill-gear'; gearId: string }
     | NonNullable<UnitBlueprint['onPlayEffect']>
@@ -101,6 +103,15 @@ export function resolvePlayEffect(
               ],
             }
           : state,
+      events: [{ type: 'unit-play-effect-resolved', sourceId: entry.sourceId }],
+    };
+  }
+  if (entry.effect.type === 'buff-units') {
+    let next = state;
+    for (const id of entry.effect.unitIds) next = buffUnit(next, id);
+    return {
+      ok: true,
+      state: next,
       events: [{ type: 'unit-play-effect-resolved', sourceId: entry.sourceId }],
     };
   }

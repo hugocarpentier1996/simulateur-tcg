@@ -316,3 +316,4 @@ export { standUnited } from './ogn/stand-united.js';
 export { emberMonk } from './ogn/ember-monk.js';
 export { bandleTree } from './ogn/bandle-tree.js';
 export { noxusSaboteur } from './ogn/noxus-saboteur.js';
+export { kinkouMonk } from './ogn/kinkou-monk.js';

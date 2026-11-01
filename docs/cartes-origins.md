@@ -272,3 +272,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Ember Monk — ogn-167-298
 - [x] Bandle Tree — ogn-278-298
 - [x] Noxus Saboteur — ogn-018-298
+- [x] Kinkou Monk — ogn-141-298

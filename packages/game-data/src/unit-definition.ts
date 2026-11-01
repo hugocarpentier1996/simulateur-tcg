@@ -205,6 +205,8 @@ export interface UnitDefinition extends PrintedMetadata {
   readonly mightOnHiddenPlay?: number;
   /** Les cartes cachées des adversaires sur son champ ne peuvent pas être jouées. */
   readonly blocksEnemyHidden?: boolean;
+  /** À la mise en jeu : buffe jusqu'à ce nombre d'autres unités alliées (onPlaySelectedIds). */
+  readonly onPlayBuffOthers?: number;
   /** Coût supplémentaire obligatoire : tuer une unité alliée à la mise en jeu. */
   readonly sacrificeCost?: boolean;
   /** « When I conquer » : son propriétaire choisit l'un de ces modes à la résolution. */

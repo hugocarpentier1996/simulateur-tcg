@@ -434,6 +434,9 @@ function actionLabel(
         (action.onPlayTargetId
           ? ' · Cible : ' + target(action.onPlayTargetId)
           : '') +
+        (action.onPlaySelectedIds
+          ? ' · Buff : ' + action.onPlaySelectedIds.map(target).join(' + ')
+          : '') +
         (action.accelerate ? ' · Accelerate (arrive Ready)' : '') +
         (action.sacrificeUnitId
           ? ' · en tuant ' + unit(action.sacrificeUnitId)

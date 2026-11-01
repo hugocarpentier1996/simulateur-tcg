@@ -1213,3 +1213,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Ember Monk (ogn-167) : quand son propriétaire joue une carte depuis Hidden, +2 Might ce tour (`mightOnHiddenPlay`, sans pile comme les autres déclencheurs simples).
 - Bandle Tree (ogn-278) : champ ; une carte Hidden supplémentaire peut y être cachée (`extraHiddenSlots`).
 - Noxus Saboteur (ogn-018) : les cartes cachées des adversaires sur son champ ne peuvent pas être jouées (`blocksEnemyHidden`).
+- Kinkou Monk (ogn-141) : à la mise en jeu, buffe jusqu'à deux autres unités alliées (`onPlayBuffOthers`, champ d'action `onPlaySelectedIds` choisi sans ordre, aussi au clic dans la table).

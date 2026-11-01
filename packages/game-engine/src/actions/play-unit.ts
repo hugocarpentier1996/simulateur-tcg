@@ -183,6 +183,22 @@ function playUnitCore(
           definitionId: definition.onPlaySummonHere,
         },
       });
+  const selected = action.onPlaySelectedIds ?? [];
+  if (
+    selected.length &&
+    (!definition.onPlayBuffOthers ||
+      !buffOthersChoices(state, action.playerId, card.id, definition).some(
+        (choice) => sameIds(choice, selected),
+      ))
+  )
+    return { ok: false, reason: 'INVALID_TARGET' };
+  if (definition.onPlayBuffOthers && selected.length)
+    entries.push({
+      kind: 'play-effect',
+      sourceId: card.id,
+      ownerId: card.ownerId,
+      effect: { type: 'buff-units', unitIds: [...selected] },
+    });
   if (definition.onPlayVision)
     entries.push({
       kind: 'play-effect',
@@ -489,4 +505,31 @@ export function handCards(
         ),
     )
     .map((c) => c.id);
+}
+
+/** Kinkou Monk : sous-ensembles (vide compris) d'au plus onPlayBuffOthers autres unités
+ * alliées en jeu, dans l'ordre du plateau. */
+export function buffOthersChoices(
+  state: GameState,
+  playerId: string,
+  sourceId: string,
+  definition: UnitBlueprint,
+): string[][] {
+  const max = definition.onPlayBuffOthers ?? 0;
+  const allies = state.units
+    .filter((u) => u.ownerId === playerId && u.id !== sourceId)
+    .map((u) => u.id);
+  const pick = (from: number, size: number): string[][] =>
+    size === 0
+      ? [[]]
+      : allies
+          .slice(from)
+          .flatMap((id, i) =>
+            pick(from + i + 1, size - 1).map((rest) => [id, ...rest]),
+          );
+  return Array.from({ length: max + 1 }, (_, size) => pick(0, size)).flat();
+}
+
+function sameIds(a: readonly string[], b: readonly string[]): boolean {
+  return a.length === b.length && a.every((id) => b.includes(id));
 }

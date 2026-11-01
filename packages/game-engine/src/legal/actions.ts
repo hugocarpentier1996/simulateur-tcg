@@ -21,7 +21,11 @@ import type { GameAction, GameState } from '../types.js';
 import { act } from '../act.js';
 import { canSummonAt } from '../actions/unit-destination.js';
 import { recoverableSpells } from '../effects/return-spell.js';
-import { unitCost, handCards } from '../actions/play-unit.js';
+import {
+  unitCost,
+  buffOthersChoices,
+  handCards,
+} from '../actions/play-unit.js';
 import { findPayment } from './payment.js';
 import { resolutionChoices, setupChoices } from './choices.js';
 
@@ -223,38 +227,44 @@ function* candidates(
             ? handCards(state, playerId, card.id)
             : [undefined])
             for (const zone of destinations)
-              for (const onPlayTargetId of playTargetChoices(
-                state,
-                card.id,
-                unit,
-                zone.id,
-              ))
-                for (const returnSpellId of unit.onPlayReturnSpell ||
-                unit.onPlayReturnUnit
-                  ? recoverableSpells(
-                      state,
-                      playerId,
-                      unit.onPlayReturnUnit ? 'unit' : 'spell',
-                    ).length
+              for (const onPlaySelectedIds of unit.onPlayBuffOthers
+                ? buffOthersChoices(state, playerId, card.id, unit)
+                : [[]])
+                for (const onPlayTargetId of playTargetChoices(
+                  state,
+                  card.id,
+                  unit,
+                  zone.id,
+                ))
+                  for (const returnSpellId of unit.onPlayReturnSpell ||
+                  unit.onPlayReturnUnit
                     ? recoverableSpells(
                         state,
                         playerId,
                         unit.onPlayReturnUnit ? 'unit' : 'spell',
-                      )
-                    : [undefined]
-                  : [undefined])
-                  yield {
-                    type: 'play-unit',
-                    ...(onPlayTargetId ? { onPlayTargetId } : {}),
-                    ...(accelerate ? { accelerate } : {}),
-                    ...(optionalCost ? { optionalCost } : {}),
-                    ...(discardCardId ? { discardCardId } : {}),
-                    ...(returnSpellId ? { returnSpellId } : {}),
-                    playerId,
-                    cardId: card.id,
-                    destinationId: zone.id,
-                    payment,
-                  };
+                      ).length
+                      ? recoverableSpells(
+                          state,
+                          playerId,
+                          unit.onPlayReturnUnit ? 'unit' : 'spell',
+                        )
+                      : [undefined]
+                    : [undefined])
+                    yield {
+                      type: 'play-unit',
+                      ...(onPlayTargetId ? { onPlayTargetId } : {}),
+                      ...(onPlaySelectedIds.length
+                        ? { onPlaySelectedIds }
+                        : {}),
+                      ...(accelerate ? { accelerate } : {}),
+                      ...(optionalCost ? { optionalCost } : {}),
+                      ...(discardCardId ? { discardCardId } : {}),
+                      ...(returnSpellId ? { returnSpellId } : {}),
+                      playerId,
+                      cardId: card.id,
+                      destinationId: zone.id,
+                      payment,
+                    };
       }
     }
     const gear = state.gearDefinitions?.find((d) => d.id === card.definitionId);

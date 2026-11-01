@@ -385,6 +385,8 @@ export interface UnitBlueprint {
   readonly mightOnHiddenPlay?: number;
   /** Les cartes cachées des adversaires sur son champ ne peuvent pas être jouées. */
   readonly blocksEnemyHidden?: boolean;
+  /** À la mise en jeu : buffe jusqu'à ce nombre d'autres unités alliées (onPlaySelectedIds). */
+  readonly onPlayBuffOthers?: number;
   /** Coût supplémentaire obligatoire : tuer une unité alliée (sacrificeUnitId). */
   readonly sacrificeCost?: boolean;
   /** « When I conquer » : son propriétaire choisit l'un de ces modes à la résolution. */
@@ -656,6 +658,8 @@ export type GameAction =
       type: 'play-unit';
       /** Cible de capacité choisie à la mise en jeu, avant réactions. */
       onPlayTargetId?: string;
+      /** Unités choisies à la mise en jeu (onPlayBuffOthers), sans ordre. */
+      onPlaySelectedIds?: readonly string[];
       /** Paye le coût supplémentaire Accelerate de l'unité pour qu'elle arrive Ready. */
       accelerate?: boolean;
       /** Paie le coût supplémentaire facultatif de l'unité (optionalCost). */

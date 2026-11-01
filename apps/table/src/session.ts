@@ -496,6 +496,8 @@ function targetPlan(
   state: GameState,
   action: GameAction,
 ): { ordered: boolean; ids: string[] } {
+  if (action.type === 'play-unit' && action.onPlaySelectedIds)
+    return { ordered: false, ids: [...action.onPlaySelectedIds] };
   if (action.type === 'play-unit')
     return {
       ordered: true,
@@ -602,7 +604,9 @@ export function toggleTarget(
   const picks = selection.picks ?? [];
   const index = picks.indexOf(id);
   const unordered = cardActions(session, selection.cardId).some(
-    (a) => a.type === 'cast-spell' && a.selectedUnitIds !== undefined,
+    (a) =>
+      (a.type === 'cast-spell' && a.selectedUnitIds !== undefined) ||
+      (a.type === 'play-unit' && a.onPlaySelectedIds !== undefined),
   );
   // Cible répétable (plusieurs instructions sur la même unité) : un nouveau clic l'ajoute.
   const repeat =
