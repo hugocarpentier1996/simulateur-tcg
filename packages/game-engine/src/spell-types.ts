@@ -81,6 +81,8 @@ export interface SpellBlueprint {
     | { readonly type: 'kill-all-gear' }
     /** Chaque joueur garde 2 unités, 2 gears, 2 runes, 2 cartes en main ; le reste est recyclé. */
     | { readonly type: 'divine-judgment' }
+    /** Chaque joueur choisit une carte parmi ses 5 du dessus et la joue sans payer l'énergie. */
+    | { readonly type: 'promising-future' }
     /** Révèle le dessus du deck adverse, la bannit puis la joue gratuitement (Blind Fury). */
     | { readonly type: 'steal-top-card' }
     /** Le lanceur prend le contrôle du sort ciblé sur la pile (Mystic Reversal). */

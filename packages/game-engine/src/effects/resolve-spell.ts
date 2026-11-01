@@ -1,3 +1,4 @@
+import { futureStep } from './promising-future.js';
 import { hiddenInTrash } from './hidden.js';
 import { playUnitFromTrash } from './play-from-trash.js';
 import {
@@ -249,6 +250,17 @@ export function resolveSpell(
         effect.action,
       );
       if (choice) state = { ...state, pendingModeChoice: choice };
+      continue;
+    }
+    if (effect.type === 'promising-future') {
+      const ids = state.players.map((p) => p.id);
+      const started = futureStep(state, entry.card.id, {
+        casterId: entry.casterId,
+        steps: [entry.casterId, ...ids.filter((id) => id !== entry.casterId)],
+        chosen: [],
+      });
+      state = started.state;
+      events.push(...started.events);
       continue;
     }
     if (effect.type === 'divine-judgment') {

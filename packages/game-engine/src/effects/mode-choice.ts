@@ -1,3 +1,4 @@
+import { chooseFuture, type FutureProgress } from './promising-future.js';
 import { hasHidden } from './hidden.js';
 import { dealEffectDamage } from './effect-damage.js';
 import { moveUnit } from './resolve-spell.js';
@@ -53,7 +54,8 @@ export type EffectMode =
   | `hit:${string}`
   | `ava:${string}`
   | `kaisa:${string}`
-  | `keep:${string}`;
+  | `keep:${string}`
+  | `future:${string}`;
 
 const ONE_ENERGY = { energy: 1, power: {} };
 
@@ -77,6 +79,8 @@ export interface ModeChoiceEntry {
     steps: readonly { playerId: string; category: JudgmentCategory }[];
     kept: readonly string[];
   };
+  /** Promising Future : progression des choix. */
+  future?: FutureProgress;
   /** Kai'Sa (Mind) : sort du cimetière à rejouer, calculé à la résolution. */
   replaySpell?: boolean;
   /** Ava Achiever : champ d'attaque et couleur du Power à payer. */
@@ -365,6 +369,21 @@ export function chooseMode(
     return { ok: false, reason: 'NO_PRIORITY' };
   if (!pending.modes.includes(action.mode))
     return { ok: false, reason: 'INVALID_MODE' };
+  if (pending.future && action.mode.startsWith('future:')) {
+    const next = chooseFuture(
+      state,
+      pending.sourceId,
+      pending.ownerId,
+      action.mode.slice('future:'.length),
+      pending.future,
+    );
+    return next.state.pendingModeChoice
+      ? { ok: true, state: next.state, events: next.events }
+      : continueStack(next.state, [
+          ...next.events,
+          { type: 'legend-effect-resolved', sourceId: pending.sourceId },
+        ]);
+  }
   if (pending.judgment && action.mode.startsWith('keep:')) {
     const kept = [
       ...pending.judgment.kept,

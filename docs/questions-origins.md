@@ -87,3 +87,4 @@ existantes ; seuls les nouveaux doutes utiles rejoindront le prochain lot de que
 - Blind Fury (limite) : un gear ou un sort à cibles révélé reste banni sans être joué.
 - Kai'Sa (Mind) (limite) : seuls les sorts sans cible individuelle sont proposés.
 - Divine Judgment (hypothèse) : ordre des choix = lanceur puis adversaire, chacun voit les choix précédents ; les gears attachés à une unité recyclée restent en jeu détachés ; les unités adverses contrôlées (`cardOwnerId`) retournent au deck de leur propriétaire.
+- Promising Future (hypothèse/limite) : une carte dont le Power est impayable, ou un sort à cibles, est recyclée sous le deck ; les unités jouées n'ont pas leurs effets « when you play me ».
