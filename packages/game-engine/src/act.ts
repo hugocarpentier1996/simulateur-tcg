@@ -1,3 +1,4 @@
+import { spendBuffAbility } from './actions/spend-buff-ability.js';
 import {
   hideCard,
   playableFacedown,
@@ -485,6 +486,8 @@ function dispatch(state: GameState, action: GameAction): ActionResult {
   if (state.setup || state.phase === 'setup')
     return { ok: false, reason: 'SETUP_IN_PROGRESS' };
   if (action.type === 'hide-card') return hideCard(state, action);
+  if (action.type === 'spend-buff-ability')
+    return spendBuffAbility(state, action);
   if (
     state.stack &&
     !(

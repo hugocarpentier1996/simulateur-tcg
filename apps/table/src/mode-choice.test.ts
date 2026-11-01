@@ -4,6 +4,7 @@ import {
   cruelPatron,
   kinkouMonk,
   qiyana,
+  sett,
   stupefy,
 } from '../../../packages/game-data/src/index.js';
 import {
@@ -73,4 +74,12 @@ it('Kinkou Monk : les unités à buffer se choisissent sans ordre', () => {
   const options = targetOptions(s, 'monk', ['ally2', 'ally']);
   expect(options.complete.length).toBeGreaterThan(0);
   expect(renderTable(s, { cardId: 'monk' })).toContain('Buff : ');
+});
+
+it('Sett : le panneau de l’unité propose de dépenser son buff', () => {
+  const state = spellScenario(stupefy);
+  state.unitDefinitions = [sett];
+  state.units[0] = { ...state.units[0]!, definitionId: sett.id, buffed: true };
+  const s: Session = { state, history: [], log: [], error: null };
+  expect(renderTable(s, { cardId: 'ally' })).toContain('Dépenser le buff de');
 });

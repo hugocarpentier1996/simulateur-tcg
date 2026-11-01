@@ -1214,3 +1214,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Bandle Tree (ogn-278) : champ ; une carte Hidden supplémentaire peut y être cachée (`extraHiddenSlots`).
 - Noxus Saboteur (ogn-018) : les cartes cachées des adversaires sur son champ ne peuvent pas être jouées (`blocksEnemyHidden`).
 - Kinkou Monk (ogn-141) : à la mise en jeu, buffe jusqu'à deux autres unités alliées (`onPlayBuffOthers`, champ d'action `onPlaySelectedIds` choisi sans ordre, aussi au clic dans la table).
+- Sett (ogn-164) : se buffe quand il est joué et quand il conquiert (`onConquerBuffSelf`) ; « dépenser mon buff » : +4 Might ce tour via la pile (action `spend-buff-ability`, `buffSpendMight`, à son tour en état ouvert comme les capacités Tap).

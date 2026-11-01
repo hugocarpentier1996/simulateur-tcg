@@ -207,6 +207,10 @@ export interface UnitDefinition extends PrintedMetadata {
   readonly blocksEnemyHidden?: boolean;
   /** À la mise en jeu : buffe jusqu'à ce nombre d'autres unités alliées (onPlaySelectedIds). */
   readonly onPlayBuffOthers?: number;
+  /** « When I conquer » : se buffe, via la pile (Sett). */
+  readonly onConquerBuffSelf?: boolean;
+  /** « Spend my buff » : +Might jusqu'à la fin du tour, via la pile (Sett). */
+  readonly buffSpendMight?: number;
   /** Coût supplémentaire obligatoire : tuer une unité alliée à la mise en jeu. */
   readonly sacrificeCost?: boolean;
   /** « When I conquer » : son propriétaire choisit l'un de ces modes à la résolution. */

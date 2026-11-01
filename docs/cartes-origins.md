@@ -273,3 +273,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Bandle Tree — ogn-278-298
 - [x] Noxus Saboteur — ogn-018-298
 - [x] Kinkou Monk — ogn-141-298
+- [x] Sett — ogn-164-298

@@ -511,6 +511,8 @@ function actionLabel(
     }
     case 'choose-defense-shield':
       return prefix + 'Shield 2 → ' + unit(action.targetId);
+    case 'spend-buff-ability':
+      return prefix + 'Dépenser le buff de ' + target(action.unitId);
     case 'hide-card':
       return (
         prefix + 'Cacher sur ' + target(action.battlefieldId) + ' (1 Power)'

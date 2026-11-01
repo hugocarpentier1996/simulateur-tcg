@@ -387,6 +387,10 @@ export interface UnitBlueprint {
   readonly blocksEnemyHidden?: boolean;
   /** À la mise en jeu : buffe jusqu'à ce nombre d'autres unités alliées (onPlaySelectedIds). */
   readonly onPlayBuffOthers?: number;
+  /** « When I conquer » : se buffe, via la pile (Sett). */
+  readonly onConquerBuffSelf?: boolean;
+  /** « Spend my buff » : +Might jusqu'à la fin du tour, via la pile (Sett). */
+  readonly buffSpendMight?: number;
   /** Coût supplémentaire obligatoire : tuer une unité alliée (sacrificeUnitId). */
   readonly sacrificeCost?: boolean;
   /** « When I conquer » : son propriétaire choisit l'un de ces modes à la résolution. */
@@ -589,6 +593,8 @@ export type GameAction =
       battlefieldId: string;
       payment: PaymentPlan;
     }
+  /** Capacité « Spend my buff » d'une unité alliée buffée (buffSpendMight). */
+  | { type: 'spend-buff-ability'; playerId: string; unitId: string }
   /** Mode d'une capacité « X ou Y » en attente (pendingModeChoice). */
   | {
       type: 'choose-mode';

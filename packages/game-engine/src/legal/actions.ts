@@ -118,8 +118,11 @@ function* candidates(
   const destinations = state.zones.filter(
     (z) => z.kind === 'base' || z.kind === 'battlefield',
   );
-  for (const unit of state.units)
+  for (const unit of state.units) {
     yield { type: 'activate-spell-energy', playerId, unitId: unit.id };
+    if (unit.buffed && unit.ownerId === playerId)
+      yield { type: 'spend-buff-ability', playerId, unitId: unit.id };
+  }
   // Capacités Tap ciblées des gears et de la légende du joueur.
   for (const gear of [
     ...(state.gears ?? []).map((g) => ({
