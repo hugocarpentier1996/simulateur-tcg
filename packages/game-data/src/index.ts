@@ -268,3 +268,4 @@ export { scrapheap } from './ogn/scrapheap.js';
 export { ironBallista } from './ogn/iron-ballista.js';
 export { orbOfRegret } from './ogn/orb-of-regret.js';
 export { arenaBar } from './ogn/arena-bar.js';
+export { theSyren } from './ogn/the-syren.js';

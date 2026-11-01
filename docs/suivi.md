@@ -1163,3 +1163,5 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Iron Ballista (ogn-017) : gear qui entre Tap (`entersExhausted`) ; Tap : 2 dégâts à une unité sur un champ, via la pile. Nouveau mécanisme `tapAbility` des gears (cible, coût éventuel, effet ciblé ; à son tour hors Showdown), énuméré par les actions légales et proposé dans la table en sélectionnant le gear.
 - Orb of Regret (ogn-090) : gear ; Tap — une unité a -1 Might ce tour, minimum 1 (`tapAbility` `modify-might`).
 - Arena Bar (ogn-124) : gear ; Tap — buffe une unité alliée Tap (`tapAbility` avec cible `exhausted`).
+- The Syren (ogn-184) : gear ; 1 énergie + Tap — déplace une unité alliée d'un champ vers sa base (`tapAbility` avec coût et effet `move-to-base`).
+- The Syren (ogn-184) : gear ; 1 énergie + Tap — déplace une unité alliée d'un champ vers sa base (`tapAbility` avec coût et effet `move-to-base`).

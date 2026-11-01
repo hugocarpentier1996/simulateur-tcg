@@ -224,3 +224,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Iron Ballista — ogn-017-298
 - [x] Orb of Regret — ogn-090-298
 - [x] Arena Bar — ogn-124-298
+- [x] The Syren — ogn-184-298
