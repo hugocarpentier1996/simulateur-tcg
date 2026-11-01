@@ -332,3 +332,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Lee Sin — ogn-078-298
 - [x] Icathian Rain — ogn-248-298
 - [x] Baited Hook — ogn-242-298
+- [x] Dazzling Aurora — ogn-160-298

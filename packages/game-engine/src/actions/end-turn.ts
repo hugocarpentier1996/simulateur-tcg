@@ -1,3 +1,4 @@
+import type { PlayEffectEntry } from '../effects/play-effect.js';
 import { endRuneLegend, runeIdsInPlay } from '../effects/end-runes.js';
 import type { ActionResult, GameAction, GameState } from '../types.js';
 import type { ReadyRunesEntry } from '../legend-types.js';
@@ -23,7 +24,19 @@ export function endTurn(
   if (state.showdown) {
     return { ok: false, reason: 'SHOWDOWN_IN_PROGRESS' };
   }
-  const entries: ReadyRunesEntry[] = [];
+  const entries: (ReadyRunesEntry | PlayEffectEntry)[] = [];
+  for (const gear of state.gears ?? [])
+    if (
+      gear.ownerId === action.playerId &&
+      state.gearDefinitions?.find((d) => d.id === gear.definitionId)
+        ?.endTurnRevealUnit
+    )
+      entries.push({
+        kind: 'play-effect',
+        sourceId: gear.id,
+        ownerId: action.playerId,
+        effect: { type: 'reveal-play-unit' },
+      });
   const legend = endRuneLegend(state, action.playerId);
   if (legend) {
     const valid = runeIdsInPlay(state, action.playerId),

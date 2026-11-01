@@ -79,6 +79,9 @@ export interface GearBlueprint {
   /** Une unité alliée redressée par un effet (hors Awaken) gagne cette Might ce tour
    * (Pirate's Haven ; sans pile). */
   readonly mightOnAllyReadied?: number;
+  /** Fin du tour de son propriétaire : révèle jusqu'à une unité, la joue gratuitement et
+   * recycle le reste (Dazzling Aurora, via la pile). */
+  readonly endTurnRevealUnit?: boolean;
   /** Posé : buffe l'unité alliée choisie (targetId de play-gear, sans pile). */
   readonly onPlayBuffAlly?: boolean;
   /** La prochaine fois qu'une unité alliée devrait mourir : ce gear est détruit à la place

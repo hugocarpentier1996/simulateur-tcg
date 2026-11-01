@@ -16,7 +16,12 @@ import { summonHere } from './summon-here.js';
 import { startVision } from './vision.js';
 import { resolveFlash } from './flash.js';
 import { drawCardForPlayer } from '../turn/draw.js';
-import type { ActionResult, GameState, UnitBlueprint } from '../types.js';
+import type {
+  GameEvent,
+  ActionResult,
+  GameState,
+  UnitBlueprint,
+} from '../types.js';
 import { channelForPlayer } from '../turn/supplies.js';
 import { resolveTargetedPlay } from './targeted-play.js';
 import { effectiveMight } from './modifiers.js';
@@ -39,6 +44,8 @@ export interface PlayEffectEntry {
     | { type: 'spend-buffs-channel'; unitIds: readonly string[] }
     /** La prochaine unité jouée ce tour par le propriétaire arrive Ready (Legion vérifié). */
     | { type: 'next-unit-ready'; legion?: boolean }
+    /** Dazzling Aurora : révèle jusqu'à une unité, la joue gratuitement, recycle le reste. */
+    | { type: 'reveal-play-unit' }
     /** Baited Hook : tue l'unité puis propose une unité gratuite du dessus du deck. */
     | { type: 'hook'; targetId: string; count: number }
     /** Renvoie en main l'unité, le gear ou la carte cachée indiqué (Pack of Wonders). */
@@ -145,6 +152,49 @@ export function resolvePlayEffect(
         },
       },
       events: [{ type: 'unit-play-effect-resolved', sourceId: entry.sourceId }],
+    };
+  }
+  if (entry.effect.type === 'reveal-play-unit') {
+    const deck = state.cards.filter((c) =>
+      state.zones.some(
+        (z) =>
+          z.id === c.zoneId && z.kind === 'deck' && z.ownerId === entry.ownerId,
+      ),
+    );
+    const index = deck.findIndex((c) =>
+      state.unitDefinitions?.some((d) => d.id === c.definitionId),
+    );
+    const revealed = index < 0 ? deck : deck.slice(0, index);
+    const unitCard = index < 0 ? undefined : deck[index];
+    let next: GameState = {
+      ...state,
+      cards: [...state.cards.filter((c) => !revealed.includes(c)), ...revealed],
+    };
+    const events: GameEvent[] = [];
+    if (unitCard) {
+      const graveyard = next.zones.find(
+        (z) => z.kind === 'graveyard' && z.ownerId === entry.ownerId,
+      );
+      // Passage technique par le cimetière pour réutiliser la mise en jeu commune.
+      next = {
+        ...next,
+        cards: next.cards.map((c) =>
+          c.id === unitCard.id
+            ? { ...c, zoneId: graveyard?.id ?? c.zoneId }
+            : c,
+        ),
+      };
+      const played = playUnitFromTrash(next, entry.ownerId, unitCard.id);
+      next = played.state;
+      events.push(...played.events);
+    }
+    return {
+      ok: true,
+      state: next,
+      events: [
+        ...events,
+        { type: 'unit-play-effect-resolved', sourceId: entry.sourceId },
+      ],
     };
   }
   if (entry.effect.type === 'hook') {
