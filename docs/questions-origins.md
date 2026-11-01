@@ -80,3 +80,4 @@ existantes ; seuls les nouveaux doutes utiles rejoindront le prochain lot de que
 - Icathian Rain (hypothèses) : les six cibles sont choisies une à une à la résolution (et non au lancement) ; la répartition du coût en Power (3) entre Fury et Mind n'est pas dans les données : 2 Fury + 1 Mind retenus.
 - Karthus (hypothèse) : il compte s'il est en jeu juste avant les morts, y compris s'il meurt en même temps.
 - Nocturne (limite) : seul le regard d'une Vision le déclenche pour l'instant (pas Reinforce, Baited Hook, The Candlelit Sanctum ni Stacked Deck).
+- Karma (hypothèses) : sans pile ; l'unité buffée est choisie automatiquement (sans buff d'abord) ; les recyclages internes au deck autres que la Vision (Reinforce, The Candlelit Sanctum…) ne sont pas encore détectés.

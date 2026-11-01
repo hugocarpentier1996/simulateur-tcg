@@ -437,6 +437,35 @@ export function act(state: GameState, action: GameAction): ActionResult {
         ),
       };
     }
+  // Karma : cartes recyclées par son propriétaire (vers le deck, ou Vision) -> buff allié.
+  const recyclers = new Set([
+    ...events.flatMap((e) => (e.type === 'cards-recycled' ? [e.playerId] : [])),
+    ...shrine.cards
+      .filter(
+        (c) =>
+          shrine.zones.some((z) => z.id === c.zoneId && z.kind === 'deck') &&
+          state.cards.some(
+            (o) =>
+              o.id === c.id &&
+              !state.zones.some((z) => z.id === o.zoneId && z.kind === 'deck'),
+          ),
+      )
+      .map((c) => c.ownerId),
+  ]);
+  for (const owner of recyclers) {
+    const karmas = shrine.units.filter(
+      (u) =>
+        u.ownerId === owner &&
+        shrine.unitDefinitions?.find((d) => d.id === u.definitionId)
+          ?.buffOnRecycle,
+    ).length;
+    for (let i = 0; i < karmas; i++) {
+      const recipient = [...shrine.units]
+        .filter((u) => u.ownerId === owner)
+        .sort((x, y) => Number(!!x.buffed) - Number(!!y.buffed))[0];
+      if (recipient) shrine = buffUnit(shrine, recipient.id);
+    }
+  }
   // Vanguard Helm : alliée buffée morte -> une autre alliée est buffée, par gear.
   for (const e of events) {
     if (e.type !== 'unit-died' && e.type !== 'token-removed') continue;

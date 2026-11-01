@@ -69,6 +69,17 @@ export function chooseVision(
           },
         }
       : placed,
-    [{ type: 'unit-play-effect-resolved', sourceId: pending.sourceId }],
+    [
+      ...(action.recycle
+        ? [
+            {
+              type: 'cards-recycled' as const,
+              playerId: action.playerId,
+              count: 1,
+            },
+          ]
+        : []),
+      { type: 'unit-play-effect-resolved', sourceId: pending.sourceId },
+    ],
   );
 }

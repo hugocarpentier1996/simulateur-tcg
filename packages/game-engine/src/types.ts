@@ -484,6 +484,8 @@ export interface UnitBlueprint {
   readonly conquerExcessScore?: number;
   /** Vu au dessus du deck (Vision) : peut être joué pour 1 Power quelconque (Nocturne). */
   readonly playWhenSeen?: boolean;
+  /** Son propriétaire recycle des cartes : une unité alliée est buffée (Karma, sans pile). */
+  readonly buffOnRecycle?: boolean;
   /** « Recycle 1 from your trash » : +Might jusqu'à la fin du tour, via la pile (Vi). */
   readonly trashRecycleMight?: number;
   /** Coût supplémentaire obligatoire : tuer une unité alliée (sacrificeUnitId). */
@@ -898,6 +900,8 @@ export type GameEvent =
       to: string;
     }
   | { type: 'gear-killed'; gearId: string; ownerId: string }
+  /** Cartes recyclées sous le deck de leur propriétaire (hors runes). */
+  | { type: 'cards-recycled'; playerId: string; count: number }
   | {
       type: 'card-hidden';
       playerId: string;
