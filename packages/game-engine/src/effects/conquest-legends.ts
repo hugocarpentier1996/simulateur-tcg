@@ -15,6 +15,20 @@ export function queueConquestLegends(
 ): { state: GameState; events: GameEvent[] } {
   let state = input;
   if (state.result) return { state, events: [] };
+  // The Boss : la légende du conquérant se redresse (sans pile, hypothèse).
+  for (const e of events)
+    if (e.type === 'battlefield-conquered') {
+      const ready = activeLegends(state, e.playerId)
+        .filter((l) => l.definition.readyOnConquer)
+        .map((l) => l.card.id);
+      if (ready.length)
+        state = {
+          ...state,
+          cards: state.cards.map((c) =>
+            ready.includes(c.id) ? { ...c, ready: true } : c,
+          ),
+        };
+    }
   // Targon's Peak : redressement de runes différé à la fin du tour.
   for (const e of events)
     if (e.type === 'battlefield-conquered') {

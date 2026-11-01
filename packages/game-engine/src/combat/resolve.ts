@@ -10,7 +10,7 @@ import type {
 import { finishCombat } from './finish.js';
 import { deathTriggers } from '../effects/death.js';
 import { effectiveMight, preventsDamage } from '../effects/modifiers.js';
-import { replaceDeaths } from '../effects/replace-death.js';
+import { payBossLegends, replaceDeaths } from '../effects/replace-death.js';
 
 type Combat = Extract<NonNullable<GameState['showdown']>, { kind: 'combat' }>;
 
@@ -80,6 +80,8 @@ export function resolveCombat(
     units: survivors.map((unit) => ({ ...unit, damage: 0 })),
     cards: [...state.cards, ...graveCards],
   };
+  if (replaced.bossLegendIds.length)
+    next = payBossLegends(next, replaced.bossLegendIds);
   if (replaced.consumedGearIds.length) {
     const broken = killGears(next, replaced.consumedGearIds);
     next = broken.state;

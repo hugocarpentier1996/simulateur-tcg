@@ -318,3 +318,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Swift Scout — ogn-263-298
 - [x] Daughter of the Void — ogn-247-298
 - [x] Unforgiven — ogn-259-298
+- [x] The Boss — ogn-269-298

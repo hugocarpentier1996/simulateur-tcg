@@ -7,7 +7,7 @@ import type {
 } from '../types.js';
 import type { DeathTrigger } from '../death-types.js';
 import { effectiveMight } from './modifiers.js';
-import { replaceDeaths } from './replace-death.js';
+import { payBossLegends, replaceDeaths } from './replace-death.js';
 import { deathTriggers } from './death.js';
 
 /** État après une action/effet + éventuelles morts directes -> résolution des morts.
@@ -69,6 +69,8 @@ export function settleLethalUnits(
       cards,
       units: replaced.units.filter((u) => !ids.has(u.id)),
     };
+    if (replaced.bossLegendIds.length)
+      state = payBossLegends(state, replaced.bossLegendIds);
     if (replaced.consumedGearIds.length) {
       const broken = killGears(state, replaced.consumedGearIds);
       state = broken.state;

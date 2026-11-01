@@ -30,6 +30,11 @@ export interface LegendDefinition extends PrintedMetadata {
   readonly beginningDrawIfHandAtMost?: number;
   /** Cacher une carte peut se payer 1 énergie au lieu d'1 Power (Swift Scout). */
   readonly hideWithEnergy?: boolean;
+  /** Unité buffée alliée qui devrait mourir : 1 Power + légende couchée -> buff dépensé et
+   * rappel Tap en base à la place (The Boss ; accepté automatiquement si possible). */
+  readonly saveBuffedFromDeath?: boolean;
+  /** Quand son propriétaire conquiert, la légende se redresse. */
+  readonly readyOnConquer?: boolean;
   /** Capacité ADD « Tap : ajoute » ; legion : seulement si une carte a été jouée ce tour. */
   readonly resourceAbility?: {
     readonly energy?: number;

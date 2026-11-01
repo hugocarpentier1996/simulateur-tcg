@@ -362,3 +362,4 @@ export { guerillaWarfare } from './ogn/guerilla-warfare.js';
 export { swiftScout } from './ogn/swift-scout.js';
 export { daughterOfTheVoid } from './ogn/daughter-of-the-void.js';
 export { unforgiven } from './ogn/unforgiven.js';
+export { theBoss } from './ogn/the-boss.js';

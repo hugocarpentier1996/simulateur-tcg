@@ -73,3 +73,4 @@ existantes ; seuls les nouveaux doutes utiles rejoindront le prochain lot de que
 - Reaver's Row (hypothèse) : le renvoi en base n'est pas traité comme un déplacement (aucun déclencheur de mouvement).
 - Reinforce (hypothèses) : le reste du coût de l'unité est payé automatiquement (réserve puis runes) ; seules les unités payables sont proposées ; l'unité arrive dans la base, Tap, sans ses effets « when you play me ».
 - Gears Hidden (hypothèse) : posés depuis facedown directement dans la base (la règle les place sur le champ puis les rappelle au Cleanup).
+- The Boss (hypothèses) : le « you may » est accepté automatiquement dès que la légende est Ready et le Power payable ; le redressement à la conquête se fait sans pile.
