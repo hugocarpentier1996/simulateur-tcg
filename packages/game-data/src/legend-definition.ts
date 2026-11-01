@@ -35,6 +35,8 @@ export interface LegendDefinition extends PrintedMetadata {
     readonly energy?: number;
     readonly power?: string;
     readonly legion?: boolean;
+    /** Power de n'importe quel domaine réservé aux sorts. */
+    readonly spellPower?: number;
   };
 }
 /** Définition de confiance -> copie figée, dont les couleurs. */

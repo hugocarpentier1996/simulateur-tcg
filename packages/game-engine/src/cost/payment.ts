@@ -54,27 +54,31 @@ export function payCost(
   for (const card of selected)
     if (card && powerIds.has(card.id))
       power[card.color!] = (power[card.color!] ?? 0) + 1;
-  if (
-    energy < cost.energy ||
-    Object.entries(cost.power).some(
-      ([color, amount]) => (power[color] ?? 0) < amount,
-    )
-  )
+  // Power réservé aux sorts : comble n'importe quel manque de couleur d'un sort.
+  let wild = purpose === 'spell' ? (previous.spellPower ?? 0) : 0;
+  const wildBefore = wild;
+  if (energy < cost.energy)
     return { ok: false, reason: 'INSUFFICIENT_RESOURCES' };
-  for (const [color, amount] of Object.entries(cost.power))
-    power[color] = (power[color] ?? 0) - amount;
+  for (const [color, amount] of Object.entries(cost.power)) {
+    const missing = Math.max(0, amount - (power[color] ?? 0));
+    if (missing > wild) return { ok: false, reason: 'INSUFFICIENT_RESOURCES' };
+    wild -= missing;
+    power[color] = (power[color] ?? 0) - (amount - missing);
+  }
   // Chaque symbole accepte une couleur disponible du catalogue, mélange autorisé.
   for (let i = 0; cost.powerChoice && i < (cost.powerChoiceAmount ?? 1); i++) {
     const color = cost.powerChoice.find((c) => (power[c] ?? 0) >= 1);
-    if (!color) return { ok: false, reason: 'INSUFFICIENT_RESOURCES' };
-    power[color]!--;
+    if (color) power[color]!--;
+    else if (wild > 0) wild--;
+    else return { ok: false, reason: 'INSUFFICIENT_RESOURCES' };
   }
   for (let i = 0; i < (cost.genericPower ?? 0); i++) {
     const color = Object.keys(power)
       .sort()
       .find((c) => (power[c] ?? 0) >= 1);
-    if (!color) return { ok: false, reason: 'INSUFFICIENT_RESOURCES' };
-    power[color]!--;
+    if (color) power[color]!--;
+    else if (wild > 0) wild--;
+    else return { ok: false, reason: 'INSUFFICIENT_RESOURCES' };
   }
   const recycled = plan.powerRunes.map((id) => ({
     ...state.cards.find((c) => c.id === id)!,
@@ -94,6 +98,7 @@ export function payCost(
           ...(previous.spellEnergy !== undefined
             ? { spellEnergy: previous.spellEnergy - restrictedSpent }
             : {}),
+          ...(wildBefore !== wild ? { spellPower: wild } : {}),
         },
       },
       cards: [

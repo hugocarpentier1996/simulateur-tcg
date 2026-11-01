@@ -360,3 +360,4 @@ export { zhonyasHourglass } from './ogn/zhonyas-hourglass.js';
 export { packOfWonders } from './ogn/pack-of-wonders.js';
 export { guerillaWarfare } from './ogn/guerilla-warfare.js';
 export { swiftScout } from './ogn/swift-scout.js';
+export { daughterOfTheVoid } from './ogn/daughter-of-the-void.js';

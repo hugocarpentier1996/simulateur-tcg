@@ -10,7 +10,30 @@ export function findPayment(
   playerId: string,
   cost: UnitBlueprint['cost'],
   purpose: 'ordinary' | 'spell' = 'ordinary',
+  wild = purpose === 'spell' ? (state.resources[playerId]?.spellPower ?? 0) : 0,
 ): PaymentPlan | null {
+  // Power réservé aux sorts : à défaut de plan direct, retirer une unité de Power du coût
+  // et vérifier le plan complet (payCost comble le manque avec cette réserve).
+  if (wild > 0) {
+    const direct = findPayment(state, playerId, cost, purpose, 0);
+    if (direct) return direct;
+    const reductions: UnitBlueprint['cost'][] = [
+      ...Object.entries(cost.power)
+        .filter(([, n]) => (n ?? 0) > 0)
+        .map(([color, n]) => ({
+          ...cost,
+          power: { ...cost.power, [color]: (n ?? 0) - 1 },
+        })),
+      ...(cost.genericPower
+        ? [{ ...cost, genericPower: cost.genericPower - 1 }]
+        : []),
+    ];
+    for (const reduced of reductions) {
+      const plan = findPayment(state, playerId, reduced, purpose, wild - 1);
+      if (plan && payCost(state, playerId, cost, plan, purpose).ok) return plan;
+    }
+    return null;
+  }
   if (cost.powerChoice) {
     const floating = state.resources[playerId]?.power ?? {};
     const colors = [...cost.powerChoice].sort(

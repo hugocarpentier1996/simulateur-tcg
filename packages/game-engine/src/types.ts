@@ -171,6 +171,8 @@ export interface GameState {
       energy: number;
       power: Record<string, number>;
       /** Réserve réservée au lancement de sorts, effacée avec les ressources flottantes. */ spellEnergy?: number;
+      /** Power de n'importe quel domaine réservé aux sorts (Daughter of the Void). */
+      spellPower?: number;
     }
   >;
   battlefields: {

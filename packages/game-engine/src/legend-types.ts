@@ -31,6 +31,8 @@ export interface LegendBlueprint {
     readonly energy?: number;
     readonly power?: string;
     readonly legion?: boolean;
+    /** Power de n'importe quel domaine réservé aux sorts. */
+    readonly spellPower?: number;
   };
 }
 

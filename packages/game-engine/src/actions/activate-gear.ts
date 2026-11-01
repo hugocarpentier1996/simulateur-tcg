@@ -311,7 +311,11 @@ function addResource(
   state: GameState,
   playerId: string,
   sourceId: string,
-  ability: { readonly energy?: number; readonly power?: string },
+  ability: {
+    readonly energy?: number;
+    readonly power?: string;
+    readonly spellPower?: number;
+  },
 ): ActionResult {
   const previous = state.resources[playerId] ?? { energy: 0, power: {} };
   const energy = ability.energy ?? 0;
@@ -328,6 +332,9 @@ function addResource(
           power: color
             ? { ...previous.power, [color]: (previous.power[color] ?? 0) + 1 }
             : previous.power,
+          ...(ability.spellPower
+            ? { spellPower: (previous.spellPower ?? 0) + ability.spellPower }
+            : {}),
         },
       },
     },
