@@ -207,6 +207,21 @@ export function resolveSpell(
         state = buffUnit(state, unit.id);
       continue;
     }
+    if (effect.type === 'party-favors') {
+      const opponent = state.players.find((p) => p.id !== entry.casterId);
+      if (opponent)
+        state = {
+          ...state,
+          pendingModeChoice: {
+            kind: 'mode-choice',
+            sourceId: entry.card.id,
+            ownerId: opponent.id,
+            partnerId: entry.casterId,
+            modes: ['favor-cards', 'favor-runes'],
+          },
+        };
+      continue;
+    }
     if (effect.type === 'empower-buffs') {
       state = {
         ...state,

@@ -16,7 +16,9 @@ export type EffectMode =
   | 'skip'
   | `kill-gear:${string}`
   | `discard-return:${string}`
-  | 'pay-return';
+  | 'pay-return'
+  | 'favor-cards'
+  | 'favor-runes';
 
 const ONE_ENERGY = { energy: 1, power: {} };
 
@@ -31,6 +33,8 @@ export interface ModeChoiceEntry {
   discardReturn?: boolean;
   /** Payer 1 énergie pour renvoyer la source en main (proposé seulement si payable). */
   payReturn?: boolean;
+  /** Joueur qui profite aussi du mode choisi (lanceur de Party Favors). */
+  partnerId?: string;
 }
 
 /** Capacité dépilée après réactions -> choix du mode par son propriétaire, sans fenêtre.
@@ -109,6 +113,20 @@ function applyMode(
   if (mode === 'channel-exhausted')
     return channelForPlayer(state, pending.ownerId, 1);
   if (mode === 'skip') return { state, events: [] };
+  if (mode === 'favor-cards' || mode === 'favor-runes') {
+    let next = state;
+    const events: Extract<ActionResult, { ok: true }>['events'] = [];
+    for (const playerId of [pending.partnerId, pending.ownerId]) {
+      if (!playerId || next.result) continue;
+      const r =
+        mode === 'favor-cards'
+          ? drawCardForPlayer(next, playerId)
+          : channelForPlayer(next, playerId, 1);
+      next = r.state;
+      events.push(...r.events);
+    }
+    return { state: next, events };
+  }
   if (mode === 'pay-return') {
     const unit = state.units.find((u) => u.id === pending.sourceId);
     const payment = findPayment(state, pending.ownerId, ONE_ENERGY);

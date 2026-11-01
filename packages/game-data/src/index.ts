@@ -323,3 +323,4 @@ export { overtOperation } from './ogn/overt-operation.js';
 export { albusFerros } from './ogn/albus-ferros.js';
 export { superMegaDeathRocket } from './ogn/super-mega-death-rocket.js';
 export { vayne } from './ogn/vayne.js';
+export { partyFavors } from './ogn/party-favors.js';

@@ -157,7 +157,7 @@ function paymentPanel(session: Session, selection: Selection | null): string {
     state.showdown
   ) {
     const heading = state.pendingModeChoice
-      ? `Choisir l’effet · ${cardName(state.units.find((u) => u.id === state.pendingModeChoice!.sourceId)?.definitionId ?? state.pendingModeChoice.sourceId)}`
+      ? `Choisir l’effet · ${cardName([...state.units, ...state.cards].find((u) => u.id === state.pendingModeChoice!.sourceId)?.definitionId ?? state.pendingModeChoice.sourceId)}`
       : state.pendingPick
         ? 'Choisir la carte à garder'
         : state.pendingVision
@@ -534,12 +534,16 @@ function actionLabel(
               ? 'Ne rien faire'
               : action.mode === 'pay-return'
                 ? 'Payer 1 énergie : retour en main'
-                : action.mode.startsWith('discard-return:')
-                  ? 'Défausser ' +
-                    target(action.mode.slice('discard-return:'.length)) +
-                    ' pour reprendre la carte'
-                  : 'Détruire ' +
-                    target(action.mode.slice('kill-gear:'.length)))
+                : action.mode === 'favor-cards'
+                  ? 'Cartes (chacun pioche 1)'
+                  : action.mode === 'favor-runes'
+                    ? 'Runes (chacun canalise 1 rune Tap)'
+                    : action.mode.startsWith('discard-return:')
+                      ? 'Défausser ' +
+                        target(action.mode.slice('discard-return:'.length)) +
+                        ' pour reprendre la carte'
+                      : 'Détruire ' +
+                        target(action.mode.slice('kill-gear:'.length)))
       );
     case 'choose-hold-channel':
       return (

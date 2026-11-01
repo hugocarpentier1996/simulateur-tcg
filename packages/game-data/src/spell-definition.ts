@@ -35,6 +35,9 @@ export type SpellEffect =
   | { readonly type: 'exhaust-allies' }
   /** Détruit tous les équipements en jeu (cimetière de leur propriétaire). */
   | { readonly type: 'kill-all-gear' }
+  /** L'adversaire choisit Cartes (lanceur et lui piochent 1) ou Runes (chacun canalise 1
+   * rune Tap), via un choix de mode (Party Favors, 1v1). */
+  | { readonly type: 'party-favors' }
   /** Alliées Tap buffées : buff dépensé, redressées ; puis buff de toutes les alliées. */
   | { readonly type: 'spend-buffs-ready-then-buff-all' }
   /** Ce tour, les buffs des unités du lanceur donnent `amount` Might de plus (Stand United). */
