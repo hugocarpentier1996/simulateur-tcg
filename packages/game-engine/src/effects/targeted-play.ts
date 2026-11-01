@@ -1,3 +1,4 @@
+import { moveUnit } from './resolve-spell.js';
 import { buffUnit, spendBuff } from './buff.js';
 import type { ActionResult, GameState, UnitBlueprint } from '../types.js';
 import { dealEffectDamage } from './effect-damage.js';
@@ -22,6 +23,12 @@ export function resolveTargetedPlay(
 ): Extract<ActionResult, { ok: true }> {
   const target = state.units.find((u) => u.id === targetId);
   if (!target) return { ok: true, state, events: [] };
+  if (effect.type === 'pull-here') {
+    const source = state.units.find((u) => u.id === sourceId);
+    if (!source || source.zoneId === target.zoneId)
+      return { ok: true, state, events: [] };
+    return { ok: true, ...moveUnit(state, target, source.zoneId) };
+  }
   if (effect.type === 'spend-buff-empower-self') {
     const spent = spendBuff(state, target.id);
     if (!spent) return { ok: true, state, events: [] };

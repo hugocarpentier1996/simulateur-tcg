@@ -1186,3 +1186,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Volibear (ogn-158, Body) : Shield 3, Tank ; quand une unité adverse se déplace vers un autre champ que le sien, son propriétaire pioche 1 (`drawOnEnemyMoveElsewhere`, sans pile).
 - Miss Fortune (ogn-193, Chaos) : peut être jouée sur un champ libre, et les unités alliées aussi tant qu'elle est en jeu (`alliesCanPlayToOpenBattlefield`).
 - Mageseeker Warden (ogn-070) : sur un champ, les adversaires ne jouent leurs unités qu'en base et leurs unités ne peuvent pas être redressées par sorts et capacités (`wardenLockdown`, helper `wardenAgainst` ; aucun effet ne redresse encore de gear).
+- Blitzcrank (ogn-067) : Tank ; joué sur un champ, peut y attirer une unité ennemie (`pull-here`, filtre `onlyToBattlefield`) ; quand il tient, retourne dans la main de son propriétaire via la pile (`onHoldReturnToHand`).

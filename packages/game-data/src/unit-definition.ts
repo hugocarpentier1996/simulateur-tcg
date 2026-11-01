@@ -110,6 +110,8 @@ export interface UnitDefinition extends PrintedMetadata {
     readonly buffed?: boolean;
     /** « You may » : jouer sans cible reste possible même si une cible existe. */
     readonly optional?: boolean;
+    /** Capacité seulement si l'unité est jouée sur un champ. */
+    readonly onlyToBattlefield?: boolean;
     readonly allegiance?: 'friendly' | 'enemy';
     readonly zone?: 'battlefield';
     readonly excludeSelf?: boolean;
@@ -131,6 +133,8 @@ export interface UnitDefinition extends PrintedMetadata {
       | { readonly type: 'grant-ganking' }
       /** Dépense le buff de la cible, puis la source se buffe et se redresse. */
       | { readonly type: 'spend-buff-empower-self' }
+      /** Déplace la cible vers le lieu de la source (Blitzcrank). */
+      | { readonly type: 'pull-here' }
       | { readonly type: 'kill' }
       | { readonly type: 'return-to-hand' };
   };
@@ -208,6 +212,8 @@ export interface UnitDefinition extends PrintedMetadata {
   readonly accelerate?: { readonly power: string };
   /** « When I hold » : points d'effet de carte quand son propriétaire tient son champ. */
   readonly onHoldScore?: number;
+  /** « When I hold » : retourne dans la main de son propriétaire, via la pile. */
+  readonly onHoldReturnToHand?: boolean;
   /** En attaquant : dégâts de capacité à toutes les unités ennemies du champ, via la pile. */
   readonly onAttackDamageEnemiesHere?: number;
   /** En attaquant : tue toutes les unités ennemies blessées du champ, via la pile. */

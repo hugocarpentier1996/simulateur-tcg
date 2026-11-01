@@ -24,6 +24,11 @@ export function playTargetChoices(
   const targeted = definition.onPlayTargetEffect;
   if (targeted?.legion && !state.cardsPlayedThisTurn?.[playerId])
     return [undefined];
+  if (
+    targeted?.onlyToBattlefield &&
+    !state.battlefields.some((f) => f.zoneId === destinationId)
+  )
+    return [undefined];
   if (targeted) {
     const toField = state.battlefields.some((f) => f.zoneId === destinationId);
     const ids = state.units

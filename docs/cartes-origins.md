@@ -246,3 +246,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Volibear — ogn-158-298
 - [x] Miss Fortune — ogn-193-298
 - [x] Mageseeker Warden — ogn-070-298
+- [x] Blitzcrank — ogn-067-298

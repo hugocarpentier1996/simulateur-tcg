@@ -1,3 +1,4 @@
+import { leaveBoard } from './leave-board.js';
 import { victoryTarget } from '../scoring/victory-target.js';
 import type { ActionResult, GameEvent, GameState } from '../types.js';
 
@@ -8,6 +9,8 @@ export interface HoldUnitEntry {
   ownerId: string;
   battlefieldId: string;
   points: number;
+  /** return-to-hand : la source retourne en main (Blitzcrank) au lieu de marquer. */
+  effect?: 'return-to-hand';
 }
 
 /** Tenue scorée sur un champ -> une capacité par unité du joueur présente sur ce champ et
@@ -19,20 +22,24 @@ export function queueHoldUnits(
 ): GameState {
   if (state.result) return state;
   const entries: HoldUnitEntry[] = state.units.flatMap((u) => {
-    const points = state.unitDefinitions?.find(
+    const definition = state.unitDefinitions?.find(
       (d) => d.id === u.definitionId,
-    )?.onHoldScore;
-    return u.ownerId === playerId && u.zoneId === battlefieldId && points
-      ? [
-          {
-            kind: 'hold-unit' as const,
-            sourceId: u.id,
-            ownerId: playerId,
-            battlefieldId,
-            points,
-          },
-        ]
-      : [];
+    );
+    if (u.ownerId !== playerId || u.zoneId !== battlefieldId) return [];
+    const base = {
+      kind: 'hold-unit' as const,
+      sourceId: u.id,
+      ownerId: playerId,
+      battlefieldId,
+    };
+    return [
+      ...(definition?.onHoldScore
+        ? [{ ...base, points: definition.onHoldScore }]
+        : []),
+      ...(definition?.onHoldReturnToHand
+        ? [{ ...base, points: 0, effect: 'return-to-hand' as const }]
+        : []),
+    ];
   });
   if (!entries.length) return state;
   return {
@@ -52,6 +59,12 @@ export function resolveHoldUnit(
   state: GameState,
   entry: HoldUnitEntry,
 ): Extract<ActionResult, { ok: true }> {
+  if (entry.effect === 'return-to-hand') {
+    const unit = state.units.find((u) => u.id === entry.sourceId);
+    return unit
+      ? leaveBoard(state, unit, 'hand')
+      : { ok: true, state, events: [] };
+  }
   return awardPoints(state, entry.ownerId, entry.points, entry.sourceId);
 }
 

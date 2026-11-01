@@ -587,7 +587,7 @@ export function resolveSpell(
 
 /** Déplacement par sort : unité -> zone, contrôle des champs abandonnés recalculé (hors
  * champ du showdown) et showdown en attente sur un autre champ atteint. */
-function moveUnit(
+export function moveUnit(
   input: GameState,
   target: UnitState,
   destinationId: string,

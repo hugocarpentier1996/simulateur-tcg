@@ -290,3 +290,4 @@ export { viktorMind } from './ogn/viktor-mind.js';
 export { volibearBody } from './ogn/volibear-body.js';
 export { missFortuneChaos } from './ogn/miss-fortune-chaos.js';
 export { mageseekerWarden } from './ogn/mageseeker-warden.js';
+export { blitzcrank } from './ogn/blitzcrank.js';
