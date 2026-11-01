@@ -397,6 +397,16 @@ function* tokenPlacements(
 
 /** Coût facultatif : une variante par allié Ready, puis validation atomique par act. */
 function optionalCosts(state: GameState, action: GameAction): GameAction[] {
+  if (action.type === 'play-unit') {
+    const card = state.cards.find((c) => c.id === action.cardId);
+    // Coût supplémentaire obligatoire : une variante par unité alliée sacrifiable.
+    return state.unitDefinitions?.find((d) => d.id === card?.definitionId)
+      ?.sacrificeCost
+      ? state.units
+          .filter((u) => u.ownerId === action.playerId)
+          .map((u) => ({ ...action, sacrificeUnitId: u.id }))
+      : [action];
+  }
   if (action.type !== 'cast-spell') return [action];
   const card = state.cards.find((c) => c.id === action.cardId);
   // Coût X : une variante par X jusqu'au Power potentiellement disponible (filtrée au paiement).

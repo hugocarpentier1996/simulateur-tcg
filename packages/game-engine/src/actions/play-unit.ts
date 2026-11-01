@@ -1,3 +1,4 @@
+import { settleLethalUnits } from '../effects/lethal-units.js';
 import { activeLegends } from '../effects/legends.js';
 import { victoryTarget } from '../scoring/victory-target.js';
 import { alliesEnterReady, wardenAgainst } from '../effects/unit-aura.js';
@@ -23,6 +24,35 @@ import { canSummonAt } from './unit-destination.js';
  * onPlayBattlefieldDamage empile la capacité après la mise en jeu, sans dégâts immédiats.
  * Le chosen champion suit le coût du catalogue et quitte sa zone comme une carte en main. */
 export function playUnit(
+  state: GameState,
+  action: Extract<GameAction, { type: 'play-unit' }>,
+): ActionResult {
+  const definition = state.unitDefinitions?.find(
+    (d) =>
+      d.id === state.cards.find((c) => c.id === action.cardId)?.definitionId,
+  );
+  const sacrifice = state.units.find(
+    (u) => u.id === action.sacrificeUnitId && u.ownerId === action.playerId,
+  );
+  if (
+    action.sacrificeUnitId !== undefined &&
+    (!definition?.sacrificeCost || !sacrifice)
+  )
+    return { ok: false, reason: 'INVALID_ADDITIONAL_COST' };
+  if (definition?.sacrificeCost && !sacrifice)
+    return { ok: false, reason: 'INVALID_ADDITIONAL_COST' };
+  const played = playUnitCore(state, action);
+  if (!played.ok || !sacrifice) return played;
+  // Coût supplémentaire payé avec le reste : l'unité sacrifiée meurt (effets de mort compris).
+  const killed = settleLethalUnits(played.state, new Set([sacrifice.id]));
+  return {
+    ok: true,
+    state: killed.state,
+    events: [...played.events, ...killed.events],
+  };
+}
+
+function playUnitCore(
   state: GameState,
   action: Extract<GameAction, { type: 'play-unit' }>,
 ): ActionResult {

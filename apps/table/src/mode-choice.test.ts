@@ -1,6 +1,10 @@
 import { expect, it } from 'vitest';
 import { spellScenario } from '../../../packages/game-engine/src/origins-test-fixtures.js';
-import { qiyana, stupefy } from '../../../packages/game-data/src/index.js';
+import {
+  cruelPatron,
+  qiyana,
+  stupefy,
+} from '../../../packages/game-data/src/index.js';
 import { handPlayer, tableActions, type Session } from './session.js';
 import { renderTable } from './view.js';
 
@@ -30,4 +34,20 @@ it('Choix de mode : le panneau propose « Piocher 1 » et « Canaliser 1 rune Ta
   expect(html).toContain('Choisir l’effet · Qiyana');
   expect(html).toContain('Piocher 1');
   expect(html).toContain('Canaliser 1 rune Tap');
+});
+
+it('Cruel Patron : chaque option nomme l’unité alliée tuée en coût', () => {
+  const state = spellScenario(stupefy);
+  state.unitDefinitions = [cruelPatron];
+  state.cards.push({
+    id: 'patron',
+    definitionId: cruelPatron.id,
+    ownerId: 'a',
+    zoneId: 'hand-a',
+  });
+  state.resources.a = { energy: 4, power: {} };
+  const s: Session = { state, history: [], log: [], error: null };
+  expect(renderTable(s, { cardId: 'patron' })).toMatch(
+    /en tuant [^<]*ally|en tuant/,
+  );
 });

@@ -424,6 +424,9 @@ function actionLabel(
           ? ' · Cible : ' + target(action.onPlayTargetId)
           : '') +
         (action.accelerate ? ' · Accelerate (arrive Ready)' : '') +
+        (action.sacrificeUnitId
+          ? ' · en tuant ' + unit(action.sacrificeUnitId)
+          : '') +
         (action.optionalCost ? ' · Coût facultatif payé' : '') +
         (action.returnSpellId
           ? ' · Récupérer : ' + target(action.returnSpellId)

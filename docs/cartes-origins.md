@@ -254,3 +254,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Monastery of Hirana — ogn-282-298
 - [x] Reckoner's Arena — ogn-286-298
 - [x] Qiyana — ogn-155-298
+- [x] Cruel Patron — ogn-208-298
