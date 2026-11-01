@@ -286,3 +286,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] King's Edict — ogn-237-298
 - [x] Mindsplitter — ogn-192-298
 - [x] Sabotage — ogn-156-298
+- [x] Shen — ogn-241-298

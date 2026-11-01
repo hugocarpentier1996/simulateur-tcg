@@ -492,11 +492,16 @@ function dispatch(state: GameState, action: GameAction): ActionResult {
     state.stack &&
     !(
       action.type === 'play-unit' &&
-      playableFacedown(
+      (playableFacedown(
         state,
         state.cards.find((c) => c.id === action.cardId),
         action.playerId,
-      )
+      ) ||
+        state.unitDefinitions?.find(
+          (d) =>
+            d.id ===
+            state.cards.find((c) => c.id === action.cardId)?.definitionId,
+        )?.reactionTiming)
     ) &&
     action.type !== 'cast-spell' &&
     action.type !== 'pass' &&

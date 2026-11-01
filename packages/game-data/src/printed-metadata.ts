@@ -7,6 +7,11 @@ export interface PrintedMetadata {
   readonly imageLocal?: string;
 }
 const entries: Record<string, PrintedMetadata> = {
+  'ogn-241-298': {
+    displayName: 'Shen',
+    tags: ['Shen', 'Ionia'],
+    imageLocal: '/cards/ogn-241-298.png',
+  },
   'ogn-156-298': {
     displayName: 'Sabotage',
     tags: [],

@@ -391,6 +391,8 @@ export interface UnitBlueprint {
   readonly mightOnHiddenPlay?: number;
   /** Les cartes cachées des adversaires sur son champ ne peuvent pas être jouées. */
   readonly blocksEnemyHidden?: boolean;
+  /** Réaction : jouable comme une Réaction (pile, Showdown, tour adverse) avec la priorité. */
+  readonly reactionTiming?: boolean;
   /** À la mise en jeu : buffe jusqu'à ce nombre d'autres unités alliées (onPlaySelectedIds). */
   readonly onPlayBuffOthers?: number;
   /** « When I conquer » : se buffe, via la pile (Sett). */

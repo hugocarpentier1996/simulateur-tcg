@@ -1227,3 +1227,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - King's Edict (ogn-237) : l'adversaire choisit une de ses unités (non contrôlée par le lanceur), qui meurt (`each-player-kills` avec `opponentsOnly`).
 - Mindsplitter (ogn-192) : à la mise en jeu, la main adverse est révélée et son propriétaire y choisit une carte, défaussée (`onPlayEffect: opponent-hand-pick`, modes `discard-opp:<id>`).
 - Sabotage (ogn-156) : la main adverse est révélée et le lanceur y choisit une carte non-unité, recyclée sous le deck de son propriétaire (`opponent-hand-pick`, modes `recycle-opp:<id>`).
+- Shen (ogn-241) : unité Réaction (jouable avec la priorité pendant une pile, un Showdown ou le tour adverse, `reactionTiming`), Shield 2, Tank.
