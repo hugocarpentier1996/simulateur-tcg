@@ -74,3 +74,4 @@ existantes ; seuls les nouveaux doutes utiles rejoindront le prochain lot de que
 - Reinforce (hypothèses) : le reste du coût de l'unité est payé automatiquement (réserve puis runes) ; seules les unités payables sont proposées ; l'unité arrive dans la base, Tap, sans ses effets « when you play me ».
 - Gears Hidden (hypothèse) : posés depuis facedown directement dans la base (la règle les place sur le champ puis les rappelle au Cleanup).
 - The Boss (hypothèses) : le « you may » est accepté automatiquement dès que la légende est Ready et le Power payable ; le redressement à la conquête se fait sans pile.
+- Légendes surnuméraires OGN-299 à OGN-310 (versions alternatives des légendes 247 à 269) : non ajoutées comme cartes distinctes (pas d'image locale) ; à confirmer si elles doivent l'être.

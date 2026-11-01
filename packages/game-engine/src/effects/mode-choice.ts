@@ -1,3 +1,4 @@
+import { playUnitFromTrash } from './play-from-trash.js';
 import { dealSpellDamage } from './spell-damage.js';
 import { settleLethalUnits } from './lethal-units.js';
 import { findPayment } from '../legal/payment.js';
@@ -36,7 +37,8 @@ export type EffectMode =
   | 'return-champion'
   | `retreat:${string}`
   | `arrange:${string}`
-  | `reinforce:${string}`;
+  | `reinforce:${string}`
+  | 'pay-play';
 
 const ONE_ENERGY = { energy: 1, power: {} };
 
@@ -55,6 +57,8 @@ export interface ModeChoiceEntry {
   partnerId?: string;
   /** Joueurs suivants à choisir à leur tour ce qu'ils tuent (Cull the Weak). */
   nextChoosers?: readonly string[];
+  /** Couleur du Power à payer pour jouer la source depuis le cimetière (Flame Chompers). */
+  payPlayPower?: string;
   /** Reinforce : cartes regardées et réduction d'énergie de l'unité jouée. */
   lookedIds?: readonly string[];
   energyReduction?: number;
@@ -110,32 +114,43 @@ export function resolveModeChoice(
         .slice(0, entry.arrangeTop)
         .map((c) => c.id)
     : [];
-  const modes: readonly EffectMode[] = entry.arrangeTop
-    ? arrangements(top).map((kept) => `arrange:${kept.join('+')}` as const)
-    : entry.retreatFrom
-      ? ['skip', ...retreats]
-      : entry.killGearBuff
-        ? [
-            'skip',
-            ...(state.gears ?? []).map((g) => `kill-gear:${g.id}` as const),
-          ]
-        : entry.discardReturn
-          ? inTrash
-            ? ['skip', ...handIds.map((id) => `discard-return:${id}` as const)]
-            : []
-          : entry.payReturn
-            ? state.units.some((u) => u.id === entry.sourceId) &&
-              findPayment(state, entry.ownerId, ONE_ENERGY)
-              ? ['skip', 'pay-return']
+  const payPlayCost = entry.payPlayPower
+    ? { energy: 0, power: { [entry.payPlayPower]: 1 } }
+    : undefined;
+  const modes: readonly EffectMode[] = payPlayCost
+    ? inTrash && findPayment(state, entry.ownerId, payPlayCost)
+      ? ['skip', 'pay-play']
+      : []
+    : entry.arrangeTop
+      ? arrangements(top).map((kept) => `arrange:${kept.join('+')}` as const)
+      : entry.retreatFrom
+        ? ['skip', ...retreats]
+        : entry.killGearBuff
+          ? [
+              'skip',
+              ...(state.gears ?? []).map((g) => `kill-gear:${g.id}` as const),
+            ]
+          : entry.discardReturn
+            ? inTrash
+              ? [
+                  'skip',
+                  ...handIds.map((id) => `discard-return:${id}` as const),
+                ]
               : []
-            : entry.modes;
+            : entry.payReturn
+              ? state.units.some((u) => u.id === entry.sourceId) &&
+                findPayment(state, entry.ownerId, ONE_ENERGY)
+                ? ['skip', 'pay-return']
+                : []
+              : entry.modes;
   if (
     modes.length <= 1 &&
     (entry.killGearBuff ||
       entry.discardReturn ||
       entry.payReturn ||
       entry.retreatFrom ||
-      entry.arrangeTop)
+      entry.arrangeTop ||
+      entry.payPlayPower)
   )
     return {
       ok: true,
@@ -432,6 +447,13 @@ function applyMode(
       events.push(...r.events);
     }
     return { state: next, events };
+  }
+  if (mode === 'pay-play' && pending.payPlayPower) {
+    const cost = { energy: 0, power: { [pending.payPlayPower]: 1 } };
+    const plan = findPayment(state, pending.ownerId, cost);
+    const paid = plan && payCost(state, pending.ownerId, cost, plan);
+    if (!paid || !paid.ok) return { state, events: [] };
+    return playUnitFromTrash(paid.state, pending.ownerId, pending.sourceId);
   }
   if (mode === 'pay-return') {
     const unit = state.units.find((u) => u.id === pending.sourceId);

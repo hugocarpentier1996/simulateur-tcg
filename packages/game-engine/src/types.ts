@@ -407,6 +407,9 @@ export interface UnitBlueprint {
   readonly blocksEnemyHidden?: boolean;
   /** Réaction : jouable comme une Réaction (pile, Showdown, tour adverse) avec la priorité. */
   readonly reactionTiming?: boolean;
+  /** Défaussée : peut être jouée depuis le cimetière en payant 1 Power de cette couleur
+   * (Flame Chompers, capacité sur la pile). */
+  readonly playOnDiscard?: { readonly power: string };
   /** Tant qu'elle est en jeu, les autres unités alliées ont Vision (Gemcraft Seer). */
   readonly alliesHaveVision?: boolean;
   /** À la mise en jeu, peut jouer une unité de son cimetière (returnSpellId) : gratuitement

@@ -477,6 +477,36 @@ export function act(state: GameState, action: GameAction): ActionResult {
         events.push(...drawn.events);
       }
   }
+  // Flame Chompers : carte défaussée -> capacité « payer pour la jouer » sur la pile.
+  const chompers = events.flatMap((e) => {
+    if (e.type !== 'card-discarded') return [];
+    const card = shrine.cards.find((c) => c.id === e.cardId);
+    const rule = shrine.unitDefinitions?.find(
+      (d) => d.id === card?.definitionId,
+    )?.playOnDiscard;
+    return card && rule
+      ? [
+          {
+            kind: 'mode-choice' as const,
+            sourceId: card.id,
+            ownerId: card.ownerId,
+            modes: [],
+            payPlayPower: rule.power,
+          },
+        ]
+      : [];
+  });
+  if (chompers.length)
+    shrine = {
+      ...shrine,
+      stack: {
+        entries: [...(shrine.stack?.entries ?? []), ...chompers],
+        initiatorId: shrine.stack?.initiatorId ?? shrine.activePlayerId,
+        priorityPlayerId:
+          shrine.stack?.priorityPlayerId ?? shrine.activePlayerId,
+        consecutivePasses: 0,
+      },
+    };
   const lostFacedown = trashLostFacedown(shrine);
   events.push(...lostFacedown.events);
   const scrapped = scrapheapDraws(lostFacedown.state, events);
