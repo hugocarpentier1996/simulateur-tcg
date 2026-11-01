@@ -32,6 +32,8 @@ export interface PlayEffectEntry {
     | { type: 'spend-buffs-channel'; unitIds: readonly string[] }
     /** La prochaine unité jouée ce tour par le propriétaire arrive Ready (Legion vérifié). */
     | { type: 'next-unit-ready'; legion?: boolean }
+    /** Le prochain sort du propriétaire ce tour gagne des dégâts bonus. */
+    | { type: 'next-spell-bonus-damage'; amount: number }
     /** Joue l'unité indiquée du cimetière du propriétaire dans sa base. */
     | { type: 'play-from-trash'; cardId: string }
     /** Buffe chacune des unités indiquées encore en jeu (Kinkou Monk). */
@@ -112,6 +114,21 @@ export function resolvePlayEffect(
               ],
             }
           : state,
+      events: [{ type: 'unit-play-effect-resolved', sourceId: entry.sourceId }],
+    };
+  }
+  if (entry.effect.type === 'next-spell-bonus-damage') {
+    return {
+      ok: true,
+      state: {
+        ...state,
+        nextSpellBonusDamage: {
+          ...state.nextSpellBonusDamage,
+          [entry.ownerId]:
+            (state.nextSpellBonusDamage?.[entry.ownerId] ?? 0) +
+            entry.effect.amount,
+        },
+      },
       events: [{ type: 'unit-play-effect-resolved', sourceId: entry.sourceId }],
     };
   }

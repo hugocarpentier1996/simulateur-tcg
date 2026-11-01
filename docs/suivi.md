@@ -1244,3 +1244,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Vi (ogn-036) : Ganking ; recycler une carte de son cimetière : +1 Might ce tour via la pile (action `trash-recycle-ability`, `trashRecycleMight`).
 - Garbage Grabber (ogn-099) : gear ; recycler 3 cartes de son cimetière, 1 énergie, Tap : pioche 1 (capacité Tap sans cible `draw`, coût `recycleTrash`).
 - Sun Disc (ogn-021) : gear ; Tap — Legion : la prochaine unité jouée ce tour arrive Ready (capacité Tap sans cible `next-unit-ready`, registre `nextUnitReady` vidé en fin de tour ; Legion vérifié à la résolution).
+- Ravenborn Tome (ogn-032) : gear ; Tap — le prochain sort joué ce tour inflige 1 dégât bonus par instance (`nextSpellBonusDamage` transféré au sort lancé dans `spellBonusDamage`, pris en compte par `dealEffectDamage`).

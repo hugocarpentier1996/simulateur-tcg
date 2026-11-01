@@ -78,7 +78,9 @@ export interface GearTapAbility {
     | { readonly type: 'draw'; readonly count: number }
     /** Sans cible : la prochaine unité jouée ce tour arrive Ready ; legion : seulement si une
      * carte a déjà été jouée ce tour (vérifié à la résolution). */
-    | { readonly type: 'next-unit-ready'; readonly legion?: boolean };
+    | { readonly type: 'next-unit-ready'; readonly legion?: boolean }
+    /** Sans cible : le prochain sort joué ce tour inflige `amount` dégâts bonus par instance. */
+    | { readonly type: 'next-spell-bonus-damage'; readonly amount: number };
 }
 
 /** Définition -> copie figée indépendante. RangeError si coût négatif/non fini,

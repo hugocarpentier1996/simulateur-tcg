@@ -111,7 +111,8 @@ export function tapAbilityTargets(
     ability.effect.type === 'summon-base' ||
     ability.effect.type === 'kill-self' ||
     ability.effect.type === 'draw' ||
-    ability.effect.type === 'next-unit-ready'
+    ability.effect.type === 'next-unit-ready' ||
+    ability.effect.type === 'next-spell-bonus-damage'
   )
     return [];
   const { allegiance, zone, exhausted } = ability.target;
@@ -150,7 +151,8 @@ function activateTapAbility(
     ability.effect.type === 'summon-base' ||
     ability.effect.type === 'kill-self' ||
     ability.effect.type === 'draw' ||
-    ability.effect.type === 'next-unit-ready';
+    ability.effect.type === 'next-unit-ready' ||
+    ability.effect.type === 'next-spell-bonus-damage';
   if (
     untargeted
       ? action.targetId !== undefined
@@ -216,18 +218,23 @@ function activateTapAbility(
           ? { type: 'kill-gear', gearId: gear.id }
           : ability.effect.type === 'draw'
             ? { type: 'draw', count: ability.effect.count }
-            : ability.effect.type === 'next-unit-ready'
+            : ability.effect.type === 'next-spell-bonus-damage'
               ? {
-                  type: 'next-unit-ready',
-                  ...(ability.effect.legion ? { legion: true } : {}),
+                  type: 'next-spell-bonus-damage',
+                  amount: ability.effect.amount,
                 }
-              : ability.effect.type === 'move-to-base'
-                ? { type: 'move-to-base', targetId: action.targetId! }
-                : {
-                    type: 'targeted',
-                    targetId: action.targetId!,
-                    effect: ability.effect,
-                  },
+              : ability.effect.type === 'next-unit-ready'
+                ? {
+                    type: 'next-unit-ready',
+                    ...(ability.effect.legion ? { legion: true } : {}),
+                  }
+                : ability.effect.type === 'move-to-base'
+                  ? { type: 'move-to-base', targetId: action.targetId! }
+                  : {
+                      type: 'targeted',
+                      targetId: action.targetId!,
+                      effect: ability.effect,
+                    },
   };
   return {
     ok: true,

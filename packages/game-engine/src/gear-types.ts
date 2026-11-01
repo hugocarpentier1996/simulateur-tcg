@@ -50,7 +50,9 @@ export interface GearBlueprint {
       | { readonly type: 'draw'; readonly count: number }
       /** Sans cible : la prochaine unité jouée ce tour arrive Ready ; legion : seulement si une
        * carte a déjà été jouée ce tour (vérifié à la résolution). */
-      | { readonly type: 'next-unit-ready'; readonly legion?: boolean };
+      | { readonly type: 'next-unit-ready'; readonly legion?: boolean }
+      /** Sans cible : le prochain sort joué ce tour inflige `amount` dégâts bonus par instance. */
+      | { readonly type: 'next-spell-bonus-damage'; readonly amount: number };
   };
   /** Posé, défaussé ou détruit : son propriétaire pioche 1 (Scrapheap ; sans pile). */
   readonly drawOnPlayDiscardOrKill?: boolean;

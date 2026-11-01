@@ -314,6 +314,18 @@ export function castSpell(
           }
         : {}),
       cards: paid.state.cards.filter((c) => c.id !== card.id),
+      ...(state.nextSpellBonusDamage?.[action.playerId]
+        ? {
+            nextSpellBonusDamage: {
+              ...state.nextSpellBonusDamage,
+              [action.playerId]: 0,
+            },
+            spellBonusDamage: {
+              ...state.spellBonusDamage,
+              [card.id]: state.nextSpellBonusDamage[action.playerId]!,
+            },
+          }
+        : {}),
       ...(state.nextSpellDiscount?.[action.playerId]
         ? {
             nextSpellDiscount: {

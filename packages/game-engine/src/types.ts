@@ -47,6 +47,10 @@ export interface GameState {
   effectDamagePrevented?: boolean;
   /** Joueurs dont au moins une unité ennemie est morte ce tour (Spoils of War). */
   enemyDeathsThisTurn?: readonly string[];
+  /** Dégâts bonus du prochain sort de chaque joueur ce tour (Ravenborn Tome), puis ceux
+   * acquis par chaque sort lancé, par id de carte. */
+  nextSpellBonusDamage?: Readonly<Record<string, number>>;
+  spellBonusDamage?: Readonly<Record<string, number>>;
   /** Joueurs dont la prochaine unité jouée ce tour arrive Ready (Sun Disc). */
   nextUnitReady?: readonly string[];
   /** Tours supplémentaires en attente, dans l'ordre (Time Warp). */

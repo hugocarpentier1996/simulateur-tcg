@@ -17,7 +17,11 @@ export function dealEffectDamage(
     throw new RangeError('Dégâts invalides.');
   const amount = state.effectDamagePrevented
     ? 0
-    : baseAmount + spellAbilityDamageBonus(state, source.playerId);
+    : baseAmount +
+      spellAbilityDamageBonus(state, source.playerId) +
+      (source.kind === 'spell'
+        ? (state.spellBonusDamage?.[source.cardId] ?? 0)
+        : 0);
   const ids = new Set(targets.map((u) => u.id));
   const damage = (id: string) =>
     state.effectDamagePrevented
