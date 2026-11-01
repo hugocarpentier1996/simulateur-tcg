@@ -268,6 +268,9 @@ export interface UnitDefinition extends PrintedMetadata {
   readonly onConquerKillGearBuff?: boolean;
   /** « Spend my buff » : +Might jusqu'à la fin du tour, via la pile (Sett). */
   readonly buffSpendMight?: number;
+  /** « Spend my buff » : un mode non choisi ce tour parmi dégâts / Stun / Ready / Ganking
+   * (Udyr, choix à la résolution). */
+  readonly buffSpendModes?: boolean;
   /** « Recycle 1 from your trash » : +Might jusqu'à la fin du tour, via la pile (Vi). */
   readonly trashRecycleMight?: number;
   /** Coût supplémentaire obligatoire : tuer une unité alliée à la mise en jeu. */

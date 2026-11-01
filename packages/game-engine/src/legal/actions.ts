@@ -146,6 +146,7 @@ function* candidates(
         };
     if (unit.buffed && unit.ownerId === playerId)
       yield { type: 'spend-buff-ability', playerId, unitId: unit.id };
+
     if (
       unit.ownerId === playerId &&
       state.unitDefinitions?.find((d) => d.id === unit.definitionId)

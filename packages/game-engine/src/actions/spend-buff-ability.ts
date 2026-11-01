@@ -1,3 +1,4 @@
+import type { ModeChoiceEntry } from '../effects/mode-choice.js';
 import type { ActionResult, GameAction, GameState } from '../types.js';
 import type { PlayEffectEntry } from '../effects/play-effect.js';
 import { spendBuff } from '../effects/buff.js';
@@ -18,18 +19,33 @@ export function spendBuffAbility(
   const unit = state.units.find(
     (u) => u.id === action.unitId && u.ownerId === action.playerId,
   );
-  const might = state.unitDefinitions?.find(
+  const definition = state.unitDefinitions?.find(
     (d) => d.id === unit?.definitionId,
-  )?.buffSpendMight;
-  if (!unit || !might) return { ok: false, reason: 'NO_ABILITY' };
+  );
+  const might = definition?.buffSpendMight;
+  if (!unit || (!might && !definition?.buffSpendModes))
+    return { ok: false, reason: 'NO_ABILITY' };
+  if (
+    definition?.buffSpendModes &&
+    (state.udyrModesUsed?.[unit.id]?.length ?? 0) >= 4
+  )
+    return { ok: false, reason: 'NO_MODE_LEFT' };
   const spent = spendBuff(state, unit.id);
   if (!spent) return { ok: false, reason: 'NOT_BUFFED' };
-  const entry: PlayEffectEntry = {
-    kind: 'play-effect',
-    sourceId: unit.id,
-    ownerId: action.playerId,
-    effect: { type: 'self-might', amount: might },
-  };
+  const entry: PlayEffectEntry | ModeChoiceEntry = might
+    ? {
+        kind: 'play-effect',
+        sourceId: unit.id,
+        ownerId: action.playerId,
+        effect: { type: 'self-might', amount: might },
+      }
+    : {
+        kind: 'mode-choice',
+        sourceId: unit.id,
+        ownerId: action.playerId,
+        modes: [],
+        udyr: true,
+      };
   return {
     ok: true,
     state: {

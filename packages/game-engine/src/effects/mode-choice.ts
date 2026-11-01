@@ -46,7 +46,10 @@ export type EffectMode =
   | 'follow'
   | `tf-fury:${string}`
   | `stun:${string}`
-  | `split:${string}`;
+  | `split:${string}`
+  | `udyr-damage:${string}`
+  | 'udyr-ready'
+  | 'udyr-ganking';
 
 const ONE_ENERGY = { energy: 1, power: {} };
 
@@ -65,6 +68,8 @@ export interface ModeChoiceEntry {
   partnerId?: string;
   /** Joueurs suivants à choisir à leur tour ce qu'ils tuent (Cull the Weak). */
   nextChoosers?: readonly string[];
+  /** Udyr : modes non encore choisis ce tour, calculés à la résolution. */
+  udyr?: boolean;
   /** Teemo (Mind) : cartes du dessus à révéler ; leurs cartes Hidden fixent les dégâts. */
   revealCount?: number;
   /** Volibear : dégâts à répartir entre les ennemis du champ, à la résolution. */
@@ -186,40 +191,55 @@ export function resolveModeChoice(
         )
         .map((u) => u.id)
     : [];
-  const modes: readonly EffectMode[] = entry.splitDamageAt
-    ? splitModes(splitTargets, entry.splitAmount ?? 0)
-    : entry.readyOther
-      ? ['skip', ...exhausted]
-      : payPlayCost
-        ? inTrash && findPayment(state, entry.ownerId, payPlayCost)
-          ? ['skip', 'pay-play']
-          : []
-        : entry.arrangeTop
-          ? arrangements(top).map(
-              (kept) => `arrange:${kept.join('+')}` as const,
-            )
-          : entry.retreatFrom
-            ? ['skip', ...retreats]
-            : entry.killGearBuff
-              ? [
-                  'skip',
-                  ...(state.gears ?? []).map(
-                    (g) => `kill-gear:${g.id}` as const,
-                  ),
-                ]
-              : entry.discardReturn
-                ? inTrash
-                  ? [
-                      'skip',
-                      ...handIds.map((id) => `discard-return:${id}` as const),
-                    ]
-                  : []
-                : entry.payReturn
-                  ? state.units.some((u) => u.id === entry.sourceId) &&
-                    findPayment(state, entry.ownerId, ONE_ENERGY)
-                    ? ['skip', 'pay-return']
+  const used = state.udyrModesUsed?.[entry.sourceId] ?? [];
+  const atFields = state.units
+    .filter((u) => state.battlefields.some((f) => f.zoneId === u.zoneId))
+    .map((u) => u.id);
+  const modes: readonly EffectMode[] = entry.udyr
+    ? [
+        ...(used.includes('damage')
+          ? []
+          : atFields.map((id) => `udyr-damage:${id}` as const)),
+        ...(used.includes('stun')
+          ? []
+          : atFields.map((id) => `stun:${id}` as const)),
+        ...(used.includes('ready') ? [] : (['udyr-ready'] as const)),
+        ...(used.includes('ganking') ? [] : (['udyr-ganking'] as const)),
+      ]
+    : entry.splitDamageAt
+      ? splitModes(splitTargets, entry.splitAmount ?? 0)
+      : entry.readyOther
+        ? ['skip', ...exhausted]
+        : payPlayCost
+          ? inTrash && findPayment(state, entry.ownerId, payPlayCost)
+            ? ['skip', 'pay-play']
+            : []
+          : entry.arrangeTop
+            ? arrangements(top).map(
+                (kept) => `arrange:${kept.join('+')}` as const,
+              )
+            : entry.retreatFrom
+              ? ['skip', ...retreats]
+              : entry.killGearBuff
+                ? [
+                    'skip',
+                    ...(state.gears ?? []).map(
+                      (g) => `kill-gear:${g.id}` as const,
+                    ),
+                  ]
+                : entry.discardReturn
+                  ? inTrash
+                    ? [
+                        'skip',
+                        ...handIds.map((id) => `discard-return:${id}` as const),
+                      ]
                     : []
-                  : entry.modes;
+                  : entry.payReturn
+                    ? state.units.some((u) => u.id === entry.sourceId) &&
+                      findPayment(state, entry.ownerId, ONE_ENERGY)
+                      ? ['skip', 'pay-return']
+                      : []
+                    : entry.modes;
   if (
     modes.length <= 1 &&
     (entry.killGearBuff ||
@@ -229,7 +249,8 @@ export function resolveModeChoice(
       entry.arrangeTop ||
       entry.payPlayCost ||
       entry.readyOther ||
-      (entry.splitDamageAt && !modes.length))
+      (entry.splitDamageAt && !modes.length) ||
+      (entry.udyr && !modes.length))
   )
     return {
       ok: true,
@@ -255,7 +276,27 @@ export function chooseMode(
     return { ok: false, reason: 'NO_PRIORITY' };
   if (!pending.modes.includes(action.mode))
     return { ok: false, reason: 'INVALID_MODE' };
-  const cleared = { ...state, pendingModeChoice: null };
+  const cleared: GameState = {
+    ...state,
+    pendingModeChoice: null,
+    ...(pending.udyr
+      ? {
+          udyrModesUsed: {
+            ...state.udyrModesUsed,
+            [pending.sourceId]: [
+              ...(state.udyrModesUsed?.[pending.sourceId] ?? []),
+              action.mode.startsWith('udyr-damage:')
+                ? 'damage'
+                : action.mode.startsWith('stun:')
+                  ? 'stun'
+                  : action.mode === 'udyr-ready'
+                    ? 'ready'
+                    : 'ganking',
+            ],
+          },
+        }
+      : {}),
+  };
   const applied = applyMode(cleared, pending, action.mode);
   if (pending.recycleLeft && action.mode.startsWith('recycle-any:')) {
     const next = trashRecycleChoice(
@@ -527,6 +568,47 @@ function applyMode(
     }
     return { state: next, events };
   }
+  if (mode.startsWith('udyr-damage:')) {
+    const unit = state.units.find(
+      (u) => u.id === mode.slice('udyr-damage:'.length),
+    );
+    if (!unit) return { state, events: [] };
+    const damaged = dealEffectDamage(
+      state,
+      {
+        kind: 'ability',
+        sourceId: pending.sourceId,
+        playerId: pending.ownerId,
+      },
+      [unit],
+      2,
+    );
+    const settled = settleLethalUnits(damaged.state);
+    return {
+      state: settled.state,
+      events: [...damaged.events, ...settled.events],
+    };
+  }
+  if (mode === 'udyr-ready' || mode === 'udyr-ganking')
+    return {
+      state: {
+        ...state,
+        units: state.units.map((u) =>
+          u.id !== pending.sourceId
+            ? u
+            : mode === 'udyr-ready'
+              ? { ...u, ready: true }
+              : {
+                  ...u,
+                  temporaryEffects: [
+                    ...(u.temporaryEffects ?? []),
+                    { type: 'ganking' as const },
+                  ],
+                },
+        ),
+      },
+      events: [],
+    };
   if (mode.startsWith('split:')) {
     let next = state;
     const events: Extract<ActionResult, { ok: true }>['events'] = [];

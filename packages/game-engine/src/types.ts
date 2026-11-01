@@ -51,6 +51,8 @@ export interface GameState {
    * acquis par chaque sort lancé, par id de carte. */
   nextSpellBonusDamage?: Readonly<Record<string, number>>;
   spellBonusDamage?: Readonly<Record<string, number>>;
+  /** Modes d'Udyr déjà choisis ce tour, par unité. */
+  udyrModesUsed?: Readonly<Record<string, readonly string[]>>;
   /** Joueurs pour qui cacher une carte est gratuit ce tour (Guerilla Warfare). */
   freeHidePlayers?: readonly string[];
   /** Chosen Champion de chaque joueur (carte placée en zone champion à la création). */
@@ -464,6 +466,9 @@ export interface UnitBlueprint {
   readonly onConquerKillGearBuff?: boolean;
   /** « Spend my buff » : +Might jusqu'à la fin du tour, via la pile (Sett). */
   readonly buffSpendMight?: number;
+  /** « Spend my buff » : un mode non choisi ce tour parmi dégâts / Stun / Ready / Ganking
+   * (Udyr, choix à la résolution). */
+  readonly buffSpendModes?: boolean;
   /** « Recycle 1 from your trash » : +Might jusqu'à la fin du tour, via la pile (Vi). */
   readonly trashRecycleMight?: number;
   /** Coût supplémentaire obligatoire : tuer une unité alliée (sacrificeUnitId). */

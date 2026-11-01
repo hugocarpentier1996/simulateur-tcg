@@ -372,3 +372,4 @@ export { twistedFate } from './ogn/twisted-fate.js';
 export { volibearFury } from './ogn/volibear-fury.js';
 export { teemoMind } from './ogn/teemo-mind.js';
 export { malzahar } from './ogn/malzahar.js';
+export { udyr } from './ogn/udyr.js';
