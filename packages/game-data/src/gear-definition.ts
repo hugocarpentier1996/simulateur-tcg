@@ -34,6 +34,9 @@ export interface GearDefinition extends PrintedMetadata {
   /** Une unité alliée redressée par un effet (hors Awaken) gagne cette Might ce tour
    * (Pirate's Haven ; sans pile). */
   readonly mightOnAllyReadied?: number;
+  /** Combat attaqué par son propriétaire fini à égalité : toutes les unités du champ sont
+   * rappelées (Symbol of the Solari). */
+  readonly tieRecallAll?: boolean;
   /** Fin du tour de son propriétaire : révèle jusqu'à une unité, la joue gratuitement et
    * recycle le reste (Dazzling Aurora, via la pile). */
   readonly endTurnRevealUnit?: boolean;

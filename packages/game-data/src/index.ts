@@ -379,3 +379,4 @@ export { baitedHook } from './ogn/baited-hook.js';
 export { dazzlingAurora } from './ogn/dazzling-aurora.js';
 export { karthus } from './ogn/karthus.js';
 export { unlicensedArmory } from './ogn/unlicensed-armory.js';
+export { symbolOfTheSolari } from './ogn/symbol-of-the-solari.js';

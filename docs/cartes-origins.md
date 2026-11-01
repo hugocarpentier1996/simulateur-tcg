@@ -335,3 +335,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Dazzling Aurora — ogn-160-298
 - [x] Karthus — ogn-236-298
 - [x] Unlicensed Armory — ogn-023-298
+- [x] Symbol of the Solari — ogn-227-298

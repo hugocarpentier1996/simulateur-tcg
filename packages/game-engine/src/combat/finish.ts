@@ -57,6 +57,54 @@ export function finishCombat(
       ],
     };
   }
+  const solari =
+    attackers.length &&
+    defenders.length &&
+    state.gears?.some(
+      (g) =>
+        g.ownerId === combat.initiatorId &&
+        state.gearDefinitions?.find((d) => d.id === g.definitionId)
+          ?.tieRecallAll,
+    );
+  if (solari) {
+    const recalled = [...attackers, ...defenders];
+    next = {
+      ...next,
+      units: next.units.map((unit) => {
+        if (!recalled.includes(unit)) return unit;
+        const home = state.zones.find(
+          (z) => z.kind === 'base' && z.ownerId === unit.ownerId,
+        );
+        return home ? { ...unit, zoneId: home.id } : unit;
+      }),
+    };
+    events.push(
+      ...recalled.map((unit) => ({
+        type: 'unit-recalled' as const,
+        unitId: unit.id,
+        zoneId:
+          state.zones.find(
+            (z) => z.kind === 'base' && z.ownerId === unit.ownerId,
+          )?.id ?? unit.zoneId,
+      })),
+    );
+    return {
+      ok: true,
+      state: {
+        ...next,
+        showdown: null,
+        battlefields: next.battlefields.map((field) =>
+          field.zoneId === combat.battlefieldId
+            ? { ...field, controllerId: null }
+            : field,
+        ),
+      },
+      events: [
+        ...events,
+        { type: 'showdown-ended', battlefieldId: combat.battlefieldId },
+      ],
+    };
+  }
   if (attackers.length) {
     const base = state.zones.find(
       (zone) => zone.kind === 'base' && zone.ownerId === combat.initiatorId,
