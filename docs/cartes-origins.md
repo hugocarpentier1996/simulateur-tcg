@@ -293,3 +293,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Vanguard Helm — ogn-228-298
 - [x] Gemcraft Seer — ogn-100-298
 - [x] Commander Ledros — ogn-231-298
+- [x] Kraken Hunter — ogn-150-298

@@ -1234,3 +1234,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Vanguard Helm (ogn-228) : gear ; quand une unité alliée buffée meurt, une autre unité alliée est buffée (`buffOnBuffedAllyDeath`).
 - Gemcraft Seer (ogn-100) : Vision ; tant qu'elle est en jeu, les autres unités alliées jouées ont Vision (`alliesHaveVision`).
 - Commander Ledros (ogn-231) : Deflect, Ganking ; peut tuer des unités alliées en coût supplémentaire, chacune retirant 1 Power Order (`unitCostReduction` kind sacrifice, champ d'action `costUnitIds`).
+- Kraken Hunter (ogn-150) : Accelerate, Assault ; peut dépenser des buffs alliés en coût supplémentaire, chacun retirant 1 Power Body (`unitCostReduction` kind spend-buff).

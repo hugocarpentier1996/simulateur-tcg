@@ -337,3 +337,4 @@ export { fadingMemories } from './ogn/fading-memories.js';
 export { vanguardHelm } from './ogn/vanguard-helm.js';
 export { gemcraftSeer } from './ogn/gemcraft-seer.js';
 export { commanderLedros } from './ogn/commander-ledros.js';
+export { krakenHunter } from './ogn/kraken-hunter.js';
