@@ -307,3 +307,4 @@ export { consultThePast } from './ogn/consult-the-past.js';
 export { fightOrFlight } from './ogn/fight-or-flight.js';
 export { hiddenBlade } from './ogn/hidden-blade.js';
 export { block } from './ogn/block.js';
+export { spriteCall } from './ogn/sprite-call.js';

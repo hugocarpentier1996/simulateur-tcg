@@ -1204,3 +1204,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Fight or Flight (ogn-168) : Hidden ; Action ; renvoie une unité d'un champ dans la base de son propriétaire (`move-unit` avec `baseOnly`).
 - Hidden Blade (ogn-213) : Hidden ; Action ; tue une unité sur un champ, son contrôleur pioche 2 (`kill-unit` avec `controllerDraws`).
 - Block (ogn-057) : Hidden ; Action ; une unité gagne Shield 3 et Tank jusqu'à la fin du tour (effet `grant-shield-tank`, effets temporaires `shield` / `tank`, helper `isTank`).
+- Sprite Call (ogn-094) : Hidden ; Action ; joue un jeton Sprite 3 Ready et Temporary (base ou champ contrôlé, via `summon-recruits`).
