@@ -345,6 +345,20 @@ export function resolveSpell(
       }
       continue;
     }
+    if (effect.type === 'steal-spell') {
+      const stolen = stackSpellTarget(state, entry.definition, entry.targetId);
+      if (!stolen || !state.stack) continue;
+      state = {
+        ...state,
+        stack: {
+          ...state.stack,
+          entries: state.stack.entries.map((e) =>
+            e === stolen ? { ...stolen, casterId: entry.casterId } : e,
+          ),
+        },
+      };
+      continue;
+    }
     if (effect.type === 'counter-spell') {
       const countered = stackSpellTarget(
         state,

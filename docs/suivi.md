@@ -1282,3 +1282,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Karma (ogn-235) : Vision ; quand son propriétaire recycle une ou plusieurs cartes (carte arrivant dans son deck depuis une autre zone, ou recyclage de Vision), une unité alliée est buffée (`buffOnRecycle`, événement `cards-recycled`).
 - Ava Achiever (ogn-107) : en attaquant, une capacité sur la pile permet de payer 1 Power Mind pour jouer ici, gratuitement, une unité Hidden de sa main (un gear Hidden va en base) (`onAttackPlayHidden`, modes `ava:<id>`).
 - Heimerdinger (ogn-111) : a toutes les capacités Tap des légendes, unités et gears alliés ; il se couche lui-même pour les utiliser (`copiesTapAbilities`, champ `borrowFromId` d'activate-gear).
+- Mystic Reversal (ogn-080) : Réaction ; le lanceur prend le contrôle d'un sort de la pile (effet `steal-spell`, le sort résout pour lui ; la carte retourne au cimetière de son propriétaire).

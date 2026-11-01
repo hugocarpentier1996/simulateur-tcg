@@ -341,3 +341,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Karma — ogn-235-298
 - [x] Ava Achiever — ogn-107-298
 - [x] Heimerdinger — ogn-111-298
+- [x] Mystic Reversal — ogn-080-298

@@ -35,6 +35,8 @@ export type SpellEffect =
   | { readonly type: 'exhaust-allies' }
   /** Détruit tous les équipements en jeu (cimetière de leur propriétaire). */
   | { readonly type: 'kill-all-gear' }
+  /** Le lanceur prend le contrôle du sort ciblé sur la pile (Mystic Reversal). */
+  | { readonly type: 'steal-spell' }
   /** count instructions « inflige amount à une unité », cibles choisies une à une à la
    * résolution (Icathian Rain). */
   | {

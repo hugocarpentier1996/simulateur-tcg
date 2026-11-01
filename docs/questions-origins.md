@@ -83,3 +83,4 @@ existantes ; seuls les nouveaux doutes utiles rejoindront le prochain lot de que
 - Karma (hypothèses) : sans pile ; l'unité buffée est choisie automatiquement (sans buff d'abord) ; les recyclages internes au deck autres que la Vision (Reinforce, The Candlelit Sanctum…) ne sont pas encore détectés.
 - Ava Achiever (limite) : les sorts Hidden ne sont pas proposés (choix de cibles non géré dans ce cadre) ; l'unité jouée arrive Tap, sans ses effets « when you play me ».
 - Heimerdinger (limite) : seules les capacités Tap à effet sont copiées, pas les capacités ADD de ressource.
+- Mystic Reversal (limite) : « you may make new choices » n'est pas proposé, les choix d'origine sont conservés.
