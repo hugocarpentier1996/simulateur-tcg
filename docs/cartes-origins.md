@@ -221,3 +221,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Obelisk of Power — ogn-284-298
 - [x] Navori Fighting Pit — ogn-283-298
 - [x] Scrapheap — ogn-182-298
+- [x] Iron Ballista — ogn-017-298

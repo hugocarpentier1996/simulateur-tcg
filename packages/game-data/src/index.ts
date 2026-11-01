@@ -265,3 +265,4 @@ export { theArenasGreatest } from './ogn/the-arenas-greatest.js';
 export { obeliskOfPower } from './ogn/obelisk-of-power.js';
 export { navoriFightingPit } from './ogn/navori-fighting-pit.js';
 export { scrapheap } from './ogn/scrapheap.js';
+export { ironBallista } from './ogn/iron-ballista.js';

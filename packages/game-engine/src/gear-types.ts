@@ -12,6 +12,27 @@ export interface GearBlueprint {
     readonly energy?: number;
     readonly power?: string;
   };
+  /** Le gear entre en jeu Tap. */
+  readonly entersExhausted?: boolean;
+  /** Capacité « Tap : effet » sur une unité ciblée, via la pile, à son tour hors Showdown.
+   * exhausted : la cible doit être Tap. move-to-base : unité alliée d'un champ vers sa base. */
+  readonly tapAbility?: {
+    readonly cost?: UnitBlueprint['cost'];
+    readonly target: {
+      readonly allegiance?: 'friendly' | 'enemy';
+      readonly zone?: 'battlefield';
+      readonly exhausted?: boolean;
+    };
+    readonly effect:
+      | { readonly type: 'damage'; readonly amount: number }
+      | {
+          readonly type: 'modify-might';
+          readonly amount: number;
+          readonly minimum?: number;
+        }
+      | { readonly type: 'buff' }
+      | { readonly type: 'move-to-base' };
+  };
   /** Posé, défaussé ou détruit : son propriétaire pioche 1 (Scrapheap ; sans pile). */
   readonly drawOnPlayDiscardOrKill?: boolean;
   readonly effects: readonly {

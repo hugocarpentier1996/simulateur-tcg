@@ -503,7 +503,14 @@ export type GameAction =
   | { type: 'choose-discard'; playerId: string; cardId: string }
   | { type: 'activate-spell-energy'; playerId: string; unitId: string }
   /** Capacité ADD d'un gear Ready : Tap et ressource dans la réserve flottante. */
-  | { type: 'activate-gear'; playerId: string; gearId: string }
+  | {
+      type: 'activate-gear';
+      playerId: string;
+      gearId: string;
+      /** Capacité Tap ciblée (tapAbility) : unité choisie et paiement du coût éventuel. */
+      targetId?: string;
+      payment?: PaymentPlan;
+    }
   /** Ressource manuelle : Tap d'une rune Ready pour 1 énergie dans la réserve. */
   | { type: 'tap-rune'; playerId: string; runeId: string }
   /** Ressource manuelle : rune sous son deck pour 1 Power (+1 énergie si elle était Ready). */

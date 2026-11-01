@@ -2,6 +2,7 @@ import { expect, it } from 'vitest';
 import { spellScenario } from '../../../packages/game-engine/src/origins-test-fixtures.js';
 import {
   incinerate,
+  ironBallista,
   salvage,
   sealOfRage,
 } from '../../../packages/game-data/src/index.js';
@@ -68,4 +69,31 @@ it('Salvage : un gear en jeu est une cible cliquable du ciblage', () => {
   expect(targetOptions(s, 'spell', []).next).toContain('seal');
   const html = renderTable(s, { cardId: 'spell', targeting: true, picks: [] });
   expect(html).toMatch(/data-gear="seal" class="gear-card ready targetable"/);
+});
+
+it('Iron Ballista : sélectionner le gear propose sa capacité Tap sur chaque cible', () => {
+  const state = spellScenario(incinerate);
+  state.gearDefinitions = [ironBallista];
+  state.gears = [
+    {
+      id: 'ballista',
+      definitionId: ironBallista.id,
+      ownerId: 'a',
+      zoneId: 'base-a',
+      ready: true,
+    },
+  ];
+  const s: Session = { state, history: [], log: [], error: null };
+  const actions = cardActions(s, 'ballista');
+  expect(
+    actions.map((a) => (a.type === 'activate-gear' ? a.targetId : null)),
+  ).toEqual(expect.arrayContaining(['enemy', 'ally']));
+  expect(renderTable(s, { cardId: 'ballista' })).toContain('Iron Ballista → ');
+  const used = submitCardAction(
+    s,
+    'ballista',
+    actions.find((a) => a.type === 'activate-gear' && a.targetId === 'enemy')!,
+  );
+  expect(used.error).toBeNull();
+  expect(used.state.stack?.entries).toHaveLength(1);
 });

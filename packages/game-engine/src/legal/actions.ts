@@ -1,3 +1,4 @@
+import { tapAbilityTargets } from '../actions/activate-gear.js';
 import {
   secondaryEnemyTarget,
   stackSpellTarget,
@@ -98,6 +99,30 @@ function* candidates(
   );
   for (const unit of state.units)
     yield { type: 'activate-spell-energy', playerId, unitId: unit.id };
+  // Capacités Tap ciblées des gears du joueur.
+  for (const gear of state.gears ?? []) {
+    const ability = state.gearDefinitions?.find(
+      (d) => d.id === gear.definitionId,
+    )?.tapAbility;
+    if (!ability || gear.ownerId !== playerId || !gear.ready) continue;
+    for (const targetId of tapAbilityTargets(state, playerId, ability)) {
+      const payment = findPayment(
+        state,
+        playerId,
+        withDeflect(state, playerId, ability.cost ?? { energy: 0, power: {} }, [
+          targetId,
+        ]),
+      );
+      if (payment)
+        yield {
+          type: 'activate-gear',
+          playerId,
+          gearId: gear.id,
+          targetId,
+          payment,
+        };
+    }
+  }
   for (const unit of state.units)
     for (const destination of destinations)
       yield {

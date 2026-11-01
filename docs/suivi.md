@@ -1160,3 +1160,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Obelisk of Power (ogn-284) : champ ; au début de la première Beginning de chaque joueur, il canalise 1 rune (`firstBeginning: 'channel'`).
 - Navori Fighting Pit (ogn-283) : champ ; le tenir buffe une unité alliée ici via la pile, choisie automatiquement (sans buff d'abord) (`holdBuffHere`).
 - Scrapheap (ogn-182) : gear ; posé, défaussé ou détruit, son propriétaire pioche 1 (`drawOnPlayDiscardOrKill`, appliqué par `act` sans pile).
+- Iron Ballista (ogn-017) : gear qui entre Tap (`entersExhausted`) ; Tap : 2 dégâts à une unité sur un champ, via la pile. Nouveau mécanisme `tapAbility` des gears (cible, coût éventuel, effet ciblé ; à son tour hors Showdown), énuméré par les actions légales et proposé dans la table en sélectionnant le gear.

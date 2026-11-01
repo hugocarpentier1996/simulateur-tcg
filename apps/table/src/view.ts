@@ -360,6 +360,8 @@ function actionLabel(
   const target = (id: string): string => {
     const u = state.units.find((u) => u.id === id);
     if (u) return unit(id);
+    const g = state.gears?.find((g) => g.id === id);
+    if (g) return cardName(g.definitionId);
     const c =
       state.cards.find((c) => c.id === id) ??
       state.stack?.entries.flatMap((e) =>
@@ -422,6 +424,12 @@ function actionLabel(
       return 'Poser en base';
     case 'equip-gear':
       return 'Équiper sur ' + target(action.unitId);
+    case 'activate-gear':
+      return (
+        prefix +
+        target(action.gearId) +
+        (action.targetId ? ' → ' + target(action.targetId) : '')
+      );
     case 'activate-spell-energy':
       return (
         'Épuiser ' +

@@ -56,7 +56,7 @@ export function playGear(
           definitionId: card.definitionId,
           ownerId: card.ownerId,
           zoneId: base.id,
-          ready: true,
+          ready: !definition.entersExhausted,
         },
       ],
     },

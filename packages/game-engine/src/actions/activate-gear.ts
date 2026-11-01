@@ -1,4 +1,8 @@
 import type { ActionResult, GameAction, GameState } from '../types.js';
+import type { GearBlueprint, GearState } from '../gear-types.js';
+import type { PlayEffectEntry } from '../effects/play-effect.js';
+import { payCost } from '../cost/payment.js';
+import { withDeflect } from '../cost/deflect.js';
 import { canUseTiming } from './timing.js';
 
 /** Gear Ready du demandeur avec capacité ADD -> Tap et ressource dans la réserve flottante.
@@ -12,9 +16,12 @@ export function activateGear(
     (g) => g.id === action.gearId && g.ownerId === action.playerId,
   );
   if (!gear) return { ok: false, reason: 'INVALID_GEAR' };
-  const ability = state.gearDefinitions?.find(
+  const definition = state.gearDefinitions?.find(
     (d) => d.id === gear.definitionId,
-  )?.resourceAbility;
+  );
+  if (definition?.tapAbility)
+    return activateTapAbility(state, action, gear, definition.tapAbility);
+  const ability = definition?.resourceAbility;
   if (!ability) return { ok: false, reason: 'NO_RESOURCE_ABILITY' };
   if (!gear.ready) return { ok: false, reason: 'GEAR_NOT_READY' };
   if (!canUseTiming(state, action.playerId, 'reaction'))
@@ -49,5 +56,95 @@ export function activateGear(
         power: color ?? null,
       },
     ],
+  };
+}
+
+type TapAbility = NonNullable<GearBlueprint['tapAbility']>;
+
+/** Unités ciblables par une capacité Tap de gear de ce joueur. */
+export function tapAbilityTargets(
+  state: GameState,
+  playerId: string,
+  ability: TapAbility,
+): string[] {
+  const { allegiance, zone, exhausted } = ability.target;
+  const moveToBase = ability.effect.type === 'move-to-base';
+  return state.units
+    .filter(
+      (u) =>
+        (allegiance !== 'friendly' || u.ownerId === playerId) &&
+        (allegiance !== 'enemy' || u.ownerId !== playerId) &&
+        (!moveToBase || u.ownerId === playerId) &&
+        (zone !== 'battlefield' && !moveToBase
+          ? true
+          : state.battlefields.some((f) => f.zoneId === u.zoneId)) &&
+        (!exhausted || !u.ready),
+    )
+    .map((u) => u.id);
+}
+
+/** Capacité Tap ciblée : à son tour, phase Main, sans pile ni Showdown ; gear Ready, cible
+ * valide et coût payé -> gear Tap et effet empilé (réactions possibles). Refus atomique. */
+function activateTapAbility(
+  state: GameState,
+  action: Extract<GameAction, { type: 'activate-gear' }>,
+  gear: GearState,
+  ability: TapAbility,
+): ActionResult {
+  if (
+    state.phase !== 'main' ||
+    state.activePlayerId !== action.playerId ||
+    state.stack ||
+    state.showdown
+  )
+    return { ok: false, reason: 'ABILITY_WINDOW_CLOSED' };
+  if (!gear.ready) return { ok: false, reason: 'GEAR_NOT_READY' };
+  if (
+    !action.targetId ||
+    !tapAbilityTargets(state, action.playerId, ability).includes(
+      action.targetId,
+    )
+  )
+    return { ok: false, reason: 'INVALID_TARGET' };
+  const paid = payCost(
+    state,
+    action.playerId,
+    withDeflect(
+      state,
+      action.playerId,
+      ability.cost ?? { energy: 0, power: {} },
+      [action.targetId],
+    ),
+    action.payment ?? { energyRunes: [], powerRunes: [] },
+  );
+  if (!paid.ok) return paid;
+  const entry: PlayEffectEntry = {
+    kind: 'play-effect',
+    sourceId: gear.id,
+    ownerId: action.playerId,
+    effect:
+      ability.effect.type === 'move-to-base'
+        ? { type: 'move-to-base', targetId: action.targetId }
+        : {
+            type: 'targeted',
+            targetId: action.targetId,
+            effect: ability.effect,
+          },
+  };
+  return {
+    ok: true,
+    state: {
+      ...paid.state,
+      gears: paid.state.gears!.map((g) =>
+        g.id === gear.id ? { ...g, ready: false } : g,
+      ),
+      stack: {
+        entries: [entry],
+        initiatorId: action.playerId,
+        priorityPlayerId: action.playerId,
+        consecutivePasses: 0,
+      },
+    },
+    events: [{ type: 'unit-play-effect-queued', sourceId: gear.id }],
   };
 }
