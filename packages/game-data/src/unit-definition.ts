@@ -222,6 +222,10 @@ export interface UnitDefinition extends PrintedMetadata {
   /** En attaquant : révèle puis recycle la rune du dessus ; effet selon son domaine
    * (Twisted Fate, capacité sur la pile). */
   readonly onAttackRuneFate?: boolean;
+  /** Deflect N : taxe de N Power (1 par défaut). */
+  readonly deflectAmount?: number;
+  /** En attaquant : ces dégâts répartis entre les ennemis ici (Volibear, pile). */
+  readonly onAttackSplitDamage?: number;
   /** Défaussée : peut être jouée depuis le cimetière en payant 1 Power de cette couleur
    * (Flame Chompers, capacité sur la pile). */
   readonly playOnDiscard?: { readonly power: string };

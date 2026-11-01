@@ -9,14 +9,19 @@ export function withDeflect(
   cost: UnitBlueprint['cost'],
   ids: readonly string[],
 ): UnitBlueprint['cost'] {
-  const tax = [...new Set(ids)].filter((id) =>
-    state.units.some(
+  const tax = [...new Set(ids)].reduce((sum, id) => {
+    const unit = state.units.find(
       (u) =>
         u.id === id &&
         u.ownerId !== playerId &&
         hasKeyword(u, state, 'deflect'),
-    ),
-  ).length;
+    );
+    return unit
+      ? sum +
+          (state.unitDefinitions?.find((d) => d.id === unit.definitionId)
+            ?.deflectAmount ?? 1)
+      : sum;
+  }, 0);
   return tax ? { ...cost, genericPower: (cost.genericPower ?? 0) + tax } : cost;
 }
 /** Extrait seulement les unités réellement choisies par le texte du sort, jamais son champ cible. */

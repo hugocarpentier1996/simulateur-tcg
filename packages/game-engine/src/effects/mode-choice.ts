@@ -44,7 +44,8 @@ export type EffectMode =
   | `ready:${string}`
   | 'follow'
   | `tf-fury:${string}`
-  | `stun:${string}`;
+  | `stun:${string}`
+  | `split:${string}`;
 
 const ONE_ENERGY = { energy: 1, power: {} };
 
@@ -63,6 +64,9 @@ export interface ModeChoiceEntry {
   partnerId?: string;
   /** Joueurs suivants à choisir à leur tour ce qu'ils tuent (Cull the Weak). */
   nextChoosers?: readonly string[];
+  /** Volibear : dégâts à répartir entre les ennemis du champ, à la résolution. */
+  splitDamageAt?: string;
+  splitAmount?: number;
   /** Twisted Fate : champ de l'attaque ; la rune est révélée à la résolution. */
   runeFateAt?: string;
   /** Zone où suivre l'unité alliée déplacée (Stealthy Pursuer). */
@@ -149,34 +153,48 @@ export function resolveModeChoice(
         ),
       ].map((x) => `ready:${x.id}` as const)
     : [];
-  const modes: readonly EffectMode[] = entry.readyOther
-    ? ['skip', ...exhausted]
-    : payPlayCost
-      ? inTrash && findPayment(state, entry.ownerId, payPlayCost)
-        ? ['skip', 'pay-play']
-        : []
-      : entry.arrangeTop
-        ? arrangements(top).map((kept) => `arrange:${kept.join('+')}` as const)
-        : entry.retreatFrom
-          ? ['skip', ...retreats]
-          : entry.killGearBuff
-            ? [
-                'skip',
-                ...(state.gears ?? []).map((g) => `kill-gear:${g.id}` as const),
-              ]
-            : entry.discardReturn
-              ? inTrash
-                ? [
-                    'skip',
-                    ...handIds.map((id) => `discard-return:${id}` as const),
-                  ]
-                : []
-              : entry.payReturn
-                ? state.units.some((u) => u.id === entry.sourceId) &&
-                  findPayment(state, entry.ownerId, ONE_ENERGY)
-                  ? ['skip', 'pay-return']
+  const splitTargets = entry.splitDamageAt
+    ? state.units
+        .filter(
+          (u) =>
+            u.ownerId !== entry.ownerId && u.zoneId === entry.splitDamageAt,
+        )
+        .map((u) => u.id)
+    : [];
+  const modes: readonly EffectMode[] = entry.splitDamageAt
+    ? splitModes(splitTargets, entry.splitAmount ?? 0)
+    : entry.readyOther
+      ? ['skip', ...exhausted]
+      : payPlayCost
+        ? inTrash && findPayment(state, entry.ownerId, payPlayCost)
+          ? ['skip', 'pay-play']
+          : []
+        : entry.arrangeTop
+          ? arrangements(top).map(
+              (kept) => `arrange:${kept.join('+')}` as const,
+            )
+          : entry.retreatFrom
+            ? ['skip', ...retreats]
+            : entry.killGearBuff
+              ? [
+                  'skip',
+                  ...(state.gears ?? []).map(
+                    (g) => `kill-gear:${g.id}` as const,
+                  ),
+                ]
+              : entry.discardReturn
+                ? inTrash
+                  ? [
+                      'skip',
+                      ...handIds.map((id) => `discard-return:${id}` as const),
+                    ]
                   : []
-                : entry.modes;
+                : entry.payReturn
+                  ? state.units.some((u) => u.id === entry.sourceId) &&
+                    findPayment(state, entry.ownerId, ONE_ENERGY)
+                    ? ['skip', 'pay-return']
+                    : []
+                  : entry.modes;
   if (
     modes.length <= 1 &&
     (entry.killGearBuff ||
@@ -185,7 +203,8 @@ export function resolveModeChoice(
       entry.retreatFrom ||
       entry.arrangeTop ||
       entry.payPlayCost ||
-      entry.readyOther)
+      entry.readyOther ||
+      entry.splitDamageAt)
   )
     return {
       ok: true,
@@ -482,6 +501,29 @@ function applyMode(
       events.push(...r.events);
     }
     return { state: next, events };
+  }
+  if (mode.startsWith('split:')) {
+    let next = state;
+    const events: Extract<ActionResult, { ok: true }>['events'] = [];
+    for (const part of mode.slice('split:'.length).split(',')) {
+      const [id, n] = part.split('=');
+      const unit = next.units.find((u) => u.id === id);
+      if (!unit || !n) continue;
+      const damaged = dealEffectDamage(
+        next,
+        {
+          kind: 'ability',
+          sourceId: pending.sourceId,
+          playerId: pending.ownerId,
+        },
+        [unit],
+        Number(n),
+      );
+      next = damaged.state;
+      events.push(...damaged.events);
+    }
+    const settled = settleLethalUnits(next);
+    return { state: settled.state, events: [...events, ...settled.events] };
   }
   if (mode.startsWith('tf-fury:')) {
     const main = state.units.find(
@@ -851,4 +893,21 @@ function resolveRuneFate(
   delete pending.runeFateAt;
   next = { ...next, pendingModeChoice: pending };
   return { ok: true, state: next, events: [] };
+}
+
+/** Répartitions de `amount` dégâts entre des cibles (chaque part ≥ 1, cibles facultatives),
+ * sous forme « split:id=n,id=m ». Aucune cible : aucune option. */
+function splitModes(ids: readonly string[], amount: number): EffectMode[] {
+  const result: EffectMode[] = [];
+  const walk = (i: number, left: number, parts: string[]) => {
+    if (left === 0) {
+      if (parts.length) result.push(`split:${parts.join(',')}`);
+      return;
+    }
+    if (i >= ids.length) return;
+    for (let n = left; n >= 0; n--)
+      walk(i + 1, left - n, n ? [...parts, `${ids[i]}=${n}`] : parts);
+  };
+  walk(0, amount, []);
+  return result;
 }

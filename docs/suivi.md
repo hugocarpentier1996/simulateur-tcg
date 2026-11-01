@@ -1266,3 +1266,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Stealthy Pursuer (ogn-177) : quand une unité alliée quitte sa zone en se déplaçant, une capacité sur la pile lui permet de la suivre (`followsAllies`, mode `follow`).
 - Tideturner (ogn-199) : Hidden ; joué, il peut échanger sa place avec une unité alliée (deux déplacements, `swap-places`) ; exception Hidden : l'alliée peut être hors de son champ.
 - Twisted Fate (ogn-200) : en attaquant, une capacité sur la pile révèle puis recycle la rune du dessus de son deck de runes : Fury -> 2 dégâts à un ennemi ici et 1 aux autres ennemis ici ; Mind -> pioche 1 ; Order -> étourdit une unité ennemie (`onAttackRuneFate`, modes `tf-fury:<id>` / `stun:<id>`).
+- Volibear (Fury, ogn-041) : Deflect 2 (`deflectAmount`, taxe de 2 Power) ; en attaquant, une capacité sur la pile répartit 5 dégâts entre des unités ennemies ici (`onAttackSplitDamage`, modes `split:id=n,…`).

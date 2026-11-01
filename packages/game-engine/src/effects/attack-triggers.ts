@@ -90,6 +90,15 @@ export function queueAttackEffects(
         amount: definition.onAttackDamageEnemiesHere,
         mode: 'damage-enemies-here',
       });
+    if (definition?.onAttackSplitDamage)
+      entries.push({
+        kind: 'mode-choice',
+        sourceId: u.id,
+        ownerId: u.ownerId,
+        modes: [],
+        splitDamageAt: combat.battlefieldId,
+        splitAmount: definition.onAttackSplitDamage,
+      });
     if (definition?.onAttackRuneFate)
       entries.push({
         kind: 'mode-choice',
