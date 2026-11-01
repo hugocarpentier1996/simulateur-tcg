@@ -6,7 +6,11 @@ import {
   noRunes,
 } from './origins-test-fixtures.js';
 import { effectiveMight } from './effects/modifiers.js';
-import { eclipseHerald, zenithBlade } from '../../game-data/src/index.js';
+import {
+  eclipseHerald,
+  runePrison,
+  zenithBlade,
+} from '../../game-data/src/index.js';
 
 it('Eclipse Herald : quand son propriétaire étourdit un ennemi, se redresse et gagne +1 Might', () => {
   let s = spellScenario(zenithBlade);
@@ -35,4 +39,33 @@ it('Eclipse Herald : quand son propriétaire étourdit un ennemi, se redresse et
   const herald = s.units.find((u) => u.id === 'herald')!;
   expect(herald.ready).toBe(true);
   expect(effectiveMight(herald, s)).toBe(8);
+});
+
+it("Eclipse Herald : l'étourdissement est attribué au joueur qui l'inflige (pas à l'adversaire de la victime)", () => {
+  let s = spellScenario(runePrison);
+  s.unitDefinitions = [eclipseHerald];
+  s.units.push({
+    ...s.units[1]!,
+    id: 'herald',
+    definitionId: eclipseHerald.id,
+    ready: false,
+    might: 7,
+    zoneId: 'base-b',
+  });
+  s.resources.a = { energy: 9, power: { vert: 3 } };
+  s = resolveTop(
+    step(s, {
+      type: 'cast-spell',
+      playerId: 'a',
+      cardId: 'spell',
+      targetId: 'ally',
+      payment: noRunes,
+    }),
+  );
+  const ally = s.units.find((u) => u.id === 'ally')!;
+  expect(ally.temporaryEffects).toContainEqual({
+    type: 'stun',
+    byPlayerId: 'a',
+  });
+  expect(s.units.find((u) => u.id === 'herald')?.ready).toBe(false);
 });

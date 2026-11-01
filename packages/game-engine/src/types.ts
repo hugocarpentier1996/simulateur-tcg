@@ -585,7 +585,8 @@ export interface UnitState {
     | { type: 'shield'; amount: number }
     /** Tank accordé jusqu'à la fin du tour. */
     | { type: 'tank' }
-    | { type: 'stun' }
+    /** Stun ; byPlayerId = joueur qui l'a infligé (Eclipse Herald, Radiant Dawn). */
+    | { type: 'stun'; byPlayerId?: string }
     | { type: 'recall-on-death'; power?: string }
     /** Ganking accordé jusqu'à la fin du tour. */
     | { type: 'ganking' }

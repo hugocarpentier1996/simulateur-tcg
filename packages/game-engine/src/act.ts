@@ -189,21 +189,31 @@ export function act(state: GameState, action: GameAction): ActionResult {
         }),
       }
     : counted;
-  // Eclipse Herald : unités ennemies nouvellement Stun -> déclencheurs de leurs adversaires.
-  const stunnedOwners = new Set(
+  // Eclipse Herald / Radiant Dawn : unités ennemies nouvellement Stun -> déclencheurs du
+  // joueur qui les a étourdies (byPlayerId ; à défaut, l'adversaire de l'unité).
+  const stunners = new Set(
     afterDiscard.units
       .filter(
         (u) =>
           isStunned(u) &&
           !state.units.some((b) => b.id === u.id && isStunned(b)),
       )
-      .map((u) => u.ownerId),
+      .flatMap((u) => {
+        const stun = [...(u.temporaryEffects ?? [])]
+          .reverse()
+          .find((e) => e.type === 'stun') as
+          { byPlayerId?: string } | undefined;
+        const by =
+          stun?.byPlayerId ??
+          afterDiscard.players.find((p) => p.id !== u.ownerId)?.id;
+        return by && by !== u.ownerId ? [by] : [];
+      }),
   );
-  const afterStun = stunnedOwners.size
+  const afterStun = stunners.size
     ? {
         ...afterDiscard,
         units: afterDiscard.units.map((u) => {
-          const trigger = [...stunnedOwners].some((o) => o !== u.ownerId)
+          const trigger = stunners.has(u.ownerId)
             ? afterDiscard.unitDefinitions?.find((d) => d.id === u.definitionId)
                 ?.onEnemyStunned
             : undefined;
@@ -223,7 +233,7 @@ export function act(state: GameState, action: GameAction): ActionResult {
   let dawn = afterStun;
   for (const player of dawn.players)
     if (
-      [...stunnedOwners].some((o) => o !== player.id) &&
+      stunners.has(player.id) &&
       activeLegends(dawn, player.id).some(
         (l) => l.definition.buffOnEnemyStunned,
       )

@@ -1289,3 +1289,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Promising Future (ogn-115) : chaque joueur, le lanceur d'abord, choisit une carte parmi ses 5 du dessus (modes `future:<id>`) et recycle le reste ; puis, en commençant par le joueur suivant, chacun joue sa carte en payant seulement le Power (unité/gear en base, sort sans cible sur la pile).
 - Réponse 17 : Relentless Storm mesure Mighty sur la Might réelle de l'unité à son arrivée (auras, champ, bonus), plus sur la Might imprimée.
 - Réponse 21 : Malzahar peut se sacrifier lui-même pour payer sa capacité ; il meurt et les 2 Power sont ajoutés.
+- Réponse 16 : le Stun trace le joueur qui l'inflige (`byPlayerId`) ; Eclipse Herald et Radiant Dawn se déclenchent pour ce joueur (repli : l'adversaire de la victime si la source est inconnue).

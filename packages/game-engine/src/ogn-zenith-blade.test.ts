@@ -26,7 +26,7 @@ const cast = (secondaryTargetId?: string) => ({
 it('Zenith Blade : étourdit l’ennemi et peut déplacer un allié sur son champ', () => {
   const s = resolveTop(step(scenario(), cast('ally')));
   expect(s.units.find((u) => u.id === 'enemy')?.temporaryEffects).toEqual([
-    { type: 'stun' },
+    { type: 'stun', byPlayerId: 'a' },
   ]);
   expect(s.units.find((u) => u.id === 'ally')?.zoneId).toBe('g');
   const alone = resolveTop(step(scenario(), cast()));

@@ -69,5 +69,5 @@ it('Twisted Fate : rune Mind -> pioche 1 ; rune Order -> étourdit un ennemi', (
   });
   expect(
     order.units.find((u) => u.id === 'enemy')?.temporaryEffects,
-  ).toContainEqual({ type: 'stun' });
+  ).toContainEqual({ type: 'stun', byPlayerId: 'a' });
 });

@@ -114,7 +114,7 @@ export function resolveTargetedPlay(
   }
   const modifier =
     effect.type === 'stun' || effect.type === 'kill-if-stunned-else-stun'
-      ? { type: 'stun' as const }
+      ? { type: 'stun' as const, byPlayerId: ownerId }
       : {
           type: 'modify-might' as const,
           amount:

@@ -27,7 +27,7 @@ it('Facebreaker : étourdit une unité alliée et une unité ennemie du même ch
   const s = resolveTop(step(scenario(), cast('ally', 'enemy-f')));
   for (const id of ['ally', 'enemy-f'])
     expect(s.units.find((u) => u.id === id)?.temporaryEffects).toEqual([
-      { type: 'stun' },
+      { type: 'stun', byPlayerId: 'a' },
     ]);
 });
 

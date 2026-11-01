@@ -925,7 +925,7 @@ function applyMode(
                 ...u,
                 temporaryEffects: [
                   ...(u.temporaryEffects ?? []),
-                  { type: 'stun' as const },
+                  { type: 'stun' as const, byPlayerId: pending.ownerId },
                 ],
               }
             : u,

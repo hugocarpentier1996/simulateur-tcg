@@ -954,7 +954,7 @@ export function resolveSpell(
                 ...u,
                 temporaryEffects: [
                   ...(u.temporaryEffects ?? []),
-                  { type: 'stun' as const },
+                  { type: 'stun' as const, byPlayerId: entry.casterId },
                 ],
               }
             : u,
@@ -1004,7 +1004,9 @@ export function resolveSpell(
             }
           : effect.type === 'grant-assault'
             ? { type: 'assault' as const, amount: effect.amount }
-            : { type: effect.type };
+            : effect.type === 'stun'
+              ? { type: 'stun' as const, byPlayerId: entry.casterId }
+              : { type: effect.type };
       state = {
         ...state,
         units: state.units.map((u) =>

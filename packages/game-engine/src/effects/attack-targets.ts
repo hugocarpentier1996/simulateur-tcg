@@ -200,7 +200,7 @@ export function resolveAttackDamage(
                 ...u,
                 temporaryEffects: [
                   ...(u.temporaryEffects ?? []),
-                  { type: 'stun' as const },
+                  { type: 'stun' as const, byPlayerId: entry.ownerId },
                 ],
               }
             : u,
