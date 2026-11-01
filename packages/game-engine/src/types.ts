@@ -393,6 +393,8 @@ export interface UnitBlueprint {
   readonly blocksEnemyHidden?: boolean;
   /** Réaction : jouable comme une Réaction (pile, Showdown, tour adverse) avec la priorité. */
   readonly reactionTiming?: boolean;
+  /** Tant qu'elle est en jeu, les autres unités alliées ont Vision (Gemcraft Seer). */
+  readonly alliesHaveVision?: boolean;
   /** À la mise en jeu : buffe jusqu'à ce nombre d'autres unités alliées (onPlaySelectedIds). */
   readonly onPlayBuffOthers?: number;
   /** « When I conquer » : se buffe, via la pile (Sett). */

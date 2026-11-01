@@ -291,3 +291,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Shakedown — ogn-033-298
 - [x] Fading Memories — ogn-180-298
 - [x] Vanguard Helm — ogn-228-298
+- [x] Gemcraft Seer — ogn-100-298

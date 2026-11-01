@@ -1232,3 +1232,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Shakedown (ogn-033) : Réaction ; le contrôleur de l'unité ennemie choisie choisit qu'elle subisse 6 ou que le lanceur pioche 2 (effet `damage-unless-draw`, choix de mode `suffer:<id>` / `let-draw`).
 - Fading Memories (ogn-180) : une unité sur un champ ou un gear gagne Temporary (cible `battlefield-unit-or-gear`, effet `grant-temporary`) ; les gears Temporary sont détruits au début de la Beginning de leur propriétaire.
 - Vanguard Helm (ogn-228) : gear ; quand une unité alliée buffée meurt, une autre unité alliée est buffée (`buffOnBuffedAllyDeath`).
+- Gemcraft Seer (ogn-100) : Vision ; tant qu'elle est en jeu, les autres unités alliées jouées ont Vision (`alliesHaveVision`).

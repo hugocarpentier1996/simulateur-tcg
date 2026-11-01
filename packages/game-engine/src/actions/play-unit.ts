@@ -208,7 +208,15 @@ function playUnitCore(
       ownerId: card.ownerId,
       effect: { type: 'buff-units', unitIds: [...selected] },
     });
-  if (definition.onPlayVision)
+  if (
+    definition.onPlayVision ||
+    state.units.some(
+      (u) =>
+        u.ownerId === action.playerId &&
+        state.unitDefinitions?.find((d) => d.id === u.definitionId)
+          ?.alliesHaveVision,
+    )
+  )
     entries.push({
       kind: 'play-effect',
       sourceId: card.id,
