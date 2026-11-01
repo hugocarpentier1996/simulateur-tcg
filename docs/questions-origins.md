@@ -66,3 +66,4 @@ existantes ; seuls les nouveaux doutes utiles rejoindront le prochain lot de que
 - Vanguard Helm (hypothèse) : sans pile ; l'unité buffée est choisie automatiquement (sans buff d'abord).
 - The Harrowing (hypothèses) : le Power de l'unité jouée est payé avec le sort au lancement ; l'unité arrive dans la base, Tap, sans déclencher ses effets « when you play me ».
 - Soulgorger / Spectral Matron (hypothèses) : l'unité sortie du cimetière arrive dans la base, Tap, sans ses effets « when you play me » ; le Power dû (Soulgorger) est payé avec l'unité qui la fait revenir.
+- Portal Rescue (hypothèse) : l'unité rejouée arrive Tap et sans déclencher ses effets « when you play me ».

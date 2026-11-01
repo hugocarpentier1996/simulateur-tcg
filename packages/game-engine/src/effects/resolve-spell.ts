@@ -588,6 +588,43 @@ export function resolveSpell(
           modes: [`suffer:${target.id}`, 'let-draw'],
         },
       };
+    } else if (effect.type === 'banish-replay') {
+      const banished = leaveBoard(state, target, 'banished');
+      state = banished.state;
+      events.push(...banished.events);
+      const card = state.cards.find((c) => c.id === target.id);
+      const unit = state.unitDefinitions?.find(
+        (d) => d.id === card?.definitionId,
+      );
+      const base = state.zones.find(
+        (z) => z.kind === 'base' && z.ownerId === card?.ownerId,
+      );
+      if (!card || !unit || !base) continue;
+      state = {
+        ...state,
+        cards: state.cards.filter((c) => c.id !== card.id),
+        units: [
+          ...state.units,
+          {
+            id: card.id,
+            definitionId: card.definitionId,
+            ownerId: card.ownerId,
+            zoneId: base.id,
+            ready: unit.entersReady === true,
+            might: unit.might,
+            ...(unit.tank ? { tank: true } : {}),
+            ...(unit.backline ? { backline: true } : {}),
+            damage: 0,
+          },
+        ],
+      };
+      events.push({
+        type: 'unit-played',
+        playerId: card.ownerId,
+        unitId: card.id,
+        definitionId: unit.id,
+        zoneId: base.id,
+      });
     } else if (effect.type === 'steal-and-recall') {
       const base = state.zones.find(
         (z) => z.kind === 'base' && z.ownerId === entry.casterId,

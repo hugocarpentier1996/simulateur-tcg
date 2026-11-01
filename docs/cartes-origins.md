@@ -299,3 +299,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] The Harrowing — ogn-198-298
 - [x] Spectral Matron — ogn-226-298
 - [x] Soulgorger — ogn-196-298
+- [x] Portal Rescue — ogn-102-298

@@ -79,6 +79,8 @@ export interface SpellBlueprint {
     | { readonly type: 'exhaust-allies' }
     /** Détruit tous les équipements en jeu (cimetière de leur propriétaire). */
     | { readonly type: 'kill-all-gear' }
+    /** Bannit l'unité alliée ciblée puis la joue dans la base de son propriétaire (Portal Rescue). */
+    | { readonly type: 'banish-replay' }
     /** Joue l'unité ciblée du cimetière du lanceur dans sa base, Tap ; son Power s'ajoute au
      * coût du sort (The Harrowing). */
     | { readonly type: 'play-from-trash' }
