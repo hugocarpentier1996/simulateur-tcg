@@ -229,3 +229,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Bounty Hunter — ogn-267-298
 - [x] Herald of the Arcane — ogn-265-298
 - [x] Hand of Noxus — ogn-253-298
+- [x] Loose Cannon — ogn-251-298

@@ -16,6 +16,8 @@ export interface LegendBlueprint {
   };
   /** Capacité « Tap : effet » ciblée, comme celle des gears (action activate-gear). */
   readonly tapAbility?: GearBlueprint['tapAbility'];
+  /** Début de sa Beginning : pioche 1 (via la pile) si sa main a au plus ce nombre de cartes. */
+  readonly beginningDrawIfHandAtMost?: number;
   /** Capacité ADD « Tap : ajoute » ; legion : seulement si une carte a été jouée ce tour. */
   readonly resourceAbility?: {
     readonly energy?: number;

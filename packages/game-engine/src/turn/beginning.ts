@@ -1,3 +1,5 @@
+import { activeLegends } from '../effects/legends.js';
+import { handSize } from '../effects/loot.js';
 import { channelForPlayer } from './supplies.js';
 import { awardPoints } from '../effects/hold-units.js';
 import { battlefieldDefinition } from '../effects/battlefield.js';
@@ -28,6 +30,7 @@ export function scoreHolding(
     ? settleLethalUnits(state, temporary)
     : { state, events: [] as GameEvent[] };
   state = killed.state;
+  state = queueBeginningLegends(state, playerId);
   const scored = state.scoredBattlefields[playerId] ?? [];
   const fields = state.battlefields.filter(
     (field) =>
@@ -123,4 +126,32 @@ function firstBeginning(
     }
   }
   return { state: next, events };
+}
+
+/** Loose Cannon : début de Beginning, main de taille limitée -> pioche 1 empilée. */
+function queueBeginningLegends(state: GameState, playerId: string): GameState {
+  const entries = activeLegends(state, playerId).flatMap(
+    ({ card, definition }) =>
+      definition.beginningDrawIfHandAtMost !== undefined &&
+      handSize(state, playerId) <= definition.beginningDrawIfHandAtMost
+        ? [
+            {
+              kind: 'legend-draw' as const,
+              sourceId: card.id,
+              ownerId: playerId,
+              count: 1,
+            },
+          ]
+        : [],
+  );
+  if (!entries.length) return state;
+  return {
+    ...state,
+    stack: {
+      entries: [...(state.stack?.entries ?? []), ...entries],
+      initiatorId: state.stack?.initiatorId ?? playerId,
+      priorityPlayerId: state.activePlayerId,
+      consecutivePasses: 0,
+    },
+  };
 }

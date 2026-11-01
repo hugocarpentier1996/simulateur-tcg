@@ -20,6 +20,8 @@ export interface LegendDefinition extends PrintedMetadata {
   };
   /** Capacité « Tap : effet » ciblée, comme celle des gears (action activate-gear). */
   readonly tapAbility?: GearTapAbility;
+  /** Début de sa Beginning : pioche 1 (via la pile) si sa main a au plus ce nombre de cartes. */
+  readonly beginningDrawIfHandAtMost?: number;
   /** Capacité ADD « Tap : ajoute » ; legion : seulement si une carte a été jouée ce tour. */
   readonly resourceAbility?: {
     readonly energy?: number;
