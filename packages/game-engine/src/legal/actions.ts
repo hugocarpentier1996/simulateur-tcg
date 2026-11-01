@@ -1,4 +1,7 @@
-import { trashUnitChoices } from '../effects/play-from-trash.js';
+import {
+  trashUnitChoices,
+  withTrashPower,
+} from '../effects/play-from-trash.js';
 import { hiddenFree } from '../effects/hidden.js';
 import { withTrashUnitPower } from '../cost/spell-cost.js';
 import { discardChoices } from '../actions/cast-spell.js';
@@ -610,19 +613,24 @@ function targetPayment(state: GameState, action: GameAction): GameAction[] {
           state,
           action.playerId,
           definition.type === 'unit'
-            ? hiddenFree(
-                card,
-                unitCost(
-                  state,
-                  action.playerId,
-                  definition,
-                  action.type === 'play-unit' && action.accelerate === true,
-                  action.type === 'play-unit' && action.optionalCost === true,
-                  action.type === 'play-unit' &&
-                    action.discardCardId !== undefined,
-                  action.type === 'play-unit'
-                    ? (action.costUnitIds?.length ?? 0)
-                    : 0,
+            ? withTrashPower(
+                state,
+                definition,
+                action.type === 'play-unit' ? action.returnSpellId : undefined,
+                hiddenFree(
+                  card,
+                  unitCost(
+                    state,
+                    action.playerId,
+                    definition,
+                    action.type === 'play-unit' && action.accelerate === true,
+                    action.type === 'play-unit' && action.optionalCost === true,
+                    action.type === 'play-unit' &&
+                      action.discardCardId !== undefined,
+                    action.type === 'play-unit'
+                      ? (action.costUnitIds?.length ?? 0)
+                      : 0,
+                  ),
                 ),
               )
             : definition.cost,

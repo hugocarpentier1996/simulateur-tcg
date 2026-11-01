@@ -70,3 +70,26 @@ export function trashUnitChoices(
     })
     .map((c) => c.id);
 }
+
+/** Coût de l'unité jouée + Power de l'unité qu'elle sort du cimetière (payPower). */
+export function withTrashPower(
+  state: GameState,
+  definition: UnitBlueprint,
+  trashCardId: string | undefined,
+  cost: UnitBlueprint['cost'],
+): UnitBlueprint['cost'] {
+  if (!definition.onPlayFromTrash?.payPower || !trashCardId) return cost;
+  const card = state.cards.find((c) => c.id === trashCardId);
+  const unit = state.unitDefinitions?.find((d) => d.id === card?.definitionId);
+  if (!unit) return cost;
+  const power = { ...cost.power };
+  for (const [color, n] of Object.entries(unit.cost.power))
+    power[color] = (power[color] ?? 0) + (n ?? 0);
+  return {
+    ...cost,
+    power,
+    ...(unit.cost.genericPower
+      ? { genericPower: (cost.genericPower ?? 0) + unit.cost.genericPower }
+      : {}),
+  };
+}

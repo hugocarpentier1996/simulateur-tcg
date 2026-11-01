@@ -1,4 +1,7 @@
-import { trashUnitChoices } from '../effects/play-from-trash.js';
+import {
+  trashUnitChoices,
+  withTrashPower,
+} from '../effects/play-from-trash.js';
 import { spendBuff } from '../effects/buff.js';
 import { canUseTiming } from './timing.js';
 import {
@@ -372,16 +375,21 @@ function playUnitCore(
   const cost = withDeflect(
     state,
     action.playerId,
-    hiddenFree(
-      card,
-      unitCost(
-        state,
-        action.playerId,
-        definition,
-        action.accelerate === true,
-        action.optionalCost === true,
-        action.discardCardId !== undefined,
-        action.costUnitIds?.length ?? 0,
+    withTrashPower(
+      state,
+      definition,
+      action.returnSpellId,
+      hiddenFree(
+        card,
+        unitCost(
+          state,
+          action.playerId,
+          definition,
+          action.accelerate === true,
+          action.optionalCost === true,
+          action.discardCardId !== undefined,
+          action.costUnitIds?.length ?? 0,
+        ),
       ),
     ),
     action.onPlayTargetId ? [action.onPlayTargetId] : [],

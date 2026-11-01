@@ -342,3 +342,4 @@ export { timeWarp } from './ogn/time-warp.js';
 export { possession } from './ogn/possession.js';
 export { theHarrowing } from './ogn/the-harrowing.js';
 export { spectralMatron } from './ogn/spectral-matron.js';
+export { soulgorger } from './ogn/soulgorger.js';
