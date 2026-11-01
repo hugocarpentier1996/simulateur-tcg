@@ -14,6 +14,8 @@ export interface BattlefieldDefinition extends PrintedMetadata {
   readonly holdDraw?: number;
   /** Tenue : déclenche les effets de conquête (onConquerDraw) des unités alliées présentes. */
   readonly holdActivatesConquer?: boolean;
+  /** Cartes Hidden supplémentaires pouvant être cachées ici (Bandle Tree). */
+  readonly extraHiddenSlots?: number;
   /** Conquête : le conquérant défausse 1 puis pioche 1, via la pile. */
   readonly conquerLoot?: boolean;
   /** Conquête : dépenser un buff allié pour piocher 1 (automatique si possible), via la pile. */

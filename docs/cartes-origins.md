@@ -270,3 +270,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Fox-Fire — ogn-256-298
 - [x] Stand United — ogn-053-298
 - [x] Ember Monk — ogn-167-298
+- [x] Bandle Tree — ogn-278-298

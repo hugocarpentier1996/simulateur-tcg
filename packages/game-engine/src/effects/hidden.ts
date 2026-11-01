@@ -1,3 +1,4 @@
+import { battlefieldDefinition } from './battlefield.js';
 import type {
   ActionResult,
   CardInstance,
@@ -81,7 +82,11 @@ export function hideCard(
       (f) =>
         f.zoneId === action.battlefieldId && f.controllerId === action.playerId,
     ) ||
-    state.cards.some((c) => c.facedown && c.zoneId === action.battlefieldId)
+    state.cards.filter((c) => c.facedown && c.zoneId === action.battlefieldId)
+      .length >=
+      1 +
+        (battlefieldDefinition(state, action.battlefieldId)?.extraHiddenSlots ??
+          0)
   )
     return { ok: false, reason: 'INVALID_HIDE_DESTINATION' };
   const paid = payCost(
