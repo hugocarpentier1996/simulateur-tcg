@@ -1290,3 +1290,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Réponse 17 : Relentless Storm mesure Mighty sur la Might réelle de l'unité à son arrivée (auras, champ, bonus), plus sur la Might imprimée.
 - Réponse 21 : Malzahar peut se sacrifier lui-même pour payer sa capacité ; il meurt et les 2 Power sont ajoutés.
 - Réponse 16 : le Stun trace le joueur qui l'inflige (`byPlayerId`) ; Eclipse Herald et Radiant Dawn se déclenchent pour ce joueur (repli : l'adversaire de la victime si la source est inconnue).
+- Réponse 6 : Divine Judgment confirmé ; test ajouté : un gear attaché resté en jeu compte parmi les 2 gears gardés.

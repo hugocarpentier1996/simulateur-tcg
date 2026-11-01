@@ -44,3 +44,34 @@ it('Divine Judgment : chaque joueur garde 2 unités, 2 gears, 2 runes, 2 cartes 
   expect(s.cards.find((c) => c.id === 'h1')?.zoneId).toBe('deck-a');
   expect(s.cards.find((c) => c.id === 'h2')?.zoneId).toBe('hand-a');
 });
+
+it('Divine Judgment : un gear attaché compte parmi les 2 gears gardés', () => {
+  const s0 = spellScenario(divineJudgment);
+  s0.gears = ['g1', 'g2', 'g3'].map((id) => ({
+    id,
+    definitionId: 'gear',
+    ownerId: 'a',
+    zoneId: id === 'g1' ? 'f' : 'base-a',
+    ready: true,
+    ...(id === 'g1' ? { attachedUnitId: 'ally' } : {}),
+  }));
+  s0.resources.a = { energy: 7, power: { jaune: 2 } };
+  let s = resolveTop(
+    step(s0, {
+      type: 'cast-spell',
+      playerId: 'a',
+      cardId: 'spell',
+      targetId: 'a',
+      payment: noRunes,
+    }),
+  );
+  expect(s.pendingModeChoice?.modes).toEqual([
+    'keep:g1+g2',
+    'keep:g1+g3',
+    'keep:g2+g3',
+  ]);
+  s = step(s, { type: 'choose-mode', playerId: 'a', mode: 'keep:g1+g2' });
+  expect(s.gears?.map((g) => g.id)).toEqual(['g1', 'g2']);
+  expect(s.gears?.[0]?.attachedUnitId).toBe('ally');
+  expect(s.cards.find((c) => c.id === 'g3')?.zoneId).toBe('deck-a');
+});
