@@ -297,3 +297,4 @@ export { sigilOfTheStorm } from './ogn/sigil-of-the-storm.js';
 export { theDreamingTree } from './ogn/the-dreaming-tree.js';
 export { monasteryOfHirana } from './ogn/monastery-of-hirana.js';
 export { reckonersArena } from './ogn/reckoners-arena.js';
+export { qiyana } from './ogn/qiyana.js';

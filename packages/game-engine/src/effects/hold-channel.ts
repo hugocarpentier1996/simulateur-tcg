@@ -1,3 +1,4 @@
+import { unitConquerEntries } from './unit-conquer.js';
 import type { GameState, ActionResult, GameAction } from '../types.js';
 import { battlefieldDefinition } from './battlefield.js';
 import { channelForPlayer } from '../turn/supplies.js';
@@ -82,21 +83,7 @@ export function queueHoldDraw(
     (z) => z.kind === 'base' && z.ownerId === playerId,
   );
   const conquerDraws = definition?.holdActivatesConquer
-    ? state.units.flatMap((u) => {
-        const count = state.unitDefinitions?.find(
-          (d) => d.id === u.definitionId,
-        )?.onConquerDraw;
-        return count && u.ownerId === playerId && u.zoneId === battlefieldId
-          ? [
-              {
-                kind: 'legend-draw' as const,
-                sourceId: u.id,
-                ownerId: playerId,
-                count,
-              },
-            ]
-          : [];
-      })
+    ? unitConquerEntries(state, playerId, battlefieldId)
     : [];
   const buffTarget = definition?.holdBuffHere
     ? [...state.units]

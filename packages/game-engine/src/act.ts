@@ -1,3 +1,4 @@
+import { chooseMode } from './effects/mode-choice.js';
 import { spellChosenUnits } from './cost/deflect.js';
 import { choosePick } from './effects/pick.js';
 import { summonToken } from './effects/summon-token.js';
@@ -418,6 +419,9 @@ function dispatch(state: GameState, action: GameAction): ActionResult {
     return chooseHoldChannel(state, action);
   if (state.pendingHoldChannel)
     return { ok: false, reason: 'HOLD_CHANNEL_CHOICE_REQUIRED' };
+  if (action.type === 'choose-mode') return chooseMode(state, action);
+  if (state.pendingModeChoice)
+    return { ok: false, reason: 'MODE_CHOICE_REQUIRED' };
   if (action.type === 'choose-vision') return chooseVision(state, action);
   if (state.pendingVision)
     return { ok: false, reason: 'VISION_CHOICE_REQUIRED' };

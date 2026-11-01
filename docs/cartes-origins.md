@@ -253,3 +253,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] The Dreaming Tree — ogn-292-298
 - [x] Monastery of Hirana — ogn-282-298
 - [x] Reckoner's Arena — ogn-286-298
+- [x] Qiyana — ogn-155-298

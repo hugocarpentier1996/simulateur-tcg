@@ -4,6 +4,8 @@ import { battlefieldDefinition } from './battlefield.js';
 import type { GameState, GameEvent } from '../types.js';
 import type { LegendEntry } from '../legend-types.js';
 import { activeLegends } from './legends.js';
+import { unitConquerEntries } from './unit-conquer.js';
+import type { ModeChoiceEntry } from './mode-choice.js';
 /** Événements de cette action -> capacités de conquête (légendes et unités), après clôture et score.
  * Vérifie le seuil à la conquête ; la résolution le vérifiera à nouveau. Victoire : aucun ajout.
  * Appelé une seule fois par act, pas lors d'une tenue ni d'un simple mouvement. */
@@ -29,45 +31,35 @@ export function queueConquestLegends(
           },
         };
     }
-  const entries: (LegendEntry | MovementEntry | PlayEffectEntry)[] =
-    events.flatMap((e) =>
-      e.type === 'battlefield-conquered'
-        ? activeLegends(state, e.playerId).flatMap(({ card, definition }) =>
-            definition.conquestDraw &&
-            state.units.filter(
-              (u) => u.ownerId === e.playerId && u.zoneId === e.battlefieldId,
-            ).length >= definition.conquestDraw.minimumUnits
-              ? [
-                  {
-                    kind: 'legend-draw' as const,
-                    sourceId: card.id,
-                    ownerId: e.playerId,
-                    count: definition.conquestDraw.count,
-                    battlefieldCondition: {
-                      battlefieldId: e.battlefieldId,
-                      minimumUnits: definition.conquestDraw.minimumUnits,
-                    },
+  const entries: (
+    LegendEntry | MovementEntry | PlayEffectEntry | ModeChoiceEntry
+  )[] = events.flatMap((e) =>
+    e.type === 'battlefield-conquered'
+      ? activeLegends(state, e.playerId).flatMap(({ card, definition }) =>
+          definition.conquestDraw &&
+          state.units.filter(
+            (u) => u.ownerId === e.playerId && u.zoneId === e.battlefieldId,
+          ).length >= definition.conquestDraw.minimumUnits
+            ? [
+                {
+                  kind: 'legend-draw' as const,
+                  sourceId: card.id,
+                  ownerId: e.playerId,
+                  count: definition.conquestDraw.count,
+                  battlefieldCondition: {
+                    battlefieldId: e.battlefieldId,
+                    minimumUnits: definition.conquestDraw.minimumUnits,
                   },
-                ]
-              : [],
-          )
-        : [],
-    );
+                },
+              ]
+            : [],
+        )
+      : [],
+  );
   // Capacités « When I conquer » des unités du conquérant présentes sur le champ conquis.
   for (const e of events)
     if (e.type === 'battlefield-conquered')
-      for (const u of state.units) {
-        const count = state.unitDefinitions?.find(
-          (d) => d.id === u.definitionId,
-        )?.onConquerDraw;
-        if (count && u.ownerId === e.playerId && u.zoneId === e.battlefieldId)
-          entries.push({
-            kind: 'legend-draw',
-            sourceId: u.id,
-            ownerId: e.playerId,
-            count,
-          });
-      }
+      entries.push(...unitConquerEntries(state, e.playerId, e.battlefieldId));
   // Monastery of Hirana : dépense d'un buff du conquérant pour piocher.
   for (const e of events)
     if (

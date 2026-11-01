@@ -195,6 +195,8 @@ export interface UnitDefinition extends PrintedMetadata {
   readonly onAttackDamage?: number;
   /** « When I conquer » : son propriétaire pioche ce nombre de cartes, via la pile. */
   readonly onConquerDraw?: number;
+  /** « When I conquer » : son propriétaire choisit l'un de ces modes à la résolution. */
+  readonly onConquerChoice?: readonly ('draw' | 'channel-exhausted')[];
   /** En attaquant : effet sur une unité ennemie de ce champ, choisie avant réactions.
    * stun : Stun jusqu'à la fin du tour ; might-damage : dégâts égaux à la Might de la source
    * à la résolution. */

@@ -14,6 +14,7 @@ export function continueStack(
   const entries = stack.entries;
   if (
     next.pendingHoldChannel ||
+    next.pendingModeChoice ||
     next.pendingDefenseShield ||
     next.pendingDeaths ||
     next.pendingDiscard ||

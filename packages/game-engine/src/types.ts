@@ -67,6 +67,8 @@ export interface GameState {
     sourceId: string;
     cardIds: string[];
   } | null;
+  /** Choix de mode en attente (« pioche 1 ou canalise 1 », Qiyana). */
+  pendingModeChoice?: import('./effects/mode-choice.js').ModeChoiceEntry | null;
   /** État serveur privé : sommet connu uniquement du joueur de Vision. */
   pendingVision?: { playerId: string; sourceId: string; cardId: string } | null;
   /** Choix obligatoire pendant une résolution ; aucune réaction entre défausse et pioche. */
@@ -118,6 +120,7 @@ export interface GameState {
     entries: (
       | import('./effects/hold-channel.js').HoldChannelEntry
       | import('./effects/hold-units.js').HoldUnitEntry
+      | import('./effects/mode-choice.js').ModeChoiceEntry
       | import('./effects/defense-shield.js').DefenseShieldEntry
       | AttackDamageEntry
       | PlayEffectEntry
@@ -370,6 +373,8 @@ export interface UnitBlueprint {
   readonly onAttackDamage?: number;
   /** « When I conquer » : son propriétaire pioche ce nombre de cartes, via la pile. */
   readonly onConquerDraw?: number;
+  /** « When I conquer » : son propriétaire choisit l'un de ces modes à la résolution. */
+  readonly onConquerChoice?: readonly import('./effects/mode-choice.js').EffectMode[];
   /** En attaquant : effet sur une unité ennemie de ce champ, choisie avant réactions.
    * stun : Stun jusqu'à la fin du tour ; might-damage : dégâts égaux à la Might de la source
    * à la résolution. */
@@ -554,6 +559,12 @@ export type GameAction =
       }[];
     }
   | { type: 'choose-vision'; playerId: string; recycle: boolean }
+  /** Mode d'une capacité « X ou Y » en attente (pendingModeChoice). */
+  | {
+      type: 'choose-mode';
+      playerId: string;
+      mode: import('./effects/mode-choice.js').EffectMode;
+    }
   | { type: 'choose-discard'; playerId: string; cardId: string }
   /** Carte gardée parmi celles regardées (pendingPick). */
   | { type: 'choose-pick'; playerId: string; cardId: string }

@@ -423,6 +423,7 @@ export function tableActions(session: Session): GameAction[] {
         'choose-battlefield',
         'choose-defense-shield',
         'choose-hold-channel',
+        'choose-mode',
         'assign-damage',
         'pass',
       ].includes(a.type),
@@ -436,6 +437,7 @@ export function handPlayer(state: GameState): string {
     state.pendingDiscard?.playerId ??
     state.pendingVision?.playerId ??
     state.pendingPick?.playerId ??
+    state.pendingModeChoice?.ownerId ??
     state.pendingDeaths?.playerOrder[0] ??
     state.pendingAttackChoices?.[0]?.ownerId ??
     state.stack?.priorityPlayerId ??

@@ -48,6 +48,12 @@ function* candidates(
     }
     return;
   }
+  if (state.pendingModeChoice) {
+    if (state.pendingModeChoice.ownerId === playerId)
+      for (const mode of state.pendingModeChoice.modes)
+        yield { type: 'choose-mode', playerId, mode };
+    return;
+  }
   if (state.pendingDeaths) {
     yield* resolutionChoices(state, playerId);
     return;
