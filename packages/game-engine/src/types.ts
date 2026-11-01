@@ -255,6 +255,10 @@ export interface UnitBlueprint {
   readonly onPlayTargetEffect?: {
     /** Legion : capacité seulement si une autre carte a été jouée ce tour. */
     readonly legion?: boolean;
+    /** Seules les unités buffées sont ciblables. */
+    readonly buffed?: boolean;
+    /** « You may » : jouer sans cible reste possible même si une cible existe. */
+    readonly optional?: boolean;
     readonly allegiance?: 'friendly' | 'enemy';
     readonly zone?: 'battlefield';
     readonly excludeSelf?: boolean;
@@ -274,6 +278,8 @@ export interface UnitBlueprint {
       | { readonly type: 'buff' }
       /** Ganking jusqu'à la fin du tour. */
       | { readonly type: 'grant-ganking' }
+      /** Dépense le buff de la cible, puis la source se buffe et se redresse. */
+      | { readonly type: 'spend-buff-empower-self' }
       | { readonly type: 'kill' }
       | { readonly type: 'return-to-hand' };
   };

@@ -1,4 +1,4 @@
-import { buffUnit } from './buff.js';
+import { buffUnit, spendBuff } from './buff.js';
 import type { ActionResult, GameState, UnitBlueprint } from '../types.js';
 import { dealEffectDamage } from './effect-damage.js';
 import { settleLethalUnits } from './lethal-units.js';
@@ -22,6 +22,21 @@ export function resolveTargetedPlay(
 ): Extract<ActionResult, { ok: true }> {
   const target = state.units.find((u) => u.id === targetId);
   if (!target) return { ok: true, state, events: [] };
+  if (effect.type === 'spend-buff-empower-self') {
+    const spent = spendBuff(state, target.id);
+    if (!spent) return { ok: true, state, events: [] };
+    const empowered = buffUnit(spent, sourceId);
+    return {
+      ok: true,
+      state: {
+        ...empowered,
+        units: empowered.units.map((u) =>
+          u.id === sourceId ? { ...u, ready: true } : u,
+        ),
+      },
+      events: [],
+    };
+  }
   if (effect.type === 'grant-ganking')
     return {
       ok: true,

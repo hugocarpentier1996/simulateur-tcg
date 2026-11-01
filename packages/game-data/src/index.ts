@@ -279,3 +279,4 @@ export { relentlessStorm } from './ogn/relentless-storm.js';
 export { clockworkKeeper } from './ogn/clockwork-keeper.js';
 export { wallop } from './ogn/wallop.js';
 export { callToGlory } from './ogn/call-to-glory.js';
+export { wildclawShaman } from './ogn/wildclaw-shaman.js';

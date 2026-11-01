@@ -32,7 +32,8 @@ export function playTargetChoices(
           (targeted.allegiance !== 'friendly' || u.ownerId === playerId) &&
           (targeted.allegiance !== 'enemy' || u.ownerId !== playerId) &&
           (targeted.zone !== 'battlefield' ||
-            state.battlefields.some((f) => f.zoneId === u.zoneId)),
+            state.battlefields.some((f) => f.zoneId === u.zoneId)) &&
+          (!targeted.buffed || !!u.buffed),
       )
       .map((u) => u.id);
     if (
@@ -41,7 +42,10 @@ export function playTargetChoices(
       (targeted.zone !== 'battlefield' || toField)
     )
       ids.push(sourceId);
-    return payable(ids);
+    const choices = payable(ids);
+    return targeted.optional && choices[0] !== undefined
+      ? [undefined, ...choices]
+      : choices;
   }
   if (definition.onPlayMoveToBase) {
     const ids = state.units

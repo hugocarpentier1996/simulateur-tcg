@@ -1175,3 +1175,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Clockwork Keeper (ogn-044) : en la jouant, peut payer 1 Power Calm en plus pour piocher 1 via la pile (`optionalCost` d'unité, champ d'action `optionalCost`, variantes proposées par les actions légales et la table).
 - Wallop (ogn-146) : Action ; redresse une unité ; peut dépenser le buff d'une unité alliée pour ignorer tout le coût (`spendBuffForFreeCast`, champ d'action `spendBuffUnitId`, helper `castCost`).
 - Call to Glory (ogn-207) : Réaction ; +3 Might à une unité ce tour, gratuit en dépensant un buff allié (`spendBuffForFreeCast`).
+- Wildclaw Shaman (ogn-147) : à la mise en jeu, peut dépenser le buff d'une unité alliée pour se buffer et se redresser (`onPlayTargetEffect` avec filtres `buffed`/`optional`, effet `spend-buff-empower-self`).
