@@ -340,7 +340,17 @@ function* candidates(
     if (gear) {
       const payment = findPayment(state, playerId, gear.cost);
       if (payment)
-        yield { type: 'play-gear', playerId, cardId: card.id, payment };
+        for (const targetId of gear.onPlayBuffAlly &&
+        state.units.some((u) => u.ownerId === playerId)
+          ? state.units.filter((u) => u.ownerId === playerId).map((u) => u.id)
+          : [undefined])
+          yield {
+            type: 'play-gear',
+            playerId,
+            cardId: card.id,
+            ...(targetId ? { targetId } : {}),
+            payment,
+          };
     }
     const spell = state.spellDefinitions?.find(
       (d) => d.id === card.definitionId,

@@ -34,6 +34,10 @@ export interface GearDefinition extends PrintedMetadata {
   /** Une unité alliée redressée par un effet (hors Awaken) gagne cette Might ce tour
    * (Pirate's Haven ; sans pile). */
   readonly mightOnAllyReadied?: number;
+  /** Posé : buffe l'unité alliée choisie (targetId de play-gear, sans pile). */
+  readonly onPlayBuffAlly?: boolean;
+  /** Les unités alliées buffées ont Deflect (Spirit's Refuge). */
+  readonly buffedAlliesDeflect?: boolean;
   /** Une unité alliée Tap vient d'être buffée : payer 1 Power de cette couleur et coucher
    * le gear pour la redresser (Mistfall ; automatique si possible, sans pile). */
   readonly readyOnAllyBuffed?: { readonly power: string };

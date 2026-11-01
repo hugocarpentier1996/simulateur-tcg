@@ -70,6 +70,17 @@ export function hasKeyword(
   );
   if (definition?.[key]) return true;
   if (
+    key === 'deflect' &&
+    unit.buffed &&
+    state.gears?.some(
+      (g) =>
+        g.ownerId === unit.ownerId &&
+        state.gearDefinitions?.find((d) => d.id === g.definitionId)
+          ?.buffedAlliesDeflect,
+    )
+  )
+    return true;
+  if (
     key === 'ganking' &&
     battlefieldDefinition(state, unit.zoneId)?.grantsGanking
   )

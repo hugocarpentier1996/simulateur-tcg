@@ -465,7 +465,10 @@ function actionLabel(
           : '')
       );
     case 'play-gear':
-      return 'Poser en base';
+      return (
+        'Poser en base' +
+        (action.targetId ? ' · Buff : ' + target(action.targetId) : '')
+      );
     case 'equip-gear':
       return 'Équiper sur ' + target(action.unitId);
     case 'activate-gear':

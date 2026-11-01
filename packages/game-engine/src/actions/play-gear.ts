@@ -1,3 +1,4 @@
+import { buffUnit } from '../effects/buff.js';
 import type { ActionResult, GameAction, GameState } from '../types.js';
 import { payCost } from '../cost/payment.js';
 
@@ -34,8 +35,28 @@ export function playGear(
     (z) => z.kind === 'base' && z.ownerId === action.playerId,
   );
   if (!base) return { ok: false, reason: 'MISSING_BASE' };
-  const paid = payCost(state, action.playerId, definition.cost, action.payment);
-  if (!paid.ok) return paid;
+  const buffTarget = state.units.find(
+    (u) => u.id === action.targetId && u.ownerId === action.playerId,
+  );
+  const allies = state.units.some((u) => u.ownerId === action.playerId);
+  if (
+    definition.onPlayBuffAlly
+      ? allies
+        ? !buffTarget
+        : action.targetId !== undefined
+      : action.targetId !== undefined
+  )
+    return { ok: false, reason: 'INVALID_TARGET' };
+  const charged = payCost(
+    state,
+    action.playerId,
+    definition.cost,
+    action.payment,
+  );
+  if (!charged.ok) return charged;
+  const paid = buffTarget
+    ? { ...charged, state: buffUnit(charged.state, buffTarget.id) }
+    : charged;
   return {
     ok: true,
     state: {

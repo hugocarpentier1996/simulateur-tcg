@@ -306,3 +306,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Ravenborn Tome — ogn-032-298
 - [x] Pirate's Haven — ogn-143-298
 - [x] Mistfall — ogn-152-298
+- [x] Spirit's Refuge — ogn-063-298

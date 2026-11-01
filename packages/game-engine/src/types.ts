@@ -678,6 +678,8 @@ export type GameAction =
       type: 'play-gear';
       playerId: string;
       cardId: string;
+      /** Unité alliée choisie par un effet de pose (onPlayBuffAlly). */
+      targetId?: string;
       payment: PaymentPlan;
     }
   | {

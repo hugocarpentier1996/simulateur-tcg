@@ -1247,3 +1247,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Ravenborn Tome (ogn-032) : gear ; Tap — le prochain sort joué ce tour inflige 1 dégât bonus par instance (`nextSpellBonusDamage` transféré au sort lancé dans `spellBonusDamage`, pris en compte par `dealEffectDamage`).
 - Pirate's Haven (ogn-143) : gear ; quand une unité alliée est redressée par un effet, elle gagne +1 Might ce tour (`mightOnAllyReadied`).
 - Mistfall (ogn-152) : gear ; quand une unité alliée Tap est buffée, payer 1 Power Body et coucher le gear la redresse (`readyOnAllyBuffed`).
+- Spirit's Refuge (ogn-063) : gear ; posé, buffe l'unité alliée choisie (`onPlayBuffAlly`, champ `targetId` de play-gear) ; les unités alliées buffées ont Deflect (`buffedAlliesDeflect`).
