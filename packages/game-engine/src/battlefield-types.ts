@@ -14,6 +14,8 @@ export interface BattlefieldBlueprint {
   readonly extraHiddenSlots?: number;
   /** Tenue : peut ramener le Chosen Champion du cimetière dans sa zone champion vide. */
   readonly holdReturnChampion?: boolean;
+  /** Défense ici : le défenseur peut renvoyer une de ses unités d'ici dans sa base. */
+  readonly defendRetreat?: boolean;
   /** Conquête : le conquérant défausse 1 puis pioche 1, via la pile. */
   readonly conquerLoot?: boolean;
   /** Conquête : dépenser un buff allié pour piocher 1 (automatique si possible), via la pile. */

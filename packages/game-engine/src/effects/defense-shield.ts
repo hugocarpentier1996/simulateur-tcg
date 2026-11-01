@@ -1,3 +1,4 @@
+import type { ModeChoiceEntry } from './mode-choice.js';
 import type {
   ActionResult,
   GameAction,
@@ -138,5 +139,39 @@ export function resolveDefenseShield(
         playerId: entry.ownerId,
       },
     ],
+  };
+}
+
+/** Début de Combat sur un champ defendRetreat -> capacité du défenseur sur la pile : renvoyer
+ * une de ses unités d'ici dans sa base (choix à la résolution, Reaver's Row). */
+export function queueDefendRetreat(
+  before: GameState,
+  state: GameState,
+  events: readonly GameEvent[],
+): GameState {
+  const c = state.showdown;
+  if (state.result || c?.kind !== 'combat' || c.stage !== 'priority')
+    return state;
+  const begins =
+    before.showdown?.kind !== 'combat' ||
+    before.showdown.battlefieldId !== c.battlefieldId ||
+    events.some((e) => e.type === 'combat-restarted');
+  if (!begins || !battlefieldDefinition(state, c.battlefieldId)?.defendRetreat)
+    return state;
+  const entry: ModeChoiceEntry = {
+    kind: 'mode-choice',
+    sourceId: c.battlefieldId,
+    ownerId: c.defenderId,
+    modes: [],
+    retreatFrom: c.battlefieldId,
+  };
+  return {
+    ...state,
+    stack: {
+      entries: [...(state.stack?.entries ?? []), entry],
+      initiatorId: state.stack?.initiatorId ?? c.initiatorId,
+      priorityPlayerId: c.initiatorId,
+      consecutivePasses: 0,
+    },
   };
 }

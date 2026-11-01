@@ -28,7 +28,8 @@ export type EffectMode =
   | `suffer:${string}`
   | 'let-draw'
   | `recycle-any:${string}`
-  | 'return-champion';
+  | 'return-champion'
+  | `retreat:${string}`;
 
 const ONE_ENERGY = { energy: 1, power: {} };
 
@@ -47,6 +48,8 @@ export interface ModeChoiceEntry {
   partnerId?: string;
   /** Joueurs suivants à choisir à leur tour ce qu'ils tuent (Cull the Weak). */
   nextChoosers?: readonly string[];
+  /** Champ dont les unités alliées peuvent être renvoyées en base (Reaver's Row). */
+  retreatFrom?: string;
   /** Recyclages restant à choisir dans les cimetières (Forge of the Future). */
   recycleLeft?: number;
   /** Shakedown : dégâts si l'unité est choisie, pioches du partenaire sinon. */
@@ -75,21 +78,36 @@ export function resolveModeChoice(
       ),
     )
     .map((c) => c.id);
-  const modes: readonly EffectMode[] = entry.killGearBuff
-    ? ['skip', ...(state.gears ?? []).map((g) => `kill-gear:${g.id}` as const)]
-    : entry.discardReturn
-      ? inTrash
-        ? ['skip', ...handIds.map((id) => `discard-return:${id}` as const)]
-        : []
-      : entry.payReturn
-        ? state.units.some((u) => u.id === entry.sourceId) &&
-          findPayment(state, entry.ownerId, ONE_ENERGY)
-          ? ['skip', 'pay-return']
+  const retreats = entry.retreatFrom
+    ? state.units
+        .filter(
+          (u) => u.ownerId === entry.ownerId && u.zoneId === entry.retreatFrom,
+        )
+        .map((u) => `retreat:${u.id}` as const)
+    : [];
+  const modes: readonly EffectMode[] = entry.retreatFrom
+    ? ['skip', ...retreats]
+    : entry.killGearBuff
+      ? [
+          'skip',
+          ...(state.gears ?? []).map((g) => `kill-gear:${g.id}` as const),
+        ]
+      : entry.discardReturn
+        ? inTrash
+          ? ['skip', ...handIds.map((id) => `discard-return:${id}` as const)]
           : []
-        : entry.modes;
+        : entry.payReturn
+          ? state.units.some((u) => u.id === entry.sourceId) &&
+            findPayment(state, entry.ownerId, ONE_ENERGY)
+            ? ['skip', 'pay-return']
+            : []
+          : entry.modes;
   if (
     modes.length <= 1 &&
-    (entry.killGearBuff || entry.discardReturn || entry.payReturn)
+    (entry.killGearBuff ||
+      entry.discardReturn ||
+      entry.payReturn ||
+      entry.retreatFrom)
   )
     return {
       ok: true,
@@ -188,6 +206,26 @@ function applyMode(
         ],
       },
       events: [],
+    };
+  }
+  if (mode.startsWith('retreat:')) {
+    const unit = state.units.find(
+      (u) => u.id === mode.slice('retreat:'.length),
+    );
+    const base = state.zones.find(
+      (z) => z.kind === 'base' && z.ownerId === unit?.ownerId,
+    );
+    if (!unit || !base) return { state, events: [] };
+    return {
+      state: {
+        ...state,
+        units: state.units.map((u) =>
+          u.id === unit.id ? { ...u, zoneId: base.id } : u,
+        ),
+      },
+      events: [
+        { type: 'unit-moved', unitId: unit.id, from: unit.zoneId, to: base.id },
+      ],
     };
   }
   if (mode === 'return-champion') {

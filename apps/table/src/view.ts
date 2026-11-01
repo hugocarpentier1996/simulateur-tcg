@@ -558,48 +558,57 @@ function actionLabel(
                   ? 'Cartes (chacun pioche 1)'
                   : action.mode === 'favor-runes'
                     ? 'Runes (chacun canalise 1 rune Tap)'
-                    : action.mode === 'return-champion'
-                      ? 'Ramener le Chosen Champion'
-                      : action.mode.startsWith('recycle-any:')
-                        ? 'Recycler ' +
-                          target(action.mode.slice('recycle-any:'.length))
-                        : action.mode.startsWith('suffer:')
-                          ? 'Subir les dégâts sur ' +
-                            target(action.mode.slice('suffer:'.length))
-                          : action.mode === 'let-draw'
-                            ? 'Laisser l’adversaire piocher'
-                            : action.mode.startsWith('discard-opp:')
-                              ? 'Faire défausser ' +
-                                target(action.mode.slice('discard-opp:'.length))
-                              : action.mode.startsWith('recycle-opp:')
-                                ? 'Recycler ' +
+                    : action.mode.startsWith('retreat:')
+                      ? 'Renvoyer en base ' +
+                        target(action.mode.slice('retreat:'.length))
+                      : action.mode === 'return-champion'
+                        ? 'Ramener le Chosen Champion'
+                        : action.mode.startsWith('recycle-any:')
+                          ? 'Recycler ' +
+                            target(action.mode.slice('recycle-any:'.length))
+                          : action.mode.startsWith('suffer:')
+                            ? 'Subir les dégâts sur ' +
+                              target(action.mode.slice('suffer:'.length))
+                            : action.mode === 'let-draw'
+                              ? 'Laisser l’adversaire piocher'
+                              : action.mode.startsWith('discard-opp:')
+                                ? 'Faire défausser ' +
                                   target(
-                                    action.mode.slice('recycle-opp:'.length),
+                                    action.mode.slice('discard-opp:'.length),
                                   )
-                                : action.mode.startsWith('return-unit:')
-                                  ? 'Renvoyer en main ' +
+                                : action.mode.startsWith('recycle-opp:')
+                                  ? 'Recycler ' +
                                     target(
-                                      action.mode.slice('return-unit:'.length),
+                                      action.mode.slice('recycle-opp:'.length),
                                     )
-                                  : action.mode.startsWith('kill-own:')
-                                    ? 'Tuer ' +
+                                  : action.mode.startsWith('return-unit:')
+                                    ? 'Renvoyer en main ' +
                                       target(
-                                        action.mode.slice('kill-own:'.length),
+                                        action.mode.slice(
+                                          'return-unit:'.length,
+                                        ),
                                       )
-                                    : action.mode.startsWith('discard-return:')
-                                      ? 'Défausser ' +
+                                    : action.mode.startsWith('kill-own:')
+                                      ? 'Tuer ' +
                                         target(
-                                          action.mode.slice(
-                                            'discard-return:'.length,
-                                          ),
-                                        ) +
-                                        ' pour reprendre la carte'
-                                      : 'Détruire ' +
-                                        target(
-                                          action.mode.slice(
-                                            'kill-gear:'.length,
-                                          ),
-                                        ))
+                                          action.mode.slice('kill-own:'.length),
+                                        )
+                                      : action.mode.startsWith(
+                                            'discard-return:',
+                                          )
+                                        ? 'Défausser ' +
+                                          target(
+                                            action.mode.slice(
+                                              'discard-return:'.length,
+                                            ),
+                                          ) +
+                                          ' pour reprendre la carte'
+                                        : 'Détruire ' +
+                                          target(
+                                            action.mode.slice(
+                                              'kill-gear:'.length,
+                                            ),
+                                          ))
       );
     case 'choose-hold-channel':
       return (

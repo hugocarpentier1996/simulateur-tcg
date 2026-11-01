@@ -23,6 +23,7 @@ import { awardPoints } from './effects/hold-units.js';
 import {
   chooseDefenseShield,
   queueDefenseShield,
+  queueDefendRetreat,
 } from './effects/defense-shield.js';
 import { chooseHoldChannel } from './effects/hold-channel.js';
 import { resumeTurn } from './turn/progression.js';
@@ -485,7 +486,11 @@ export function act(state: GameState, action: GameAction): ActionResult {
   const scoredMoves = thirdMovePoints(entered, scrap.state);
   events.push(...scoredMoves.events);
   const attacked = queueAttackEffects(state, scoredMoves.state, events);
-  const next = queueDefenseShield(state, attacked.state, events);
+  const next = queueDefendRetreat(
+    state,
+    queueDefenseShield(state, attacked.state, events),
+    events,
+  );
   events.push(...attacked.events);
   if (
     next.pendingTurnEnd &&
