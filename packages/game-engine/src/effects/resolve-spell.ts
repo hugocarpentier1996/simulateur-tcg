@@ -3,7 +3,7 @@ import { startPick } from './pick.js';
 import { wardenAgainst } from './unit-aura.js';
 import { buffUnit, spendBuff } from './buff.js';
 import { channelForPlayer } from '../turn/supplies.js';
-import { returnGraveyardCard } from './graveyard-card.js';
+import { graveyardCard, returnGraveyardCard } from './graveyard-card.js';
 import { effectiveMight, preventsDamage } from './modifiers.js';
 import { leaveBoard } from './leave-board.js';
 import { getBattlefieldSides } from '../battlefield-areas.js';
@@ -91,6 +91,42 @@ export function resolveSpell(
             : u,
         ),
       };
+      continue;
+    }
+    if (effect.type === 'play-from-trash') {
+      const card = graveyardCard(state, entry.casterId, entry.targetId, 'unit');
+      const unit = state.unitDefinitions?.find(
+        (d) => d.id === card?.definitionId,
+      );
+      const base = state.zones.find(
+        (z) => z.kind === 'base' && z.ownerId === entry.casterId,
+      );
+      if (!card || !unit || !base) continue;
+      state = {
+        ...state,
+        cards: state.cards.filter((c) => c.id !== card.id),
+        units: [
+          ...state.units,
+          {
+            id: card.id,
+            definitionId: card.definitionId,
+            ownerId: entry.casterId,
+            zoneId: base.id,
+            ready: unit.entersReady === true,
+            might: unit.might,
+            ...(unit.tank ? { tank: true } : {}),
+            ...(unit.backline ? { backline: true } : {}),
+            damage: 0,
+          },
+        ],
+      };
+      events.push({
+        type: 'unit-played',
+        playerId: entry.casterId,
+        unitId: card.id,
+        definitionId: unit.id,
+        zoneId: base.id,
+      });
       continue;
     }
     if (effect.type === 'return-graveyard-unit') {

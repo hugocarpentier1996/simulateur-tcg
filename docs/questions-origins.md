@@ -64,3 +64,4 @@ existantes ; seuls les nouveaux doutes utiles rejoindront le prochain lot de que
 - Hidden (hypothèses) : une seule carte cachée par champ (tous joueurs confondus) ; le nettoyage d'un champ perdu est appliqué après chaque action plutôt qu'au Cleanup ; jouer depuis facedown ignore tout le coût imprimé (énergie et Power), les coûts supplémentaires (Deflect…) restent dus.
 - Overt Operation (hypothèse) : le « you may » est accepté automatiquement pour chaque unité alliée Tap et buffée (jamais pour une unité déjà Ready).
 - Vanguard Helm (hypothèse) : sans pile ; l'unité buffée est choisie automatiquement (sans buff d'abord).
+- The Harrowing (hypothèses) : le Power de l'unité jouée est payé avec le sort au lancement ; l'unité arrive dans la base, Tap, sans déclencher ses effets « when you play me ».

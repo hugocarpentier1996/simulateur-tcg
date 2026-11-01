@@ -4,7 +4,7 @@ import {
   playableFacedown,
 } from '../effects/hidden.js';
 import { withDeflect, spellChosenUnits } from '../cost/deflect.js';
-import { castCost } from '../cost/spell-cost.js';
+import { castCost, withTrashUnitPower } from '../cost/spell-cost.js';
 import { spendBuff } from '../effects/buff.js';
 import { graveyardCard } from '../effects/graveyard-card.js';
 import type { ActionResult, GameAction, GameState } from '../types.js';
@@ -271,14 +271,19 @@ export function castSpell(
   const cost = withDeflect(
     state,
     action.playerId,
-    hiddenFree(
-      card,
-      castCost(
-        state,
-        action.playerId,
-        definition,
-        action.xPower,
-        action.spendBuffUnitId,
+    withTrashUnitPower(
+      state,
+      definition,
+      action.targetId,
+      hiddenFree(
+        card,
+        castCost(
+          state,
+          action.playerId,
+          definition,
+          action.xPower,
+          action.spendBuffUnitId,
+        ),
       ),
     ),
     spellChosenUnits(definition, action),

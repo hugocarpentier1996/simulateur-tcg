@@ -1,4 +1,5 @@
 import { hiddenFree } from '../effects/hidden.js';
+import { withTrashUnitPower } from '../cost/spell-cost.js';
 import { discardChoices } from '../actions/cast-spell.js';
 import { activeLegends } from '../effects/legends.js';
 import { tapAbilityTargets } from '../actions/activate-gear.js';
@@ -579,14 +580,19 @@ function targetPayment(state: GameState, action: GameAction): GameAction[] {
       ? withDeflect(
           state,
           action.playerId,
-          hiddenFree(
-            card,
-            castCost(
-              state,
-              action.playerId,
-              definition,
-              action.xPower,
-              action.spendBuffUnitId,
+          withTrashUnitPower(
+            state,
+            definition,
+            action.targetId,
+            hiddenFree(
+              card,
+              castCost(
+                state,
+                action.playerId,
+                definition,
+                action.xPower,
+                action.spendBuffUnitId,
+              ),
             ),
           ),
           spellChosenUnits(definition, action),

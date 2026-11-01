@@ -75,3 +75,29 @@ export function castCost(
     ? { energy: 0, power: {} }
     : withX(spellCost(state, playerId, definition), xPower);
 }
+
+/** Coût du sort + Power de l'unité du cimetière qu'il joue (play-from-trash). */
+export function withTrashUnitPower(
+  state: GameState,
+  definition: SpellBlueprint,
+  targetId: string,
+  cost: UnitBlueprint['cost'],
+): UnitBlueprint['cost'] {
+  if (!definition.effects.some((e) => e.type === 'play-from-trash'))
+    return cost;
+  const unitCard = state.cards.find((c) => c.id === targetId);
+  const unit = state.unitDefinitions?.find(
+    (d) => d.id === unitCard?.definitionId,
+  );
+  if (!unit) return cost;
+  const power = { ...cost.power };
+  for (const [color, n] of Object.entries(unit.cost.power))
+    power[color] = (power[color] ?? 0) + (n ?? 0);
+  return {
+    ...cost,
+    power,
+    ...(unit.cost.genericPower
+      ? { genericPower: (cost.genericPower ?? 0) + unit.cost.genericPower }
+      : {}),
+  };
+}
