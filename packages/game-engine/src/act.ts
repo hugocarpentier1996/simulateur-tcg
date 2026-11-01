@@ -1,3 +1,5 @@
+import { payCost } from './cost/payment.js';
+import { findPayment } from './legal/payment.js';
 import {
   spendBuffAbility,
   trashRecycleAbility,
@@ -380,6 +382,34 @@ export function act(state: GameState, action: GameAction): ActionResult {
       shrine = summoned.state;
       events.push(...summoned.events);
     }
+  }
+  // Mistfall : alliée Tap nouvellement buffée -> 1 Power + gear couché pour la redresser.
+  for (const mist of shrine.gears ?? []) {
+    const rule = shrine.gearDefinitions?.find(
+      (d) => d.id === mist.definitionId,
+    )?.readyOnAllyBuffed;
+    if (!rule || !mist.ready) continue;
+    const unit = shrine.units.find(
+      (u) =>
+        u.ownerId === mist.ownerId &&
+        u.buffed &&
+        !u.ready &&
+        state.units.some((o) => o.id === u.id && !o.buffed),
+    );
+    if (!unit) continue;
+    const cost = { energy: 0, power: { [rule.power]: 1 } };
+    const plan = findPayment(shrine, mist.ownerId, cost);
+    const paid = plan && payCost(shrine, mist.ownerId, cost, plan);
+    if (!paid || !paid.ok) continue;
+    shrine = {
+      ...paid.state,
+      gears: (paid.state.gears ?? []).map((g) =>
+        g.id === mist.id ? { ...g, ready: false } : g,
+      ),
+      units: paid.state.units.map((u) =>
+        u.id === unit.id ? { ...u, ready: true } : u,
+      ),
+    };
   }
   // Pirate's Haven : alliée redressée pendant cette action (même tour) -> bonus de Might.
   if (shrine.activePlayerId === state.activePlayerId)

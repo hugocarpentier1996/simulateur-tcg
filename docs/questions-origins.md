@@ -69,3 +69,4 @@ existantes ; seuls les nouveaux doutes utiles rejoindront le prochain lot de que
 - Portal Rescue (hypothèse) : l'unité rejouée arrive Tap et sans déclencher ses effets « when you play me ».
 - Garbage Grabber (hypothèse) : les 3 cartes recyclées sont les plus anciennes du cimetière, sans choix (comme Dr. Mundo).
 - Pirate's Haven (hypothèses) : sans pile ; le redressement d'Awaken (début de tour) et l'entrée en jeu Ready ne comptent pas.
+- Mistfall (hypothèses) : sans pile ; le « you may » est accepté automatiquement dès que le gear est Ready et le Power payable (réserve ou runes).

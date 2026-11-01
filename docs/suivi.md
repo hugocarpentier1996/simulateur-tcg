@@ -1246,3 +1246,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Sun Disc (ogn-021) : gear ; Tap — Legion : la prochaine unité jouée ce tour arrive Ready (capacité Tap sans cible `next-unit-ready`, registre `nextUnitReady` vidé en fin de tour ; Legion vérifié à la résolution).
 - Ravenborn Tome (ogn-032) : gear ; Tap — le prochain sort joué ce tour inflige 1 dégât bonus par instance (`nextSpellBonusDamage` transféré au sort lancé dans `spellBonusDamage`, pris en compte par `dealEffectDamage`).
 - Pirate's Haven (ogn-143) : gear ; quand une unité alliée est redressée par un effet, elle gagne +1 Might ce tour (`mightOnAllyReadied`).
+- Mistfall (ogn-152) : gear ; quand une unité alliée Tap est buffée, payer 1 Power Body et coucher le gear la redresse (`readyOnAllyBuffed`).

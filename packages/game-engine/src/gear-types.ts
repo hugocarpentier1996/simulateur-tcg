@@ -62,6 +62,9 @@ export interface GearBlueprint {
   /** Une unité alliée redressée par un effet (hors Awaken) gagne cette Might ce tour
    * (Pirate's Haven ; sans pile). */
   readonly mightOnAllyReadied?: number;
+  /** Une unité alliée Tap vient d'être buffée : payer 1 Power de cette couleur et coucher
+   * le gear pour la redresser (Mistfall ; automatique si possible, sans pile). */
+  readonly readyOnAllyBuffed?: { readonly power: string };
   /** Une unité alliée buffée meurt : une autre unité alliée (sans buff d'abord) est buffée
    * (Vanguard Helm ; sans pile). */
   readonly buffOnBuffedAllyDeath?: boolean;
