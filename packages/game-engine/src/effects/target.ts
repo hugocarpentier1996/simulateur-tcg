@@ -181,3 +181,20 @@ export function enemyHere(
       u.id === enemyId && u.ownerId !== casterId && u.zoneId === target.zoneId,
   );
 }
+
+/** Sélection Fox-Fire valide : au moins une unité, distinctes, sur un même champ, Might
+ * effective totale au plus `maximum`. */
+export function validMightBundle(
+  state: GameState,
+  ids: readonly string[] | undefined,
+  maximum: number,
+): boolean {
+  if (!ids?.length || new Set(ids).size !== ids.length) return false;
+  const units = ids.map((id) => state.units.find((u) => u.id === id));
+  const zone = units[0]?.zoneId;
+  return (
+    units.every((u) => u && u.zoneId === zone) &&
+    state.battlefields.some((f) => f.zoneId === zone) &&
+    units.reduce((sum, u) => sum + effectiveMight(u!, state), 0) <= maximum
+  );
+}

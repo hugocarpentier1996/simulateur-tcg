@@ -35,6 +35,9 @@ export type SpellEffect =
   | { readonly type: 'exhaust-allies' }
   /** Détruit tous les équipements en jeu (cimetière de leur propriétaire). */
   | { readonly type: 'kill-all-gear' }
+  /** Tue les unités selectedUnitIds (au moins une), toutes sur un même champ, de Might totale
+   * au plus `maximum` (Fox-Fire ; revérifié à la résolution). */
+  | { readonly type: 'kill-selected-total-might'; readonly maximum: number }
   /** Étourdit la cible alliée et l'unité ennemie secondaryTargetId du même champ (Facebreaker). */
   | { readonly type: 'stun-with-enemy-here' }
   /** Shield temporaire (+shield en défense) et Tank jusqu'à la fin du tour (Block). */

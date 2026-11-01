@@ -18,6 +18,7 @@ import {
   secondaryEnemyTarget,
   stackSpellTarget,
   allyToMove,
+  validMightBundle,
   enemyHere,
   otherAlly,
   destinationFoe,
@@ -113,6 +114,14 @@ export function castSpell(
       action.selectedUnitIds.some(
         (id) => !state.units.some((u) => u.id === id),
       ))
+  )
+    return { ok: false, reason: 'INVALID_TARGET' };
+  const bundle = definition.effects.find(
+    (e) => e.type === 'kill-selected-total-might',
+  );
+  if (
+    bundle &&
+    !validMightBundle(state, action.selectedUnitIds, bundle.maximum)
   )
     return { ok: false, reason: 'INVALID_TARGET' };
   const instances = definition.effects.find(

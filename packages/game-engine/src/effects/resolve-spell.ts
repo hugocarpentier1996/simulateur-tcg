@@ -23,6 +23,7 @@ import {
   stackSpellTarget,
   allyToMove,
   enemyHere,
+  validMightBundle,
   otherAlly,
   destinationFoe,
 } from './target.js';
@@ -182,6 +183,14 @@ export function resolveSpell(
           };
         }),
       };
+      continue;
+    }
+    if (effect.type === 'kill-selected-total-might') {
+      if (!validMightBundle(state, entry.selectedUnitIds, effect.maximum))
+        continue;
+      const killed = settleLethalUnits(state, new Set(entry.selectedUnitIds));
+      state = killed.state;
+      events.push(...killed.events);
       continue;
     }
     if (effect.type === 'damage-instances') {

@@ -6,6 +6,7 @@ import {
   secondaryEnemyTarget,
   stackSpellTarget,
   allyToMove,
+  validMightBundle,
   enemyHere,
   otherAlly,
   destinationFoe,
@@ -277,6 +278,9 @@ function* candidates(
         state.units.some((u) => u.ownerId === playerId && u.buffed)
           ? { energyRunes: [], powerRunes: [] }
           : null);
+      const bundle = spell.effects.find(
+        (e) => e.type === 'kill-selected-total-might',
+      );
       const instances = spell.effects.find(
         (e) => e.type === 'damage-instances',
       );
@@ -335,6 +339,17 @@ function* candidates(
               yield { ...base, selectedUnitIds: [id] };
               for (const second of ids.slice(i + 1))
                 yield { ...base, selectedUnitIds: [id, second] };
+            }
+          } else if (bundle) {
+            for (const field of state.battlefields) {
+              const here = state.units
+                .filter((u) => u.zoneId === field.zoneId)
+                .map((u) => u.id);
+              for (let mask = 1; mask < 1 << here.length; mask++) {
+                const ids = here.filter((_, i) => mask & (1 << i));
+                if (validMightBundle(state, ids, bundle.maximum))
+                  yield { ...base, selectedUnitIds: ids };
+              }
             }
           } else if (instances) {
             for (const selectedUnitIds of multisets(
