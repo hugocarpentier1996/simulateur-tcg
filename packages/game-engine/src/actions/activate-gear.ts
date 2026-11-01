@@ -1,3 +1,4 @@
+import { activeLegends } from '../effects/legends.js';
 import type { ActionResult, GameAction, GameState } from '../types.js';
 import type { GearBlueprint, GearState } from '../gear-types.js';
 import type { PlayEffectEntry } from '../effects/play-effect.js';
@@ -15,7 +16,20 @@ export function activateGear(
   const gear = state.gears?.find(
     (g) => g.id === action.gearId && g.ownerId === action.playerId,
   );
-  if (!gear) return { ok: false, reason: 'INVALID_GEAR' };
+  if (!gear) {
+    // Légende à capacité Tap : même action, l'identifiant désigne la carte de légende.
+    const legend = activeLegends(state, action.playerId).find(
+      (l) => l.card.id === action.gearId,
+    );
+    return legend?.definition.tapAbility
+      ? activateTapAbility(
+          state,
+          action,
+          { id: legend.card.id, ready: legend.card.ready !== false },
+          legend.definition.tapAbility,
+        )
+      : { ok: false, reason: 'INVALID_GEAR' };
+  }
   const definition = state.gearDefinitions?.find(
     (d) => d.id === gear.definitionId,
   );
@@ -88,7 +102,7 @@ export function tapAbilityTargets(
 function activateTapAbility(
   state: GameState,
   action: Extract<GameAction, { type: 'activate-gear' }>,
-  gear: GearState,
+  gear: Pick<GearState, 'id' | 'ready'>,
   ability: TapAbility,
 ): ActionResult {
   if (
@@ -135,8 +149,15 @@ function activateTapAbility(
     ok: true,
     state: {
       ...paid.state,
-      gears: paid.state.gears!.map((g) =>
-        g.id === gear.id ? { ...g, ready: false } : g,
+      ...(paid.state.gears
+        ? {
+            gears: paid.state.gears.map((g) =>
+              g.id === gear.id ? { ...g, ready: false } : g,
+            ),
+          }
+        : {}),
+      cards: paid.state.cards.map((c) =>
+        c.id === gear.id ? { ...c, ready: false } : c,
       ),
       stack: {
         entries: [entry],

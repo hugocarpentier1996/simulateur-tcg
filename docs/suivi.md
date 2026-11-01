@@ -1165,3 +1165,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Arena Bar (ogn-124) : gear ; Tap — buffe une unité alliée Tap (`tapAbility` avec cible `exhausted`).
 - The Syren (ogn-184) : gear ; 1 énergie + Tap — déplace une unité alliée d'un champ vers sa base (`tapAbility` avec coût et effet `move-to-base`).
 - The Syren (ogn-184) : gear ; 1 énergie + Tap — déplace une unité alliée d'un champ vers sa base (`tapAbility` avec coût et effet `move-to-base`).
+- Blind Monk (ogn-257) : légende ; 1 énergie + Tap — buffe une unité alliée. Les légendes peuvent désormais porter une `tapAbility` (même action `activate-gear`), cliquable dans la table et couchée quand elle est Tap.

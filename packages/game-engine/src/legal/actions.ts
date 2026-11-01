@@ -1,3 +1,4 @@
+import { activeLegends } from '../effects/legends.js';
 import { tapAbilityTargets } from '../actions/activate-gear.js';
 import {
   secondaryEnemyTarget,
@@ -99,11 +100,21 @@ function* candidates(
   );
   for (const unit of state.units)
     yield { type: 'activate-spell-energy', playerId, unitId: unit.id };
-  // Capacités Tap ciblées des gears du joueur.
-  for (const gear of state.gears ?? []) {
-    const ability = state.gearDefinitions?.find(
-      (d) => d.id === gear.definitionId,
-    )?.tapAbility;
+  // Capacités Tap ciblées des gears et de la légende du joueur.
+  for (const gear of [
+    ...(state.gears ?? []).map((g) => ({
+      ...g,
+      ability: state.gearDefinitions?.find((d) => d.id === g.definitionId)
+        ?.tapAbility,
+    })),
+    ...activeLegends(state, playerId).map((l) => ({
+      id: l.card.id,
+      ownerId: l.card.ownerId,
+      ready: l.card.ready !== false,
+      ability: l.definition.tapAbility,
+    })),
+  ]) {
+    const ability = gear.ability;
     if (!ability || gear.ownerId !== playerId || !gear.ready) continue;
     for (const targetId of tapAbilityTargets(state, playerId, ability)) {
       const payment = findPayment(

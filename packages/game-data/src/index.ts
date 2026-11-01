@@ -269,3 +269,4 @@ export { ironBallista } from './ogn/iron-ballista.js';
 export { orbOfRegret } from './ogn/orb-of-regret.js';
 export { arenaBar } from './ogn/arena-bar.js';
 export { theSyren } from './ogn/the-syren.js';
+export { blindMonk } from './ogn/blind-monk.js';

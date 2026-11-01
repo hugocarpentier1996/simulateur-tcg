@@ -3,6 +3,7 @@ import { spellScenario } from '../../../packages/game-engine/src/origins-test-fi
 import {
   incinerate,
   ironBallista,
+  blindMonk,
   salvage,
   sealOfRage,
 } from '../../../packages/game-data/src/index.js';
@@ -96,4 +97,28 @@ it('Iron Ballista : sélectionner le gear propose sa capacité Tap sur chaque ci
   );
   expect(used.error).toBeNull();
   expect(used.state.stack?.entries).toHaveLength(1);
+});
+
+it('Blind Monk : la légende est cliquable et propose sa capacité Tap', () => {
+  const state = spellScenario(incinerate);
+  state.legendDefinitions = [blindMonk];
+  state.zones.push({ id: 'legend-a', kind: 'legend', ownerId: 'a' });
+  state.cards.push({
+    id: 'monk',
+    definitionId: blindMonk.id,
+    ownerId: 'a',
+    zoneId: 'legend-a',
+    ready: true,
+  });
+  state.resources.a = { energy: 1, power: {} };
+  const s: Session = { state, history: [], log: [], error: null };
+  expect(renderTable(s, null)).toContain('data-card="monk"');
+  const actions = cardActions(s, 'monk');
+  expect(actions).toContainEqual(
+    expect.objectContaining({
+      type: 'activate-gear',
+      gearId: 'monk',
+      targetId: 'ally',
+    }),
+  );
 });

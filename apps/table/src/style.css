@@ -1868,3 +1868,15 @@ button.pile.graveyard:hover .pile-face {
 .gear-card:hover .gear-face {
   box-shadow: 0 0 10px #e6c48199;
 }
+
+/* Légende à capacité Tap : bouton sans habillage, couché quand elle est Tap. */
+.legend-button {
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+.legend-button.tapped {
+  transform: rotate(90deg);
+}

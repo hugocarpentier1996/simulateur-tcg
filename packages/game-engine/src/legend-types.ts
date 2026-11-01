@@ -1,3 +1,4 @@
+import type { GearBlueprint } from './gear-types.js';
 /** Catalogue de légendes permanentes : ni coût de pose, ni Might, ni dégâts.
  * L'instance reste dans cards, en zone legend, avec son Ready/Tap indépendant du passif. */
 export interface LegendBlueprint {
@@ -13,6 +14,8 @@ export interface LegendBlueprint {
     readonly minimumEnergy: number;
     readonly count: number;
   };
+  /** Capacité « Tap : effet » ciblée, comme celle des gears (action activate-gear). */
+  readonly tapAbility?: GearBlueprint['tapAbility'];
 }
 
 /** Déclenchement de pioche indépendant de la source, après une fenêtre de réaction. */

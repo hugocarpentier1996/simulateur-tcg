@@ -1,3 +1,4 @@
+import type { GearTapAbility } from './gear-definition.js';
 import { printedMetadata, type PrintedMetadata } from './printed-metadata.js';
 /** Légende constante en zone dédiée ; pas d'attributs de combat ou de coût de pose. */
 export interface LegendDefinition extends PrintedMetadata {
@@ -17,6 +18,8 @@ export interface LegendDefinition extends PrintedMetadata {
     readonly minimumEnergy: number;
     readonly count: number;
   };
+  /** Capacité « Tap : effet » ciblée, comme celle des gears (action activate-gear). */
+  readonly tapAbility?: GearTapAbility;
 }
 /** Définition de confiance -> copie figée, dont les couleurs. */
 export function defineLegend(input: LegendDefinition): LegendDefinition {
