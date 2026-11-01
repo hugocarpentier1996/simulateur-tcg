@@ -18,6 +18,8 @@ export interface LegendBlueprint {
   readonly tapAbility?: GearBlueprint['tapAbility'];
   /** Attaque ennemie d'un champ qu'il contrôle : -N Might ce tour aux attaquants, minimum 1. */
   readonly weakenAttackers?: number;
+  /** Unité Mighty jouée : la légende Ready se couche pour canaliser N runes Tap (pile). */
+  readonly mightyPlayChannel?: number;
   /** Début de sa Beginning : pioche 1 (via la pile) si sa main a au plus ce nombre de cartes. */
   readonly beginningDrawIfHandAtMost?: number;
   /** Capacité ADD « Tap : ajoute » ; legion : seulement si une carte a été jouée ce tour. */

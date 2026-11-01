@@ -275,3 +275,4 @@ export { heraldOfTheArcane } from './ogn/herald-of-the-arcane.js';
 export { handOfNoxus } from './ogn/hand-of-noxus.js';
 export { looseCannon } from './ogn/loose-cannon.js';
 export { nineTailedFox } from './ogn/nine-tailed-fox.js';
+export { relentlessStorm } from './ogn/relentless-storm.js';

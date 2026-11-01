@@ -1,3 +1,4 @@
+import { activeLegends } from '../effects/legends.js';
 import { victoryTarget } from '../scoring/victory-target.js';
 import { alliesEnterReady } from '../effects/unit-aura.js';
 import { withDeflect } from '../cost/deflect.js';
@@ -174,6 +175,23 @@ export function playUnit(
       ownerId: card.ownerId,
       amount: definition.onPlayBattlefieldDamage,
     });
+  // Relentless Storm : unité Mighty jouée -> légende Ready couchée, canalisation empilée.
+  const storm =
+    definition.might >= 5
+      ? activeLegends(state, action.playerId).find(
+          (l) => l.definition.mightyPlayChannel && l.card.ready !== false,
+        )
+      : undefined;
+  if (storm)
+    entries.push({
+      kind: 'play-effect',
+      sourceId: storm.card.id,
+      ownerId: action.playerId,
+      effect: {
+        type: 'channel-exhausted',
+        count: storm.definition.mightyPlayChannel!,
+      },
+    });
   if (action.accelerate && !definition.accelerate)
     return { ok: false, reason: 'NO_ACCELERATE' };
   const cost = withDeflect(
@@ -206,7 +224,9 @@ export function playUnit(
             },
           }
         : {}),
-      cards: payment.state.cards.filter((c) => c.id !== card.id),
+      cards: payment.state.cards
+        .filter((c) => c.id !== card.id)
+        .map((c) => (c.id === storm?.card.id ? { ...c, ready: false } : c)),
       units: [
         ...state.units.map((u) =>
           u.ownerId === action.playerId &&
