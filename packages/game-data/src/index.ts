@@ -283,3 +283,4 @@ export { wildclawShaman } from './ogn/wildclaw-shaman.js';
 export { poroHerder } from './ogn/poro-herder.js';
 export { eclipseHerald } from './ogn/eclipse-herald.js';
 export { radiantDawn } from './ogn/radiant-dawn.js';
+export { solariShrine } from './ogn/solari-shrine.js';

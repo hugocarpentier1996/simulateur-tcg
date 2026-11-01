@@ -12,6 +12,8 @@ export interface GearBlueprint {
     readonly energy?: number;
     readonly power?: string;
   };
+  /** Ennemi Stun tué : le gear Ready se couche et son propriétaire pioche 1 (sans pile). */
+  readonly drawOnStunnedEnemyKill?: boolean;
   /** Le gear entre en jeu Tap. */
   readonly entersExhausted?: boolean;
   /** Capacité « Tap : effet » sur une unité ciblée, via la pile, à son tour hors Showdown.

@@ -239,3 +239,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Poro Herder — ogn-061-298
 - [x] Eclipse Herald — ogn-059-298
 - [x] Radiant Dawn — ogn-261-298
+- [x] Solari Shrine — ogn-072-298

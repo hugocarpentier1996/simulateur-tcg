@@ -215,7 +215,34 @@ export function act(state: GameState, action: GameAction): ActionResult {
         .sort((x, y) => Number(!!x.buffed) - Number(!!y.buffed))[0];
       if (pick) dawn = buffUnit(dawn, pick.id);
     }
-  const scrap = scrapheapDraws(dawn, events);
+  // Solari Shrine : ennemi Stun mort -> gear Ready couché, pioche de son propriétaire.
+  const stunnedDead = events.flatMap((e) =>
+    e.type === 'unit-died' || e.type === 'token-removed'
+      ? state.units.filter((u) => u.id === e.unitId && isStunned(u))
+      : [],
+  );
+  let shrine = dawn;
+  const shrineEvents: GameEvent[] = [];
+  for (const gear of dawn.gears ?? []) {
+    if (
+      !gear.ready ||
+      !stunnedDead.some((u) => u.ownerId !== gear.ownerId) ||
+      !dawn.gearDefinitions?.find((d) => d.id === gear.definitionId)
+        ?.drawOnStunnedEnemyKill
+    )
+      continue;
+    shrine = {
+      ...shrine,
+      gears: shrine.gears!.map((g) =>
+        g.id === gear.id ? { ...g, ready: false } : g,
+      ),
+    };
+    const drawn = drawCardForPlayer(shrine, gear.ownerId);
+    shrine = drawn.state;
+    shrineEvents.push(...drawn.events);
+  }
+  events.push(...shrineEvents);
+  const scrap = scrapheapDraws(shrine, events);
   events.push(...scrap.events);
   const scoredMoves = thirdMovePoints(entered, scrap.state);
   events.push(...scoredMoves.events);
