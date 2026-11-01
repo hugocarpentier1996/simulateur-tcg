@@ -255,3 +255,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Reckoner's Arena — ogn-286-298
 - [x] Qiyana — ogn-155-298
 - [x] Cruel Patron — ogn-208-298
+- [x] Get Excited! — ogn-008-298

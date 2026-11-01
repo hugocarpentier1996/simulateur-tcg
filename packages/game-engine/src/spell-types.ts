@@ -71,6 +71,8 @@ export interface SpellBlueprint {
     | { readonly type: 'exhaust-allies' }
     /** Détruit tous les équipements en jeu (cimetière de leur propriétaire). */
     | { readonly type: 'kill-all-gear' }
+    /** Défausse discardCardId (choisie au lancement) puis inflige à la cible son coût en énergie. */
+    | { readonly type: 'discard-for-damage' }
     /** Regarde les `count` cartes du dessus de son deck, en garde 1 en main, recycle le reste. */
     | { readonly type: 'look-pick'; readonly count: number }
     /** Buffe la cible. */
@@ -189,6 +191,8 @@ export interface SpellEntry {
   targetId: string;
   /** Flash : sélection de 0 à 2 unités alliées, copiée au lancement. */
   selectedUnitIds?: readonly string[];
+  /** Carte de la main à défausser à la résolution (discard-for-damage). */
+  discardCardId?: string;
   /** Adversaire du duel choisi au lancement ; requis pour l'effet duel. */
   secondaryTargetId?: string;
   destinationId?: string;

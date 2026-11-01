@@ -409,6 +409,8 @@ function actionLabel(
         );
       if (action.exhaustUnitId)
         parts.push('Épuiser ' + target(action.exhaustUnitId));
+      if (action.discardCardId)
+        parts.push('en défaussant ' + target(action.discardCardId));
       return 'Lancer' + (parts.length ? ' · ' + parts.join(' · ') : ' le sort');
     }
     case 'play-unit':

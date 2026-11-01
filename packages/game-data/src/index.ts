@@ -299,3 +299,4 @@ export { monasteryOfHirana } from './ogn/monastery-of-hirana.js';
 export { reckonersArena } from './ogn/reckoners-arena.js';
 export { qiyana } from './ogn/qiyana.js';
 export { cruelPatron } from './ogn/cruel-patron.js';
+export { getExcited } from './ogn/get-excited.js';

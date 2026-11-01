@@ -1,3 +1,4 @@
+import { discardChoices } from '../actions/cast-spell.js';
 import { activeLegends } from '../effects/legends.js';
 import { tapAbilityTargets } from '../actions/activate-gear.js';
 import {
@@ -409,6 +410,14 @@ function optionalCosts(state: GameState, action: GameAction): GameAction[] {
   }
   if (action.type !== 'cast-spell') return [action];
   const card = state.cards.find((c) => c.id === action.cardId);
+  if (
+    state.spellDefinitions
+      ?.find((d) => d.id === card?.definitionId)
+      ?.effects.some((e) => e.type === 'discard-for-damage')
+  )
+    return discardChoices(state, action.playerId, action.cardId).map((id) =>
+      id ? { ...action, discardCardId: id } : action,
+    );
   // Coût X : une variante par X jusqu'au Power potentiellement disponible (filtrée au paiement).
   if (
     state.spellDefinitions?.find((d) => d.id === card?.definitionId)

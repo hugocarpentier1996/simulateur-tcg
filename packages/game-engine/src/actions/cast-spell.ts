@@ -98,6 +98,13 @@ export function castSpell(
       ))
   )
     return { ok: false, reason: 'INVALID_TARGET' };
+  if (
+    definition.effects.some((e) => e.type === 'discard-for-damage') &&
+    !discardChoices(state, action.playerId, card.id).includes(
+      action.discardCardId,
+    )
+  )
+    return { ok: false, reason: 'INVALID_ADDITIONAL_COST' };
   const target = spellTarget(
     state,
     definition,
@@ -274,6 +281,9 @@ export function castSpell(
               ? { destinationId: action.destinationId }
               : {}),
             ...(action.xPower ? { xPower: action.xPower } : {}),
+            ...(action.discardCardId
+              ? { discardCardId: action.discardCardId }
+              : {}),
           },
         ],
         initiatorId: state.stack?.initiatorId ?? action.playerId,
@@ -296,4 +306,21 @@ export function castSpell(
       },
     ],
   };
+}
+
+/** Cartes de la main du lanceur défaussables par le sort (lui excepté) ; main vide : seule
+ * l'absence de choix est valable. */
+export function discardChoices(
+  state: GameState,
+  playerId: string,
+  spellId: string,
+): (string | undefined)[] {
+  const hand = state.cards.filter(
+    (c) =>
+      c.id !== spellId &&
+      state.zones.some(
+        (z) => z.id === c.zoneId && z.kind === 'hand' && z.ownerId === playerId,
+      ),
+  );
+  return hand.length ? hand.map((c) => c.id) : [undefined];
 }
