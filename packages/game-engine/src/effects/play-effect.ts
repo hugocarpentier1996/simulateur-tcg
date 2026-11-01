@@ -117,7 +117,31 @@ export function resolvePlayEffect(
     };
   }
   if (entry.effect.type === 'buff-self') {
+    const tag = entry.effect.ifControlTag;
+    if (
+      tag &&
+      !state.units.some(
+        (u) =>
+          u.ownerId === entry.ownerId &&
+          state.unitDefinitions
+            ?.find((d) => d.id === u.definitionId)
+            ?.tags?.includes(tag),
+      )
+    )
+      return {
+        ok: true,
+        state,
+        events: [
+          { type: 'unit-play-effect-resolved', sourceId: entry.sourceId },
+        ],
+      };
     let next = buffUnit(state, entry.sourceId);
+    const drawEvents: Extract<ActionResult, { ok: true }>['events'] = [];
+    for (let i = 0; i < (entry.effect.draw ?? 0) && !next.result; i++) {
+      const drawn = drawCardForPlayer(next, entry.ownerId);
+      next = drawn.state;
+      drawEvents.push(...drawn.events);
+    }
     const source = next.units.find((u) => u.id === entry.sourceId);
     if (
       entry.effect.alliesHere &&
@@ -134,7 +158,10 @@ export function resolvePlayEffect(
     return {
       ok: true,
       state: next,
-      events: [{ type: 'unit-play-effect-resolved', sourceId: entry.sourceId }],
+      events: [
+        ...drawEvents,
+        { type: 'unit-play-effect-resolved', sourceId: entry.sourceId },
+      ],
     };
   }
   if (entry.effect.type === 'next-spell-discount') {

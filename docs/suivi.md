@@ -1176,3 +1176,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Wallop (ogn-146) : Action ; redresse une unité ; peut dépenser le buff d'une unité alliée pour ignorer tout le coût (`spendBuffForFreeCast`, champ d'action `spendBuffUnitId`, helper `castCost`).
 - Call to Glory (ogn-207) : Réaction ; +3 Might à une unité ce tour, gratuit en dépensant un buff allié (`spendBuffForFreeCast`).
 - Wildclaw Shaman (ogn-147) : à la mise en jeu, peut dépenser le buff d'une unité alliée pour se buffer et se redresser (`onPlayTargetEffect` avec filtres `buffed`/`optional`, effet `spend-buff-empower-self`).
+- Poro Herder (ogn-061) : à la mise en jeu, s'il contrôle un Poro, se buffe et pioche 1 (`buff-self` avec `ifControlTag` et `draw`).

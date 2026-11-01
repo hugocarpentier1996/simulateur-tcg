@@ -316,6 +316,10 @@ export interface UnitBlueprint {
         readonly type: 'buff-self';
         readonly legion?: boolean;
         readonly alliesHere?: boolean;
+        /** Condition à la résolution : contrôler une unité portant ce tag. */
+        readonly ifControlTag?: string;
+        /** Pioches supplémentaires quand l'effet s'applique. */
+        readonly draw?: number;
       }
     /** Le prochain sort joué ce tour coûte `energy` de moins (plancher 0). */
     | { readonly type: 'next-spell-discount'; readonly energy: number }

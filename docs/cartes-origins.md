@@ -236,3 +236,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Wallop — ogn-146-298
 - [x] Call to Glory — ogn-207-298
 - [x] Wildclaw Shaman — ogn-147-298
+- [x] Poro Herder — ogn-061-298
