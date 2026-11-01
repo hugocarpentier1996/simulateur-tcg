@@ -28,8 +28,8 @@ export interface GearBlueprint {
     readonly discardCost?: boolean;
     /** Coût : détruire le gear source (« Kill this: »). */
     readonly killSelfCost?: boolean;
-    /** Coût supplémentaire : recycler ce nombre de cartes de son cimetière (les plus anciennes,
-     * hypothèse) sous son deck. */
+    /** Coût supplémentaire : recycler ce nombre de cartes de son cimetière, choisies une à une
+     * par le joueur, sous son deck. */
     readonly recycleTrash?: number;
     readonly target: {
       readonly allegiance?: 'friendly' | 'enemy';

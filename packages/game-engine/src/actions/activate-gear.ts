@@ -1,3 +1,4 @@
+import { trashRecycleChoice } from '../effects/mode-choice.js';
 import { settleLethalUnits } from '../effects/lethal-units.js';
 import { killGears } from '../effects/kill-gear.js';
 import { activeLegends } from '../effects/legends.js';
@@ -322,20 +323,13 @@ function activateTapAbility(
   const deck = paid.state.zones.find(
     (z) => z.kind === 'deck' && z.ownerId === action.playerId,
   );
-  const recycled = trash.slice(0, ability.recycleTrash ?? 0);
+  // Coût de recyclage : vérifié ici, cartes choisies une à une par le joueur avant que la
+  // capacité ne rejoigne la pile (Garbage Grabber).
   if (
-    recycled.length < (ability.recycleTrash ?? 0) ||
-    (recycled.length && !deck)
+    trash.length < (ability.recycleTrash ?? 0) ||
+    (ability.recycleTrash && !deck)
   )
     return { ok: false, reason: 'INVALID_ADDITIONAL_COST' };
-  if (recycled.length)
-    paid.state = {
-      ...paid.state,
-      cards: [
-        ...paid.state.cards.filter((c) => !recycled.includes(c)),
-        ...recycled.map((c) => ({ ...c, zoneId: deck!.id })),
-      ],
-    };
   const entry: PlayEffectEntry = {
     kind: 'play-effect',
     sourceId: gear.id,
@@ -419,14 +413,28 @@ function activateTapAbility(
       cards: paid.state.cards.map((c) =>
         c.id === gear.id ? { ...c, ready: false } : c,
       ),
-      stack: {
-        entries: [entry],
-        initiatorId: action.playerId,
-        priorityPlayerId: action.playerId,
-        consecutivePasses: 0,
-      },
+      ...(ability.recycleTrash
+        ? {
+            pendingModeChoice: trashRecycleChoice(
+              paid.state,
+              gear.id,
+              action.playerId,
+              ability.recycleTrash,
+              { own: true, mandatory: true, then: entry },
+            )!,
+          }
+        : {
+            stack: {
+              entries: [entry],
+              initiatorId: action.playerId,
+              priorityPlayerId: action.playerId,
+              consecutivePasses: 0,
+            },
+          }),
     },
-    events: [{ type: 'unit-play-effect-queued', sourceId: gear.id }],
+    events: ability.recycleTrash
+      ? []
+      : [{ type: 'unit-play-effect-queued', sourceId: gear.id }],
   };
 }
 

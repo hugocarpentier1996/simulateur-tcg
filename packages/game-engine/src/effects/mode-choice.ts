@@ -1,3 +1,4 @@
+import type { PlayEffectEntry } from './play-effect.js';
 import { chooseFuture, type FutureProgress } from './promising-future.js';
 import { hasHidden } from './hidden.js';
 import { dealEffectDamage } from './effect-damage.js';
@@ -117,6 +118,13 @@ export interface ModeChoiceEntry {
   retreatFrom?: string;
   /** Recyclages restant à choisir dans les cimetières (Forge of the Future). */
   recycleLeft?: number;
+  /** Recyclage : seulement son propre cimetière, sans « skip » (Dr. Mundo, Garbage Grabber). */
+  recycleOwn?: boolean;
+  recycleMandatory?: boolean;
+  /** Recyclage calculé à la résolution de l'entrée (Dr. Mundo). */
+  recycleCompute?: boolean;
+  /** Coût payé : capacité à empiler une fois les recyclages faits (Garbage Grabber). */
+  recycleThen?: PlayEffectEntry;
   /** Shakedown : dégâts si l'unité est choisie, pioches du partenaire sinon. */
   sufferAmount?: number;
   partnerDraws?: number;
@@ -131,6 +139,24 @@ export function resolveModeChoice(
   entry: ModeChoiceEntry,
 ): Extract<ActionResult, { ok: true }> {
   if (entry.runeFateAt) return resolveRuneFate(state, entry, entry.runeFateAt);
+  if (entry.recycleCompute) {
+    const choice = trashRecycleChoice(
+      state,
+      entry.sourceId,
+      entry.ownerId,
+      entry.recycleLeft ?? 0,
+      { own: !!entry.recycleOwn, mandatory: !!entry.recycleMandatory },
+    );
+    return choice
+      ? { ok: true, state: { ...state, pendingModeChoice: choice }, events: [] }
+      : {
+          ok: true,
+          state,
+          events: [
+            { type: 'legend-effect-resolved', sourceId: entry.sourceId },
+          ],
+        };
+  }
   if (entry.revealCount && entry.splitDamageAt) {
     const looked = state.cards
       .filter((c) =>
@@ -444,12 +470,37 @@ export function chooseMode(
       pending.sourceId,
       pending.ownerId,
       pending.recycleLeft - 1,
+      {
+        own: !!pending.recycleOwn,
+        mandatory: !!pending.recycleMandatory,
+        ...(pending.recycleThen ? { then: pending.recycleThen } : {}),
+      },
     );
     if (next)
       return {
         ok: true,
         state: { ...applied.state, pendingModeChoice: next },
         events: applied.events,
+      };
+    if (pending.recycleThen)
+      return {
+        ok: true,
+        state: {
+          ...applied.state,
+          stack: {
+            entries: [
+              ...(applied.state.stack?.entries ?? []),
+              pending.recycleThen,
+            ],
+            initiatorId: applied.state.stack?.initiatorId ?? pending.ownerId,
+            priorityPlayerId: pending.ownerId,
+            consecutivePasses: 0,
+          },
+        },
+        events: [
+          ...applied.events,
+          { type: 'unit-play-effect-queued', sourceId: pending.sourceId },
+        ],
       };
   }
   if (pending.killWhat) {
@@ -1093,10 +1144,20 @@ export function trashRecycleChoice(
   sourceId: string,
   playerId: string,
   left: number,
+  options: {
+    own?: boolean;
+    mandatory?: boolean;
+    then?: PlayEffectEntry;
+  } = {},
 ): ModeChoiceEntry | undefined {
   const ids = state.cards
     .filter((c) =>
-      state.zones.some((z) => z.id === c.zoneId && z.kind === 'graveyard'),
+      state.zones.some(
+        (z) =>
+          z.id === c.zoneId &&
+          z.kind === 'graveyard' &&
+          (!options.own || z.ownerId === playerId),
+      ),
     )
     .map((c) => c.id);
   if (left <= 0 || !ids.length) return undefined;
@@ -1104,8 +1165,14 @@ export function trashRecycleChoice(
     kind: 'mode-choice',
     sourceId,
     ownerId: playerId,
-    modes: ['skip', ...ids.map((id) => `recycle-any:${id}` as const)],
+    modes: [
+      ...(options.mandatory ? [] : (['skip'] as const)),
+      ...ids.map((id) => `recycle-any:${id}` as const),
+    ],
     recycleLeft: left,
+    ...(options.own ? { recycleOwn: true } : {}),
+    ...(options.mandatory ? { recycleMandatory: true } : {}),
+    ...(options.then ? { recycleThen: options.then } : {}),
   };
 }
 

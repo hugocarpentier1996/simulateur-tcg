@@ -1,3 +1,4 @@
+import type { ModeChoiceEntry } from '../effects/mode-choice.js';
 import { killGears } from '../effects/kill-gear.js';
 import { activeLegends } from '../effects/legends.js';
 import { handSize } from '../effects/loot.js';
@@ -71,35 +72,39 @@ export function scoreHolding(
   return { ok: true, state: current, events };
 }
 
-/** Dr. Mundo : chaque unité du joueur actif recycle ses cartes de cimetière les plus
- * anciennes sous son deck. */
+/** Dr. Mundo : chaque unité du joueur actif empile un recyclage de son cimetière ; les
+ * cartes sont choisies par le joueur à la résolution. */
 function recycleTrash(state: GameState, playerId: string): GameState {
-  const count = state.units.reduce(
-    (sum, u) =>
+  const entries: ModeChoiceEntry[] = state.units.flatMap((u) => {
+    const count =
       u.ownerId === playerId
-        ? sum +
-          (state.unitDefinitions?.find((d) => d.id === u.definitionId)
-            ?.recycleTrashAtBeginning ?? 0)
-        : sum,
-    0,
-  );
-  const grave = state.zones.find(
-    (z) => z.kind === 'graveyard' && z.ownerId === playerId,
-  );
-  const deck = state.zones.find(
-    (z) => z.kind === 'deck' && z.ownerId === playerId,
-  );
-  if (!count || !grave || !deck) return state;
-  const recycled = state.cards
-    .filter((c) => c.zoneId === grave.id)
-    .slice(0, count);
-  if (!recycled.length) return state;
+        ? state.unitDefinitions?.find((d) => d.id === u.definitionId)
+            ?.recycleTrashAtBeginning
+        : undefined;
+    return count
+      ? [
+          {
+            kind: 'mode-choice' as const,
+            sourceId: u.id,
+            ownerId: playerId,
+            modes: [],
+            recycleLeft: count,
+            recycleOwn: true,
+            recycleMandatory: true,
+            recycleCompute: true,
+          },
+        ]
+      : [];
+  });
+  if (!entries.length) return state;
   return {
     ...state,
-    cards: [
-      ...state.cards.filter((c) => !recycled.includes(c)),
-      ...recycled.map((c) => ({ ...c, zoneId: deck.id })),
-    ],
+    stack: {
+      entries: [...(state.stack?.entries ?? []), ...entries],
+      initiatorId: state.stack?.initiatorId ?? playerId,
+      priorityPlayerId: state.activePlayerId,
+      consecutivePasses: 0,
+    },
   };
 }
 

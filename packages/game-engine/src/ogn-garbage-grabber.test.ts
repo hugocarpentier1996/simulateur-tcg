@@ -39,7 +39,15 @@ const use = {
 
 it('Garbage Grabber : recycler 3 cartes du cimetière + 1 énergie + Tap : pioche 1', () => {
   expect(act(scenario(2), use).ok).toBe(false);
-  const s = resolveTop(step(scenario(4), use));
+  let s = step(scenario(4), use);
+  expect(s.pendingModeChoice?.modes).toHaveLength(4);
+  for (const id of ['t0', 't1', 't2'])
+    s = step(s, {
+      type: 'choose-mode',
+      playerId: 'a',
+      mode: `recycle-any:${id}`,
+    });
+  s = resolveTop(s);
   expect(s.cards.find((c) => c.id === 'draw-a-0')?.zoneId).toBe('hand-a');
   expect(
     s.cards.filter((c) => c.zoneId === 'graveyard-a').map((c) => c.id),

@@ -1291,3 +1291,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Réponse 21 : Malzahar peut se sacrifier lui-même pour payer sa capacité ; il meurt et les 2 Power sont ajoutés.
 - Réponse 16 : le Stun trace le joueur qui l'inflige (`byPlayerId`) ; Eclipse Herald et Radiant Dawn se déclenchent pour ce joueur (repli : l'adversaire de la victime si la source est inconnue).
 - Réponse 6 : Divine Judgment confirmé ; test ajouté : un gear attaché resté en jeu compte parmi les 2 gears gardés.
+- Réponse 10 : Dr. Mundo (capacité de début de Beginning sur la pile) et Garbage Grabber (coût payé avant d'empiler la pioche) font choisir au joueur, une à une, les cartes de son propre cimetière à recycler (modes `recycle-any:`, sans « skip »).

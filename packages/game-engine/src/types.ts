@@ -256,7 +256,7 @@ export interface UnitBlueprint {
   /** +Might par carte du cimetière de son propriétaire (Dr. Mundo). */
   readonly mightPerTrashCard?: number;
   /** Au début de la Beginning de son propriétaire, recycle ce nombre de cartes de son
-   * cimetière (les plus anciennes, sans choix ; hypothèse de prototype). */
+   * cimetière, choisies par le joueur (capacité sur la pile). */
   readonly recycleTrashAtBeginning?: number;
   /** Sur un champ en fin de tour de son propriétaire : redresse ce nombre de runes
    * alliées (Tap d'abord, sans choix), via la pile (Sona). */
