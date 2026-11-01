@@ -1158,3 +1158,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - The Grand Plaza (ogn-293) : champ ; le tenir avec 7 unités alliées ou plus fait gagner la partie (`holdWinUnits`, résultat `GRAND_PLAZA`, appliqué sans pile).
 - The Arena's Greatest (ogn-290) : champ ; au début de la première Beginning de chaque joueur, il gagne 1 point (`firstBeginning`, registre `firstBeginningDone`).
 - Obelisk of Power (ogn-284) : champ ; au début de la première Beginning de chaque joueur, il canalise 1 rune (`firstBeginning: 'channel'`).
+- Navori Fighting Pit (ogn-283) : champ ; le tenir buffe une unité alliée ici via la pile, choisie automatiquement (sans buff d'abord) (`holdBuffHere`).

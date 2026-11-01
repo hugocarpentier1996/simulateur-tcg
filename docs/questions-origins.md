@@ -56,3 +56,4 @@ existantes ; seuls les nouveaux doutes utiles rejoindront le prochain lot de que
 - Darius Fury (hypothèse) : le déclencheur « second card » s'applique immédiatement quand la carte est jouée (avant sa résolution), sans pile.
 - Sona (hypothèse) : les 4 runes redressées sont choisies automatiquement (Tap d'abord) plutôt que par le joueur.
 - Dr. Mundo (hypothèse) : les 3 cartes recyclées sont les plus anciennes du cimetière, sans choix du joueur ; l'effet s'applique sans pile au début de la Beginning.
+- Navori Fighting Pit (hypothèse) : l'unité buffée est choisie automatiquement parmi les alliées présentes (non buffée d'abord) ; la carte dit « a unit here ».

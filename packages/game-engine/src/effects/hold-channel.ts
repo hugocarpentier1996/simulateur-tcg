@@ -81,7 +81,12 @@ export function queueHoldDraw(
   const base = state.zones.find(
     (z) => z.kind === 'base' && z.ownerId === playerId,
   );
-  if (state.result || (!count && !(token && base))) return state;
+  const buffTarget = definition?.holdBuffHere
+    ? [...state.units]
+        .filter((u) => u.ownerId === playerId && u.zoneId === battlefieldId)
+        .sort((x, y) => Number(!!x.buffed) - Number(!!y.buffed))[0]?.id
+    : undefined;
+  if (state.result || (!count && !(token && base) && !buffTarget)) return state;
   return {
     ...state,
     stack: {
@@ -94,6 +99,20 @@ export function queueHoldDraw(
                 sourceId: battlefieldId,
                 ownerId: playerId,
                 count,
+              },
+            ]
+          : []),
+        ...(buffTarget
+          ? [
+              {
+                kind: 'play-effect' as const,
+                sourceId: battlefieldId,
+                ownerId: playerId,
+                effect: {
+                  type: 'targeted' as const,
+                  targetId: buffTarget,
+                  effect: { type: 'buff' as const },
+                },
               },
             ]
           : []),
