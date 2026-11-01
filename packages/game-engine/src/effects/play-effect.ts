@@ -297,6 +297,27 @@ export function resolvePlayEffect(
       ],
     };
   }
+  if (entry.effect.type === 'self-might') {
+    const { amount } = entry.effect;
+    return {
+      ok: true,
+      state: {
+        ...state,
+        units: state.units.map((u) =>
+          u.id === entry.sourceId
+            ? {
+                ...u,
+                temporaryEffects: [
+                  ...(u.temporaryEffects ?? []),
+                  { type: 'modify-might' as const, amount },
+                ],
+              }
+            : u,
+        ),
+      },
+      events: [{ type: 'unit-play-effect-resolved', sourceId: entry.sourceId }],
+    };
+  }
   if (entry.effect.type === 'weaken-enemies') {
     const { amount, minimum } = entry.effect;
     return {

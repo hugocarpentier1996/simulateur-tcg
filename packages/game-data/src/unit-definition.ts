@@ -184,6 +184,8 @@ export interface UnitDefinition extends PrintedMetadata {
       }
     /** Le prochain sort joué ce tour coûte `energy` de moins (plancher 0). */
     | { readonly type: 'next-spell-discount'; readonly energy: number }
+    /** L'unité jouée gagne cette Might jusqu'à la fin du tour (Teemo Chaos). */
+    | { readonly type: 'self-might'; readonly amount: number }
     /** Modificateur de Might jusqu'à la fin du tour à toutes les unités ennemies. */
     | {
         readonly type: 'weaken-enemies';

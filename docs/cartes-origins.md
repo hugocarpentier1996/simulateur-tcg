@@ -264,3 +264,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Hidden Blade — ogn-213-298
 - [x] Block — ogn-057-298
 - [x] Sprite Call — ogn-094-298
+- [x] Teemo — ogn-197-298
