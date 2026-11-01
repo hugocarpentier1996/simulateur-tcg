@@ -116,8 +116,9 @@ implémenté ; chaque point deviendra une correction testée et commitée sépar
    choisie plusieurs fois, sauf texte contraire (Singularity : « up to 2 units » = 2 unités
    distinctes, différent de « 2 times »).
 5. **Icathian Rain** : même réponse que pour le point 4 → cibles choisies au lancement
-   (corriger le choix à la résolution actuel). Répartition du coût Power : non tranchée, à
-   revérifier sur la carte.
+   (corriger le choix à la résolution actuel). Répartition du coût Power : **au choix du
+   joueur**, comme pour tous les sorts multicolores (le coût de 3 Power accepte n'importe
+   quelle combinaison de Fury et de Mind) — à généraliser aux autres sorts multicolores.
 6. **Divine Judgment** : confirmé. Précision : les gears attachés qui restent sur le terrain
    **comptent** dans les 2 gears gardés.
 7. **Déclencheurs** : tous passent par la pile et ouvrent une fenêtre de réaction (supprimer
@@ -133,7 +134,8 @@ implémenté ; chaque point deviendra une correction testée et commitée sépar
 12. **Reinforce** : confirmé (paiement auto, seules les unités payables proposées).
 13. **Unité jouée par un effet** : elle est bel et bien **jouée** et déclenche ses effets
     « when you play me » (The Harrowing, Soulgorger, Spectral Matron, Portal Rescue,
-    Reinforce, Ava Achiever, Promising Future, Blind Fury…). Revoir aussi l'état Tap imposé.
+    Reinforce, Ava Achiever, Promising Future, Blind Fury…). Elles arrivent **Tap**, sauf
+    indication contraire (ex. : Accelerate payé en supplément, ou entrée Ready imprimée).
 14. **Assault / Shield** : cumulables (Assault + Assault = Assault 2). Confirmé.
 15. **Sorts contrés** : confirmé (cimetière, pas « joués »).
 16. **Stun** : tracer le **joueur** qui a étourdi (pas l'unité) ; Eclipse Herald / Radiant
