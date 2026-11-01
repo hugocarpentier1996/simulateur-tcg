@@ -1225,3 +1225,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Acceptable Losses (ogn-179) : Action ; chaque joueur, le lanceur d'abord, détruit un de ses gears (`each-player-kills` sur les gears).
 - Whirlwind (ogn-187) : en commençant par l'adversaire, chaque joueur peut renvoyer une unité dans la main de son propriétaire (effet `each-player-may-return-unit`, modes `skip` / `return-unit:<id>`).
 - King's Edict (ogn-237) : l'adversaire choisit une de ses unités (non contrôlée par le lanceur), qui meurt (`each-player-kills` avec `opponentsOnly`).
+- Mindsplitter (ogn-192) : à la mise en jeu, la main adverse est révélée et son propriétaire y choisit une carte, défaussée (`onPlayEffect: opponent-hand-pick`, modes `discard-opp:<id>`).

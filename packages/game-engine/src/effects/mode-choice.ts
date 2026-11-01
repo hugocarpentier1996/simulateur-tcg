@@ -21,7 +21,9 @@ export type EffectMode =
   | 'favor-cards'
   | 'favor-runes'
   | `kill-own:${string}`
-  | `return-unit:${string}`;
+  | `return-unit:${string}`
+  | `discard-opp:${string}`
+  | `recycle-opp:${string}`;
 
 const ONE_ENERGY = { energy: 1, power: {} };
 
@@ -134,6 +136,36 @@ function applyMode(
   if (mode === 'channel-exhausted')
     return channelForPlayer(state, pending.ownerId, 1);
   if (mode === 'skip') return { state, events: [] };
+  if (mode.startsWith('discard-opp:') || mode.startsWith('recycle-opp:')) {
+    const id = mode.slice(mode.indexOf(':') + 1);
+    const card = state.cards.find((c) => c.id === id);
+    if (!card) return { state, events: [] };
+    const zone = (kind: 'graveyard' | 'deck') =>
+      state.zones.find((z) => z.kind === kind && z.ownerId === card.ownerId)
+        ?.id ?? card.zoneId;
+    if (mode.startsWith('discard-opp:'))
+      return {
+        state: {
+          ...state,
+          cards: state.cards.map((c) =>
+            c.id === id ? { ...c, zoneId: zone('graveyard') } : c,
+          ),
+        },
+        events: [
+          { type: 'card-discarded', playerId: card.ownerId, cardId: id },
+        ],
+      };
+    return {
+      state: {
+        ...state,
+        cards: [
+          ...state.cards.filter((c) => c.id !== id),
+          { ...card, zoneId: zone('deck') },
+        ],
+      },
+      events: [],
+    };
+  }
   if (mode.startsWith('return-unit:')) {
     const unit = state.units.find(
       (u) => u.id === mode.slice('return-unit:'.length),
@@ -240,4 +272,39 @@ export function nextKillChoice(
       };
   }
   return undefined;
+}
+
+/** Main de l'adversaire révélée -> choix du joueur parmi ses cartes (hors unités pour un
+ * recyclage). Rien à choisir : undefined. */
+export function opponentHandChoice(
+  state: GameState,
+  sourceId: string,
+  playerId: string,
+  action: 'discard' | 'recycle-non-unit',
+): ModeChoiceEntry | undefined {
+  const opponent = state.players.find((p) => p.id !== playerId);
+  const ids = state.cards
+    .filter(
+      (c) =>
+        state.zones.some(
+          (z) =>
+            z.id === c.zoneId &&
+            z.kind === 'hand' &&
+            z.ownerId === opponent?.id,
+        ) &&
+        (action === 'discard' ||
+          !state.unitDefinitions?.some((d) => d.id === c.definitionId)),
+    )
+    .map((c) => c.id);
+  if (!ids.length) return undefined;
+  return {
+    kind: 'mode-choice',
+    sourceId,
+    ownerId: playerId,
+    modes: ids.map((id) =>
+      action === 'discard'
+        ? (`discard-opp:${id}` as const)
+        : (`recycle-opp:${id}` as const),
+    ),
+  };
 }

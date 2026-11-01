@@ -328,3 +328,4 @@ export { cullTheWeak } from './ogn/cull-the-weak.js';
 export { acceptableLosses } from './ogn/acceptable-losses.js';
 export { whirlwind } from './ogn/whirlwind.js';
 export { kingsEdict } from './ogn/kings-edict.js';
+export { mindsplitter } from './ogn/mindsplitter.js';

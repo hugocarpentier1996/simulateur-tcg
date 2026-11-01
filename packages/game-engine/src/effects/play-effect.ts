@@ -1,3 +1,4 @@
+import { opponentHandChoice } from './mode-choice.js';
 import { killGears } from './kill-gear.js';
 import { wardenAgainst } from './unit-aura.js';
 import { summonToken } from './summon-token.js';
@@ -329,6 +330,19 @@ export function resolvePlayEffect(
         ...started.events,
         { type: 'unit-play-effect-resolved', sourceId: entry.sourceId },
       ],
+    };
+  }
+  if (entry.effect.type === 'opponent-hand-pick') {
+    const choice = opponentHandChoice(
+      state,
+      entry.sourceId,
+      entry.ownerId,
+      entry.effect.action,
+    );
+    return {
+      ok: true,
+      state: choice ? { ...state, pendingModeChoice: choice } : state,
+      events: [{ type: 'unit-play-effect-resolved', sourceId: entry.sourceId }],
     };
   }
   if (entry.effect.type === 'self-might') {

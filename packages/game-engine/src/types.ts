@@ -366,6 +366,12 @@ export interface UnitBlueprint {
     | { readonly type: 'next-spell-discount'; readonly energy: number }
     /** L'unité jouée gagne cette Might jusqu'à la fin du tour (Teemo Chaos). */
     | { readonly type: 'self-might'; readonly amount: number }
+    /** L'adversaire révèle sa main ; le joueur y choisit une carte qui est défaussée
+     * (Mindsplitter) ou recyclée, hors unités (Sabotage). */
+    | {
+        readonly type: 'opponent-hand-pick';
+        readonly action: 'discard' | 'recycle-non-unit';
+      }
     /** Modificateur de Might jusqu'à la fin du tour à toutes les unités ennemies. */
     | {
         readonly type: 'weaken-enemies';
