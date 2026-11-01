@@ -1,3 +1,4 @@
+import { hiddenFree } from '../effects/hidden.js';
 import { discardChoices } from '../actions/cast-spell.js';
 import { activeLegends } from '../effects/legends.js';
 import { tapAbilityTargets } from '../actions/activate-gear.js';
@@ -175,6 +176,22 @@ function* candidates(
         unitId: unit.id,
         destinationId: destination.id,
       };
+  // Hidden : chaque carte Hidden de la main peut être cachée sur un champ contrôlé.
+  const hidePayment = findPayment(state, playerId, {
+    energy: 0,
+    power: {},
+    genericPower: 1,
+  });
+  if (hidePayment)
+    for (const card of state.cards.filter((c) => c.ownerId === playerId))
+      for (const field of state.battlefields)
+        yield {
+          type: 'hide-card',
+          playerId,
+          cardId: card.id,
+          battlefieldId: field.zoneId,
+          payment: hidePayment,
+        };
   for (const card of state.cards.filter((c) => c.ownerId === playerId)) {
     const unit = state.unitDefinitions?.find((d) => d.id === card.definitionId);
     if (unit) {
@@ -194,7 +211,10 @@ function* candidates(
         const payment = findPayment(
           state,
           playerId,
-          unitCost(state, playerId, unit, accelerate, optionalCost, discard),
+          hiddenFree(
+            card,
+            unitCost(state, playerId, unit, accelerate, optionalCost, discard),
+          ),
         );
         if (payment)
           for (const discardCardId of discard
@@ -249,7 +269,7 @@ function* candidates(
         findPayment(
           state,
           playerId,
-          spellCost(state, playerId, spell),
+          hiddenFree(card, spellCost(state, playerId, spell)),
           'spell',
         ) ??
         (spell.spendBuffForFreeCast &&
@@ -485,12 +505,15 @@ function targetPayment(state: GameState, action: GameAction): GameAction[] {
       ? withDeflect(
           state,
           action.playerId,
-          castCost(
-            state,
-            action.playerId,
-            definition,
-            action.xPower,
-            action.spendBuffUnitId,
+          hiddenFree(
+            card,
+            castCost(
+              state,
+              action.playerId,
+              definition,
+              action.xPower,
+              action.spendBuffUnitId,
+            ),
           ),
           spellChosenUnits(definition, action),
         )
@@ -498,14 +521,17 @@ function targetPayment(state: GameState, action: GameAction): GameAction[] {
           state,
           action.playerId,
           definition.type === 'unit'
-            ? unitCost(
-                state,
-                action.playerId,
-                definition,
-                action.type === 'play-unit' && action.accelerate === true,
-                action.type === 'play-unit' && action.optionalCost === true,
-                action.type === 'play-unit' &&
-                  action.discardCardId !== undefined,
+            ? hiddenFree(
+                card,
+                unitCost(
+                  state,
+                  action.playerId,
+                  definition,
+                  action.type === 'play-unit' && action.accelerate === true,
+                  action.type === 'play-unit' && action.optionalCost === true,
+                  action.type === 'play-unit' &&
+                    action.discardCardId !== undefined,
+                ),
               )
             : definition.cost,
           action.type === 'play-unit' && action.onPlayTargetId

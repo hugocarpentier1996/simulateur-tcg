@@ -100,11 +100,20 @@ function zone(
       return `<div class="gear-slot"><button type="button" data-gear="${escape(g.id)}" class="gear-card ${g.ready ? 'ready' : 'tapped'}${g.attachedUnitId ? ' attached' : ''}${destinations.includes(g.id) ? ' targetable' : ''}${picked.includes(g.id) ? ' picked' : ''}" aria-label="${escape(label)}" title="${escape(label)}"><span class="gear-face">${art(g.definitionId, 'gear-art') || `<span class="unit-fallback">${escape(cardName(g.definitionId))}</span>`}</span></button></div>`;
     })
     .join('');
+  // Cartes Hidden face cachée : dos visible, nom en infobulle (table en hot-seat).
+  const hiddenCards = state.cards
+    .filter((c) => c.facedown && c.zoneId === zoneId)
+    .map((c) => {
+      const label = `Carte cachée · ${playerName(c.ownerId)}${c.facedown?.fresh ? ' · jouable au prochain tour' : ''}`;
+      return `<div class="gear-slot"><button type="button" data-card="${escape(c.id)}" class="facedown-card${c.facedown?.fresh ? ' fresh' : ''}" aria-label="${escape(label)}" title="${escape(label)}"><span class="facedown-face">?</span></button></div>`;
+    })
+    .join('');
   return `<section data-zone="${escape(zoneId)}" class="zone ${destinations.includes(zoneId) ? 'drop-target' : ''}${picked.includes(zoneId) ? ' picked' : ''} ${battlefield ? 'battlefield' : 'base'}"><header><h3>${escape(title)}</h3><span>${escape(subtitle)}</span></header>
     ${battlefield ? art(state.battlefields.find((b) => b.zoneId === zoneId)?.definitionId ?? '', 'field-art') : ''}
     <div class="units">${
-      units.length || gears.length
-        ? gearCards +
+      units.length || gears.length || hiddenCards
+        ? hiddenCards +
+          gearCards +
           units
             .map((u) => {
               const label = `${cardName(u.definitionId)} · ${playerName(u.ownerId)} · ${u.ready ? 'Ready' : 'Tap'} · Might ${effectiveMight(u, state)} · ${u.damage} dégât(s)${u.buffed ? ' · Buff' : ''}${u.temporary ? ' · Temporary' : ''}`;
@@ -499,6 +508,10 @@ function actionLabel(
     }
     case 'choose-defense-shield':
       return prefix + 'Shield 2 → ' + unit(action.targetId);
+    case 'hide-card':
+      return (
+        prefix + 'Cacher sur ' + target(action.battlefieldId) + ' (1 Power)'
+      );
     case 'choose-mode':
       return (
         prefix + (action.mode === 'draw' ? 'Piocher 1' : 'Canaliser 1 rune Tap')
@@ -633,9 +646,13 @@ function selectedCardPanel(session: Session, selection: Selection): string {
   const choices = all.filter(({ action }) =>
     compatible.has(JSON.stringify(action)),
   );
+  const hides = all
+    .filter(({ action }) => action.type === 'hide-card')
+    .map(button)
+    .join('');
   if (spell)
-    return `${header}<div class="choice-list"><button class="primary" data-action="start-targeting">Lancer</button><button class="quiet" data-action="cancel">Retour</button></div><details class="all-options"><summary>Toutes les options (${choices.length})</summary><div class="choice-list">${choices.map(button).join('')}</div></details>`;
-  return `${header}<p class="help">Choisis la mise en jeu ou la capacité ci-dessous. Le paiement est automatique.</p><div class="choice-list">${choices.map(button).join('')}</div><button class="quiet" data-action="cancel">Retour</button>`;
+    return `${header}<div class="choice-list"><button class="primary" data-action="start-targeting">Lancer</button>${hides}<button class="quiet" data-action="cancel">Retour</button></div><details class="all-options"><summary>Toutes les options (${choices.length})</summary><div class="choice-list">${choices.map(button).join('')}</div></details>`;
+  return `${header}<p class="help">Choisis la mise en jeu ou la capacité ci-dessous. Le paiement est automatique.</p><div class="choice-list">${choices.map(button).join('')}${hides}</div><button class="quiet" data-action="cancel">Retour</button>`;
 }
 
 /** Confirmation de remise à zéro ; la partie n'est effacée qu'après « Recommencer ». */

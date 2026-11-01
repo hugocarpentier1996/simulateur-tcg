@@ -1,3 +1,9 @@
+import { canUseTiming } from './timing.js';
+import {
+  choicesHere,
+  hiddenFree,
+  playableFacedown,
+} from '../effects/hidden.js';
 import { settleLethalUnits } from '../effects/lethal-units.js';
 import { activeLegends } from '../effects/legends.js';
 import { victoryTarget } from '../scoring/victory-target.js';
@@ -87,20 +93,24 @@ function playUnitCore(
   state: GameState,
   action: Extract<GameAction, { type: 'play-unit' }>,
 ): ActionResult {
+  const card = state.cards.find((c) => c.id === action.cardId);
+  // Hidden : jouée depuis facedown à vitesse Réaction, gratuite, sur son champ.
+  const hiddenField = playableFacedown(card, action.playerId);
   if (
-    state.phase !== 'main' ||
-    state.activePlayerId !== action.playerId ||
-    state.showdown
+    hiddenField
+      ? !canUseTiming(state, action.playerId, 'reaction')
+      : state.phase !== 'main' ||
+        state.activePlayerId !== action.playerId ||
+        state.showdown
   )
     return { ok: false, reason: 'PLAY_WINDOW_CLOSED' };
-  const card = state.cards.find((c) => c.id === action.cardId);
   const source = state.zones.find(
     (z) =>
       z.id === card?.zoneId &&
       ['hand', 'champion'].includes(z.kind) &&
       z.ownerId === action.playerId,
   );
-  if (!card || !source || card.ownerId !== action.playerId)
+  if (!card || (!source && !hiddenField) || card.ownerId !== action.playerId)
     return { ok: false, reason: 'CARD_NOT_IN_HAND' };
   const definition = state.unitDefinitions?.find(
     (d) => d.id === card.definitionId,
@@ -111,8 +121,14 @@ function playUnitCore(
     (z) => z.kind === 'base' && z.ownerId === action.playerId,
   );
   if (!base) return { ok: false, reason: 'MISSING_BASE' };
-  const destinationId = action.destinationId ?? base.id;
-  if (destinationId !== base.id && wardenAgainst(state, action.playerId))
+  const destinationId = hiddenField ?? action.destinationId ?? base.id;
+  if (hiddenField && (action.destinationId ?? hiddenField) !== hiddenField)
+    return { ok: false, reason: 'INVALID_SUMMON_DESTINATION' };
+  if (
+    !hiddenField &&
+    destinationId !== base.id &&
+    wardenAgainst(state, action.playerId)
+  )
     return { ok: false, reason: 'INVALID_SUMMON_DESTINATION' };
   const openField =
     (definition.canPlayToOpenBattlefield ||
@@ -134,8 +150,14 @@ function playUnitCore(
       (u) => u.zoneId === destinationId && u.ownerId !== action.playerId,
     );
   const contested = openField || enemyField;
-  if (!canSummonAt(state, action.playerId, destinationId) && !contested)
+  if (
+    !hiddenField &&
+    !canSummonAt(state, action.playerId, destinationId) &&
+    !contested
+  )
     return { ok: false, reason: 'INVALID_SUMMON_DESTINATION' };
+  if (hiddenField && !choicesHere(state, [action.onPlayTargetId], hiddenField))
+    return { ok: false, reason: 'INVALID_TARGET' };
   const entries: (ReturnSpellEntry | UnitPlayEntry | PlayEffectEntry)[] = [];
   if (
     !playTargetChoices(state, card.id, definition, destinationId).includes(
@@ -275,13 +297,16 @@ function playUnitCore(
   const cost = withDeflect(
     state,
     action.playerId,
-    unitCost(
-      state,
-      action.playerId,
-      definition,
-      action.accelerate === true,
-      action.optionalCost === true,
-      action.discardCardId !== undefined,
+    hiddenFree(
+      card,
+      unitCost(
+        state,
+        action.playerId,
+        definition,
+        action.accelerate === true,
+        action.optionalCost === true,
+        action.discardCardId !== undefined,
+      ),
     ),
     action.onPlayTargetId ? [action.onPlayTargetId] : [],
   );
@@ -302,8 +327,8 @@ function playUnitCore(
       ...(entries.length
         ? {
             stack: {
-              entries,
-              initiatorId: action.playerId,
+              entries: [...(state.stack?.entries ?? []), ...entries],
+              initiatorId: state.stack?.initiatorId ?? action.playerId,
               priorityPlayerId: state.activePlayerId,
               consecutivePasses: 0,
             },

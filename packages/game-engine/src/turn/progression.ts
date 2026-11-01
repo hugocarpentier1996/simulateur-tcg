@@ -1,3 +1,4 @@
+import { ripenFacedown } from '../effects/hidden.js';
 import type {
   ActionResult,
   GameEvent,
@@ -49,7 +50,7 @@ export function startNextTurn(
       state.players.map((player) => [player.id, []]),
     ),
   };
-  const started = startTurn(current);
+  const started = startTurn(ripenFacedown(current));
   return {
     ok: true,
     state: started.state,

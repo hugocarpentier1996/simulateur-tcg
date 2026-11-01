@@ -375,6 +375,8 @@ export interface UnitBlueprint {
   readonly onConquerDraw?: number;
   /** Coût supplémentaire facultatif : défausser 1 carte pour cette énergie en moins. */
   readonly discardDiscount?: number;
+  /** Hidden : peut être cachée pour 1 Power puis jouée gratuitement plus tard. */
+  readonly hidden?: boolean;
   /** Coût supplémentaire obligatoire : tuer une unité alliée (sacrificeUnitId). */
   readonly sacrificeCost?: boolean;
   /** « When I conquer » : son propriétaire choisit l'un de ces modes à la résolution. */
@@ -523,6 +525,8 @@ export interface CardInstance {
   zoneId: string;
   ready?: boolean;
   color?: string;
+  /** Carte cachée face cachée sur le champ zoneId ; fresh : cachée ce tour, pas encore jouable. */
+  facedown?: { fresh: boolean };
 }
 
 /**
@@ -563,6 +567,14 @@ export type GameAction =
       }[];
     }
   | { type: 'choose-vision'; playerId: string; recycle: boolean }
+  /** Cacher une carte Hidden de sa main face cachée sur un champ contrôlé (1 Power). */
+  | {
+      type: 'hide-card';
+      playerId: string;
+      cardId: string;
+      battlefieldId: string;
+      payment: PaymentPlan;
+    }
   /** Mode d'une capacité « X ou Y » en attente (pendingModeChoice). */
   | {
       type: 'choose-mode';
@@ -748,6 +760,14 @@ export type GameEvent =
       to: string;
     }
   | { type: 'gear-killed'; gearId: string; ownerId: string }
+  | {
+      type: 'card-hidden';
+      playerId: string;
+      cardId: string;
+      battlefieldId: string;
+    }
+  /** Carte facedown d'un champ perdu : révélée et mise au cimetière. */
+  | { type: 'facedown-lost'; playerId: string; cardId: string }
   | {
       type: 'spell-countered';
       cardId: string;

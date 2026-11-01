@@ -1,3 +1,8 @@
+import {
+  hideCard,
+  playableFacedown,
+  trashLostFacedown,
+} from './effects/hidden.js';
 import { channelForPlayer } from './turn/supplies.js';
 import { chooseMode } from './effects/mode-choice.js';
 import { spellChosenUnits } from './cost/deflect.js';
@@ -371,7 +376,9 @@ export function act(state: GameState, action: GameAction): ActionResult {
         events.push(...drawn.events);
       }
   }
-  const scrapped = scrapheapDraws(shrine, events);
+  const lostFacedown = trashLostFacedown(shrine);
+  events.push(...lostFacedown.events);
+  const scrapped = scrapheapDraws(lostFacedown.state, events);
   events.push(...scrapped.events);
   const scrap = treasureTroves(scrapped.state, events);
   events.push(...scrap.events);
@@ -453,8 +460,16 @@ function dispatch(state: GameState, action: GameAction): ActionResult {
   if (action.type === 'mulligan') return mulligan(state, action);
   if (state.setup || state.phase === 'setup')
     return { ok: false, reason: 'SETUP_IN_PROGRESS' };
+  if (action.type === 'hide-card') return hideCard(state, action);
   if (
     state.stack &&
+    !(
+      action.type === 'play-unit' &&
+      playableFacedown(
+        state.cards.find((c) => c.id === action.cardId),
+        action.playerId,
+      )
+    ) &&
     action.type !== 'cast-spell' &&
     action.type !== 'pass' &&
     action.type !== 'activate-spell-energy' &&

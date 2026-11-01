@@ -1880,3 +1880,38 @@ button.pile.graveyard:hover .pile-face {
 .legend-button.tapped {
   transform: rotate(90deg);
 }
+
+/* Cartes Hidden face cachée sur un champ. */
+.facedown-card {
+  position: relative;
+  width: 52px;
+  height: 72px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.facedown-face {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  border: 2px solid #637c79;
+  border-radius: 5px;
+  background: repeating-linear-gradient(
+    45deg,
+    #243b40,
+    #243b40 6px,
+    #1b2d31 6px,
+    #1b2d31 12px
+  );
+  color: #e6c481;
+  font-weight: 700;
+  box-shadow: 0 2px 6px #0008;
+}
+.facedown-card.fresh .facedown-face {
+  opacity: 0.7;
+}
+.facedown-card:hover .facedown-face {
+  box-shadow: 0 0 10px #e6c48199;
+}

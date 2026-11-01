@@ -182,6 +182,10 @@ function describe(
       return `${playerName(event.playerId)} gagne ${event.amount} point(s) grâce à ${name(event.sourceId)}.`;
     case 'gear-played':
       return `${playerName(event.playerId)} pose ${name(event.gearId)}.`;
+    case 'card-hidden':
+      return `${playerName(event.playerId)} cache une carte face cachée.`;
+    case 'facedown-lost':
+      return `${name(event.cardId)} (cachée) est révélée et part au cimetière.`;
     case 'spell-countered':
       return `${name(event.sourceId)} contre ${name(event.cardId)}.`;
     case 'gear-killed':
@@ -460,6 +464,7 @@ export function cardActions(session: Session, cardId: string): GameAction[] {
         a.type === 'play-unit' ||
         a.type === 'play-gear') &&
         a.cardId === cardId) ||
+      (a.type === 'hide-card' && a.cardId === cardId) ||
       (a.type === 'equip-gear' && a.gearId === cardId) ||
       (a.type === 'activate-gear' && a.gearId === cardId) ||
       (a.type === 'activate-spell-energy' && a.unitId === cardId),
@@ -548,11 +553,13 @@ export function targetOptions(
   const state = session.state;
   const actions = cardActions(session, cardId).filter(
     (action) =>
+      action.type !== 'hide-card' &&
       !(
         destinationId &&
         action.type === 'play-unit' &&
         action.destinationId !== destinationId
-      ) && fits(targetPlan(state, action), picks),
+      ) &&
+      fits(targetPlan(state, action), picks),
   );
   const next = actions.flatMap((action) => {
     const plan = targetPlan(state, action);

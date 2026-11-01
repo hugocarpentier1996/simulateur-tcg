@@ -1,3 +1,8 @@
+import {
+  choicesHere,
+  hiddenFree,
+  playableFacedown,
+} from '../effects/hidden.js';
 import { withDeflect, spellChosenUnits } from '../cost/deflect.js';
 import { castCost } from '../cost/spell-cost.js';
 import { spendBuff } from '../effects/buff.js';
@@ -31,20 +36,42 @@ export function castSpell(
     (c) =>
       c.id === action.cardId &&
       c.ownerId === action.playerId &&
-      state.zones.some(
-        (z) =>
-          z.id === c.zoneId &&
-          z.kind === 'hand' &&
-          z.ownerId === action.playerId,
-      ),
+      (playableFacedown(c, action.playerId) ||
+        state.zones.some(
+          (z) =>
+            z.id === c.zoneId &&
+            z.kind === 'hand' &&
+            z.ownerId === action.playerId,
+        )),
   );
   if (!card) return { ok: false, reason: 'CARD_NOT_IN_HAND' };
   const definition = state.spellDefinitions?.find(
     (d) => d.id === card.definitionId,
   );
   if (!definition) return { ok: false, reason: 'UNKNOWN_SPELL_DEFINITION' };
-  if (!canUseTiming(state, action.playerId, definition.timing))
+  // Hidden : joué depuis facedown à vitesse Réaction, gratuit, choix limités à son champ.
+  const hiddenField = playableFacedown(card, action.playerId);
+  if (
+    !canUseTiming(
+      state,
+      action.playerId,
+      hiddenField ? 'reaction' : definition.timing,
+    )
+  )
     return { ok: false, reason: 'SPELL_WINDOW_CLOSED' };
+  if (
+    hiddenField &&
+    !choicesHere(
+      state,
+      [
+        action.targetId,
+        action.secondaryTargetId,
+        ...(action.selectedUnitIds ?? []),
+      ],
+      hiddenField,
+    )
+  )
+    return { ok: false, reason: 'INVALID_TARGET' };
   if (
     action.xPower !== undefined &&
     (!definition.variablePower ||
@@ -219,15 +246,21 @@ export function castSpell(
   const cost = withDeflect(
     state,
     action.playerId,
-    castCost(
-      state,
-      action.playerId,
-      definition,
-      action.xPower,
-      action.spendBuffUnitId,
+    hiddenFree(
+      card,
+      castCost(
+        state,
+        action.playerId,
+        definition,
+        action.xPower,
+        action.spendBuffUnitId,
+      ),
     ),
     spellChosenUnits(definition, action),
   );
+  // Sur la pile, la carte est révélée : plus de marque facedown.
+  const revealed = { ...card };
+  delete revealed.facedown;
   const charged = payCost(
     state,
     action.playerId,
@@ -267,7 +300,7 @@ export function castSpell(
               ? { tokenDestinations: [...action.tokenDestinations] }
               : {}),
             ...(action.exhaustUnitId ? { exhaustedForCost: true } : {}),
-            card,
+            card: revealed,
             definition,
             casterId: action.playerId,
             targetId: action.targetId,

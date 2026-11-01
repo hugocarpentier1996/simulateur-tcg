@@ -197,6 +197,8 @@ export interface UnitDefinition extends PrintedMetadata {
   readonly onConquerDraw?: number;
   /** Coût supplémentaire facultatif : défausser 1 carte pour cette énergie en moins. */
   readonly discardDiscount?: number;
+  /** Hidden : peut être cachée pour 1 Power puis jouée gratuitement plus tard. */
+  readonly hidden?: boolean;
   /** Coût supplémentaire obligatoire : tuer une unité alliée à la mise en jeu. */
   readonly sacrificeCost?: boolean;
   /** « When I conquer » : son propriétaire choisit l'un de ces modes à la résolution. */
