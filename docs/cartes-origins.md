@@ -259,3 +259,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Brazen Buccaneer — ogn-002-298
 - [x] Treasure Trove — ogn-186-298
 - [x] Pakaa Cub — ogn-135-298
+- [x] Consult the Past — ogn-083-298
