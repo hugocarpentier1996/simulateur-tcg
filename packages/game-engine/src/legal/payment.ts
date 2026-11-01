@@ -10,7 +10,9 @@ export function findPayment(
   playerId: string,
   cost: UnitBlueprint['cost'],
   purpose: 'ordinary' | 'spell' = 'ordinary',
-  wild = purpose === 'spell' ? (state.resources[playerId]?.spellPower ?? 0) : 0,
+  wild = (purpose === 'spell'
+    ? (state.resources[playerId]?.spellPower ?? 0)
+    : 0) + (state.resources[playerId]?.anyPower ?? 0),
 ): PaymentPlan | null {
   // Power réservé aux sorts : à défaut de plan direct, retirer une unité de Power du coût
   // et vérifier le plan complet (payCost comble le manque avec cette réserve).

@@ -173,6 +173,8 @@ export interface GameState {
       /** Réserve réservée au lancement de sorts, effacée avec les ressources flottantes. */ spellEnergy?: number;
       /** Power de n'importe quel domaine réservé aux sorts (Daughter of the Void). */
       spellPower?: number;
+      /** Power de n'importe quel domaine, tout usage (Malzahar). */
+      anyPower?: number;
     }
   >;
   battlefields: {
@@ -423,6 +425,9 @@ export interface UnitBlueprint {
   /** Quand il défend ou est joué depuis Hidden : révèle ce nombre de cartes du dessus, 1 dégât
    * réparti entre les ennemis ici par carte Hidden révélée, puis les recycle (Teemo Mind). */
   readonly hiddenRevealDamage?: number;
+  /** « Tuer une unité ou un gear allié, Tap : Action — ajoute N Power quelconques »
+   * (Malzahar ; activate-gear avec targetId = la victime). */
+  readonly sacrificeResource?: { readonly anyPower: number };
   /** Défaussée : peut être jouée depuis le cimetière en payant 1 Power de cette couleur
    * (Flame Chompers, capacité sur la pile). */
   readonly playOnDiscard?: { readonly power: string };

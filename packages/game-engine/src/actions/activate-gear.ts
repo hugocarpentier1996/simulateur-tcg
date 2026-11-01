@@ -1,3 +1,4 @@
+import { settleLethalUnits } from '../effects/lethal-units.js';
 import { killGears } from '../effects/kill-gear.js';
 import { activeLegends } from '../effects/legends.js';
 import type { ActionResult, GameAction, GameState } from '../types.js';
@@ -29,6 +30,52 @@ export function activateGear(
     const unitAbility = state.unitDefinitions?.find(
       (d) => d.id === unit?.definitionId,
     )?.tapAbility;
+    const sacrifice = state.unitDefinitions?.find(
+      (d) => d.id === unit?.definitionId,
+    )?.sacrificeResource;
+    if (unit && sacrifice) {
+      if (!unit.ready) return { ok: false, reason: 'GEAR_NOT_READY' };
+      if (!canUseTiming(state, action.playerId, 'action'))
+        return { ok: false, reason: 'ABILITY_WINDOW_CLOSED' };
+      const victimUnit = state.units.find(
+        (u) =>
+          u.id === action.targetId &&
+          u.id !== unit.id &&
+          u.ownerId === action.playerId,
+      );
+      const victimGear = state.gears?.find(
+        (g) => g.id === action.targetId && g.ownerId === action.playerId,
+      );
+      if (!victimUnit && !victimGear)
+        return { ok: false, reason: 'INVALID_ADDITIONAL_COST' };
+      const tapped = {
+        ...state,
+        units: state.units.map((u) =>
+          u.id === unit.id ? { ...u, ready: false } : u,
+        ),
+      };
+      const killed = victimUnit
+        ? settleLethalUnits(tapped, new Set([victimUnit.id]))
+        : { ...killGears(tapped, [victimGear!.id]), ok: true as const };
+      const previous = killed.state.resources[action.playerId] ?? {
+        energy: 0,
+        power: {},
+      };
+      return {
+        ok: true,
+        state: {
+          ...killed.state,
+          resources: {
+            ...killed.state.resources,
+            [action.playerId]: {
+              ...previous,
+              anyPower: (previous.anyPower ?? 0) + sacrifice.anyPower,
+            },
+          },
+        },
+        events: killed.events,
+      };
+    }
     if (unit && unitAbility) {
       if (
         unitAbility.requiresBattlefield &&

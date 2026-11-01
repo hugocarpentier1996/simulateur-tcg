@@ -327,3 +327,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Twisted Fate — ogn-200-298
 - [x] Volibear — ogn-041-298
 - [x] Teemo — ogn-121-298
+- [x] Malzahar — ogn-113-298

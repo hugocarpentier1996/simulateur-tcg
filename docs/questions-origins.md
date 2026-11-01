@@ -76,3 +76,4 @@ existantes ; seuls les nouveaux doutes utiles rejoindront le prochain lot de que
 - The Boss (hypothèses) : le « you may » est accepté automatiquement dès que la légende est Ready et le Power payable ; le redressement à la conquête se fait sans pile.
 - Légendes surnuméraires OGN-299 à OGN-310 (versions alternatives des légendes 247 à 269) : non ajoutées comme cartes distinctes (pas d'image locale) ; à confirmer si elles doivent l'être.
 - Immortal Phoenix (hypothèse) : « tuer avec un sort » = au moins une unité meurt pendant l'action où un sort du joueur se résout (dégâts ou destruction).
+- Malzahar (hypothèse) : il ne peut pas se tuer lui-même pour payer sa propre capacité.

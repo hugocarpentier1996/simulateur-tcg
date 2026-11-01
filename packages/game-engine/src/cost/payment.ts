@@ -55,7 +55,9 @@ export function payCost(
     if (card && powerIds.has(card.id))
       power[card.color!] = (power[card.color!] ?? 0) + 1;
   // Power réservé aux sorts : comble n'importe quel manque de couleur d'un sort.
-  let wild = purpose === 'spell' ? (previous.spellPower ?? 0) : 0;
+  // Puis Power quelconque tout usage (Malzahar), consommé après la réserve des sorts.
+  const spellWild = purpose === 'spell' ? (previous.spellPower ?? 0) : 0;
+  let wild = spellWild + (previous.anyPower ?? 0);
   const wildBefore = wild;
   if (energy < cost.energy)
     return { ok: false, reason: 'INSUFFICIENT_RESOURCES' };
@@ -98,7 +100,7 @@ export function payCost(
           ...(previous.spellEnergy !== undefined
             ? { spellEnergy: previous.spellEnergy - restrictedSpent }
             : {}),
-          ...(wildBefore !== wild ? { spellPower: wild } : {}),
+          ...wildRemainders(previous, spellWild, wildBefore - wild),
         },
       },
       cards: [
@@ -108,5 +110,24 @@ export function payCost(
         ...recycled,
       ],
     },
+  };
+}
+
+/** Réserves de Power quelconque après paiement : la réserve des sorts d'abord, puis le
+ * Power tout usage. */
+function wildRemainders(
+  previous: { spellPower?: number; anyPower?: number },
+  spellWild: number,
+  used: number,
+): { spellPower?: number; anyPower?: number } {
+  if (!used) return {};
+  const fromSpell = Math.min(spellWild, used);
+  return {
+    ...(previous.spellPower !== undefined
+      ? { spellPower: previous.spellPower - fromSpell }
+      : {}),
+    ...(previous.anyPower !== undefined
+      ? { anyPower: previous.anyPower - (used - fromSpell) }
+      : {}),
   };
 }

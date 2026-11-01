@@ -127,6 +127,23 @@ function* candidates(
   );
   for (const unit of state.units) {
     yield { type: 'activate-spell-energy', playerId, unitId: unit.id };
+    if (
+      unit.ownerId === playerId &&
+      state.unitDefinitions?.find((d) => d.id === unit.definitionId)
+        ?.sacrificeResource
+    )
+      for (const victim of [
+        ...state.units.filter(
+          (u) => u.ownerId === playerId && u.id !== unit.id,
+        ),
+        ...(state.gears ?? []).filter((g) => g.ownerId === playerId),
+      ])
+        yield {
+          type: 'activate-gear',
+          playerId,
+          gearId: unit.id,
+          targetId: victim.id,
+        };
     if (unit.buffed && unit.ownerId === playerId)
       yield { type: 'spend-buff-ability', playerId, unitId: unit.id };
     if (
