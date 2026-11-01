@@ -1221,3 +1221,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Super Mega Death Rocket! (ogn-252) : inflige 5 à une unité ; au cimetière, quand son propriétaire conquiert, il peut défausser 1 carte pour la reprendre en main (`returnOnConquerDiscard`, choix de mode `discard-return:<id>` calculé à la résolution).
 - Vayne (ogn-035) : Assault 3 ; entre Ready si un adversaire contrôle un champ (`entersReadyIfOpponentControls`) ; à la conquête, peut payer 1 énergie pour retourner en main (`onConquerPayReturn`, mode `pay-return` proposé seulement si payable).
 - Party Favors (ogn-071) : l'adversaire choisit Cartes (le lanceur et lui piochent 1) ou Runes (chacun canalise 1 rune Tap) (effet `party-favors`, choix de mode appartenant à l'adversaire, `partnerId`).
+- Cull the Weak (ogn-209) : chaque joueur, le lanceur d'abord, choisit et tue une de ses unités (effet `each-player-kills`, choix de mode `kill-own:<id>` enchaînés, joueur sans unité passé).

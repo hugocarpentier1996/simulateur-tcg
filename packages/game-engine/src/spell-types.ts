@@ -75,6 +75,8 @@ export interface SpellBlueprint {
     | { readonly type: 'exhaust-allies' }
     /** Détruit tous les équipements en jeu (cimetière de leur propriétaire). */
     | { readonly type: 'kill-all-gear' }
+    /** Chaque joueur, en commençant par le lanceur, tue une de ses unités ou un de ses gears. */
+    | { readonly type: 'each-player-kills'; readonly what: 'unit' | 'gear' }
     /** L'adversaire choisit Cartes (lanceur et lui piochent 1) ou Runes (chacun canalise 1
      * rune Tap), via un choix de mode (Party Favors, 1v1). */
     | { readonly type: 'party-favors' }

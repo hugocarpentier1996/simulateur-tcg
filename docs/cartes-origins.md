@@ -280,3 +280,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Super Mega Death Rocket! — ogn-252-298
 - [x] Vayne — ogn-035-298
 - [x] Party Favors — ogn-071-298
+- [x] Cull the Weak — ogn-209-298

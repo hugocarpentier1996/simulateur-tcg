@@ -1,3 +1,4 @@
+import { nextKillChoice } from './mode-choice.js';
 import { startPick } from './pick.js';
 import { wardenAgainst } from './unit-aura.js';
 import { buffUnit, spendBuff } from './buff.js';
@@ -205,6 +206,15 @@ export function resolveSpell(
         (u) => u.ownerId === entry.casterId,
       ))
         state = buffUnit(state, unit.id);
+      continue;
+    }
+    if (effect.type === 'each-player-kills') {
+      const order = [
+        entry.casterId,
+        ...state.players.map((p) => p.id).filter((id) => id !== entry.casterId),
+      ];
+      const choice = nextKillChoice(state, entry.card.id, effect.what, order);
+      if (choice) state = { ...state, pendingModeChoice: choice };
       continue;
     }
     if (effect.type === 'party-favors') {

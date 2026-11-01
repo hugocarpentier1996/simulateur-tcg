@@ -1,3 +1,4 @@
+import { settleLethalUnits } from './lethal-units.js';
 import { findPayment } from '../legal/payment.js';
 import { payCost } from '../cost/payment.js';
 import { leaveBoard } from './leave-board.js';
@@ -18,7 +19,8 @@ export type EffectMode =
   | `discard-return:${string}`
   | 'pay-return'
   | 'favor-cards'
-  | 'favor-runes';
+  | 'favor-runes'
+  | `kill-own:${string}`;
 
 const ONE_ENERGY = { energy: 1, power: {} };
 
@@ -35,6 +37,10 @@ export interface ModeChoiceEntry {
   payReturn?: boolean;
   /** Joueur qui profite aussi du mode choisi (lanceur de Party Favors). */
   partnerId?: string;
+  /** Joueurs suivants à choisir à leur tour ce qu'ils tuent (Cull the Weak). */
+  nextChoosers?: readonly string[];
+  /** Ce que chaque joueur tue (each-player-kills). */
+  killWhat?: 'unit' | 'gear';
 }
 
 /** Capacité dépilée après réactions -> choix du mode par son propriétaire, sans fenêtre.
@@ -98,6 +104,20 @@ export function chooseMode(
     return { ok: false, reason: 'INVALID_MODE' };
   const cleared = { ...state, pendingModeChoice: null };
   const applied = applyMode(cleared, pending, action.mode);
+  if (pending.killWhat) {
+    const next = nextKillChoice(
+      applied.state,
+      pending.sourceId,
+      pending.killWhat,
+      pending.nextChoosers ?? [],
+    );
+    if (next)
+      return {
+        ok: true,
+        state: { ...applied.state, pendingModeChoice: next },
+        events: applied.events,
+      };
+  }
   return continueStack(applied.state, [
     ...applied.events,
     { type: 'legend-effect-resolved', sourceId: pending.sourceId },
@@ -113,6 +133,12 @@ function applyMode(
   if (mode === 'channel-exhausted')
     return channelForPlayer(state, pending.ownerId, 1);
   if (mode === 'skip') return { state, events: [] };
+  if (mode.startsWith('kill-own:')) {
+    const id = mode.slice('kill-own:'.length);
+    return pending.killWhat === 'gear'
+      ? killGears(state, [id])
+      : settleLethalUnits(state, new Set([id]));
+  }
   if (mode === 'favor-cards' || mode === 'favor-runes') {
     let next = state;
     const events: Extract<ActionResult, { ok: true }>['events'] = [];
@@ -168,4 +194,29 @@ function applyMode(
       : killed.state,
     events: killed.events,
   };
+}
+
+/** Premier joueur de la liste ayant quelque chose à tuer -> son choix (« kill-own:<id> »),
+ * les suivants restant en file. Personne : undefined. */
+export function nextKillChoice(
+  state: GameState,
+  sourceId: string,
+  what: 'unit' | 'gear',
+  players: readonly string[],
+): ModeChoiceEntry | undefined {
+  for (const [i, playerId] of players.entries()) {
+    const ids = (what === 'unit' ? state.units : (state.gears ?? []))
+      .filter((p) => p.ownerId === playerId)
+      .map((p) => p.id);
+    if (ids.length)
+      return {
+        kind: 'mode-choice',
+        sourceId,
+        ownerId: playerId,
+        modes: ids.map((id) => `kill-own:${id}` as const),
+        killWhat: what,
+        nextChoosers: players.slice(i + 1),
+      };
+  }
+  return undefined;
 }
