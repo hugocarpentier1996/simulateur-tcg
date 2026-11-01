@@ -469,6 +469,8 @@ export interface UnitBlueprint {
   /** « Spend my buff » : un mode non choisi ce tour parmi dégâts / Stun / Ready / Ganking
    * (Udyr, choix à la résolution). */
   readonly buffSpendModes?: boolean;
+  /** Peut avoir un nombre quelconque de buffs (Lee Sin ; buffs en plus dans extraBuffs). */
+  readonly unlimitedBuffs?: boolean;
   /** « Recycle 1 from your trash » : +Might jusqu'à la fin du tour, via la pile (Vi). */
   readonly trashRecycleMight?: number;
   /** Coût supplémentaire obligatoire : tuer une unité alliée (sacrificeUnitId). */
@@ -572,6 +574,8 @@ export interface UnitState {
   definitionId: string;
   might: number;
   damage: number;
+  /** Buffs au-delà du premier (unités unlimitedBuffs). */
+  extraBuffs?: number;
   /** Propriétaire de la carte quand un autre joueur la contrôle (ownerId = contrôleur). */
   cardOwnerId?: string;
   tank?: boolean;

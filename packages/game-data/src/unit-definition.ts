@@ -271,6 +271,8 @@ export interface UnitDefinition extends PrintedMetadata {
   /** « Spend my buff » : un mode non choisi ce tour parmi dégâts / Stun / Ready / Ganking
    * (Udyr, choix à la résolution). */
   readonly buffSpendModes?: boolean;
+  /** Peut avoir un nombre quelconque de buffs (Lee Sin ; buffs en plus dans extraBuffs). */
+  readonly unlimitedBuffs?: boolean;
   /** « Recycle 1 from your trash » : +Might jusqu'à la fin du tour, via la pile (Vi). */
   readonly trashRecycleMight?: number;
   /** Coût supplémentaire obligatoire : tuer une unité alliée à la mise en jeu. */

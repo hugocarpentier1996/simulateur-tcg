@@ -19,7 +19,10 @@ export function effectiveMight(unit: UnitState, state?: GameState): number {
       (state ? runeMightBonus(unit, state) : 0) +
       (state ? unitAuraMightBonus(unit, state) : 0) +
       (state ? selfScoreMightBonus(unit, state) : 0) +
-      (unit.buffed ? 1 + (state?.buffBonus?.[unit.ownerId] ?? 0) : 0) +
+      (unit.buffed
+        ? (1 + (unit.extraBuffs ?? 0)) *
+          (1 + (state?.buffBonus?.[unit.ownerId] ?? 0))
+        : 0) +
       (unit.temporaryEffects ?? []).reduce(
         (sum, effect) =>
           sum + (effect.type === 'modify-might' ? effect.amount : 0),

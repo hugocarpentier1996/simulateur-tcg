@@ -207,7 +207,8 @@ function* candidates(
     ability.effect.type === 'draw' ||
     ability.effect.type === 'next-unit-ready' ||
     ability.effect.type === 'next-spell-bonus-damage' ||
-    ability.effect.type === 'recycle-trashes'
+    ability.effect.type === 'recycle-trashes' ||
+    ability.effect.type === 'buff-self'
       ? [undefined]
       : tapAbilityTargets(state, playerId, ability, gear.id)) {
       const payment = findPayment(

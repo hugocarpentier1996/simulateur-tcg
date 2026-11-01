@@ -329,3 +329,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Teemo — ogn-121-298
 - [x] Malzahar — ogn-113-298
 - [x] Udyr — ogn-157-298
+- [x] Lee Sin — ogn-078-298

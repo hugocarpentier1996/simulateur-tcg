@@ -109,7 +109,9 @@ export interface GearTapAbility {
     /** Met en main une unité à soi portant ce tag, depuis la zone champion ou le plateau. */
     | { readonly type: 'tag-to-hand'; readonly tag: string }
     /** Unité alliée : d'un champ vers sa base, ou de sa base vers le champ destinationId. */
-    | { readonly type: 'move-to-or-from-base' };
+    | { readonly type: 'move-to-or-from-base' }
+    /** Sans cible : l'unité source se buffe (Lee Sin). */
+    | { readonly type: 'buff-self' };
 }
 
 /** Définition -> copie figée indépendante. RangeError si coût négatif/non fini,
