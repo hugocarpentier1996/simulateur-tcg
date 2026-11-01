@@ -47,7 +47,10 @@ export interface GearBlueprint {
       /** Sans cible : le gear source se détruit (Treasure Trove). */
       | { readonly type: 'kill-self' }
       /** Sans cible : son propriétaire pioche count cartes. */
-      | { readonly type: 'draw'; readonly count: number };
+      | { readonly type: 'draw'; readonly count: number }
+      /** Sans cible : la prochaine unité jouée ce tour arrive Ready ; legion : seulement si une
+       * carte a déjà été jouée ce tour (vérifié à la résolution). */
+      | { readonly type: 'next-unit-ready'; readonly legion?: boolean };
   };
   /** Posé, défaussé ou détruit : son propriétaire pioche 1 (Scrapheap ; sans pile). */
   readonly drawOnPlayDiscardOrKill?: boolean;

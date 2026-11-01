@@ -47,6 +47,8 @@ export interface GameState {
   effectDamagePrevented?: boolean;
   /** Joueurs dont au moins une unité ennemie est morte ce tour (Spoils of War). */
   enemyDeathsThisTurn?: readonly string[];
+  /** Joueurs dont la prochaine unité jouée ce tour arrive Ready (Sun Disc). */
+  nextUnitReady?: readonly string[];
   /** Tours supplémentaires en attente, dans l'ordre (Time Warp). */
   extraTurns?: readonly string[];
   /** Might supplémentaire donnée ce tour par les buffs des unités de chaque joueur. */

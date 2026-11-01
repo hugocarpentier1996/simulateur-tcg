@@ -30,6 +30,8 @@ export interface PlayEffectEntry {
     /** Dépense le buff de chaque unité indiquée qui en a encore un, puis canalise
      * autant de runes Tap (Albus Ferros). */
     | { type: 'spend-buffs-channel'; unitIds: readonly string[] }
+    /** La prochaine unité jouée ce tour par le propriétaire arrive Ready (Legion vérifié). */
+    | { type: 'next-unit-ready'; legion?: boolean }
     /** Joue l'unité indiquée du cimetière du propriétaire dans sa base. */
     | { type: 'play-from-trash'; cardId: string }
     /** Buffe chacune des unités indiquées encore en jeu (Kinkou Monk). */
@@ -110,6 +112,21 @@ export function resolvePlayEffect(
               ],
             }
           : state,
+      events: [{ type: 'unit-play-effect-resolved', sourceId: entry.sourceId }],
+    };
+  }
+  if (entry.effect.type === 'next-unit-ready') {
+    const active =
+      !entry.effect.legion ||
+      (state.cardsPlayedThisTurn?.[entry.ownerId] ?? 0) > 0;
+    return {
+      ok: true,
+      state: active
+        ? {
+            ...state,
+            nextUnitReady: [...(state.nextUnitReady ?? []), entry.ownerId],
+          }
+        : state,
       events: [{ type: 'unit-play-effect-resolved', sourceId: entry.sourceId }],
     };
   }

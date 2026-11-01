@@ -418,6 +418,13 @@ function playUnitCore(
             },
           }
         : {}),
+      ...(state.nextUnitReady?.includes(card.ownerId)
+        ? {
+            nextUnitReady: state.nextUnitReady.filter(
+              (_, i) => i !== state.nextUnitReady!.indexOf(card.ownerId),
+            ),
+          }
+        : {}),
       cards: payment.state.cards
         .filter((c) => c.id !== card.id)
         .map((c) => (c.id === storm?.card.id ? { ...c, ready: false } : c)),
@@ -453,7 +460,8 @@ function playUnitCore(
             (definition.legionReady === true &&
               (state.cardsPlayedThisTurn?.[action.playerId] ?? 0) > 0) ||
             action.accelerate === true ||
-            !!state.readyEntryPlayers?.includes(card.ownerId),
+            !!state.readyEntryPlayers?.includes(card.ownerId) ||
+            !!state.nextUnitReady?.includes(card.ownerId),
           might: definition.might,
           ...(definition.tank ? { tank: true } : {}),
           ...(definition.backline ? { backline: true } : {}),

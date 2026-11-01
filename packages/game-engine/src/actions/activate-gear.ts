@@ -110,7 +110,8 @@ export function tapAbilityTargets(
   if (
     ability.effect.type === 'summon-base' ||
     ability.effect.type === 'kill-self' ||
-    ability.effect.type === 'draw'
+    ability.effect.type === 'draw' ||
+    ability.effect.type === 'next-unit-ready'
   )
     return [];
   const { allegiance, zone, exhausted } = ability.target;
@@ -148,7 +149,8 @@ function activateTapAbility(
   const untargeted =
     ability.effect.type === 'summon-base' ||
     ability.effect.type === 'kill-self' ||
-    ability.effect.type === 'draw';
+    ability.effect.type === 'draw' ||
+    ability.effect.type === 'next-unit-ready';
   if (
     untargeted
       ? action.targetId !== undefined
@@ -214,13 +216,18 @@ function activateTapAbility(
           ? { type: 'kill-gear', gearId: gear.id }
           : ability.effect.type === 'draw'
             ? { type: 'draw', count: ability.effect.count }
-            : ability.effect.type === 'move-to-base'
-              ? { type: 'move-to-base', targetId: action.targetId! }
-              : {
-                  type: 'targeted',
-                  targetId: action.targetId!,
-                  effect: ability.effect,
-                },
+            : ability.effect.type === 'next-unit-ready'
+              ? {
+                  type: 'next-unit-ready',
+                  ...(ability.effect.legion ? { legion: true } : {}),
+                }
+              : ability.effect.type === 'move-to-base'
+                ? { type: 'move-to-base', targetId: action.targetId! }
+                : {
+                    type: 'targeted',
+                    targetId: action.targetId!,
+                    effect: ability.effect,
+                  },
   };
   return {
     ok: true,

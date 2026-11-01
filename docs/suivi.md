@@ -1243,3 +1243,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Portal Rescue (ogn-102) : Action ; bannit une unité alliée puis la rejoue dans sa base, gratuitement, avec un état remis à neuf (effet `banish-replay` ; un jeton banni disparaît).
 - Vi (ogn-036) : Ganking ; recycler une carte de son cimetière : +1 Might ce tour via la pile (action `trash-recycle-ability`, `trashRecycleMight`).
 - Garbage Grabber (ogn-099) : gear ; recycler 3 cartes de son cimetière, 1 énergie, Tap : pioche 1 (capacité Tap sans cible `draw`, coût `recycleTrash`).
+- Sun Disc (ogn-021) : gear ; Tap — Legion : la prochaine unité jouée ce tour arrive Ready (capacité Tap sans cible `next-unit-ready`, registre `nextUnitReady` vidé en fin de tour ; Legion vérifié à la résolution).

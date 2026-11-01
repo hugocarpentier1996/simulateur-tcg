@@ -36,6 +36,7 @@ export function startNextTurn(
     ...(state.allyDeathThisTurn ? { allyDeathThisTurn: [] } : {}),
     ...(state.dreamingTreeUsed ? { dreamingTreeUsed: [] } : {}),
     ...(state.buffBonus ? { buffBonus: {} } : {}),
+    ...(state.nextUnitReady ? { nextUnitReady: [] } : {}),
     ...(state.extraTurns ? { extraTurns: laterExtras } : {}),
     ...(state.enemyDeathsThisTurn ? { enemyDeathsThisTurn: [] } : {}),
     ...(state.effectDamagePrevented ? { effectDamagePrevented: false } : {}),
