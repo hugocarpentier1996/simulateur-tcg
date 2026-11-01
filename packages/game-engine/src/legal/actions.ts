@@ -137,9 +137,7 @@ function* candidates(
         ?.sacrificeResource
     )
       for (const victim of [
-        ...state.units.filter(
-          (u) => u.ownerId === playerId && u.id !== unit.id,
-        ),
+        ...state.units.filter((u) => u.ownerId === playerId),
         ...(state.gears ?? []).filter((g) => g.ownerId === playerId),
       ])
         yield {

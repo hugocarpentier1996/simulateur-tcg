@@ -44,3 +44,10 @@ it('Malzahar : tuer une unité ou un gear allié et se coucher ajoute 2 Power qu
   ).toBe(true);
   expect(act(scenario(), use('enemy')).ok).toBe(false);
 });
+
+it('Malzahar peut se sacrifier lui-même : il meurt et ajoute 2 Power quelconques', () => {
+  expect(getLegalActions(scenario(), 'a')).toContainEqual(use('malz'));
+  const s = step(scenario(), use('malz'));
+  expect(s.units.map((u) => u.id)).toEqual(['fodder', 'enemy']);
+  expect(s.resources.a?.anyPower).toBe(2);
+});

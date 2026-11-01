@@ -1288,3 +1288,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Divine Judgment (ogn-244) : chaque joueur, le lanceur d'abord, garde 2 unités, 2 gears, 2 runes et 2 cartes en main (modes `keep:<id>+<id>`, catégorie de 2 objets ou moins gardée d'office) ; le reste est recyclé sous le deck (runes sous la pile de runes, jetons retirés), les champs sans unité de leur contrôleur deviennent neutres.
 - Promising Future (ogn-115) : chaque joueur, le lanceur d'abord, choisit une carte parmi ses 5 du dessus (modes `future:<id>`) et recycle le reste ; puis, en commençant par le joueur suivant, chacun joue sa carte en payant seulement le Power (unité/gear en base, sort sans cible sur la pile).
 - Réponse 17 : Relentless Storm mesure Mighty sur la Might réelle de l'unité à son arrivée (auras, champ, bonus), plus sur la Might imprimée.
+- Réponse 21 : Malzahar peut se sacrifier lui-même pour payer sa capacité ; il meurt et les 2 Power sont ajoutés.

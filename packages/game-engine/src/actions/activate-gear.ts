@@ -43,9 +43,8 @@ export function activateGear(
         return { ok: false, reason: 'ABILITY_WINDOW_CLOSED' };
       const victimUnit = state.units.find(
         (u) =>
-          u.id === action.targetId &&
-          u.id !== unit.id &&
-          u.ownerId === action.playerId,
+          // Malzahar peut se sacrifier lui-même (réponse 21).
+          u.id === action.targetId && u.ownerId === action.playerId,
       );
       const victimGear = state.gears?.find(
         (g) => g.id === action.targetId && g.ownerId === action.playerId,
