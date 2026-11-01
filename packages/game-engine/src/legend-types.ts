@@ -24,6 +24,8 @@ export interface LegendBlueprint {
   readonly buffOnEnemyStunned?: boolean;
   /** Début de sa Beginning : pioche 1 (via la pile) si sa main a au plus ce nombre de cartes. */
   readonly beginningDrawIfHandAtMost?: number;
+  /** Cacher une carte peut se payer 1 énergie au lieu d'1 Power (Swift Scout). */
+  readonly hideWithEnergy?: boolean;
   /** Capacité ADD « Tap : ajoute » ; legion : seulement si une carte a été jouée ce tour. */
   readonly resourceAbility?: {
     readonly energy?: number;

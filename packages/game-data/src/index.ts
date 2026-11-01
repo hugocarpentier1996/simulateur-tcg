@@ -359,3 +359,4 @@ export { reinforce } from './ogn/reinforce.js';
 export { zhonyasHourglass } from './ogn/zhonyas-hourglass.js';
 export { packOfWonders } from './ogn/pack-of-wonders.js';
 export { guerillaWarfare } from './ogn/guerilla-warfare.js';
+export { swiftScout } from './ogn/swift-scout.js';

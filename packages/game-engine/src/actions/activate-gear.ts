@@ -118,6 +118,30 @@ export function tapAbilityTargets(
     ability.effect.type === 'recycle-trashes'
   )
     return [];
+  if (ability.effect.type === 'tag-to-hand') {
+    const tag = ability.effect.tag;
+    const tagged = (definitionId: string) =>
+      !!state.unitDefinitions
+        ?.find((d) => d.id === definitionId)
+        ?.tags?.includes(tag);
+    return [
+      ...state.units
+        .filter((u) => u.ownerId === playerId && tagged(u.definitionId))
+        .map((u) => u.id),
+      ...state.cards
+        .filter(
+          (c) =>
+            tagged(c.definitionId) &&
+            state.zones.some(
+              (z) =>
+                z.id === c.zoneId &&
+                z.kind === 'champion' &&
+                z.ownerId === playerId,
+            ),
+        )
+        .map((c) => c.id),
+    ];
+  }
   if (ability.effect.type === 'bounce-friendly')
     return [
       ...state.units.filter((u) => u.ownerId === playerId).map((u) => u.id),
@@ -233,7 +257,8 @@ function activateTapAbility(
           ? { type: 'kill-gear', gearId: gear.id }
           : ability.effect.type === 'draw'
             ? { type: 'draw', count: ability.effect.count }
-            : ability.effect.type === 'bounce-friendly'
+            : ability.effect.type === 'bounce-friendly' ||
+                ability.effect.type === 'tag-to-hand'
               ? { type: 'bounce', targetId: action.targetId! }
               : ability.effect.type === 'recycle-trashes'
                 ? { type: 'recycle-trashes', count: ability.effect.count }

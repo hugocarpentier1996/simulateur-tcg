@@ -1,3 +1,4 @@
+import { activeLegends } from './legends.js';
 import { battlefieldDefinition } from './battlefield.js';
 import type {
   ActionResult,
@@ -86,6 +87,13 @@ export function hideCard(
   if (!card || !hasHidden(state, card.definitionId))
     return { ok: false, reason: 'CARD_NOT_HIDDEN' };
   if (
+    action.payWithEnergy &&
+    !activeLegends(state, action.playerId).some(
+      (l) => l.definition.hideWithEnergy,
+    )
+  )
+    return { ok: false, reason: 'INVALID_ADDITIONAL_COST' };
+  if (
     !state.battlefields.some(
       (f) =>
         f.zoneId === action.battlefieldId && f.controllerId === action.playerId,
@@ -102,7 +110,9 @@ export function hideCard(
     action.playerId,
     state.freeHidePlayers?.includes(action.playerId)
       ? { energy: 0, power: {} }
-      : { energy: 0, power: {}, genericPower: 1 },
+      : action.payWithEnergy
+        ? { energy: 1, power: {} }
+        : { energy: 0, power: {}, genericPower: 1 },
     action.payment,
   );
   if (!paid.ok) return paid;

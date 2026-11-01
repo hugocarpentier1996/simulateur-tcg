@@ -238,6 +238,20 @@ function* candidates(
           battlefieldId: field.zoneId,
           payment: hidePayment,
         };
+  const energyHide =
+    activeLegends(state, playerId).some((l) => l.definition.hideWithEnergy) &&
+    findPayment(state, playerId, { energy: 1, power: {} });
+  if (energyHide)
+    for (const card of state.cards.filter((c) => c.ownerId === playerId))
+      for (const field of state.battlefields)
+        yield {
+          type: 'hide-card',
+          playerId,
+          cardId: card.id,
+          battlefieldId: field.zoneId,
+          payWithEnergy: true,
+          payment: energyHide,
+        };
   for (const card of state.cards.filter((c) => c.ownerId === playerId)) {
     const unit = state.unitDefinitions?.find((d) => d.id === card.definitionId);
     if (unit) {

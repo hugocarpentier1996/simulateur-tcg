@@ -315,3 +315,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Zhonya's Hourglass — ogn-077-298
 - [x] Pack of Wonders — ogn-181-298
 - [x] Guerilla Warfare — ogn-264-298
+- [x] Swift Scout — ogn-263-298

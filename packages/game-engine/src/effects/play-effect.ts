@@ -173,6 +173,11 @@ export function resolvePlayEffect(
       state: {
         ...state,
         cards: state.cards.map((c) => {
+          if (
+            c.id === id &&
+            state.zones.some((z) => z.id === c.zoneId && z.kind === 'champion')
+          )
+            return { ...c, zoneId: handOf(c.ownerId) ?? c.zoneId };
           if (c.id !== id || !c.facedown) return c;
           const back = { ...c, zoneId: handOf(c.ownerId) ?? c.zoneId };
           delete back.facedown;

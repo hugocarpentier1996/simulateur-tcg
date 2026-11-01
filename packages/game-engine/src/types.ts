@@ -639,6 +639,8 @@ export type GameAction =
       playerId: string;
       cardId: string;
       battlefieldId: string;
+      /** Swift Scout : payer 1 énergie au lieu d'1 Power. */
+      payWithEnergy?: boolean;
       payment: PaymentPlan;
     }
   /** Capacité « Spend my buff » d'une unité alliée buffée (buffSpendMight). */

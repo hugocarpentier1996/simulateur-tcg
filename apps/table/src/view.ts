@@ -541,7 +541,10 @@ function actionLabel(
       return prefix + 'Dépenser le buff de ' + target(action.unitId);
     case 'hide-card':
       return (
-        prefix + 'Cacher sur ' + target(action.battlefieldId) + ' (1 Power)'
+        prefix +
+        'Cacher sur ' +
+        target(action.battlefieldId) +
+        (action.payWithEnergy ? ' (1 énergie)' : ' (1 Power)')
       );
     case 'choose-mode':
       return (
