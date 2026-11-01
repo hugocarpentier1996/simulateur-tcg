@@ -35,6 +35,8 @@ export type SpellEffect =
   | { readonly type: 'exhaust-allies' }
   /** Détruit tous les équipements en jeu (cimetière de leur propriétaire). */
   | { readonly type: 'kill-all-gear' }
+  /** Alliées Tap buffées : buff dépensé, redressées ; puis buff de toutes les alliées. */
+  | { readonly type: 'spend-buffs-ready-then-buff-all' }
   /** Ce tour, les buffs des unités du lanceur donnent `amount` Might de plus (Stand United). */
   | { readonly type: 'empower-buffs'; readonly amount: number }
   /** Tue les unités selectedUnitIds (au moins une), toutes sur un même champ, de Might totale

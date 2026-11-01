@@ -1,6 +1,6 @@
 import { startPick } from './pick.js';
 import { wardenAgainst } from './unit-aura.js';
-import { buffUnit } from './buff.js';
+import { buffUnit, spendBuff } from './buff.js';
 import { channelForPlayer } from '../turn/supplies.js';
 import { returnGraveyardCard } from './graveyard-card.js';
 import { effectiveMight, preventsDamage } from './modifiers.js';
@@ -183,6 +183,28 @@ export function resolveSpell(
           };
         }),
       };
+      continue;
+    }
+    if (effect.type === 'spend-buffs-ready-then-buff-all') {
+      for (const unit of state.units.filter(
+        (u) => u.ownerId === entry.casterId && u.buffed && !u.ready,
+      ))
+        state = {
+          ...(spendBuff(state, unit.id) ?? state),
+        };
+      state = {
+        ...state,
+        units: state.units.map((u) =>
+          u.ownerId === entry.casterId &&
+          input.units.some((o) => o.id === u.id && o.buffed && !o.ready)
+            ? { ...u, ready: true }
+            : u,
+        ),
+      };
+      for (const unit of state.units.filter(
+        (u) => u.ownerId === entry.casterId,
+      ))
+        state = buffUnit(state, unit.id);
       continue;
     }
     if (effect.type === 'empower-buffs') {

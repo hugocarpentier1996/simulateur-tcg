@@ -275,3 +275,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Kinkou Monk — ogn-141-298
 - [x] Sett — ogn-164-298
 - [x] Adaptatron — ogn-056-298
+- [x] Overt Operation — ogn-153-298

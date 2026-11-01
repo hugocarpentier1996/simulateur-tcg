@@ -319,3 +319,4 @@ export { noxusSaboteur } from './ogn/noxus-saboteur.js';
 export { kinkouMonk } from './ogn/kinkou-monk.js';
 export { sett } from './ogn/sett.js';
 export { adaptatron } from './ogn/adaptatron.js';
+export { overtOperation } from './ogn/overt-operation.js';

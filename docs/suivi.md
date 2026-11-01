@@ -1216,3 +1216,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Kinkou Monk (ogn-141) : à la mise en jeu, buffe jusqu'à deux autres unités alliées (`onPlayBuffOthers`, champ d'action `onPlaySelectedIds` choisi sans ordre, aussi au clic dans la table).
 - Sett (ogn-164) : se buffe quand il est joué et quand il conquiert (`onConquerBuffSelf`) ; « dépenser mon buff » : +4 Might ce tour via la pile (action `spend-buff-ability`, `buffSpendMight`, à son tour en état ouvert comme les capacités Tap).
 - Adaptatron (ogn-056) : à la conquête, peut détruire un gear (choix à la résolution parmi les gears en jeu, ou rien) et, si oui, se buffe (`onConquerKillGearBuff`, modes `skip` / `kill-gear:<id>` du choix de mode).
+- Overt Operation (ogn-153) : Action ; chaque unité alliée Tap et buffée dépense son buff pour se redresser, puis toutes les unités alliées sont buffées (effet `spend-buffs-ready-then-buff-all`).
