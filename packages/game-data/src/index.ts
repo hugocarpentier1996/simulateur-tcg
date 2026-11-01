@@ -318,3 +318,4 @@ export { bandleTree } from './ogn/bandle-tree.js';
 export { noxusSaboteur } from './ogn/noxus-saboteur.js';
 export { kinkouMonk } from './ogn/kinkou-monk.js';
 export { sett } from './ogn/sett.js';
+export { adaptatron } from './ogn/adaptatron.js';

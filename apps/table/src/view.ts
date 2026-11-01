@@ -519,7 +519,14 @@ function actionLabel(
       );
     case 'choose-mode':
       return (
-        prefix + (action.mode === 'draw' ? 'Piocher 1' : 'Canaliser 1 rune Tap')
+        prefix +
+        (action.mode === 'draw'
+          ? 'Piocher 1'
+          : action.mode === 'channel-exhausted'
+            ? 'Canaliser 1 rune Tap'
+            : action.mode === 'skip'
+              ? 'Ne rien faire'
+              : 'Détruire ' + target(action.mode.slice('kill-gear:'.length)))
       );
     case 'choose-hold-channel':
       return (

@@ -209,6 +209,8 @@ export interface UnitDefinition extends PrintedMetadata {
   readonly onPlayBuffOthers?: number;
   /** « When I conquer » : se buffe, via la pile (Sett). */
   readonly onConquerBuffSelf?: boolean;
+  /** « When I conquer, you may kill a gear. If you do, buff me » (Adaptatron). */
+  readonly onConquerKillGearBuff?: boolean;
   /** « Spend my buff » : +Might jusqu'à la fin du tour, via la pile (Sett). */
   readonly buffSpendMight?: number;
   /** Coût supplémentaire obligatoire : tuer une unité alliée à la mise en jeu. */
