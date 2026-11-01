@@ -213,6 +213,8 @@ export interface UnitDefinition extends PrintedMetadata {
   readonly blocksEnemyHidden?: boolean;
   /** Réaction : jouable comme une Réaction (pile, Showdown, tour adverse) avec la priorité. */
   readonly reactionTiming?: boolean;
+  /** Premier déplacement du tour : peut redresser autre chose de Tap (Miss Fortune, pile). */
+  readonly onFirstMoveReadyOther?: boolean;
   /** Défaussée : peut être jouée depuis le cimetière en payant 1 Power de cette couleur
    * (Flame Chompers, capacité sur la pile). */
   readonly playOnDiscard?: { readonly power: string };

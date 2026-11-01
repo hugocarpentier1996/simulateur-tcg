@@ -38,7 +38,8 @@ export type EffectMode =
   | `retreat:${string}`
   | `arrange:${string}`
   | `reinforce:${string}`
-  | 'pay-play';
+  | 'pay-play'
+  | `ready:${string}`;
 
 const ONE_ENERGY = { energy: 1, power: {} };
 
@@ -57,6 +58,8 @@ export interface ModeChoiceEntry {
   partnerId?: string;
   /** Joueurs suivants à choisir à leur tour ce qu'ils tuent (Cull the Weak). */
   nextChoosers?: readonly string[];
+  /** Redresser autre chose de Tap (Miss Fortune) : modes calculés à la résolution. */
+  readyOther?: boolean;
   /** Coût à payer pour jouer la source depuis le cimetière (Flame Chompers, Phoenix). */
   payPlayCost?: UnitBlueprint['cost'];
   /** Reinforce : cartes regardées et réduction d'énergie de l'unité jouée. */
@@ -115,32 +118,55 @@ export function resolveModeChoice(
         .map((c) => c.id)
     : [];
   const payPlayCost = entry.payPlayCost;
-  const modes: readonly EffectMode[] = payPlayCost
-    ? inTrash && findPayment(state, entry.ownerId, payPlayCost)
-      ? ['skip', 'pay-play']
-      : []
-    : entry.arrangeTop
-      ? arrangements(top).map((kept) => `arrange:${kept.join('+')}` as const)
-      : entry.retreatFrom
-        ? ['skip', ...retreats]
-        : entry.killGearBuff
-          ? [
-              'skip',
-              ...(state.gears ?? []).map((g) => `kill-gear:${g.id}` as const),
-            ]
-          : entry.discardReturn
-            ? inTrash
-              ? [
-                  'skip',
-                  ...handIds.map((id) => `discard-return:${id}` as const),
-                ]
-              : []
-            : entry.payReturn
-              ? state.units.some((u) => u.id === entry.sourceId) &&
-                findPayment(state, entry.ownerId, ONE_ENERGY)
-                ? ['skip', 'pay-return']
+  const exhausted = entry.readyOther
+    ? [
+        ...state.units.filter(
+          (u) =>
+            u.ownerId === entry.ownerId && !u.ready && u.id !== entry.sourceId,
+        ),
+        ...(state.gears ?? []).filter(
+          (g) => g.ownerId === entry.ownerId && !g.ready,
+        ),
+        ...state.cards.filter(
+          (c) =>
+            c.ownerId === entry.ownerId &&
+            c.ready === false &&
+            state.zones.some(
+              (z) =>
+                z.id === c.zoneId &&
+                (z.kind === 'runes' || z.kind === 'legend'),
+            ),
+        ),
+      ].map((x) => `ready:${x.id}` as const)
+    : [];
+  const modes: readonly EffectMode[] = entry.readyOther
+    ? ['skip', ...exhausted]
+    : payPlayCost
+      ? inTrash && findPayment(state, entry.ownerId, payPlayCost)
+        ? ['skip', 'pay-play']
+        : []
+      : entry.arrangeTop
+        ? arrangements(top).map((kept) => `arrange:${kept.join('+')}` as const)
+        : entry.retreatFrom
+          ? ['skip', ...retreats]
+          : entry.killGearBuff
+            ? [
+                'skip',
+                ...(state.gears ?? []).map((g) => `kill-gear:${g.id}` as const),
+              ]
+            : entry.discardReturn
+              ? inTrash
+                ? [
+                    'skip',
+                    ...handIds.map((id) => `discard-return:${id}` as const),
+                  ]
                 : []
-              : entry.modes;
+              : entry.payReturn
+                ? state.units.some((u) => u.id === entry.sourceId) &&
+                  findPayment(state, entry.ownerId, ONE_ENERGY)
+                  ? ['skip', 'pay-return']
+                  : []
+                : entry.modes;
   if (
     modes.length <= 1 &&
     (entry.killGearBuff ||
@@ -148,7 +174,8 @@ export function resolveModeChoice(
       entry.payReturn ||
       entry.retreatFrom ||
       entry.arrangeTop ||
-      entry.payPlayCost)
+      entry.payPlayCost ||
+      entry.readyOther)
   )
     return {
       ok: true,
@@ -445,6 +472,28 @@ function applyMode(
       events.push(...r.events);
     }
     return { state: next, events };
+  }
+  if (mode.startsWith('ready:')) {
+    const id = mode.slice('ready:'.length);
+    return {
+      state: {
+        ...state,
+        units: state.units.map((u) =>
+          u.id === id ? { ...u, ready: true } : u,
+        ),
+        ...(state.gears
+          ? {
+              gears: state.gears.map((g) =>
+                g.id === id ? { ...g, ready: true } : g,
+              ),
+            }
+          : {}),
+        cards: state.cards.map((c) =>
+          c.id === id ? { ...c, ready: true } : c,
+        ),
+      },
+      events: [],
+    };
   }
   if (mode === 'pay-play' && pending.payPlayCost) {
     const cost = pending.payPlayCost;

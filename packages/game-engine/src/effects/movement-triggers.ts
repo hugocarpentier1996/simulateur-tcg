@@ -1,3 +1,4 @@
+import type { ModeChoiceEntry } from './mode-choice.js';
 import { startLoot } from './loot.js';
 import type { GameEvent, GameState, ActionResult } from '../types.js';
 import { summonHere } from './summon-here.js';
@@ -17,7 +18,7 @@ export function queueMovementEffects(
   state: GameState,
   events: readonly GameEvent[],
 ): Extract<ActionResult, { ok: true }> {
-  const entries: MovementEntry[] = [];
+  const entries: (MovementEntry | ModeChoiceEntry)[] = [];
   for (const event of events) {
     if (event.type !== 'unit-moved' && event.type !== 'unit-retreated')
       continue;
@@ -36,6 +37,14 @@ export function queueMovementEffects(
     const definition = state.unitDefinitions?.find(
       (d) => d.id === unit.definitionId,
     );
+    if (definition?.onFirstMoveReadyOther && !(unit.movesThisTurn ?? 0))
+      entries.push({
+        kind: 'mode-choice',
+        sourceId: unit.id,
+        ownerId: unit.ownerId,
+        modes: [],
+        readyOther: true,
+      });
     if (definition?.onMoveLoot)
       entries.push({
         kind: 'movement',

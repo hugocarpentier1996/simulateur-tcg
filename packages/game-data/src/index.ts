@@ -365,3 +365,4 @@ export { unforgiven } from './ogn/unforgiven.js';
 export { theBoss } from './ogn/the-boss.js';
 export { flameChompers } from './ogn/flame-chompers.js';
 export { immortalPhoenix } from './ogn/immortal-phoenix.js';
+export { missFortuneBody } from './ogn/miss-fortune-body.js';
