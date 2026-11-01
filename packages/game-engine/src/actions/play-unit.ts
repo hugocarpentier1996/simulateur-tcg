@@ -186,7 +186,11 @@ function playUnitCore(
     !contested
   )
     return { ok: false, reason: 'INVALID_SUMMON_DESTINATION' };
-  if (hiddenField && !choicesHere(state, [action.onPlayTargetId], hiddenField))
+  if (
+    hiddenField &&
+    definition.onPlayTargetEffect?.effect.type !== 'swap-places' &&
+    !choicesHere(state, [action.onPlayTargetId], hiddenField)
+  )
     return { ok: false, reason: 'INVALID_TARGET' };
   const entries: (ReturnSpellEntry | UnitPlayEntry | PlayEffectEntry)[] = [];
   if (

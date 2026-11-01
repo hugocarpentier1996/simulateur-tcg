@@ -139,6 +139,8 @@ export interface UnitDefinition extends PrintedMetadata {
       | { readonly type: 'spend-buff-empower-self' }
       /** Déplace la cible vers le lieu de la source (Blitzcrank). */
       | { readonly type: 'pull-here' }
+      /** La source et la cible échangent leurs lieux, deux déplacements (Tideturner). */
+      | { readonly type: 'swap-places' }
       /** Dégâts de capacité égaux à la Might actuelle de la source. */
       | { readonly type: 'might-damage' }
       | { readonly type: 'kill' }

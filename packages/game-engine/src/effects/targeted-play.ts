@@ -23,6 +23,19 @@ export function resolveTargetedPlay(
 ): Extract<ActionResult, { ok: true }> {
   const target = state.units.find((u) => u.id === targetId);
   if (!target) return { ok: true, state, events: [] };
+  if (effect.type === 'swap-places') {
+    const source = state.units.find((u) => u.id === sourceId);
+    if (!source || source.zoneId === target.zoneId)
+      return { ok: true, state, events: [] };
+    const first = moveUnit(state, source, target.zoneId);
+    const movedTarget = first.state.units.find((u) => u.id === target.id)!;
+    const second = moveUnit(first.state, movedTarget, source.zoneId);
+    return {
+      ok: true,
+      state: second.state,
+      events: [...first.events, ...second.events],
+    };
+  }
   if (effect.type === 'pull-here') {
     const source = state.units.find((u) => u.id === sourceId);
     if (!source || source.zoneId === target.zoneId)
