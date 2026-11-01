@@ -1178,3 +1178,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Wildclaw Shaman (ogn-147) : à la mise en jeu, peut dépenser le buff d'une unité alliée pour se buffer et se redresser (`onPlayTargetEffect` avec filtres `buffed`/`optional`, effet `spend-buff-empower-self`).
 - Poro Herder (ogn-061) : à la mise en jeu, s'il contrôle un Poro, se buffe et pioche 1 (`buff-self` avec `ifControlTag` et `draw`).
 - Eclipse Herald (ogn-059) : quand son propriétaire étourdit une unité ennemie, se redresse et gagne +1 Might ce tour (`onEnemyStunned`, détecté par `act` sur les unités nouvellement Stun).
+- Radiant Dawn (ogn-261) : légende ; quand son propriétaire étourdit des ennemis, il buffe une unité alliée (choisie automatiquement, sans pile) (`buffOnEnemyStunned`).

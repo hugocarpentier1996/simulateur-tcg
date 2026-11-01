@@ -1,3 +1,5 @@
+import { activeLegends } from './effects/legends.js';
+import { buffUnit } from './effects/buff.js';
 import { isStunned } from './effects/modifiers.js';
 import { drawCardForPlayer } from './turn/draw.js';
 import { battlefieldDefinition } from './effects/battlefield.js';
@@ -200,7 +202,20 @@ export function act(state: GameState, action: GameAction): ActionResult {
         }),
       }
     : afterDiscard;
-  const scrap = scrapheapDraws(afterStun, events);
+  let dawn = afterStun;
+  for (const player of dawn.players)
+    if (
+      [...stunnedOwners].some((o) => o !== player.id) &&
+      activeLegends(dawn, player.id).some(
+        (l) => l.definition.buffOnEnemyStunned,
+      )
+    ) {
+      const pick = [...dawn.units]
+        .filter((u) => u.ownerId === player.id)
+        .sort((x, y) => Number(!!x.buffed) - Number(!!y.buffed))[0];
+      if (pick) dawn = buffUnit(dawn, pick.id);
+    }
+  const scrap = scrapheapDraws(dawn, events);
   events.push(...scrap.events);
   const scoredMoves = thirdMovePoints(entered, scrap.state);
   events.push(...scoredMoves.events);

@@ -24,6 +24,8 @@ export interface LegendDefinition extends PrintedMetadata {
   readonly weakenAttackers?: number;
   /** Unité Mighty jouée : la légende Ready se couche pour canaliser N runes Tap (pile). */
   readonly mightyPlayChannel?: number;
+  /** Étourdir des ennemis : buffe une unité alliée (sans buff d'abord, sans choix ni pile). */
+  readonly buffOnEnemyStunned?: boolean;
   /** Début de sa Beginning : pioche 1 (via la pile) si sa main a au plus ce nombre de cartes. */
   readonly beginningDrawIfHandAtMost?: number;
   /** Capacité ADD « Tap : ajoute » ; legion : seulement si une carte a été jouée ce tour. */
