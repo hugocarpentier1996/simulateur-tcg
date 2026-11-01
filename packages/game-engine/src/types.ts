@@ -197,6 +197,8 @@ export interface UnitBlueprint {
   readonly drawOnFirstAllyDeath?: boolean;
   /** Mort d'une autre unité alliée non-Recrue : jeton de cette définition dans la base. */
   readonly recruitOnAllyDeath?: string;
+  /** Carte jouée par son propriétaire pendant le tour adverse : jeton dans sa base. */
+  readonly recruitOnOffTurnPlay?: string;
   /** Ganking tant que l'unité est buffée (Bilgewater Bully). */
   readonly buffedGanking?: boolean;
   /** Se buffe quand son propriétaire joue une autre unité (hypothèse : sans pile). */

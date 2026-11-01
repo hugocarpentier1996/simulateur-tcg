@@ -243,6 +243,32 @@ export function act(state: GameState, action: GameAction): ActionResult {
     shrineEvents.push(...drawn.events);
   }
   events.push(...shrineEvents);
+  // Viktor (Mind) : carte jouée pendant le tour adverse -> Recrue dans la base.
+  if (
+    (action.type === 'play-unit' ||
+      action.type === 'cast-spell' ||
+      action.type === 'play-gear') &&
+    action.playerId !== state.activePlayerId
+  ) {
+    const base = shrine.zones.find(
+      (z) => z.kind === 'base' && z.ownerId === action.playerId,
+    );
+    for (const viktor of shrine.units) {
+      const token = shrine.unitDefinitions?.find(
+        (d) => d.id === viktor.definitionId,
+      )?.recruitOnOffTurnPlay;
+      if (!token || !base || viktor.ownerId !== action.playerId) continue;
+      const summoned = summonToken(
+        shrine,
+        action.playerId,
+        base.id,
+        token,
+        'here',
+      );
+      shrine = summoned.state;
+      events.push(...summoned.events);
+    }
+  }
   // Viktor (Order) : chaque autre unité alliée non-Recrue morte -> Recrue dans la base.
   for (const e of events) {
     if (e.type !== 'unit-died' && e.type !== 'token-removed') continue;
