@@ -435,7 +435,13 @@ function actionLabel(
           ? ' · Cible : ' + target(action.onPlayTargetId)
           : '') +
         (action.onPlaySelectedIds
-          ? ' · Buff : ' + action.onPlaySelectedIds.map(target).join(' + ')
+          ? (state.unitDefinitions?.find(
+              (d) =>
+                d.id ===
+                state.cards.find((c) => c.id === action.cardId)?.definitionId,
+            )?.onPlaySpendBuffsChannel
+              ? ' · Dépenser les buffs : '
+              : ' · Buff : ') + action.onPlaySelectedIds.map(target).join(' + ')
           : '') +
         (action.accelerate ? ' · Accelerate (arrive Ready)' : '') +
         (action.sacrificeUnitId

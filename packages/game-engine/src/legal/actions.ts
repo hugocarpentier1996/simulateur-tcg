@@ -230,9 +230,12 @@ function* candidates(
             ? handCards(state, playerId, card.id)
             : [undefined])
             for (const zone of destinations)
-              for (const onPlaySelectedIds of unit.onPlayBuffOthers
-                ? buffOthersChoices(state, playerId, card.id, unit)
-                : [[]])
+              for (const onPlaySelectedIds of buffOthersChoices(
+                state,
+                playerId,
+                card.id,
+                unit,
+              ))
                 for (const onPlayTargetId of playTargetChoices(
                   state,
                   card.id,

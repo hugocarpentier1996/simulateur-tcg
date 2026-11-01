@@ -209,6 +209,9 @@ export interface UnitDefinition extends PrintedMetadata {
   readonly onPlayBuffOthers?: number;
   /** « When I conquer » : se buffe, via la pile (Sett). */
   readonly onConquerBuffSelf?: boolean;
+  /** À la mise en jeu : dépense les buffs des unités choisies (onPlaySelectedIds) et
+   * canalise 1 rune Tap par buff dépensé (Albus Ferros). */
+  readonly onPlaySpendBuffsChannel?: boolean;
   /** « When I conquer, you may kill a gear. If you do, buff me » (Adaptatron). */
   readonly onConquerKillGearBuff?: boolean;
   /** « Spend my buff » : +Might jusqu'à la fin du tour, via la pile (Sett). */

@@ -186,12 +186,18 @@ function playUnitCore(
   const selected = action.onPlaySelectedIds ?? [];
   if (
     selected.length &&
-    (!definition.onPlayBuffOthers ||
-      !buffOthersChoices(state, action.playerId, card.id, definition).some(
-        (choice) => sameIds(choice, selected),
-      ))
+    !buffOthersChoices(state, action.playerId, card.id, definition).some(
+      (choice) => sameIds(choice, selected),
+    )
   )
     return { ok: false, reason: 'INVALID_TARGET' };
+  if (definition.onPlaySpendBuffsChannel && selected.length)
+    entries.push({
+      kind: 'play-effect',
+      sourceId: card.id,
+      ownerId: card.ownerId,
+      effect: { type: 'spend-buffs-channel', unitIds: [...selected] },
+    });
   if (definition.onPlayBuffOthers && selected.length)
     entries.push({
       kind: 'play-effect',
@@ -507,18 +513,23 @@ export function handCards(
     .map((c) => c.id);
 }
 
-/** Kinkou Monk : sous-ensembles (vide compris) d'au plus onPlayBuffOthers autres unités
- * alliées en jeu, dans l'ordre du plateau. */
+/** Sélections de mise en jeu, dans l'ordre du plateau, vide comprise : Kinkou Monk, au plus
+ * onPlayBuffOthers autres unités alliées ; Albus Ferros, toute sélection d'alliées buffées.
+ * Sans capacité de sélection : seule la sélection vide. */
 export function buffOthersChoices(
   state: GameState,
   playerId: string,
   sourceId: string,
   definition: UnitBlueprint,
 ): string[][] {
-  const max = definition.onPlayBuffOthers ?? 0;
+  const spending = definition.onPlaySpendBuffsChannel === true;
   const allies = state.units
-    .filter((u) => u.ownerId === playerId && u.id !== sourceId)
+    .filter(
+      (u) =>
+        u.ownerId === playerId && u.id !== sourceId && (!spending || u.buffed),
+    )
     .map((u) => u.id);
+  const max = spending ? allies.length : (definition.onPlayBuffOthers ?? 0);
   const pick = (from: number, size: number): string[][] =>
     size === 0
       ? [[]]

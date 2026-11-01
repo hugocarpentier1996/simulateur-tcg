@@ -25,6 +25,9 @@ export interface PlayEffectEntry {
     /** Jeton dans la base indiquée, sans exiger que la source soit une unité en jeu. */
     | { type: 'summon-base'; destinationId: string; definitionId: string }
     | { type: 'vision' }
+    /** Dépense le buff de chaque unité indiquée qui en a encore un, puis canalise
+     * autant de runes Tap (Albus Ferros). */
+    | { type: 'spend-buffs-channel'; unitIds: readonly string[] }
     /** Buffe chacune des unités indiquées encore en jeu (Kinkou Monk). */
     | { type: 'buff-units'; unitIds: readonly string[] }
     /** Détruit le gear indiqué (capacité kill-self). */
@@ -104,6 +107,26 @@ export function resolvePlayEffect(
             }
           : state,
       events: [{ type: 'unit-play-effect-resolved', sourceId: entry.sourceId }],
+    };
+  }
+  if (entry.effect.type === 'spend-buffs-channel') {
+    let next = state;
+    let spent = 0;
+    for (const id of entry.effect.unitIds) {
+      const after = spendBuff(next, id);
+      if (after) {
+        next = after;
+        spent++;
+      }
+    }
+    const channeled = channelForPlayer(next, entry.ownerId, spent);
+    return {
+      ok: true,
+      state: channeled.state,
+      events: [
+        ...channeled.events,
+        { type: 'unit-play-effect-resolved', sourceId: entry.sourceId },
+      ],
     };
   }
   if (entry.effect.type === 'buff-units') {
