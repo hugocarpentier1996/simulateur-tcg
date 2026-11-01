@@ -219,6 +219,9 @@ export interface UnitDefinition extends PrintedMetadata {
   readonly onFirstMoveReadyOther?: boolean;
   /** Une unité alliée quitte sa zone en se déplaçant : peut la suivre (Stealthy Pursuer). */
   readonly followsAllies?: boolean;
+  /** En attaquant : révèle puis recycle la rune du dessus ; effet selon son domaine
+   * (Twisted Fate, capacité sur la pile). */
+  readonly onAttackRuneFate?: boolean;
   /** Défaussée : peut être jouée depuis le cimetière en payant 1 Power de cette couleur
    * (Flame Chompers, capacité sur la pile). */
   readonly playOnDiscard?: { readonly power: string };

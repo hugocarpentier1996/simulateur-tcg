@@ -1265,3 +1265,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Miss Fortune (Body, ogn-162) : Accelerate, Ganking ; à son premier déplacement du tour, une capacité sur la pile permet de redresser une autre unité, un gear, une légende ou une rune Tap (`onFirstMoveReadyOther`, modes `ready:<id>`).
 - Stealthy Pursuer (ogn-177) : quand une unité alliée quitte sa zone en se déplaçant, une capacité sur la pile lui permet de la suivre (`followsAllies`, mode `follow`).
 - Tideturner (ogn-199) : Hidden ; joué, il peut échanger sa place avec une unité alliée (deux déplacements, `swap-places`) ; exception Hidden : l'alliée peut être hors de son champ.
+- Twisted Fate (ogn-200) : en attaquant, une capacité sur la pile révèle puis recycle la rune du dessus de son deck de runes : Fury -> 2 dégâts à un ennemi ici et 1 aux autres ennemis ici ; Mind -> pioche 1 ; Order -> étourdit une unité ennemie (`onAttackRuneFate`, modes `tf-fury:<id>` / `stun:<id>`).

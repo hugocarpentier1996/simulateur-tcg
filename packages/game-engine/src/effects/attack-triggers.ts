@@ -1,3 +1,4 @@
+import type { ModeChoiceEntry } from './mode-choice.js';
 import { activeLegends } from './legends.js';
 import { effectiveMight } from './modifiers.js';
 import type { AttackDamageTrigger } from './attack-targets.js';
@@ -42,7 +43,7 @@ export function queueAttackEffects(
     before.showdown?.kind !== 'combat' ||
     before.showdown.battlefieldId !== combat.battlefieldId ||
     events.some((e) => e.type === 'combat-restarted');
-  const entries: AttackEntry[] = [];
+  const entries: (AttackEntry | ModeChoiceEntry)[] = [];
   const targeted: AttackDamageTrigger[] = [];
   for (const u of state.units) {
     const arrived = events.some(
@@ -88,6 +89,14 @@ export function queueAttackEffects(
         battlefieldId: combat.battlefieldId,
         amount: definition.onAttackDamageEnemiesHere,
         mode: 'damage-enemies-here',
+      });
+    if (definition?.onAttackRuneFate)
+      entries.push({
+        kind: 'mode-choice',
+        sourceId: u.id,
+        ownerId: u.ownerId,
+        modes: [],
+        runeFateAt: combat.battlefieldId,
       });
     if (definition?.onAttackKillDamagedEnemiesHere)
       entries.push({

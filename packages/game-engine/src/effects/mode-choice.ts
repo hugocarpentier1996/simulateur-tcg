@@ -1,3 +1,4 @@
+import { dealEffectDamage } from './effect-damage.js';
 import { moveUnit } from './resolve-spell.js';
 import { playUnitFromTrash } from './play-from-trash.js';
 import { dealSpellDamage } from './spell-damage.js';
@@ -41,7 +42,9 @@ export type EffectMode =
   | `reinforce:${string}`
   | 'pay-play'
   | `ready:${string}`
-  | 'follow';
+  | 'follow'
+  | `tf-fury:${string}`
+  | `stun:${string}`;
 
 const ONE_ENERGY = { energy: 1, power: {} };
 
@@ -60,6 +63,8 @@ export interface ModeChoiceEntry {
   partnerId?: string;
   /** Joueurs suivants à choisir à leur tour ce qu'ils tuent (Cull the Weak). */
   nextChoosers?: readonly string[];
+  /** Twisted Fate : champ de l'attaque ; la rune est révélée à la résolution. */
+  runeFateAt?: string;
   /** Zone où suivre l'unité alliée déplacée (Stealthy Pursuer). */
   followTo?: string;
   /** Redresser autre chose de Tap (Miss Fortune) : modes calculés à la résolution. */
@@ -88,6 +93,7 @@ export function resolveModeChoice(
   state: GameState,
   entry: ModeChoiceEntry,
 ): Extract<ActionResult, { ok: true }> {
+  if (entry.runeFateAt) return resolveRuneFate(state, entry, entry.runeFateAt);
   const inTrash = state.cards.some(
     (c) =>
       c.id === entry.sourceId &&
@@ -477,6 +483,50 @@ function applyMode(
     }
     return { state: next, events };
   }
+  if (mode.startsWith('tf-fury:')) {
+    const main = state.units.find(
+      (u) => u.id === mode.slice('tf-fury:'.length),
+    );
+    if (!main) return { state, events: [] };
+    const others = state.units.filter(
+      (u) =>
+        u.id !== main.id &&
+        u.ownerId === main.ownerId &&
+        u.zoneId === main.zoneId,
+    );
+    const source = {
+      kind: 'ability' as const,
+      sourceId: pending.sourceId,
+      playerId: pending.ownerId,
+    };
+    const first = dealEffectDamage(state, source, [main], 2);
+    const second = dealEffectDamage(first.state, source, others, 1);
+    const settled = settleLethalUnits(second.state);
+    return {
+      state: settled.state,
+      events: [...first.events, ...second.events, ...settled.events],
+    };
+  }
+  if (mode.startsWith('stun:')) {
+    const id = mode.slice('stun:'.length);
+    return {
+      state: {
+        ...state,
+        units: state.units.map((u) =>
+          u.id === id
+            ? {
+                ...u,
+                temporaryEffects: [
+                  ...(u.temporaryEffects ?? []),
+                  { type: 'stun' as const },
+                ],
+              }
+            : u,
+        ),
+      },
+      events: [],
+    };
+  }
   if (mode === 'follow' && pending.followTo) {
     const pursuer = state.units.find((u) => u.id === pending.sourceId);
     if (!pursuer || pursuer.zoneId === pending.followTo)
@@ -753,4 +803,52 @@ export function lookPlayUnitChoice(
     lookedIds: looked.map((c) => c.id),
     energyReduction,
   };
+}
+
+/** Twisted Fate : rune du dessus révélée puis recyclée sous la pile ; Mind pioche aussitôt,
+ * Fury et Order ouvrent un choix de cible ennemie (ici / n'importe où). */
+function resolveRuneFate(
+  state: GameState,
+  entry: ModeChoiceEntry,
+  battlefieldId: string,
+): Extract<ActionResult, { ok: true }> {
+  const done = [
+    { type: 'legend-effect-resolved' as const, sourceId: entry.sourceId },
+  ];
+  const pile = state.cards.filter((c) =>
+    state.zones.some(
+      (z) =>
+        z.id === c.zoneId &&
+        z.kind === 'rune-pile' &&
+        z.ownerId === entry.ownerId,
+    ),
+  );
+  const top = pile[0];
+  if (!top) return { ok: true, state, events: done };
+  let next: GameState = {
+    ...state,
+    cards: [...state.cards.filter((c) => c.id !== top.id), top],
+  };
+  const enemies = (here: boolean) =>
+    next.units
+      .filter(
+        (u) =>
+          u.ownerId !== entry.ownerId && (!here || u.zoneId === battlefieldId),
+      )
+      .map((u) => u.id);
+  if (top.color === 'bleu') {
+    const drawn = drawCardForPlayer(next, entry.ownerId);
+    return { ok: true, state: drawn.state, events: [...drawn.events, ...done] };
+  }
+  const modes =
+    top.color === 'rouge'
+      ? enemies(true).map((id) => `tf-fury:${id}` as const)
+      : top.color === 'jaune'
+        ? enemies(false).map((id) => `stun:${id}` as const)
+        : [];
+  if (!modes.length) return { ok: true, state: next, events: done };
+  const pending: ModeChoiceEntry = { ...entry, modes };
+  delete pending.runeFateAt;
+  next = { ...next, pendingModeChoice: pending };
+  return { ok: true, state: next, events: [] };
 }

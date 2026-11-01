@@ -368,3 +368,4 @@ export { immortalPhoenix } from './ogn/immortal-phoenix.js';
 export { missFortuneBody } from './ogn/miss-fortune-body.js';
 export { stealthyPursuer } from './ogn/stealthy-pursuer.js';
 export { tideturner } from './ogn/tideturner.js';
+export { twistedFate } from './ogn/twisted-fate.js';

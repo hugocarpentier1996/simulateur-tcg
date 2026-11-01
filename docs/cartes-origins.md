@@ -324,3 +324,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Miss Fortune — ogn-162-298
 - [x] Stealthy Pursuer — ogn-177-298
 - [x] Tideturner — ogn-199-298
+- [x] Twisted Fate — ogn-200-298
