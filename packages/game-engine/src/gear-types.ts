@@ -49,6 +49,9 @@ export interface GearBlueprint {
   /** Quitte le terrain (détruit) : son propriétaire pioche 1 puis canalise 1 rune Tap
    * (Treasure Trove ; sans pile, comme Scrapheap). */
   readonly onLeaveDrawChannel?: boolean;
+  /** Début de la Beginning de son propriétaire : pioche 1 (pile) s'il contrôle une carte
+   * cachée sur un champ (Mushroom Pouch). */
+  readonly beginningDrawIfFacedown?: boolean;
   readonly effects: readonly {
     readonly type: 'might-bonus';
     /** alone-in-combat : unité alliée seule de son camp au combat (Mask of Foresight). */

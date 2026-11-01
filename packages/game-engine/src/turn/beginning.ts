@@ -128,7 +128,8 @@ function firstBeginning(
   return { state: next, events };
 }
 
-/** Loose Cannon : début de Beginning, main de taille limitée -> pioche 1 empilée. */
+/** Loose Cannon : début de Beginning, main de taille limitée -> pioche 1 empilée.
+ * Mushroom Pouch : idem si le joueur a une carte cachée sur un champ. */
 function queueBeginningLegends(state: GameState, playerId: string): GameState {
   const entries = activeLegends(state, playerId).flatMap(
     ({ card, definition }) =>
@@ -144,6 +145,19 @@ function queueBeginningLegends(state: GameState, playerId: string): GameState {
           ]
         : [],
   );
+  if (state.cards.some((c) => c.facedown && c.ownerId === playerId))
+    for (const gear of state.gears ?? [])
+      if (
+        gear.ownerId === playerId &&
+        state.gearDefinitions?.find((d) => d.id === gear.definitionId)
+          ?.beginningDrawIfFacedown
+      )
+        entries.push({
+          kind: 'legend-draw',
+          sourceId: gear.id,
+          ownerId: playerId,
+          count: 1,
+        });
   if (!entries.length) return state;
   return {
     ...state,

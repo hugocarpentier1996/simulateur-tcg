@@ -31,6 +31,9 @@ export interface GearDefinition extends PrintedMetadata {
   /** Quitte le terrain (détruit) : son propriétaire pioche 1 puis canalise 1 rune Tap
    * (Treasure Trove ; sans pile, comme Scrapheap). */
   readonly onLeaveDrawChannel?: boolean;
+  /** Début de la Beginning de son propriétaire : pioche 1 (pile) s'il contrôle une carte
+   * cachée sur un champ (Mushroom Pouch). */
+  readonly beginningDrawIfFacedown?: boolean;
   /** Ennemi Stun tué : le gear Ready se couche et son propriétaire pioche 1 (sans pile). */
   readonly drawOnStunnedEnemyKill?: boolean;
   /** Le gear entre en jeu Tap. */
