@@ -387,6 +387,11 @@ export function resolveSpell(
       const killed = settleLethalUnits(state, new Set([target.id]));
       state = killed.state;
       events.push(...killed.events);
+      for (let i = 0; i < (effect.controllerDraws ?? 0) && !state.result; i++) {
+        const drawn = drawCardForPlayer(state, target.ownerId);
+        state = drawn.state;
+        events.push(...drawn.events);
+      }
     } else if (effect.type === 'strike') {
       const enemy = secondaryEnemyTarget(
         state,

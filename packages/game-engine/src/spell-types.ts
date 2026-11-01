@@ -148,7 +148,11 @@ export interface SpellBlueprint {
         readonly amount: number;
       }
     | { readonly type: 'return-unit-to-hand' }
-    | { readonly type: 'kill-unit' }
+    | {
+        readonly type: 'kill-unit';
+        /** Le contrôleur de l'unité tuée pioche ce nombre de cartes (Hidden Blade). */
+        readonly controllerDraws?: number;
+      }
     | { readonly type: 'duel' }
     | {
         readonly type: 'damage';
