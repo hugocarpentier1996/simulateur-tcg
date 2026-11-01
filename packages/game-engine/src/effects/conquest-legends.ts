@@ -5,7 +5,7 @@ import type { GameState, GameEvent } from '../types.js';
 import type { LegendEntry } from '../legend-types.js';
 import { activeLegends } from './legends.js';
 import { trashConquerEntries, unitConquerEntries } from './unit-conquer.js';
-import type { ModeChoiceEntry } from './mode-choice.js';
+import { sanctumEntry, type ModeChoiceEntry } from './mode-choice.js';
 /** Événements de cette action -> capacités de conquête (légendes et unités), après clôture et score.
  * Vérifie le seuil à la conquête ; la résolution le vérifiera à nouveau. Victoire : aucun ajout.
  * Appelé une seule fois par act, pas lors d'une tenue ni d'un simple mouvement. */
@@ -76,6 +76,15 @@ export function queueConquestLegends(
         ownerId: e.playerId,
         effect: { type: 'spend-buff-draw' },
       });
+  // The Candlelit Sanctum : arranger le dessus du deck du conquérant.
+  for (const e of events) {
+    const count =
+      e.type === 'battlefield-conquered'
+        ? battlefieldDefinition(state, e.battlefieldId)?.conquerArrangeTop
+        : undefined;
+    if (e.type === 'battlefield-conquered' && count)
+      entries.push(sanctumEntry(e.battlefieldId, e.playerId, count));
+  }
   // Sigil of the Storm : recyclage d'une rune du conquérant.
   for (const e of events)
     if (

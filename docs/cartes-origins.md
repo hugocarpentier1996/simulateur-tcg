@@ -310,3 +310,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Forge of the Future — ogn-212-298
 - [x] Hallowed Tomb — ogn-281-298
 - [x] Reaver's Row — ogn-285-298
+- [x] The Candlelit Sanctum — ogn-291-298

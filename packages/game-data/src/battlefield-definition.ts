@@ -20,6 +20,8 @@ export interface BattlefieldDefinition extends PrintedMetadata {
   readonly holdReturnChampion?: boolean;
   /** Défense ici : le défenseur peut renvoyer une de ses unités d'ici dans sa base. */
   readonly defendRetreat?: boolean;
+  /** Conquête ici : regarder ce nombre de cartes du dessus, en recycler, réordonner le reste. */
+  readonly conquerArrangeTop?: number;
   /** Conquête : le conquérant défausse 1 puis pioche 1, via la pile. */
   readonly conquerLoot?: boolean;
   /** Conquête : dépenser un buff allié pour piocher 1 (automatique si possible), via la pile. */

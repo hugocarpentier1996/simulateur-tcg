@@ -29,7 +29,8 @@ export type EffectMode =
   | 'let-draw'
   | `recycle-any:${string}`
   | 'return-champion'
-  | `retreat:${string}`;
+  | `retreat:${string}`
+  | `arrange:${string}`;
 
 const ONE_ENERGY = { energy: 1, power: {} };
 
@@ -48,6 +49,8 @@ export interface ModeChoiceEntry {
   partnerId?: string;
   /** Joueurs suivants à choisir à leur tour ce qu'ils tuent (Cull the Weak). */
   nextChoosers?: readonly string[];
+  /** Nombre de cartes du dessus du deck à arranger (The Candlelit Sanctum). */
+  arrangeTop?: number;
   /** Champ dont les unités alliées peuvent être renvoyées en base (Reaver's Row). */
   retreatFrom?: string;
   /** Recyclages restant à choisir dans les cimetières (Forge of the Future). */
@@ -85,29 +88,45 @@ export function resolveModeChoice(
         )
         .map((u) => `retreat:${u.id}` as const)
     : [];
-  const modes: readonly EffectMode[] = entry.retreatFrom
-    ? ['skip', ...retreats]
-    : entry.killGearBuff
-      ? [
-          'skip',
-          ...(state.gears ?? []).map((g) => `kill-gear:${g.id}` as const),
-        ]
-      : entry.discardReturn
-        ? inTrash
-          ? ['skip', ...handIds.map((id) => `discard-return:${id}` as const)]
-          : []
-        : entry.payReturn
-          ? state.units.some((u) => u.id === entry.sourceId) &&
-            findPayment(state, entry.ownerId, ONE_ENERGY)
-            ? ['skip', 'pay-return']
+  const top = entry.arrangeTop
+    ? state.cards
+        .filter((c) =>
+          state.zones.some(
+            (z) =>
+              z.id === c.zoneId &&
+              z.kind === 'deck' &&
+              z.ownerId === entry.ownerId,
+          ),
+        )
+        .slice(0, entry.arrangeTop)
+        .map((c) => c.id)
+    : [];
+  const modes: readonly EffectMode[] = entry.arrangeTop
+    ? arrangements(top).map((kept) => `arrange:${kept.join('+')}` as const)
+    : entry.retreatFrom
+      ? ['skip', ...retreats]
+      : entry.killGearBuff
+        ? [
+            'skip',
+            ...(state.gears ?? []).map((g) => `kill-gear:${g.id}` as const),
+          ]
+        : entry.discardReturn
+          ? inTrash
+            ? ['skip', ...handIds.map((id) => `discard-return:${id}` as const)]
             : []
-          : entry.modes;
+          : entry.payReturn
+            ? state.units.some((u) => u.id === entry.sourceId) &&
+              findPayment(state, entry.ownerId, ONE_ENERGY)
+              ? ['skip', 'pay-return']
+              : []
+            : entry.modes;
   if (
     modes.length <= 1 &&
     (entry.killGearBuff ||
       entry.discardReturn ||
       entry.payReturn ||
-      entry.retreatFrom)
+      entry.retreatFrom ||
+      entry.arrangeTop)
   )
     return {
       ok: true,
@@ -203,6 +222,36 @@ function applyMode(
         cards: [
           ...state.cards.filter((c) => c.id !== id),
           { ...card, zoneId: zone('deck') },
+        ],
+      },
+      events: [],
+    };
+  }
+  if (mode.startsWith('arrange:')) {
+    const kept = mode.slice('arrange:'.length).split('+').filter(Boolean);
+    const deckIds = state.cards
+      .filter((c) =>
+        state.zones.some(
+          (z) =>
+            z.id === c.zoneId &&
+            z.kind === 'deck' &&
+            z.ownerId === pending.ownerId,
+        ),
+      )
+      .map((c) => c.id);
+    const looked = deckIds.slice(0, pending.arrangeTop ?? 0);
+    const byId = (id: string) => state.cards.find((c) => c.id === id)!;
+    const others = state.cards.filter((c) => !looked.includes(c.id));
+    const firstDeck = others.findIndex((c) => deckIds.includes(c.id));
+    const at = firstDeck < 0 ? others.length : firstDeck;
+    return {
+      state: {
+        ...state,
+        cards: [
+          ...others.slice(0, at),
+          ...kept.map(byId),
+          ...others.slice(at),
+          ...looked.filter((id) => !kept.includes(id)).map(byId),
         ],
       },
       events: [],
@@ -478,4 +527,43 @@ export function championReturnable(
   if (!zone || !inTrash || state.cards.some((c) => c.zoneId === zone.id))
     return undefined;
   return championId;
+}
+
+/** Cartes regardées -> sous-listes ordonnées conservées au-dessus (les autres recyclées),
+ * des plus longues aux plus courtes. */
+function arrangements(ids: readonly string[]): string[][] {
+  const orders = (list: readonly string[]): string[][] =>
+    list.length <= 1
+      ? [[...list]]
+      : list.flatMap((id, i) =>
+          orders([...list.slice(0, i), ...list.slice(i + 1)]).map((rest) => [
+            id,
+            ...rest,
+          ]),
+        );
+  const subsets = (list: readonly string[], size: number): string[][] =>
+    size === 0
+      ? [[]]
+      : list.flatMap((id, i) =>
+          subsets(list.slice(i + 1), size - 1).map((rest) => [id, ...rest]),
+        );
+  const result: string[][] = [];
+  for (let size = ids.length; size >= 0; size--)
+    for (const subset of subsets(ids, size)) result.push(...orders(subset));
+  return result;
+}
+
+/** Capacité de conquête The Candlelit Sanctum (choix à la résolution). */
+export function sanctumEntry(
+  battlefieldId: string,
+  playerId: string,
+  count = 2,
+): ModeChoiceEntry {
+  return {
+    kind: 'mode-choice',
+    sourceId: battlefieldId,
+    ownerId: playerId,
+    modes: [],
+    arrangeTop: count,
+  };
 }
