@@ -297,6 +297,30 @@ export function act(state: GameState, action: GameAction): ActionResult {
       events.push(...drawn.events);
     }
   }
+  // Ember Monk : carte jouée depuis Hidden -> bonus de Might ce tour (sans pile).
+  if (
+    (action.type === 'play-unit' || action.type === 'cast-spell') &&
+    state.cards.find((c) => c.id === action.cardId)?.facedown
+  )
+    shrine = {
+      ...shrine,
+      units: shrine.units.map((u) => {
+        const bonus =
+          u.ownerId === action.playerId
+            ? shrine.unitDefinitions?.find((d) => d.id === u.definitionId)
+                ?.mightOnHiddenPlay
+            : undefined;
+        return bonus
+          ? {
+              ...u,
+              temporaryEffects: [
+                ...(u.temporaryEffects ?? []),
+                { type: 'modify-might' as const, amount: bonus },
+              ],
+            }
+          : u;
+      }),
+    };
   // Viktor (Mind) : carte jouée pendant le tour adverse -> Recrue dans la base.
   if (
     (action.type === 'play-unit' ||

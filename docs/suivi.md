@@ -1210,3 +1210,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Facebreaker (ogn-220) : Hidden ; Action ; étourdit une unité alliée et une unité ennemie du même champ (effet `stun-with-enemy-here`, helper `enemyHere`).
 - Fox-Fire (ogn-256) : Hidden ; Action ; tue des unités d'un même champ dont la Might totale est au plus 4 (effet `kill-selected-total-might`, sélection revérifiée à la résolution).
 - Stand United (ogn-053) : Hidden ; Action ; buffe une unité alliée ; ce tour, les buffs des unités du lanceur donnent +1 Might de plus (effet `empower-buffs`, registre `buffBonus` vidé en fin de tour).
+- Ember Monk (ogn-167) : quand son propriétaire joue une carte depuis Hidden, +2 Might ce tour (`mightOnHiddenPlay`, sans pile comme les autres déclencheurs simples).
