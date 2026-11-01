@@ -1207,3 +1207,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Sprite Call (ogn-094) : Hidden ; Action ; joue un jeton Sprite 3 Ready et Temporary (base ou champ contrôlé, via `summon-recruits`).
 - Teemo (Chaos, ogn-197) : Hidden ; à la mise en jeu, +3 Might jusqu'à la fin du tour (`onPlayEffect: self-might`).
 - Blastcone Fae (ogn-097) : Hidden ; à la mise en jeu, -2 Might à une unité jusqu'à la fin du tour (minimum 1). Correction Hidden : le choix de cible à la mise en jeu tient compte de la gratuité depuis facedown.
+- Facebreaker (ogn-220) : Hidden ; Action ; étourdit une unité alliée et une unité ennemie du même champ (effet `stun-with-enemy-here`, helper `enemyHere`).

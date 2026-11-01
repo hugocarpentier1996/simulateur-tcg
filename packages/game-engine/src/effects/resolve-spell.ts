@@ -22,6 +22,7 @@ import {
   secondaryEnemyTarget,
   stackSpellTarget,
   allyToMove,
+  enemyHere,
   otherAlly,
   destinationFoe,
 } from './target.js';
@@ -574,6 +575,28 @@ export function resolveSpell(
                 temporaryEffects: [
                   ...(u.temporaryEffects ?? []),
                   { type: 'modify-might' as const, amount },
+                ],
+              }
+            : u,
+        ),
+      };
+    } else if (effect.type === 'stun-with-enemy-here') {
+      const foe = enemyHere(
+        state,
+        entry.casterId,
+        target,
+        entry.secondaryTargetId,
+      );
+      const stunned = new Set([target.id, ...(foe ? [foe.id] : [])]);
+      state = {
+        ...state,
+        units: state.units.map((u) =>
+          stunned.has(u.id)
+            ? {
+                ...u,
+                temporaryEffects: [
+                  ...(u.temporaryEffects ?? []),
+                  { type: 'stun' as const },
                 ],
               }
             : u,

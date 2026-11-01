@@ -73,6 +73,8 @@ export interface SpellBlueprint {
     | { readonly type: 'exhaust-allies' }
     /** Détruit tous les équipements en jeu (cimetière de leur propriétaire). */
     | { readonly type: 'kill-all-gear' }
+    /** Étourdit la cible alliée et l'unité ennemie secondaryTargetId du même champ (Facebreaker). */
+    | { readonly type: 'stun-with-enemy-here' }
     /** Shield temporaire (+shield en défense) et Tank jusqu'à la fin du tour (Block). */
     | { readonly type: 'grant-shield-tank'; readonly shield: number }
     /** Défausse discardCardId (choisie au lancement) puis inflige à la cible son coût en énergie. */

@@ -6,6 +6,7 @@ import {
   secondaryEnemyTarget,
   stackSpellTarget,
   allyToMove,
+  enemyHere,
   otherAlly,
   destinationFoe,
 } from '../effects/target.js';
@@ -369,6 +370,16 @@ function* candidates(
               otherAlly(state, playerId, target.id, u.id),
             ))
               yield { ...base, secondaryTargetId: ally.id };
+          } else if (
+            spell.effects.some((e) => e.type === 'stun-with-enemy-here')
+          ) {
+            const unit = state.units.find((u) => u.id === target.id);
+            for (const foe of unit
+              ? state.units.filter((u) =>
+                  enemyHere(state, playerId, unit, u.id),
+                )
+              : [])
+              yield { ...base, secondaryTargetId: foe.id };
           } else if (
             spell.effects.some((e) => e.type === 'move-ally-to-target')
           ) {

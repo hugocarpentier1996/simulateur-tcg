@@ -168,3 +168,16 @@ export function destinationFoe(
       u.zoneId === destinationId,
   );
 }
+
+/** Unité ennemie du même champ que la cible (Facebreaker) -> unité adverse, sinon undefined. */
+export function enemyHere(
+  state: GameState,
+  casterId: string,
+  target: UnitState,
+  enemyId?: string,
+): UnitState | undefined {
+  return state.units.find(
+    (u) =>
+      u.id === enemyId && u.ownerId !== casterId && u.zoneId === target.zoneId,
+  );
+}

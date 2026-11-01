@@ -18,6 +18,7 @@ import {
   secondaryEnemyTarget,
   stackSpellTarget,
   allyToMove,
+  enemyHere,
   otherAlly,
   destinationFoe,
   validBattlefieldTarget,
@@ -183,6 +184,12 @@ export function castSpell(
       action.targetId,
       action.secondaryTargetId,
     )
+  )
+    return { ok: false, reason: 'INVALID_TARGET' };
+  if (
+    definition.effects.some((e) => e.type === 'stun-with-enemy-here') &&
+    (!target ||
+      !enemyHere(state, action.playerId, target, action.secondaryTargetId))
   )
     return { ok: false, reason: 'INVALID_TARGET' };
   if (
