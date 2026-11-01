@@ -24,19 +24,10 @@ export function spellChosenUnits(
   definition: SpellBlueprint,
   action: Extract<GameAction, { type: 'cast-spell' }>,
 ): string[] {
+  // Toute seconde cible et toute sélection d'unités désignent des unités choisies.
   return [
     ...(definition.target.kind === 'unit' ? [action.targetId] : []),
-    ...(definition.effects.some((e) => e.type === 'duel') &&
-    action.secondaryTargetId
-      ? [action.secondaryTargetId]
-      : []),
-    ...(definition.effects.some(
-      (e) =>
-        e.type === 'damage-selected-units' ||
-        e.type === 'boost-selected-allies' ||
-        e.type === 'move-up-to-two-allies-to-base',
-    )
-      ? (action.selectedUnitIds ?? [])
-      : []),
+    ...(action.secondaryTargetId ? [action.secondaryTargetId] : []),
+    ...(action.selectedUnitIds ?? []),
   ];
 }

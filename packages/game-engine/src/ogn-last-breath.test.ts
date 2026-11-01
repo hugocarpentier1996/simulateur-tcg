@@ -6,7 +6,7 @@ import {
   noRunes,
 } from './origins-test-fixtures.js';
 import { act, getLegalActions } from './index.js';
-import { lastBreath } from '../../game-data/src/index.js';
+import { lastBreath, deadbloomPredator } from '../../game-data/src/index.js';
 
 const cast = (secondaryTargetId: string) => ({
   type: 'cast-spell' as const,
@@ -48,4 +48,13 @@ it('Last Breath : deux symboles hybrides, payables en Calm et/ou Chaos', () => {
   expect(act(s, cast('enemy')).ok).toBe(true);
   s.resources.a = { energy: 3, power: { vert: 1, rouge: 1 } };
   expect(act(s, cast('enemy')).ok).toBe(false);
+});
+
+it('Last Breath : choisir un ennemi Deflect comme seconde cible coûte 1 Power de plus', () => {
+  const s = scenario();
+  s.unitDefinitions = [deadbloomPredator];
+  s.units[1] = { ...s.units[1]!, definitionId: deadbloomPredator.id };
+  expect(act(s, cast('enemy')).ok).toBe(false);
+  s.resources.a = { energy: 3, power: { vert: 1, violet: 2 } };
+  expect(act(s, cast('enemy')).ok).toBe(true);
 });
