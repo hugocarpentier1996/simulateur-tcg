@@ -10,7 +10,7 @@ import {
 import { defenseShieldActions } from '../effects/defense-shield.js';
 import { attackTargetActions } from '../effects/attack-targets.js';
 import { withDeflect, spellChosenUnits } from '../cost/deflect.js';
-import { spellCost, withX } from '../cost/spell-cost.js';
+import { spellCost, castCost } from '../cost/spell-cost.js';
 import { playTargetChoices } from '../effects/play-targets.js';
 import { endTurnChoices } from '../effects/end-runes.js';
 import type { GameAction, GameState } from '../types.js';
@@ -206,12 +206,17 @@ function* candidates(
       (d) => d.id === card.definitionId,
     );
     if (spell) {
-      const payment = findPayment(
-        state,
-        playerId,
-        spellCost(state, playerId, spell),
-        'spell',
-      );
+      const payment =
+        findPayment(
+          state,
+          playerId,
+          spellCost(state, playerId, spell),
+          'spell',
+        ) ??
+        (spell.spendBuffForFreeCast &&
+        state.units.some((u) => u.ownerId === playerId && u.buffed)
+          ? { energyRunes: [], powerRunes: [] }
+          : null);
       const instances = spell.effects.find(
         (e) => e.type === 'damage-instances',
       );
@@ -386,6 +391,16 @@ function optionalCosts(state: GameState, action: GameAction): GameAction[] {
     );
   }
   if (
+    state.spellDefinitions?.find((d) => d.id === card?.definitionId)
+      ?.spendBuffForFreeCast
+  )
+    return [
+      action,
+      ...state.units
+        .filter((u) => u.ownerId === action.playerId && u.buffed)
+        .map((u) => ({ ...action, spendBuffUnitId: u.id })),
+    ];
+  if (
     !state.spellDefinitions?.find((d) => d.id === card?.definitionId)
       ?.optionalExhaustAlly
   )
@@ -413,7 +428,13 @@ function targetPayment(state: GameState, action: GameAction): GameAction[] {
       ? withDeflect(
           state,
           action.playerId,
-          withX(spellCost(state, action.playerId, definition), action.xPower),
+          castCost(
+            state,
+            action.playerId,
+            definition,
+            action.xPower,
+            action.spendBuffUnitId,
+          ),
           spellChosenUnits(definition, action),
         )
       : withDeflect(

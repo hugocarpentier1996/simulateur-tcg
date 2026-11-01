@@ -5,6 +5,8 @@ export interface SpellBlueprint {
   readonly id: string;
   readonly type: 'spell';
   readonly optionalExhaustAlly?: boolean;
+  /** Coût supplémentaire facultatif : dépenser le buff d'une unité alliée pour ignorer le coût. */
+  readonly spendBuffForFreeCast?: boolean;
   /** Coût X : le lanceur choisit xPower, payé en Power quelconque en plus du coût. */
   readonly variablePower?: boolean;
   /** Réduction d'énergie propre au sort (plancher 0), avant les réductions d'unités. */

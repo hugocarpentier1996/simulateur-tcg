@@ -380,6 +380,8 @@ function actionLabel(
     case 'cast-spell': {
       const parts: string[] = [];
       if (action.xPower !== undefined) parts.push('X = ' + action.xPower);
+      if (action.spendBuffUnitId)
+        parts.push('gratuit (buff de ' + target(action.spendBuffUnitId) + ')');
       if (action.selectedUnitIds)
         parts.push(
           action.selectedUnitIds.length

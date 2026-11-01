@@ -62,3 +62,16 @@ export function withX(
     ? { ...cost, genericPower: (cost.genericPower ?? 0) + xPower }
     : cost;
 }
+
+/** Coût réellement dû au lancement : rien si un buff est dépensé à la place (Wallop). */
+export function castCost(
+  state: GameState,
+  playerId: string,
+  definition: SpellBlueprint,
+  xPower: number | undefined,
+  spendBuffUnitId: string | undefined,
+): UnitBlueprint['cost'] {
+  return spendBuffUnitId
+    ? { energy: 0, power: {} }
+    : withX(spellCost(state, playerId, definition), xPower);
+}

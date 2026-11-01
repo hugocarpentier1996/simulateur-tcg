@@ -1173,3 +1173,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Nine-Tailed Fox (ogn-255) : légende ; quand l'adversaire attaque un champ qu'il contrôle, les attaquants ont -1 Might ce tour, minimum 1, via la pile (`weakenAttackers`, mode d'attaque `weaken-enemies-here`).
 - Relentless Storm (ogn-249) : légende ; quand son propriétaire joue une unité Mighty (Might imprimée 5+), elle se couche (si Ready) pour canaliser 1 rune Tap via la pile (`mightyPlayChannel`, utilisée automatiquement).
 - Clockwork Keeper (ogn-044) : en la jouant, peut payer 1 Power Calm en plus pour piocher 1 via la pile (`optionalCost` d'unité, champ d'action `optionalCost`, variantes proposées par les actions légales et la table).
+- Wallop (ogn-146) : Action ; redresse une unité ; peut dépenser le buff d'une unité alliée pour ignorer tout le coût (`spendBuffForFreeCast`, champ d'action `spendBuffUnitId`, helper `castCost`).

@@ -1,5 +1,6 @@
 import { withDeflect, spellChosenUnits } from '../cost/deflect.js';
-import { spellCost, withX } from '../cost/spell-cost.js';
+import { castCost } from '../cost/spell-cost.js';
+import { spendBuff } from '../effects/buff.js';
 import { graveyardCard } from '../effects/graveyard-card.js';
 import type { ActionResult, GameAction, GameState } from '../types.js';
 import { canUseTiming } from './timing.js';
@@ -197,14 +198,40 @@ export function castSpell(
       ))
   )
     return { ok: false, reason: 'INVALID_ADDITIONAL_COST' };
+  if (
+    action.spendBuffUnitId !== undefined &&
+    (!definition.spendBuffForFreeCast ||
+      !state.units.some(
+        (u) =>
+          u.id === action.spendBuffUnitId &&
+          u.ownerId === action.playerId &&
+          u.buffed,
+      ))
+  )
+    return { ok: false, reason: 'INVALID_ADDITIONAL_COST' };
   const cost = withDeflect(
     state,
     action.playerId,
-    withX(spellCost(state, action.playerId, definition), action.xPower),
+    castCost(
+      state,
+      action.playerId,
+      definition,
+      action.xPower,
+      action.spendBuffUnitId,
+    ),
     spellChosenUnits(definition, action),
   );
-  const paid = payCost(state, action.playerId, cost, action.payment, 'spell');
-  if (!paid.ok) return paid;
+  const charged = payCost(
+    state,
+    action.playerId,
+    cost,
+    action.payment,
+    'spell',
+  );
+  if (!charged.ok) return charged;
+  const paid = action.spendBuffUnitId
+    ? { ...charged, state: spendBuff(charged.state, action.spendBuffUnitId)! }
+    : charged;
   return {
     ok: true,
     state: {

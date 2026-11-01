@@ -557,6 +557,8 @@ export type GameAction =
       destinationId?: string;
       /** Coût X (sort variablePower) : Power quelconque supplémentaire, entier >= 0. */
       xPower?: number;
+      /** Unité alliée dont le buff est dépensé pour ignorer le coût (spendBuffForFreeCast). */
+      spendBuffUnitId?: string;
       payment: PaymentPlan;
     }
   | {
