@@ -416,6 +416,7 @@ function actionLabel(
           ? ' · Cible : ' + target(action.onPlayTargetId)
           : '') +
         (action.accelerate ? ' · Accelerate (arrive Ready)' : '') +
+        (action.optionalCost ? ' · Coût facultatif payé' : '') +
         (action.returnSpellId
           ? ' · Récupérer : ' + target(action.returnSpellId)
           : '')

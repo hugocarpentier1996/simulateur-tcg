@@ -1172,3 +1172,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Loose Cannon (ogn-251) : légende ; au début de sa Beginning, pioche 1 via la pile s'il a 1 carte ou moins en main (`beginningDrawIfHandAtMost`).
 - Nine-Tailed Fox (ogn-255) : légende ; quand l'adversaire attaque un champ qu'il contrôle, les attaquants ont -1 Might ce tour, minimum 1, via la pile (`weakenAttackers`, mode d'attaque `weaken-enemies-here`).
 - Relentless Storm (ogn-249) : légende ; quand son propriétaire joue une unité Mighty (Might imprimée 5+), elle se couche (si Ready) pour canaliser 1 rune Tap via la pile (`mightyPlayChannel`, utilisée automatiquement).
+- Clockwork Keeper (ogn-044) : en la jouant, peut payer 1 Power Calm en plus pour piocher 1 via la pile (`optionalCost` d'unité, champ d'action `optionalCost`, variantes proposées par les actions légales et la table).

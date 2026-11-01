@@ -235,6 +235,8 @@ export interface UnitBlueprint {
   readonly otherAlliesEnterReady?: boolean;
   /** Legion : énergie en moins si une autre carte a été jouée ce tour (plancher 0). */
   readonly legionEnergyReduction?: number;
+  /** Coût supplémentaire facultatif (1 Power de cette couleur) : pioche via la pile. */
+  readonly optionalCost?: { readonly power: string; readonly draw: number };
   /** Énergie en moins par carte du cimetière de son propriétaire (plancher 0). */
   readonly energyReductionPerTrashCard?: number;
   /** Les unités Dragon de son propriétaire coûtent autant d'énergie en moins (minimum 1). */
@@ -563,6 +565,8 @@ export type GameAction =
       onPlayTargetId?: string;
       /** Paye le coût supplémentaire Accelerate de l'unité pour qu'elle arrive Ready. */
       accelerate?: boolean;
+      /** Paie le coût supplémentaire facultatif de l'unité (optionalCost). */
+      optionalCost?: boolean;
       /** Annie Chaos : sort choisi avant les réactions ; requis si un sort est récupérable. */
       returnSpellId?: string;
       playerId: string;

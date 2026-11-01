@@ -70,6 +70,8 @@ export interface UnitDefinition extends PrintedMetadata {
   readonly otherAlliesEnterReady?: boolean;
   /** Legion : énergie en moins si une autre carte a été jouée ce tour (plancher 0). */
   readonly legionEnergyReduction?: number;
+  /** Coût supplémentaire facultatif (1 Power de cette couleur) : pioche via la pile. */
+  readonly optionalCost?: { readonly power: string; readonly draw: number };
   /** Énergie en moins par carte du cimetière de son propriétaire (plancher 0). */
   readonly energyReductionPerTrashCard?: number;
   /** Les unités Dragon de son propriétaire coûtent autant d'énergie en moins (minimum 1). */

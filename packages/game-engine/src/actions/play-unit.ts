@@ -192,12 +192,27 @@ export function playUnit(
         count: storm.definition.mightyPlayChannel!,
       },
     });
+  if (action.optionalCost && !definition.optionalCost)
+    return { ok: false, reason: 'NO_OPTIONAL_COST' };
+  if (action.optionalCost && definition.optionalCost)
+    entries.push({
+      kind: 'play-effect',
+      sourceId: card.id,
+      ownerId: card.ownerId,
+      effect: { type: 'draw', count: definition.optionalCost.draw },
+    });
   if (action.accelerate && !definition.accelerate)
     return { ok: false, reason: 'NO_ACCELERATE' };
   const cost = withDeflect(
     state,
     action.playerId,
-    unitCost(state, action.playerId, definition, action.accelerate === true),
+    unitCost(
+      state,
+      action.playerId,
+      definition,
+      action.accelerate === true,
+      action.optionalCost === true,
+    ),
     action.onPlayTargetId ? [action.onPlayTargetId] : [],
   );
   const payment = payCost(state, action.playerId, cost, action.payment);
@@ -308,8 +323,16 @@ export function unitCost(
   playerId: string,
   definition: UnitBlueprint,
   accelerate: boolean,
+  optional = false,
 ): UnitBlueprint['cost'] {
-  const cost = accelerate ? acceleratedCost(definition) : definition.cost;
+  const base = accelerate ? acceleratedCost(definition) : definition.cost;
+  const extra = optional ? definition.optionalCost?.power : undefined;
+  const cost = extra
+    ? {
+        ...base,
+        power: { ...base.power, [extra]: (base.power[extra] ?? 0) + 1 },
+      }
+    : base;
   const legion =
     (state.cardsPlayedThisTurn?.[playerId] ?? 0) > 0
       ? (definition.legionEnergyReduction ?? 0)

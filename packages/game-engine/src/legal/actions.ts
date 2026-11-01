@@ -150,11 +150,16 @@ function* candidates(
   for (const card of state.cards.filter((c) => c.ownerId === playerId)) {
     const unit = state.unitDefinitions?.find((d) => d.id === card.definitionId);
     if (unit) {
-      for (const accelerate of unit.accelerate ? [false, true] : [false]) {
+      for (const [accelerate, optionalCost] of [
+        [false, false],
+        ...(unit.accelerate ? [[true, false]] : []),
+        ...(unit.optionalCost ? [[false, true]] : []),
+        ...(unit.accelerate && unit.optionalCost ? [[true, true]] : []),
+      ] as [boolean, boolean][]) {
         const payment = findPayment(
           state,
           playerId,
-          unitCost(state, playerId, unit, accelerate),
+          unitCost(state, playerId, unit, accelerate, optionalCost),
         );
         if (payment)
           for (const zone of destinations)
@@ -182,6 +187,7 @@ function* candidates(
                   type: 'play-unit',
                   ...(onPlayTargetId ? { onPlayTargetId } : {}),
                   ...(accelerate ? { accelerate } : {}),
+                  ...(optionalCost ? { optionalCost } : {}),
                   ...(returnSpellId ? { returnSpellId } : {}),
                   playerId,
                   cardId: card.id,
@@ -419,6 +425,7 @@ function targetPayment(state: GameState, action: GameAction): GameAction[] {
                 action.playerId,
                 definition,
                 action.type === 'play-unit' && action.accelerate === true,
+                action.type === 'play-unit' && action.optionalCost === true,
               )
             : definition.cost,
           action.type === 'play-unit' && action.onPlayTargetId
