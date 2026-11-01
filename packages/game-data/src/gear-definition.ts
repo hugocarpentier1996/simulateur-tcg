@@ -31,6 +31,9 @@ export interface GearDefinition extends PrintedMetadata {
   /** Quitte le terrain (détruit) : son propriétaire pioche 1 puis canalise 1 rune Tap
    * (Treasure Trove ; sans pile, comme Scrapheap). */
   readonly onLeaveDrawChannel?: boolean;
+  /** Une unité alliée redressée par un effet (hors Awaken) gagne cette Might ce tour
+   * (Pirate's Haven ; sans pile). */
+  readonly mightOnAllyReadied?: number;
   /** Une unité alliée buffée meurt : une autre unité alliée (sans buff d'abord) est buffée
    * (Vanguard Helm ; sans pile). */
   readonly buffOnBuffedAllyDeath?: boolean;

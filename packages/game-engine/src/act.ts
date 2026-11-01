@@ -381,6 +381,30 @@ export function act(state: GameState, action: GameAction): ActionResult {
       events.push(...summoned.events);
     }
   }
+  // Pirate's Haven : alliée redressée pendant cette action (même tour) -> bonus de Might.
+  if (shrine.activePlayerId === state.activePlayerId)
+    for (const haven of shrine.gears ?? []) {
+      const bonus = shrine.gearDefinitions?.find(
+        (d) => d.id === haven.definitionId,
+      )?.mightOnAllyReadied;
+      if (!bonus) continue;
+      shrine = {
+        ...shrine,
+        units: shrine.units.map((u) =>
+          u.ownerId === haven.ownerId &&
+          u.ready &&
+          state.units.some((o) => o.id === u.id && !o.ready)
+            ? {
+                ...u,
+                temporaryEffects: [
+                  ...(u.temporaryEffects ?? []),
+                  { type: 'modify-might' as const, amount: bonus },
+                ],
+              }
+            : u,
+        ),
+      };
+    }
   // Vanguard Helm : alliée buffée morte -> une autre alliée est buffée, par gear.
   for (const e of events) {
     if (e.type !== 'unit-died' && e.type !== 'token-removed') continue;

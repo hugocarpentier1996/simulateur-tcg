@@ -348,3 +348,4 @@ export { vi } from './ogn/vi.js';
 export { garbageGrabber } from './ogn/garbage-grabber.js';
 export { sunDisc } from './ogn/sun-disc.js';
 export { ravenbornTome } from './ogn/ravenborn-tome.js';
+export { piratesHaven } from './ogn/pirates-haven.js';

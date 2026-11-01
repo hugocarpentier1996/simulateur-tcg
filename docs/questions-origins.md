@@ -68,3 +68,4 @@ existantes ; seuls les nouveaux doutes utiles rejoindront le prochain lot de que
 - Soulgorger / Spectral Matron (hypothèses) : l'unité sortie du cimetière arrive dans la base, Tap, sans ses effets « when you play me » ; le Power dû (Soulgorger) est payé avec l'unité qui la fait revenir.
 - Portal Rescue (hypothèse) : l'unité rejouée arrive Tap et sans déclencher ses effets « when you play me ».
 - Garbage Grabber (hypothèse) : les 3 cartes recyclées sont les plus anciennes du cimetière, sans choix (comme Dr. Mundo).
+- Pirate's Haven (hypothèses) : sans pile ; le redressement d'Awaken (début de tour) et l'entrée en jeu Ready ne comptent pas.

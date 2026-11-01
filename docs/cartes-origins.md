@@ -304,3 +304,4 @@ Cartes ajoutées une à une depuis le 31 octobre 2026, chacune testée et commit
 - [x] Garbage Grabber — ogn-099-298
 - [x] Sun Disc — ogn-021-298
 - [x] Ravenborn Tome — ogn-032-298
+- [x] Pirate's Haven — ogn-143-298
