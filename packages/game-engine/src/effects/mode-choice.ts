@@ -14,6 +14,7 @@ import type {
   GameAction,
   GameState,
   UnitBlueprint,
+  GameEvent,
 } from '../types.js';
 import { drawCardForPlayer } from '../turn/draw.js';
 import { channelForPlayer } from '../turn/supplies.js';
@@ -58,7 +59,8 @@ export type EffectMode =
   | `keep:${string}`
   | `future:${string}`
   | `buff:${string}`
-  | `discard-dmg:${string}`;
+  | `discard-dmg:${string}`
+  | 'accept';
 
 const ONE_ENERGY = { energy: 1, power: {} };
 
@@ -120,6 +122,9 @@ export interface ModeChoiceEntry {
   retreatFrom?: string;
   /** Recyclages restant à choisir dans les cimetières (Forge of the Future). */
   recycleLeft?: number;
+  /** « You may » avec coût, toujours demandé (réponse 8) : coucher une source (et payer un
+   * Power) pour un effet. Relentless Storm, Solari Shrine, Mistfall. */
+  costlyMay?: CostlyMay;
   /** Get Excited! : unité qui subira le coût en énergie de la carte défaussée. */
   discardDamageTarget?: string;
   /** Unité exclue d'un choix (Vanguard Helm : l'alliée morte). */
@@ -148,6 +153,33 @@ export function resolveModeChoice(
   entry: ModeChoiceEntry,
 ): Extract<ActionResult, { ok: true }> {
   if (entry.runeFateAt) return resolveRuneFate(state, entry, entry.runeFateAt);
+  if (entry.costlyMay) {
+    const may = entry.costlyMay;
+    const ready =
+      may.sourceKind === 'gear'
+        ? state.gears?.some((g) => g.id === may.sourceId && g.ready)
+        : state.cards.some((c) => c.id === may.sourceId && c.ready !== false);
+    const payable =
+      !may.power ||
+      findPayment(state, entry.ownerId, {
+        energy: 0,
+        power: { [may.power]: 1 },
+      });
+    if (!ready || !payable)
+      return {
+        ok: true,
+        state,
+        events: [{ type: 'legend-effect-resolved', sourceId: entry.sourceId }],
+      };
+    return {
+      ok: true,
+      state: {
+        ...state,
+        pendingModeChoice: { ...entry, modes: ['skip', 'accept'] },
+      },
+      events: [],
+    };
+  }
   if (entry.buffChoice) {
     const here = entry.buffChoice.here;
     const ids = state.units
@@ -729,6 +761,8 @@ function applyMode(
       events: [],
     };
   }
+  if (mode === 'accept' && pending.costlyMay)
+    return acceptCostlyMay(state, pending.ownerId, pending.costlyMay);
   if (mode.startsWith('discard-dmg:')) {
     const card = state.cards.find(
       (c) => c.id === mode.slice('discard-dmg:'.length),
@@ -1608,5 +1642,61 @@ export function buffChoiceEntry(
     ownerId,
     modes: [],
     buffChoice: here ? { here } : {},
+  };
+}
+
+/** Coût d'un « you may » payant et effet obtenu. */
+export interface CostlyMay {
+  sourceKind: 'gear' | 'card';
+  sourceId: string;
+  power?: string;
+  effect:
+    | { type: 'draw' }
+    | { type: 'channel-exhausted'; count: number }
+    | { type: 'ready-unit'; unitId: string };
+}
+
+/** Coût payé (Power puis source couchée), puis effet. Coût devenu impayable : rien. */
+function acceptCostlyMay(
+  input: GameState,
+  ownerId: string,
+  may: CostlyMay,
+): { state: GameState; events: GameEvent[] } {
+  let state = input;
+  if (may.power) {
+    const cost = { energy: 0, power: { [may.power]: 1 } };
+    const plan = findPayment(state, ownerId, cost);
+    const paid = plan && payCost(state, ownerId, cost, plan);
+    if (!paid || !paid.ok) return { state, events: [] };
+    state = paid.state;
+  }
+  state =
+    may.sourceKind === 'gear'
+      ? {
+          ...state,
+          gears: (state.gears ?? []).map((g) =>
+            g.id === may.sourceId ? { ...g, ready: false } : g,
+          ),
+        }
+      : {
+          ...state,
+          cards: state.cards.map((c) =>
+            c.id === may.sourceId ? { ...c, ready: false } : c,
+          ),
+        };
+  if (may.effect.type === 'draw') return drawCardForPlayer(state, ownerId);
+  if (may.effect.type === 'channel-exhausted') {
+    const channeled = channelForPlayer(state, ownerId, may.effect.count);
+    return { state: channeled.state, events: channeled.events };
+  }
+  const unitId = may.effect.unitId;
+  return {
+    state: {
+      ...state,
+      units: state.units.map((u) =>
+        u.id === unitId ? { ...u, ready: true } : u,
+      ),
+    },
+    events: [],
   };
 }

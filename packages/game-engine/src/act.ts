@@ -1,6 +1,4 @@
 import type { ModeChoiceEntry } from './effects/mode-choice.js';
-import { payCost } from './cost/payment.js';
-import { findPayment } from './legal/payment.js';
 import {
   spendBuffAbility,
   trashRecycleAbility,
@@ -336,26 +334,25 @@ function actOnce(state: GameState, action: GameAction): ActionResult {
       : [],
   );
   let shrine = dawn;
-  const shrineEvents: GameEvent[] = [];
-  for (const gear of dawn.gears ?? []) {
+  // « You may exhaust this to draw 1 » : capacité sur la pile, toujours demandée (coût).
+  for (const gear of dawn.gears ?? [])
     if (
-      !gear.ready ||
-      !stunnedDead.some((u) => u.ownerId !== gear.ownerId) ||
-      !dawn.gearDefinitions?.find((d) => d.id === gear.definitionId)
+      gear.ready &&
+      stunnedDead.some((u) => u.ownerId !== gear.ownerId) &&
+      dawn.gearDefinitions?.find((d) => d.id === gear.definitionId)
         ?.drawOnStunnedEnemyKill
     )
-      continue;
-    shrine = {
-      ...shrine,
-      gears: shrine.gears!.map((g) =>
-        g.id === gear.id ? { ...g, ready: false } : g,
-      ),
-    };
-    const drawn = drawCardForPlayer(shrine, gear.ownerId);
-    shrine = drawn.state;
-    shrineEvents.push(...drawn.events);
-  }
-  events.push(...shrineEvents);
+      buffEntries.push({
+        kind: 'mode-choice',
+        sourceId: gear.id,
+        ownerId: gear.ownerId,
+        modes: [],
+        costlyMay: {
+          sourceKind: 'gear',
+          sourceId: gear.id,
+          effect: { type: 'draw' },
+        },
+      });
   // Volibear (Body) : déplacement adverse vers un autre champ -> pioche.
   for (const e of events) {
     if (e.type !== 'unit-moved' || e.from === e.to) continue;
@@ -481,7 +478,8 @@ function actOnce(state: GameState, action: GameAction): ActionResult {
       events.push(...summoned.events);
     }
   }
-  // Mistfall : alliée Tap nouvellement buffée -> 1 Power + gear couché pour la redresser.
+  // Mistfall : alliée Tap nouvellement buffée -> « you may » payant sur la pile (toujours
+  // demandé) : 1 Power + gear couché pour la redresser.
   for (const mist of shrine.gears ?? []) {
     const rule = shrine.gearDefinitions?.find(
       (d) => d.id === mist.definitionId,
@@ -494,20 +492,19 @@ function actOnce(state: GameState, action: GameAction): ActionResult {
         !u.ready &&
         state.units.some((o) => o.id === u.id && !o.buffed),
     );
-    if (!unit) continue;
-    const cost = { energy: 0, power: { [rule.power]: 1 } };
-    const plan = findPayment(shrine, mist.ownerId, cost);
-    const paid = plan && payCost(shrine, mist.ownerId, cost, plan);
-    if (!paid || !paid.ok) continue;
-    shrine = {
-      ...paid.state,
-      gears: (paid.state.gears ?? []).map((g) =>
-        g.id === mist.id ? { ...g, ready: false } : g,
-      ),
-      units: paid.state.units.map((u) =>
-        u.id === unit.id ? { ...u, ready: true } : u,
-      ),
-    };
+    if (unit)
+      buffEntries.push({
+        kind: 'mode-choice',
+        sourceId: mist.id,
+        ownerId: mist.ownerId,
+        modes: [],
+        costlyMay: {
+          sourceKind: 'gear',
+          sourceId: mist.id,
+          power: rule.power,
+          effect: { type: 'ready-unit', unitId: unit.id },
+        },
+      });
   }
   // Pirate's Haven : alliée redressée pendant cette action (même tour) -> bonus de Might.
   if (shrine.activePlayerId === state.activePlayerId)

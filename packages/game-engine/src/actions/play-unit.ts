@@ -383,14 +383,20 @@ function playUnitCore(
           (l) => l.definition.mightyPlayChannel && l.card.ready !== false,
         )
       : undefined;
+  // « You may exhaust me » : coût, donc toujours demandé à la résolution (réponse 8).
   if (storm)
     entries.push({
-      kind: 'play-effect',
+      kind: 'mode-choice',
       sourceId: storm.card.id,
       ownerId: action.playerId,
-      effect: {
-        type: 'channel-exhausted',
-        count: storm.definition.mightyPlayChannel!,
+      modes: [],
+      costlyMay: {
+        sourceKind: 'card',
+        sourceId: storm.card.id,
+        effect: {
+          type: 'channel-exhausted',
+          count: storm.definition.mightyPlayChannel!,
+        },
       },
     });
   if (action.optionalCost && !definition.optionalCost)
@@ -457,9 +463,7 @@ function playUnitCore(
             ),
           }
         : {}),
-      cards: payment.state.cards
-        .filter((c) => c.id !== card.id)
-        .map((c) => (c.id === storm?.card.id ? { ...c, ready: false } : c)),
+      cards: payment.state.cards.filter((c) => c.id !== card.id),
       units: [
         ...state.units.map((u) =>
           u.ownerId === action.playerId &&

@@ -40,11 +40,15 @@ it('Relentless Storm : jouer une unité Mighty couche la légende et canalise 1 
     cardId: 'spell',
     payment: noRunes,
   });
-  expect(s.cards.find((c) => c.id === 'storm')?.ready).toBe(false);
-  while (s.stack || s.pendingVision)
+  expect(s.cards.find((c) => c.id === 'storm')?.ready).toBe(true);
+  while (s.stack || s.pendingVision || s.pendingModeChoice)
     s = s.pendingVision
       ? step(s, { type: 'choose-vision', playerId: 'a', recycle: false })
-      : step(s, { type: 'pass', playerId: s.stack!.priorityPlayerId });
+      : s.pendingModeChoice
+        ? (expect(s.pendingModeChoice.modes).toEqual(['skip', 'accept']),
+          step(s, { type: 'choose-mode', playerId: 'a', mode: 'accept' }))
+        : step(s, { type: 'pass', playerId: s.stack!.priorityPlayerId });
+  expect(s.cards.find((c) => c.id === 'storm')?.ready).toBe(false);
   expect(s.cards.find((c) => c.id === 'rune')).toMatchObject({
     zoneId: 'runes-a',
     ready: false,
@@ -82,5 +86,25 @@ it('Relentless Storm : Mighty est mesuré sur la Might réelle (aura comprise)',
     cardId: 'spell',
     payment: noRunes,
   });
-  expect(s.cards.find((c) => c.id === 'storm')?.ready).toBe(false);
+  expect(s.stack?.entries.at(-1)).toMatchObject({
+    sourceId: 'storm',
+    costlyMay: { sourceId: 'storm' },
+  });
+});
+
+it('Relentless Storm : « exhaust me » est un coût, refuser laisse la légende Ready', () => {
+  let s = step(scenario(jeweledColossus.id), {
+    type: 'play-unit',
+    playerId: 'a',
+    cardId: 'spell',
+    payment: noRunes,
+  });
+  while (s.stack || s.pendingVision || s.pendingModeChoice)
+    s = s.pendingVision
+      ? step(s, { type: 'choose-vision', playerId: 'a', recycle: false })
+      : s.pendingModeChoice
+        ? step(s, { type: 'choose-mode', playerId: 'a', mode: 'skip' })
+        : step(s, { type: 'pass', playerId: s.stack!.priorityPlayerId });
+  expect(s.cards.find((c) => c.id === 'storm')?.ready).toBe(true);
+  expect(s.cards.find((c) => c.id === 'rune')?.zoneId).toBe('rune-pile-a');
 });

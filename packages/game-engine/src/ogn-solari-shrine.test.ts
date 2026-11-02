@@ -4,6 +4,7 @@ import {
   step,
   resolveTop,
   noRunes,
+  passUntilChoice,
 } from './origins-test-fixtures.js';
 import { solariShrine, hextechRay } from '../../game-data/src/index.js';
 
@@ -36,8 +37,10 @@ function scenario(stunned: boolean) {
   );
 }
 
-it('Solari Shrine : tuer un ennemi Stun couche le gear et fait piocher 1', () => {
-  const s = scenario(true);
+it('Solari Shrine : tuer un ennemi Stun propose de coucher le gear pour piocher 1', () => {
+  let s = passUntilChoice(scenario(true));
+  expect(s.pendingModeChoice?.modes).toEqual(['skip', 'accept']);
+  s = step(s, { type: 'choose-mode', playerId: 'a', mode: 'accept' });
   expect(s.gears?.[0]?.ready).toBe(false);
   expect(s.cards.find((c) => c.id === 'draw-a-0')?.zoneId).toBe('hand-a');
 });
