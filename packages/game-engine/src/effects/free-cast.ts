@@ -1,61 +1,54 @@
-import type { GameEvent, GameState } from '../types.js';
-import type { SpellBlueprint } from '../spell-types.js';
+import type { GameAction, GameEvent, GameState } from '../types.js';
 import type { ModeChoiceEntry } from './mode-choice.js';
-import {
-  spellTarget,
-  stackSpellTarget,
-  validBattlefieldTarget,
-} from './target.js';
+import { castSpell } from '../actions/cast-spell.js';
+import { spellCastVariants } from '../legal/actions.js';
+import { findPayment } from '../legal/payment.js';
+import { spellChosenUnits, withDeflect } from '../cost/deflect.js';
 
-/** Effets exigeant des choix en plus de la cible principale (sélections, seconde cible,
- * destination) : non proposés pour un lancement gratuit par effet (limite documentée). */
-const NEEDS_EXTRA = new Set([
-  'boost-selected-allies',
-  'move-up-to-two-allies-to-base',
-  'kill-selected-total-might',
-  'damage-instances',
-  'damage-selected-units',
-  'duel',
-  'strike',
-  'fight-at-destination',
-  'move-ally-to-target',
-  'move-to-battlefield',
-  'move-unit',
-  'might-damage-enemies-then-move',
-  'stun-with-enemy-here',
-  'discard-for-damage',
-  'summon-recruits',
-]);
+type CastAction = Extract<GameAction, { type: 'cast-spell' }>;
 
-/** Cibles principales d'un sort lancé gratuitement par un effet (Blind Fury, Kai'Sa, Ava,
- * Promising Future), choisies à sa mise sur la pile. null : sort non lançable par ce biais. */
-export function freeCastTargets(
+/** Lancements gratuits possibles d'un sort par effet (Blind Fury, Kai'Sa, Ava, Promising
+ * Future) : toutes les variantes complètes (cible, sélections, seconde cible, destination…)
+ * acceptées par le moteur, choisies à la mise sur la pile. Seule la taxe Deflect est payée. */
+export function freeCastOptions(
   state: GameState,
-  definition: SpellBlueprint,
+  cardId: string,
   casterId: string,
-): string[] | null {
-  if (definition.effects.some((e) => NEEDS_EXTRA.has(e.type))) return null;
-  const kind = definition.target.kind;
-  if (kind === 'caster') return [casterId];
-  if (kind === 'unit')
-    return state.units
-      .filter((u) => spellTarget(state, definition, u.id, casterId))
-      .map((u) => u.id);
-  if (kind === 'battlefield')
-    return state.battlefields
-      .map((f) => f.zoneId)
-      .filter((id) => validBattlefieldTarget(state, id));
-  if (kind === 'stack-spell')
-    return (state.stack?.entries ?? []).flatMap((e) =>
-      'card' in e && stackSpellTarget(state, definition, e.card.id)
-        ? [e.card.id]
-        : [],
+): CastAction[] {
+  const card = state.cards.find((c) => c.id === cardId);
+  const spell = state.spellDefinitions?.find(
+    (d) => d.id === card?.definitionId,
+  );
+  if (!card || !spell) return [];
+  const view: GameState = {
+    ...state,
+    freeCast: { cardId, playerId: casterId },
+  };
+  const options: CastAction[] = [];
+  for (const variant of spellCastVariants(view, casterId, card, spell, {
+    energyRunes: [],
+    powerRunes: [],
+  })) {
+    const payment = findPayment(
+      view,
+      casterId,
+      withDeflect(
+        view,
+        casterId,
+        { energy: 0, power: {} },
+        spellChosenUnits(spell, variant),
+      ),
+      'spell',
     );
-  return null;
+    if (!payment) continue;
+    const option = { ...variant, payment };
+    if (castSpell(view, option).ok) options.push(option);
+  }
+  return options;
 }
 
-/** Entrée de pile : à sa résolution, le sort indiqué est lancé (cible choisie à ce moment
- * s'il en faut une). */
+/** Entrée de pile : à sa résolution, le sort indiqué est lancé (variante choisie à ce moment
+ * s'il y en a plusieurs). */
 export function freeCastEntry(
   cardId: string,
   casterId: string,
@@ -70,37 +63,33 @@ export function freeCastEntry(
   };
 }
 
-/** Sort lancé : retiré de sa zone et posé sur la pile pour le lanceur, sur la cible donnée. */
-export function castFree(
+/** Variante choisie -> sort posé sur la pile comme un lancement normal, sans coût imprimé. */
+export function castFreeOption(
   state: GameState,
-  cardId: string,
-  casterId: string,
-  targetId: string,
+  option: CastAction,
   recycleOnResolve = false,
 ): { state: GameState; events: GameEvent[] } {
-  const card = state.cards.find((c) => c.id === cardId);
-  const definition = state.spellDefinitions?.find(
-    (d) => d.id === card?.definitionId,
-  );
-  if (!card || !definition) return { state, events: [] };
-  const entry = {
-    card,
-    definition,
-    casterId,
-    targetId,
-    ...(recycleOnResolve ? { recycleOnResolve: true } : {}),
+  const view: GameState = {
+    ...state,
+    freeCast: { cardId: option.cardId, playerId: option.playerId },
   };
+  const cast = castSpell(view, option);
+  if (!cast.ok) return { state, events: [] };
+  const next: GameState = { ...cast.state, freeCast: null };
+  if (!recycleOnResolve || !next.stack)
+    return { state: next, events: cast.events };
   return {
     state: {
-      ...state,
-      cards: state.cards.filter((c) => c.id !== cardId),
+      ...next,
       stack: {
-        entries: [...(state.stack?.entries ?? []), entry],
-        initiatorId: state.stack?.initiatorId ?? casterId,
-        priorityPlayerId: state.stack?.priorityPlayerId ?? state.activePlayerId,
-        consecutivePasses: 0,
+        ...next.stack,
+        entries: next.stack.entries.map((e) =>
+          'card' in e && e.card.id === option.cardId
+            ? { ...e, recycleOnResolve: true }
+            : e,
+        ),
       },
     },
-    events: [],
+    events: cast.events,
   };
 }

@@ -64,15 +64,11 @@ it('Kai’Sa (Mind) : un sort à cible est aussi rejouable, sa cible est choisie
   expect(s.pendingModeChoice?.modes).toEqual(['skip', 'kaisa:stu']);
   s = step(s, { type: 'choose-mode', playerId: 'a', mode: 'kaisa:stu' });
   s = resolveTop(s);
-  expect(s.pendingModeChoice?.modes).toEqual([
-    'cast-target:kaisa',
-    'cast-target:enemy',
+  expect(s.pendingModeChoice?.castOptions?.map((o) => o.targetId)).toEqual([
+    'kaisa',
+    'enemy',
   ]);
-  s = step(s, {
-    type: 'choose-mode',
-    playerId: 'a',
-    mode: 'cast-target:enemy',
-  });
+  s = step(s, { type: 'choose-mode', playerId: 'a', mode: 'cast-option:1' });
   s = drain(s);
   expect(
     s.units.find((u) => u.id === 'enemy')?.temporaryEffects,

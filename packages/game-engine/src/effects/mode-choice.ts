@@ -1,5 +1,5 @@
 import { resolveCombat } from '../combat/resolve.js';
-import { castFree, freeCastEntry, freeCastTargets } from './free-cast.js';
+import { castFreeOption, freeCastEntry, freeCastOptions } from './free-cast.js';
 import { effectPlayTargets } from './effect-play.js';
 import { resolvePlayEffect } from './play-effect.js';
 import type { PlayEffectEntry } from './play-effect.js';
@@ -68,7 +68,7 @@ export type EffectMode =
   | `ready-rune:${string}`
   | `play-target:${string}`
   | `retarget:${string}`
-  | `cast-target:${string}`
+  | `cast-option:${number}`
   | `overt:${string}`;
 
 const ONE_ENERGY = { energy: 1, power: {} };
@@ -144,6 +144,8 @@ export interface ModeChoiceEntry {
   };
   /** Lancement gratuit d'un sort par effet : cible choisie à la mise sur la pile. */
   freeCast?: { cardId: string; recycleOnResolve?: boolean };
+  /** Variantes de lancement proposées (modes `cast-option:<index>`). */
+  castOptions?: readonly Extract<GameAction, { type: 'cast-spell' }>[];
   /** Mystic Reversal : sort volé dont la cible principale peut être changée. */
   retargetSpellId?: string;
   /** Unité jouée par un effet : cible de sa capacité « when you play me » à choisir. */
@@ -180,25 +182,13 @@ export function resolveModeChoice(
   if (entry.runeFateAt) return resolveRuneFate(state, entry, entry.runeFateAt);
   if (entry.freeCast) {
     const { cardId, recycleOnResolve } = entry.freeCast;
-    const card = state.cards.find((c) => c.id === cardId);
-    const definition = state.spellDefinitions?.find(
-      (d) => d.id === card?.definitionId,
-    );
-    const targets = definition
-      ? freeCastTargets(state, definition, entry.ownerId)
-      : null;
+    const options = freeCastOptions(state, cardId, entry.ownerId);
     const done = [
       { type: 'legend-effect-resolved' as const, sourceId: entry.sourceId },
     ];
-    if (!targets?.length) return { ok: true, state, events: done };
-    if (definition!.target.kind === 'caster') {
-      const cast = castFree(
-        state,
-        cardId,
-        entry.ownerId,
-        entry.ownerId,
-        recycleOnResolve,
-      );
+    if (!options.length) return { ok: true, state, events: done };
+    if (options.length === 1) {
+      const cast = castFreeOption(state, options[0]!, recycleOnResolve);
       return { ok: true, state: cast.state, events: [...cast.events, ...done] };
     }
     return {
@@ -207,7 +197,8 @@ export function resolveModeChoice(
         ...state,
         pendingModeChoice: {
           ...entry,
-          modes: targets.map((id) => `cast-target:${id}` as const),
+          modes: options.map((_, i) => `cast-option:${i}` as const),
+          castOptions: options,
         },
       },
       events: [],
@@ -440,11 +431,7 @@ export function resolveModeChoice(
             (c) =>
               hasHidden(state, c.definitionId) &&
               (!state.spellDefinitions?.some((d) => d.id === c.definitionId) ||
-                !!freeCastTargets(
-                  state,
-                  state.spellDefinitions.find((d) => d.id === c.definitionId)!,
-                  entry.ownerId,
-                )?.length) &&
+                freeCastOptions(state, c.id, entry.ownerId).length > 0) &&
               state.zones.some(
                 (z) =>
                   z.id === c.zoneId &&
@@ -463,7 +450,7 @@ export function resolveModeChoice(
           );
           return (
             spell &&
-            !!freeCastTargets(state, spell, entry.ownerId)?.length &&
+            freeCastOptions(state, c.id, entry.ownerId).length > 0 &&
             spell.cost.energy < score &&
             state.zones.some(
               (z) =>
@@ -958,14 +945,12 @@ function applyMode(
       events: [],
     };
   }
-  if (mode.startsWith('cast-target:') && pending.freeCast)
-    return castFree(
-      state,
-      pending.freeCast.cardId,
-      pending.ownerId,
-      mode.slice('cast-target:'.length),
-      pending.freeCast.recycleOnResolve,
-    );
+  if (mode.startsWith('cast-option:') && pending.freeCast) {
+    const option =
+      pending.castOptions?.[Number(mode.slice('cast-option:'.length))];
+    if (!option) return { state, events: [] };
+    return castFreeOption(state, option, pending.freeCast.recycleOnResolve);
+  }
   if (mode.startsWith('retarget:') && pending.retargetSpellId && state.stack) {
     const targetId = mode.slice('retarget:'.length);
     return {

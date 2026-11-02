@@ -31,7 +31,13 @@ import {
 import { spellCost, castCost } from '../cost/spell-cost.js';
 import { playTargetChoices } from '../effects/play-targets.js';
 import { endTurnChoices } from '../effects/end-runes.js';
-import type { GameAction, GameState } from '../types.js';
+import type {
+  CardInstance,
+  GameAction,
+  GameState,
+  PaymentPlan,
+} from '../types.js';
+import type { SpellBlueprint } from '../spell-types.js';
 import { act } from '../act.js';
 import { canSummonAt } from '../actions/unit-destination.js';
 import { recoverableSpells } from '../effects/return-spell.js';
@@ -512,174 +518,8 @@ function* candidates(
         state.units.some((u) => u.ownerId === playerId && u.buffed)
           ? { energyRunes: [], powerRunes: [] }
           : null);
-      const bundle = spell.effects.find(
-        (e) => e.type === 'kill-selected-total-might',
-      );
-      const instances = spell.effects.find(
-        (e) => e.type === 'damage-instances',
-      );
       if (payment)
-        for (const target of spell.target.kind === 'graveyard-unit'
-          ? state.cards
-          : spell.target.kind === 'battlefield'
-            ? state.battlefields.map((f) => ({ id: f.zoneId }))
-            : spell.target.kind === 'caster'
-              ? [{ id: playerId }]
-              : spell.target.kind === 'stack-spell'
-                ? (state.stack?.entries ?? []).flatMap((e) =>
-                    'card' in e && stackSpellTarget(state, spell, e.card.id)
-                      ? [{ id: e.card.id }]
-                      : [],
-                  )
-                : spell.target.kind === 'battlefield-unit-or-gear'
-                  ? [...state.units, ...(state.gears ?? [])].filter((t) =>
-                      battlefieldUnitOrGear(state, t.id),
-                    )
-                  : spell.target.kind === 'optional-gear'
-                    ? [{ id: playerId }, ...(state.gears ?? [])]
-                    : state.units) {
-          const base = {
-            type: 'cast-spell' as const,
-            playerId,
-            cardId: card.id,
-            targetId: target.id,
-            payment,
-          };
-          const summons = spell.effects.find(
-            (e) => e.type === 'summon-recruits',
-          );
-          if (summons) {
-            const zones = destinations
-              .filter((z) => canSummonAt(state, playerId, z.id))
-              .map((z) => z.id);
-            for (const tokenDestinations of tokenPlacements(
-              zones,
-              summons.count,
-            ))
-              yield { ...base, tokenDestinations };
-          } else if (
-            spell.effects.some(
-              (e) =>
-                e.type === 'move-up-to-two-allies-to-base' ||
-                e.type === 'boost-selected-allies' ||
-                e.type === 'damage-selected-units',
-            )
-          ) {
-            const ids = state.units
-              .filter(
-                (u) =>
-                  u.ownerId === playerId ||
-                  spell.effects.some((e) => e.type === 'damage-selected-units'),
-              )
-              .map((u) => u.id);
-            yield { ...base, selectedUnitIds: [] };
-            for (const [i, id] of ids.entries()) {
-              yield { ...base, selectedUnitIds: [id] };
-              for (const second of ids.slice(i + 1))
-                yield { ...base, selectedUnitIds: [id, second] };
-            }
-          } else if (
-            spell.effects.some((e) => e.type === 'return-hidden-free-hide')
-          ) {
-            const ids = hiddenInTrash(state, playerId);
-            yield { ...base, selectedUnitIds: [] };
-            for (const [i, id] of ids.entries()) {
-              yield { ...base, selectedUnitIds: [id] };
-              for (const second of ids.slice(i + 1))
-                yield { ...base, selectedUnitIds: [id, second] };
-            }
-          } else if (bundle) {
-            for (const field of state.battlefields) {
-              const here = state.units
-                .filter((u) => u.zoneId === field.zoneId)
-                .map((u) => u.id);
-              for (let mask = 1; mask < 1 << here.length; mask++) {
-                const ids = here.filter((_, i) => mask & (1 << i));
-                if (validMightBundle(state, ids, bundle.maximum))
-                  yield { ...base, selectedUnitIds: ids };
-              }
-            }
-          } else if (instances) {
-            // Au-delà de 3 instructions, l'énumération explose : un représentant par unité
-            // (toutes les instructions sur elle) ; toute autre répartition reste valide pour act.
-            if (instances.count > 3)
-              for (const u of state.units)
-                yield {
-                  ...base,
-                  selectedUnitIds: Array.from(
-                    { length: instances.count },
-                    () => u.id,
-                  ),
-                };
-            else
-              for (const selectedUnitIds of multisets(
-                state.units.map((u) => u.id),
-                instances.count,
-              ))
-                yield { ...base, selectedUnitIds };
-          } else if (
-            spell.effects.some((e) => e.type === 'duel' || e.type === 'strike')
-          )
-            for (const enemy of state.units.filter(
-              (u) =>
-                u.ownerId !== playerId &&
-                secondaryEnemyTarget(state, spell, playerId, u.id),
-            ))
-              yield { ...base, secondaryTargetId: enemy.id };
-          else if (
-            spell.effects.some((e) => e.type === 'fight-at-destination')
-          ) {
-            const unit = state.units.find((u) => u.id === target.id);
-            for (const zone of unit ? destinations : [])
-              if (zone.id !== unit!.zoneId)
-                for (const foe of state.units.filter((u) =>
-                  destinationFoe(state, playerId, unit!.id, zone.id, u.id),
-                ))
-                  yield {
-                    ...base,
-                    destinationId: zone.id,
-                    secondaryTargetId: foe.id,
-                  };
-          } else if (spell.effects.some((e) => e.type === 'match-ally-might')) {
-            for (const ally of state.units.filter((u) =>
-              otherAlly(state, playerId, target.id, u.id),
-            ))
-              yield { ...base, secondaryTargetId: ally.id };
-          } else if (
-            spell.effects.some((e) => e.type === 'stun-with-enemy-here')
-          ) {
-            const unit = state.units.find((u) => u.id === target.id);
-            for (const foe of unit
-              ? state.units.filter((u) =>
-                  enemyHere(state, playerId, unit, u.id),
-                )
-              : [])
-              yield { ...base, secondaryTargetId: foe.id };
-          } else if (
-            spell.effects.some((e) => e.type === 'move-ally-to-target')
-          ) {
-            yield base;
-            const unit = state.units.find((u) => u.id === target.id);
-            for (const ally of unit
-              ? state.units.filter((u) =>
-                  allyToMove(state, playerId, unit, u.id),
-                )
-              : [])
-              yield { ...base, secondaryTargetId: ally.id };
-          } else if (
-            spell.effects.some(
-              (e) =>
-                e.type === 'might-damage-enemies-then-move' ||
-                e.type === 'move-to-battlefield',
-            )
-          ) {
-            for (const field of state.battlefields)
-              yield { ...base, destinationId: field.zoneId };
-          } else if (spell.effects.some((e) => e.type === 'move-unit'))
-            for (const zone of destinations)
-              yield { ...base, destinationId: zone.id };
-          else yield base;
-        }
+        yield* spellCastVariants(state, playerId, card, spell, payment);
     }
   }
   for (const gear of state.gears ?? []) {
@@ -872,4 +712,169 @@ function multisets(ids: readonly string[], size: number): string[][] {
   return ids.flatMap((id, i) =>
     multisets(ids.slice(i), size - 1).map((rest) => [id, ...rest]),
   );
+}
+
+/** Variantes complètes d'un lancement de sort (cibles, sélections, seconde cible, destination,
+ * jetons) pour un paiement donné ; act reste juge de leur validité. Utilisé par les actions
+ * légales et par les lancements gratuits par effet. */
+export function* spellCastVariants(
+  state: GameState,
+  playerId: string,
+  card: CardInstance,
+  spell: SpellBlueprint,
+  payment: PaymentPlan,
+): Generator<Extract<GameAction, { type: 'cast-spell' }>> {
+  const destinations = state.zones.filter(
+    (z) => z.kind === 'base' || z.kind === 'battlefield',
+  );
+  const bundle = spell.effects.find(
+    (e) => e.type === 'kill-selected-total-might',
+  );
+  const instances = spell.effects.find((e) => e.type === 'damage-instances');
+  for (const target of spell.target.kind === 'graveyard-unit'
+    ? state.cards
+    : spell.target.kind === 'battlefield'
+      ? state.battlefields.map((f) => ({ id: f.zoneId }))
+      : spell.target.kind === 'caster'
+        ? [{ id: playerId }]
+        : spell.target.kind === 'stack-spell'
+          ? (state.stack?.entries ?? []).flatMap((e) =>
+              'card' in e && stackSpellTarget(state, spell, e.card.id)
+                ? [{ id: e.card.id }]
+                : [],
+            )
+          : spell.target.kind === 'battlefield-unit-or-gear'
+            ? [...state.units, ...(state.gears ?? [])].filter((t) =>
+                battlefieldUnitOrGear(state, t.id),
+              )
+            : spell.target.kind === 'optional-gear'
+              ? [{ id: playerId }, ...(state.gears ?? [])]
+              : state.units) {
+    const base = {
+      type: 'cast-spell' as const,
+      playerId,
+      cardId: card.id,
+      targetId: target.id,
+      payment,
+    };
+    const summons = spell.effects.find((e) => e.type === 'summon-recruits');
+    if (summons) {
+      const zones = destinations
+        .filter((z) => canSummonAt(state, playerId, z.id))
+        .map((z) => z.id);
+      for (const tokenDestinations of tokenPlacements(zones, summons.count))
+        yield { ...base, tokenDestinations };
+    } else if (
+      spell.effects.some(
+        (e) =>
+          e.type === 'move-up-to-two-allies-to-base' ||
+          e.type === 'boost-selected-allies' ||
+          e.type === 'damage-selected-units',
+      )
+    ) {
+      const ids = state.units
+        .filter(
+          (u) =>
+            u.ownerId === playerId ||
+            spell.effects.some((e) => e.type === 'damage-selected-units'),
+        )
+        .map((u) => u.id);
+      yield { ...base, selectedUnitIds: [] };
+      for (const [i, id] of ids.entries()) {
+        yield { ...base, selectedUnitIds: [id] };
+        for (const second of ids.slice(i + 1))
+          yield { ...base, selectedUnitIds: [id, second] };
+      }
+    } else if (
+      spell.effects.some((e) => e.type === 'return-hidden-free-hide')
+    ) {
+      const ids = hiddenInTrash(state, playerId);
+      yield { ...base, selectedUnitIds: [] };
+      for (const [i, id] of ids.entries()) {
+        yield { ...base, selectedUnitIds: [id] };
+        for (const second of ids.slice(i + 1))
+          yield { ...base, selectedUnitIds: [id, second] };
+      }
+    } else if (bundle) {
+      for (const field of state.battlefields) {
+        const here = state.units
+          .filter((u) => u.zoneId === field.zoneId)
+          .map((u) => u.id);
+        for (let mask = 1; mask < 1 << here.length; mask++) {
+          const ids = here.filter((_, i) => mask & (1 << i));
+          if (validMightBundle(state, ids, bundle.maximum))
+            yield { ...base, selectedUnitIds: ids };
+        }
+      }
+    } else if (instances) {
+      // Au-delà de 3 instructions, l'énumération explose : un représentant par unité
+      // (toutes les instructions sur elle) ; toute autre répartition reste valide pour act.
+      if (instances.count > 3)
+        for (const u of state.units)
+          yield {
+            ...base,
+            selectedUnitIds: Array.from(
+              { length: instances.count },
+              () => u.id,
+            ),
+          };
+      else
+        for (const selectedUnitIds of multisets(
+          state.units.map((u) => u.id),
+          instances.count,
+        ))
+          yield { ...base, selectedUnitIds };
+    } else if (
+      spell.effects.some((e) => e.type === 'duel' || e.type === 'strike')
+    )
+      for (const enemy of state.units.filter(
+        (u) =>
+          u.ownerId !== playerId &&
+          secondaryEnemyTarget(state, spell, playerId, u.id),
+      ))
+        yield { ...base, secondaryTargetId: enemy.id };
+    else if (spell.effects.some((e) => e.type === 'fight-at-destination')) {
+      const unit = state.units.find((u) => u.id === target.id);
+      for (const zone of unit ? destinations : [])
+        if (zone.id !== unit!.zoneId)
+          for (const foe of state.units.filter((u) =>
+            destinationFoe(state, playerId, unit!.id, zone.id, u.id),
+          ))
+            yield {
+              ...base,
+              destinationId: zone.id,
+              secondaryTargetId: foe.id,
+            };
+    } else if (spell.effects.some((e) => e.type === 'match-ally-might')) {
+      for (const ally of state.units.filter((u) =>
+        otherAlly(state, playerId, target.id, u.id),
+      ))
+        yield { ...base, secondaryTargetId: ally.id };
+    } else if (spell.effects.some((e) => e.type === 'stun-with-enemy-here')) {
+      const unit = state.units.find((u) => u.id === target.id);
+      for (const foe of unit
+        ? state.units.filter((u) => enemyHere(state, playerId, unit, u.id))
+        : [])
+        yield { ...base, secondaryTargetId: foe.id };
+    } else if (spell.effects.some((e) => e.type === 'move-ally-to-target')) {
+      yield base;
+      const unit = state.units.find((u) => u.id === target.id);
+      for (const ally of unit
+        ? state.units.filter((u) => allyToMove(state, playerId, unit, u.id))
+        : [])
+        yield { ...base, secondaryTargetId: ally.id };
+    } else if (
+      spell.effects.some(
+        (e) =>
+          e.type === 'might-damage-enemies-then-move' ||
+          e.type === 'move-to-battlefield',
+      )
+    ) {
+      for (const field of state.battlefields)
+        yield { ...base, destinationId: field.zoneId };
+    } else if (spell.effects.some((e) => e.type === 'move-unit'))
+      for (const zone of destinations)
+        yield { ...base, destinationId: zone.id };
+    else yield base;
+  }
 }

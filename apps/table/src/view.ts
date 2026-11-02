@@ -571,9 +571,16 @@ function actionLabel(
               : action.mode.startsWith('overt:')
                 ? 'Dépenser le buff et redresser ' +
                   target(action.mode.slice('overt:'.length))
-                : action.mode.startsWith('cast-target:')
-                  ? 'Lancer sur ' +
-                    target(action.mode.slice('cast-target:'.length))
+                : action.mode.startsWith('cast-option:')
+                  ? (() => {
+                      const option =
+                        state.pendingModeChoice?.castOptions?.[
+                          Number(action.mode.slice('cast-option:'.length))
+                        ];
+                      return option
+                        ? actionLabel(session, option)
+                        : 'Lancer le sort';
+                    })()
                   : action.mode.startsWith('retarget:')
                     ? 'Nouvelle cible : ' +
                       target(action.mode.slice('retarget:'.length))

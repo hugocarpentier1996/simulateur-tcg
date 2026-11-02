@@ -38,6 +38,9 @@ export interface PlayerPreferences {
 export type PreferenceKey = keyof PlayerPreferences;
 
 export interface GameState {
+  /** Lancement gratuit par effet en cours de choix (Blind Fury, Kai'Sa, Ava, Promising
+   * Future) : cette carte peut être lancée hors main, sans coût imprimé ni fenêtre. */
+  freeCast?: { cardId: string; playerId: string } | null;
   /** Préférences d'ergonomie par joueur ; absentes = valeurs par défaut. */
   preferences?: Readonly<Record<string, PlayerPreferences>>;
   /** Beginning suspendu : reprendre Channel/Draw une seule fois après la pile et les choix. */

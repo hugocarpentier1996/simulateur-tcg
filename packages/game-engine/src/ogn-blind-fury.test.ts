@@ -10,6 +10,7 @@ import {
   blindFury,
   kinkouMonk,
   hextechRay,
+  fallingStar,
   sealOfRage,
 } from '../../game-data/src/index.js';
 
@@ -90,15 +91,11 @@ it('Blind Fury : un sort à cible révélé est lancé, sa cible choisie à sa m
     s0.spellDefinitions = [blindFury, hextechRay];
   });
   s = resolveTop(s);
-  expect(s.pendingModeChoice?.modes).toEqual([
-    'cast-target:ally',
-    'cast-target:enemy',
+  expect(s.pendingModeChoice?.castOptions?.map((o) => o.targetId)).toEqual([
+    'ally',
+    'enemy',
   ]);
-  s = step(s, {
-    type: 'choose-mode',
-    playerId: 'a',
-    mode: 'cast-target:enemy',
-  });
+  s = step(s, { type: 'choose-mode', playerId: 'a', mode: 'cast-option:1' });
   s = resolveTop(s);
   expect(s.units.some((u) => u.id === 'enemy')).toBe(false);
   expect(s.cards.find((c) => c.id === 'top')?.zoneId).toBe('graveyard-b');
@@ -118,4 +115,24 @@ it('Blind Fury : un gear révélé est joué dans la base du lanceur', () => {
     ownerId: 'b',
     zoneId: 'graveyard-b',
   });
+});
+
+it('Blind Fury : un sort à choix multiples révélé (Falling Star) propose toutes ses répartitions', () => {
+  let s = reveal(fallingStar.id, (s0) => {
+    s0.spellDefinitions = [blindFury, fallingStar];
+    s0.units = s0.units.map((u) => ({ ...u, might: 9 }));
+  });
+  s = resolveTop(s);
+  const options = s.pendingModeChoice?.castOptions ?? [];
+  const index = options.findIndex(
+    (o) => o.selectedUnitIds?.join() === 'enemy,enemy',
+  );
+  expect(index).toBeGreaterThanOrEqual(0);
+  s = step(s, {
+    type: 'choose-mode',
+    playerId: 'a',
+    mode: `cast-option:${index}`,
+  });
+  s = resolveTop(s);
+  expect(s.units.find((u) => u.id === 'enemy')?.damage).toBe(6);
 });

@@ -40,17 +40,23 @@ export function castSpell(
 ): ActionResult {
   if (state.players.length !== 2)
     return { ok: false, reason: 'UNSUPPORTED_MODE' };
+  // Lancement gratuit par effet : carte hors main (cimetière, banni, deck), coût imprimé et
+  // fenêtre ignorés ; les coûts supplémentaires (Deflect) restent dus.
+  const free =
+    state.freeCast?.cardId === action.cardId &&
+    state.freeCast.playerId === action.playerId;
   const card = state.cards.find(
     (c) =>
       c.id === action.cardId &&
-      c.ownerId === action.playerId &&
-      (playableFacedown(state, c, action.playerId) ||
-        state.zones.some(
-          (z) =>
-            z.id === c.zoneId &&
-            z.kind === 'hand' &&
-            z.ownerId === action.playerId,
-        )),
+      (free ||
+        (c.ownerId === action.playerId &&
+          (playableFacedown(state, c, action.playerId) ||
+            state.zones.some(
+              (z) =>
+                z.id === c.zoneId &&
+                z.kind === 'hand' &&
+                z.ownerId === action.playerId,
+            )))),
   );
   if (!card) return { ok: false, reason: 'CARD_NOT_IN_HAND' };
   const definition = state.spellDefinitions?.find(
@@ -60,6 +66,7 @@ export function castSpell(
   // Hidden : joué depuis facedown à vitesse Réaction, gratuit, choix limités à son champ.
   const hiddenField = playableFacedown(state, card, action.playerId);
   if (
+    !free &&
     !canUseTiming(
       state,
       action.playerId,
@@ -297,16 +304,18 @@ export function castSpell(
       state,
       definition,
       action.targetId,
-      hiddenFree(
-        card,
-        castCost(
-          state,
-          action.playerId,
-          definition,
-          action.xPower,
-          action.spendBuffUnitId,
-        ),
-      ),
+      free
+        ? { energy: 0, power: {} }
+        : hiddenFree(
+            card,
+            castCost(
+              state,
+              action.playerId,
+              definition,
+              action.xPower,
+              action.spendBuffUnitId,
+            ),
+          ),
     ),
     chosen.filter((id) => !fizzled.includes(id)),
   );

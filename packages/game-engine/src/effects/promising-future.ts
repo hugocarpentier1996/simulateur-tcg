@@ -1,4 +1,4 @@
-import { freeCastEntry, freeCastTargets } from './free-cast.js';
+import { freeCastEntry, freeCastOptions } from './free-cast.js';
 import { lookRecycleEvents } from './mode-choice.js';
 import { findPayment } from '../legal/payment.js';
 import { payCost } from '../cost/payment.js';
@@ -115,7 +115,8 @@ function playFutureCards(
         base &&
         definition &&
         (!spell ||
-          (!!state.stack && freeCastTargets(state, spell, playerId) !== null));
+          (!!state.stack &&
+            freeCastOptions(state, card.id, playerId).length > 0));
       const cost = definition && { ...definition.cost, energy: 0 };
       const plan = playable && cost && findPayment(state, playerId, cost);
       const paid =
