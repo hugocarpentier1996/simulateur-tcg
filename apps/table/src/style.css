@@ -1941,3 +1941,6 @@ button.pile.graveyard:hover .pile-face {
 .options-panel tbody th {
   font-weight: 400;
 }
+.options-panel thead th {
+  white-space: nowrap;
+}
