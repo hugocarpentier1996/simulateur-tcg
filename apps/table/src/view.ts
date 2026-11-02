@@ -437,6 +437,7 @@ function actionLabel(
         (action.onPlayTargetId
           ? ' · Cible : ' + target(action.onPlayTargetId)
           : '') +
+        (action.refuseDeflect ? ' · sans payer Deflect (effet annulé)' : '') +
         (action.onPlaySelectedIds
           ? (state.unitDefinitions?.find(
               (d) =>

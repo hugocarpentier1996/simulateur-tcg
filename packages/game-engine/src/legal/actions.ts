@@ -417,6 +417,7 @@ function* candidates(
                     card.id,
                     unit,
                     zone.id,
+                    !!state.preferences?.[playerId]?.allowDeflectRefusal,
                   ))
                     for (const returnSpellId of unit.onPlayFromTrash
                       ? [
@@ -696,11 +697,14 @@ function* tokenPlacements(
 /** Préférence allowDeflectRefusal : variante de sort qui refuse la taxe Deflect (l'effet sur
  * ces unités fizzle), proposée en plus de la variante payante. */
 function deflectRefusals(state: GameState, action: GameAction): GameAction[] {
-  if (
-    action.type !== 'cast-spell' ||
-    !state.preferences?.[action.playerId]?.allowDeflectRefusal
-  )
+  if (!state.preferences?.[action.playerId]?.allowDeflectRefusal)
     return [action];
+  if (action.type === 'play-unit')
+    return action.onPlayTargetId &&
+      deflectedUnits(state, action.playerId, [action.onPlayTargetId]).length
+      ? [action, { ...action, refuseDeflect: true }]
+      : [action];
+  if (action.type !== 'cast-spell') return [action];
   const definition = state.spellDefinitions?.find(
     (d) =>
       d.id === state.cards.find((c) => c.id === action.cardId)?.definitionId,
@@ -826,7 +830,9 @@ function targetPayment(state: GameState, action: GameAction): GameAction[] {
                 ),
               )
             : definition.cost,
-          action.type === 'play-unit' && action.onPlayTargetId
+          action.type === 'play-unit' &&
+            action.onPlayTargetId &&
+            !action.refuseDeflect
             ? [action.onPlayTargetId]
             : [],
         );

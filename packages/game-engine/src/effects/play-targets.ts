@@ -8,6 +8,8 @@ export function playTargetChoices(
   sourceId: string,
   definition: UnitBlueprint,
   destinationId?: string,
+  /** Option allowDeflectRefusal : la taxe Deflect peut être refusée, toute cible est choisissable. */
+  ignoreDeflect = false,
 ): (string | undefined)[] {
   const card = state.cards.find((c) => c.id === sourceId);
   const playerId = card?.ownerId ?? state.activePlayerId;
@@ -19,7 +21,7 @@ export function playTargetChoices(
         findPayment(
           state,
           playerId,
-          withDeflect(state, playerId, cost, [id]),
+          ignoreDeflect ? cost : withDeflect(state, playerId, cost, [id]),
         ) !== null,
     );
     return valid.length ? valid : [undefined];

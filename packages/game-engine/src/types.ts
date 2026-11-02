@@ -813,6 +813,9 @@ export type GameAction =
     }
   | {
       type: 'play-unit';
+      /** Deflect non payé (préférence allowDeflectRefusal) : la capacité ciblant cette unité
+       * fizzle. */
+      refuseDeflect?: boolean;
       /** Cible de capacité choisie à la mise en jeu, avant réactions. */
       onPlayTargetId?: string;
       /** Unités choisies à la mise en jeu (onPlayBuffOthers), sans ordre. */

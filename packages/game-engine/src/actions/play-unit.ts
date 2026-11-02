@@ -18,7 +18,7 @@ import { settleLethalUnits } from '../effects/lethal-units.js';
 import { activeLegends } from '../effects/legends.js';
 import { victoryTarget } from '../scoring/victory-target.js';
 import { alliesEnterReady, wardenAgainst } from '../effects/unit-aura.js';
-import { withDeflect } from '../cost/deflect.js';
+import { deflectedUnits, withDeflect } from '../cost/deflect.js';
 import { playTargetChoices } from '../effects/play-targets.js';
 import type { PlayEffectEntry } from '../effects/play-effect.js';
 import type {
@@ -197,6 +197,17 @@ function playUnitCore(
     !choicesHere(state, [action.onPlayTargetId], hiddenField)
   )
     return { ok: false, reason: 'INVALID_TARGET' };
+  // Deflect refusé (option) : la capacité ciblant l'unité Deflect fizzle.
+  if (
+    action.refuseDeflect &&
+    (!state.preferences?.[action.playerId]?.allowDeflectRefusal ||
+      !action.onPlayTargetId ||
+      !deflectedUnits(state, action.playerId, [action.onPlayTargetId]).length)
+  )
+    return { ok: false, reason: 'DEFLECT_REFUSAL_DISABLED' };
+  const effectTargetId = action.refuseDeflect
+    ? undefined
+    : action.onPlayTargetId;
   const entries: (
     ReturnSpellEntry | UnitPlayEntry | PlayEffectEntry | ModeChoiceEntry
   )[] = [];
@@ -210,9 +221,13 @@ function playUnitCore(
       ),
     );
   if (
-    !playTargetChoices(state, card.id, definition, destinationId).includes(
-      action.onPlayTargetId,
-    )
+    !playTargetChoices(
+      state,
+      card.id,
+      definition,
+      destinationId,
+      !!action.refuseDeflect,
+    ).includes(action.onPlayTargetId)
   )
     return { ok: false, reason: 'INVALID_TARGET' };
   if (
@@ -277,7 +292,7 @@ function playUnitCore(
       ownerId: card.ownerId,
       effect: {
         type: 'move-to-base',
-        ...(action.onPlayTargetId ? { targetId: action.onPlayTargetId } : {}),
+        ...(effectTargetId ? { targetId: effectTargetId } : {}),
       },
     });
   if (
@@ -294,7 +309,7 @@ function playUnitCore(
       effect: {
         type: 'targeted',
         effect: definition.onPlayTargetEffect.effect,
-        ...(action.onPlayTargetId ? { targetId: action.onPlayTargetId } : {}),
+        ...(effectTargetId ? { targetId: effectTargetId } : {}),
       },
     });
   if (definition.onPlayReadyOther)
@@ -304,7 +319,7 @@ function playUnitCore(
       ownerId: card.ownerId,
       effect: {
         type: 'ready-other',
-        ...(action.onPlayTargetId ? { targetId: action.onPlayTargetId } : {}),
+        ...(effectTargetId ? { targetId: effectTargetId } : {}),
       },
     });
   if (
@@ -430,7 +445,9 @@ function playUnitCore(
         ),
       ),
     ),
-    action.onPlayTargetId ? [action.onPlayTargetId] : [],
+    action.onPlayTargetId && !action.refuseDeflect
+      ? [action.onPlayTargetId]
+      : [],
   );
   const payment = payCost(state, action.playerId, cost, action.payment);
   if (!payment.ok) return payment;
