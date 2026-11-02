@@ -523,10 +523,20 @@ export function act(state: GameState, action: GameAction): ActionResult {
         : [];
     }),
   );
-  // Immortal Phoenix : un sort du joueur tue une unité -> payer pour la jouer du cimetière.
+  // Immortal Phoenix : une unité meurt des dégâts d'un sort du joueur (pas d'un simple malus
+  // sur une unité déjà blessée) -> payer pour la jouer du cimetière, Phoenix compris.
+  const spellDamaged = new Set(
+    events.flatMap((e) =>
+      e.type === 'spell-damage' && e.amount > 0 ? [e.unitId] : [],
+    ),
+  );
   const spellKill =
     events.some((e) => e.type === 'spell-resolved') &&
-    events.some((e) => e.type === 'unit-died' || e.type === 'token-removed');
+    events.some(
+      (e) =>
+        (e.type === 'unit-died' || e.type === 'token-removed') &&
+        spellDamaged.has(e.unitId),
+    );
   const caster = events.find((e) => e.type === 'spell-resolved');
   if (spellKill && caster?.type === 'spell-resolved')
     for (const card of shrine.cards) {
