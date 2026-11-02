@@ -176,3 +176,10 @@ implémenté ; chaque point deviendra une correction testée et commitée sépar
 29. **Légendes 299-310** : mêmes cartes que les légendes de même nom, avec un autre visuel
     (images locales présentes) → à gérer plus tard comme **skin alternatif** lors de la
     création du deck, pas comme cartes distinctes.
+
+### Points à reconfirmer après la mise en œuvre (novembre 2026)
+
+- **19 / Reaver's Row** : compris ainsi — le renvoi accordé par Reaver's Row **est** un
+  déplacement (il déclenche les effets de mouvement), contrairement au rappel d'égalité et à
+  Zhonya. « Le joueur ne peut revenir manuellement en base sur ce bf » est lu comme : hors de
+  cet effet, aucun retour manuel en base pendant le showdown (règle déjà appliquée).
