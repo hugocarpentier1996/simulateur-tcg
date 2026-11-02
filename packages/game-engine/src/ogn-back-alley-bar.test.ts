@@ -1,5 +1,5 @@
 import { expect, it } from 'vitest';
-import { spellScenario, step } from './origins-test-fixtures.js';
+import { spellScenario, step, drain } from './origins-test-fixtures.js';
 import { effectiveMight } from './effects/modifiers.js';
 import { backAlleyBar, mobilize } from '../../game-data/src/index.js';
 
@@ -14,6 +14,7 @@ it('Back-Alley Bar : une unité qui quitte ce champ gagne +1 Might ce tour', () 
     unitId: 'ally',
     destinationId: 'base-a',
   });
+  s = drain(s);
   expect(
     effectiveMight(
       s.units.find((u) => u.id === 'ally')!,

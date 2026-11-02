@@ -66,6 +66,8 @@ export interface PlayEffectEntry {
     /** Redresse et/ou donne +Might ce tour à l'unité indiquée encore en jeu (déclencheurs
      * Jinx Chaos, Eclipse Herald, Pit Crew…). */
     | { type: 'unit-boost'; unitId: string; might: number; ready: boolean }
+    /** Redresse la carte indiquée (légende The Boss à la conquête). */
+    | { type: 'ready-card'; cardId: string }
     /** Détruit le gear indiqué (capacité kill-self). */
     | { type: 'kill-gear'; gearId: string }
     | NonNullable<UnitBlueprint['onPlayEffect']>
@@ -598,6 +600,19 @@ export function resolvePlayEffect(
     return {
       ok: true,
       state: choice ? { ...state, pendingModeChoice: choice } : state,
+      events: [{ type: 'unit-play-effect-resolved', sourceId: entry.sourceId }],
+    };
+  }
+  if (entry.effect.type === 'ready-card') {
+    const { cardId } = entry.effect;
+    return {
+      ok: true,
+      state: {
+        ...state,
+        cards: state.cards.map((c) =>
+          c.id === cardId ? { ...c, ready: true } : c,
+        ),
+      },
       events: [{ type: 'unit-play-effect-resolved', sourceId: entry.sourceId }],
     };
   }

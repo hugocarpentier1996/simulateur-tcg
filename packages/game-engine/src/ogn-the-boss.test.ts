@@ -4,6 +4,7 @@ import {
   step,
   resolveTop,
   noRunes,
+  drain,
 } from './origins-test-fixtures.js';
 import { theBoss, hextechRay } from '../../game-data/src/index.js';
 import { queueConquestLegends } from './effects/conquest-legends.js';
@@ -54,5 +55,10 @@ it('The Boss : quand son propriétaire conquiert, la légende se redresse', () =
     },
     [{ type: 'battlefield-conquered', playerId: 'b', battlefieldId: 'f' }],
   ).state;
-  expect(s.cards.find((c) => c.id === 'boss')?.ready).toBe(true);
+  expect(s.stack?.entries.at(-1)).toMatchObject({
+    kind: 'play-effect',
+    effect: { type: 'ready-card', cardId: 'boss' },
+  });
+  const resolved = drain(s);
+  expect(resolved.cards.find((c) => c.id === 'boss')?.ready).toBe(true);
 });

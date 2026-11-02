@@ -266,6 +266,24 @@ function actOnce(state: GameState, action: GameAction): ActionResult {
       ownerId,
       effect: { type: 'unit-boost', unitId, ...rule },
     });
+  // Back-Alley Bar : une unité quitte ce champ -> +Might ce tour (capacité sur la pile).
+  for (const e of events)
+    if (e.type === 'unit-moved' && e.from !== e.to) {
+      const amount = battlefieldDefinition(counted, e.from)?.moveOutMightBonus;
+      const mover = counted.units.find((u) => u.id === e.unitId);
+      if (amount && mover)
+        triggers.push({
+          kind: 'play-effect',
+          sourceId: e.from,
+          ownerId: mover.ownerId,
+          effect: {
+            type: 'unit-boost',
+            unitId: mover.id,
+            might: amount,
+            ready: false,
+          },
+        });
+    }
   // Darius (Fury) : deuxième carte jouée ce tour, lui compris -> capacité sur la pile.
   if (secondCard)
     for (const u of counted.units) {
@@ -860,13 +878,6 @@ function countMoves(state: GameState, events: readonly GameEvent[]): GameState {
     if (e.type === 'unit-moved' && e.from !== e.to)
       moves.set(e.unitId, (moves.get(e.unitId) ?? 0) + 1);
   if (!moves.size) return state;
-  // Back-Alley Bar : bonus de Might pour chaque départ du champ.
-  const bonus = new Map<string, number>();
-  for (const e of events)
-    if (e.type === 'unit-moved' && e.from !== e.to) {
-      const amount = battlefieldDefinition(state, e.from)?.moveOutMightBonus;
-      if (amount) bonus.set(e.unitId, (bonus.get(e.unitId) ?? 0) + amount);
-    }
   return {
     ...state,
     units: state.units.map((u) =>
@@ -874,14 +885,6 @@ function countMoves(state: GameState, events: readonly GameEvent[]): GameState {
         ? {
             ...u,
             movesThisTurn: (u.movesThisTurn ?? 0) + moves.get(u.id)!,
-            ...(bonus.has(u.id)
-              ? {
-                  temporaryEffects: [
-                    ...(u.temporaryEffects ?? []),
-                    { type: 'modify-might' as const, amount: bonus.get(u.id)! },
-                  ],
-                }
-              : {}),
           }
         : u,
     ),
