@@ -190,16 +190,15 @@ Implémentées (un commit testé par point) : 1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13
 19, 20, 21, 23, 24, 25, 26, 27, 28. Confirmées sans changement : 2, 12, 14, 15, 22.
 Point 29 (skins alternatifs) : prévu plus tard, à la création de deck.
 
-Reste à faire / limites connues :
+Reste à faire / limites connues (mis à jour) :
 
-- **The Boss (sauvetage d'une unité buffée)** : toujours appliqué automatiquement quand il
-  est payable. C'est un effet de remplacement au moment de la mort ; le demander exige de
-  suspendre la résolution des morts (chantier à part).
-- **Overt Operation** : les « you may » par unité restent acceptés automatiquement, même
-  avec l'option « Toujours demander les you may gratuits ».
-- **The Grand Plaza** : la victoire à la tenue est appliquée sans passer par la pile.
-- **Refus du Deflect** : disponible pour les sorts seulement (pas encore pour les capacités
-  d'unités, de gears ni d'attaque).
+- **The Boss**, **Overt Operation** et **The Grand Plaza** : traités depuis (sauvetage demandé
+  avec morts suspendues ; you may par unité avec l'option ; victoire via la pile).
+- **Zhonya's Hourglass** : reste automatique — son texte est obligatoire (« The next time a
+  friendly unit would die, kill this instead ») et sans coût, contrairement à The Boss
+  (« you may pay … and exhaust me »).
+- **Refus du Deflect** : disponible pour les sorts et les capacités de mise en jeu ; pas
+  encore pour les capacités Tap de gears ni les capacités d'attaque.
 - **Lancements gratuits** (Blind Fury, Kai'Sa, Ava, Promising Future) et **unités jouées par
   un effet** : les choix secondaires (sélections multiples, seconde cible, destination,
   cartes du cimetière) ne sont pas proposés ; ces sorts restent non lançables par ce biais.
