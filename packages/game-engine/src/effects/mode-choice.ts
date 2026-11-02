@@ -1,3 +1,4 @@
+import { castFree, freeCastEntry, freeCastTargets } from './free-cast.js';
 import { effectPlayTargets } from './effect-play.js';
 import { resolvePlayEffect } from './play-effect.js';
 import type { PlayEffectEntry } from './play-effect.js';
@@ -65,7 +66,8 @@ export type EffectMode =
   | 'accept'
   | `ready-rune:${string}`
   | `play-target:${string}`
-  | `retarget:${string}`;
+  | `retarget:${string}`
+  | `cast-target:${string}`;
 
 const ONE_ENERGY = { energy: 1, power: {} };
 
@@ -130,6 +132,8 @@ export interface ModeChoiceEntry {
   /** « You may » avec coût, toujours demandé (réponse 8) : coucher une source (et payer un
    * Power) pour un effet. Relentless Storm, Solari Shrine, Mistfall. */
   costlyMay?: CostlyMay;
+  /** Lancement gratuit d'un sort par effet : cible choisie à la mise sur la pile. */
+  freeCast?: { cardId: string; recycleOnResolve?: boolean };
   /** Mystic Reversal : sort volé dont la cible principale peut être changée. */
   retargetSpellId?: string;
   /** Unité jouée par un effet : cible de sa capacité « when you play me » à choisir. */
@@ -164,6 +168,41 @@ export function resolveModeChoice(
   entry: ModeChoiceEntry,
 ): Extract<ActionResult, { ok: true }> {
   if (entry.runeFateAt) return resolveRuneFate(state, entry, entry.runeFateAt);
+  if (entry.freeCast) {
+    const { cardId, recycleOnResolve } = entry.freeCast;
+    const card = state.cards.find((c) => c.id === cardId);
+    const definition = state.spellDefinitions?.find(
+      (d) => d.id === card?.definitionId,
+    );
+    const targets = definition
+      ? freeCastTargets(state, definition, entry.ownerId)
+      : null;
+    const done = [
+      { type: 'legend-effect-resolved' as const, sourceId: entry.sourceId },
+    ];
+    if (!targets?.length) return { ok: true, state, events: done };
+    if (definition!.target.kind === 'caster') {
+      const cast = castFree(
+        state,
+        cardId,
+        entry.ownerId,
+        entry.ownerId,
+        recycleOnResolve,
+      );
+      return { ok: true, state: cast.state, events: [...cast.events, ...done] };
+    }
+    return {
+      ok: true,
+      state: {
+        ...state,
+        pendingModeChoice: {
+          ...entry,
+          modes: targets.map((id) => `cast-target:${id}` as const),
+        },
+      },
+      events: [],
+    };
+  }
   if (entry.playTargetFor) {
     const found = effectPlayTargets(state, entry.playTargetFor, entry.ownerId);
     const targets = (found?.targets ?? []).filter(
@@ -390,7 +429,12 @@ export function resolveModeChoice(
           .filter(
             (c) =>
               hasHidden(state, c.definitionId) &&
-              !state.spellDefinitions?.some((d) => d.id === c.definitionId) &&
+              (!state.spellDefinitions?.some((d) => d.id === c.definitionId) ||
+                !!freeCastTargets(
+                  state,
+                  state.spellDefinitions.find((d) => d.id === c.definitionId)!,
+                  entry.ownerId,
+                )?.length) &&
               state.zones.some(
                 (z) =>
                   z.id === c.zoneId &&
@@ -409,7 +453,7 @@ export function resolveModeChoice(
           );
           return (
             spell &&
-            spell.target.kind === 'caster' &&
+            !!freeCastTargets(state, spell, entry.ownerId)?.length &&
             spell.cost.energy < score &&
             state.zones.some(
               (z) =>
@@ -844,6 +888,14 @@ function applyMode(
       events: [],
     };
   }
+  if (mode.startsWith('cast-target:') && pending.freeCast)
+    return castFree(
+      state,
+      pending.freeCast.cardId,
+      pending.ownerId,
+      mode.slice('cast-target:'.length),
+      pending.freeCast.recycleOnResolve,
+    );
   if (mode.startsWith('retarget:') && pending.retargetSpellId && state.stack) {
     const targetId = mode.slice('retarget:'.length);
     return {
@@ -1019,21 +1071,15 @@ function applyMode(
     const plan = findPayment(state, pending.ownerId, cost, 'spell');
     const paid = plan && payCost(state, pending.ownerId, cost, plan, 'spell');
     if (!paid || !paid.ok || !paid.state.stack) return { state, events: [] };
+    // Lancement : cible choisie à la mise sur la pile (entrée freeCast).
     return {
       state: {
         ...paid.state,
-        cards: paid.state.cards.filter((c) => c.id !== card.id),
         stack: {
           ...paid.state.stack,
           entries: [
             ...paid.state.stack.entries,
-            {
-              card,
-              definition: spell,
-              casterId: pending.ownerId,
-              targetId: pending.ownerId,
-              recycleOnResolve: true,
-            },
+            freeCastEntry(card.id, pending.ownerId, true),
           ],
         },
       },
@@ -1109,6 +1155,24 @@ function applyMode(
             zoneId: base.id,
           },
         ],
+      };
+    // Sort Hidden : lancé gratuitement, cible choisie à sa mise sur la pile.
+    if (
+      paid.state.spellDefinitions?.some((d) => d.id === card.definitionId) &&
+      paid.state.stack
+    )
+      return {
+        state: {
+          ...paid.state,
+          stack: {
+            ...paid.state.stack,
+            entries: [
+              ...paid.state.stack.entries,
+              freeCastEntry(card.id, pending.ownerId),
+            ],
+          },
+        },
+        events: [],
       };
     return { state, events: [] };
   }

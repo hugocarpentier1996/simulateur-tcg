@@ -1,3 +1,4 @@
+import { freeCastEntry } from './free-cast.js';
 import { futureStep } from './promising-future.js';
 import { hiddenInTrash } from './hidden.js';
 import { playUnitFromTrash } from './play-from-trash.js';
@@ -430,23 +431,44 @@ export function resolveSpell(
           definitionId: unit.id,
           zoneId: base.id,
         });
-      } else if (spell?.target.kind === 'caster' && state.stack) {
+      } else if (spell && state.stack) {
+        // Sort révélé : lancé gratuitement par le voleur, cible choisie à sa mise sur la pile.
         state = {
           ...state,
-          cards: state.cards.filter((c) => c.id !== top.id),
           stack: {
             ...state.stack,
             entries: [
               ...state.stack.entries,
-              {
-                card: { ...top, zoneId: banished.id },
-                definition: spell,
-                casterId: entry.casterId,
-                targetId: entry.casterId,
-              },
+              freeCastEntry(top.id, entry.casterId),
             ],
           },
         };
+      } else {
+        const gear = state.gearDefinitions?.find(
+          (d) => d.id === top.definitionId,
+        );
+        if (gear && base) {
+          state = {
+            ...state,
+            cards: state.cards.filter((c) => c.id !== top.id),
+            gears: [
+              ...(state.gears ?? []),
+              {
+                id: top.id,
+                definitionId: top.definitionId,
+                ownerId: entry.casterId,
+                zoneId: base.id,
+                ready: !gear.entersExhausted,
+              },
+            ],
+          };
+          events.push({
+            type: 'gear-played',
+            playerId: entry.casterId,
+            gearId: top.id,
+            zoneId: base.id,
+          });
+        }
       }
       continue;
     }

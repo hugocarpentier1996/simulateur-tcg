@@ -1,3 +1,4 @@
+import { freeCastEntry, freeCastTargets } from './free-cast.js';
 import { lookRecycleEvents } from './mode-choice.js';
 import { findPayment } from '../legal/payment.js';
 import { payCost } from '../cost/payment.js';
@@ -113,7 +114,8 @@ function playFutureCards(
       const playable =
         base &&
         definition &&
-        (!spell || (spell.target.kind === 'caster' && state.stack));
+        (!spell ||
+          (!!state.stack && freeCastTargets(state, spell, playerId) !== null));
       const cost = definition && { ...definition.cost, energy: 0 };
       const plan = playable && cost && findPayment(state, playerId, cost);
       const paid =
@@ -171,19 +173,13 @@ function playFutureCards(
           ],
         };
       } else if (spell && state.stack) {
+        // Carte remise en jeu pour le lancement : cible choisie à sa mise sur la pile.
         state = {
           ...state,
+          cards: [...state.cards, card],
           stack: {
             ...state.stack,
-            entries: [
-              ...state.stack.entries,
-              {
-                card,
-                definition: spell,
-                casterId: playerId,
-                targetId: playerId,
-              },
-            ],
+            entries: [...state.stack.entries, freeCastEntry(card.id, playerId)],
           },
         };
       }
