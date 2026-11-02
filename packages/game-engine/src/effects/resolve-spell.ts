@@ -1,3 +1,5 @@
+import { withDeflect } from '../cost/deflect.js';
+import { findPayment } from '../legal/payment.js';
 import { freeCastEntry } from './free-cast.js';
 import { futureStep } from './promising-future.js';
 import { hiddenInTrash } from './hidden.js';
@@ -508,7 +510,17 @@ export function resolveSpell(
                 .map((f) => f.zoneId)
                 .filter((id) => validBattlefieldTarget(state, id))
             : [];
-      const others = options.filter((id) => id !== stolen.targetId);
+      // Nouvelle cible Deflect : la taxe est due par le voleur ; seules les cibles payables
+      // sont proposées.
+      const others = options.filter(
+        (id) =>
+          id !== stolen.targetId &&
+          findPayment(
+            state,
+            entry.casterId,
+            withDeflect(state, entry.casterId, { energy: 0, power: {} }, [id]),
+          ),
+      );
       if (others.length)
         state = {
           ...state,

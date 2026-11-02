@@ -1,3 +1,4 @@
+import { withDeflect } from '../cost/deflect.js';
 import { resolveCombat } from '../combat/resolve.js';
 import { castFreeOption, freeCastEntry, freeCastOptions } from './free-cast.js';
 import { effectPlayTargets, playCardOptions } from './effect-play.js';
@@ -1020,12 +1021,23 @@ function applyMode(
   }
   if (mode.startsWith('retarget:') && pending.retargetSpellId && state.stack) {
     const targetId = mode.slice('retarget:'.length);
+    // Taxe Deflect de la nouvelle cible payée par le voleur.
+    const tax = withDeflect(state, pending.ownerId, { energy: 0, power: {} }, [
+      targetId,
+    ]);
+    let taxed = state;
+    if (tax.genericPower) {
+      const plan = findPayment(state, pending.ownerId, tax);
+      const paid = plan && payCost(state, pending.ownerId, tax, plan);
+      if (!paid || !paid.ok || !paid.state.stack) return { state, events: [] };
+      taxed = paid.state;
+    }
     return {
       state: {
-        ...state,
+        ...taxed,
         stack: {
-          ...state.stack,
-          entries: state.stack.entries.map((e) =>
+          ...taxed.stack!,
+          entries: taxed.stack!.entries.map((e) =>
             'card' in e && e.card.id === pending.retargetSpellId
               ? { ...e, targetId }
               : e,

@@ -201,6 +201,6 @@ Reste à faire / limites connues (mis à jour) :
   d'attaque).
 - **Lancements gratuits** et **unités jouées par un effet** : toutes les variantes de choix
   sont désormais proposées (sélections, seconde cible, destination, cartes du cimetière).
-- **Mystic Reversal** : seule la cible principale peut être rechoisie, sans taxe Deflect.
+- **Mystic Reversal** : seule la cible principale peut être rechoisie ; la taxe Deflect d'une nouvelle cible est due par le voleur.
 - **Blind Fury** : un gear révélé est posé sous le contrôle du lanceur et retourne chez son
   propriétaire quand il quitte le jeu (`cardOwnerId`).

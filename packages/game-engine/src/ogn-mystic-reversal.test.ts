@@ -5,7 +5,11 @@ import {
   resolveTop,
   noRunes,
 } from './origins-test-fixtures.js';
-import { mysticReversal, hextechRay } from '../../game-data/src/index.js';
+import {
+  mysticReversal,
+  hextechRay,
+  poutyPoro,
+} from '../../game-data/src/index.js';
 
 function scenario() {
   const s = spellScenario(mysticReversal);
@@ -78,4 +82,30 @@ it('Mystic Reversal : « you may make new choices » — nouvelle cible valide a
   after = resolveTop(after);
   expect(after.units.some((u) => u.id === 'enemy2')).toBe(false);
   expect(after.units.some((u) => u.id === 'enemy')).toBe(true);
+});
+
+it('Mystic Reversal : une nouvelle cible Deflect impose sa taxe au voleur (proposée seulement si payable)', () => {
+  const base = () => {
+    const s = scenario();
+    s.unitDefinitions = [poutyPoro];
+    s.units.push({ ...s.units[1]!, id: 'poro', definitionId: poutyPoro.id });
+    return s;
+  };
+  const cast = {
+    type: 'cast-spell' as const,
+    playerId: 'a',
+    cardId: 'spell',
+    targetId: 'ray',
+    payment: noRunes,
+  };
+  const poor = resolveTop(step(base(), cast));
+  expect(poor.pendingModeChoice?.modes).not.toContain('retarget:poro');
+  const rich = base();
+  rich.resources.a = { energy: 4, power: { vert: 4 } };
+  let s = resolveTop(step(rich, cast));
+  expect(s.pendingModeChoice?.modes).toContain('retarget:poro');
+  s = step(s, { type: 'choose-mode', playerId: 'a', mode: 'retarget:poro' });
+  expect(s.resources.a?.power.vert).toBe(0);
+  s = resolveTop(s);
+  expect(s.units.some((u) => u.id === 'poro')).toBe(false);
 });
