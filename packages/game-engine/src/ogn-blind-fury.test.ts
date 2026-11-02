@@ -1,4 +1,5 @@
 import { expect, it } from 'vitest';
+import { killGears } from './effects/kill-gear.js';
 import {
   spellScenario,
   step,
@@ -109,6 +110,12 @@ it('Blind Fury : un gear révélé est joué dans la base du lanceur', () => {
   });
   expect(s.gears?.find((g) => g.id === 'top')).toMatchObject({
     ownerId: 'a',
+    cardOwnerId: 'b',
     zoneId: 'base-a',
+  });
+  const killed = killGears(s, ['top']).state;
+  expect(killed.cards.find((c) => c.id === 'top')).toMatchObject({
+    ownerId: 'b',
+    zoneId: 'graveyard-b',
   });
 });

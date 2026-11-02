@@ -1874,8 +1874,8 @@ function applyJudgment(state: GameState, kept: readonly string[]): GameState {
       ...goneGears.map((g) => ({
         id: g.id,
         definitionId: g.definitionId,
-        ownerId: g.ownerId,
-        zoneId: zone(g.ownerId, 'deck') ?? g.zoneId,
+        ownerId: g.cardOwnerId ?? g.ownerId,
+        zoneId: zone(g.cardOwnerId ?? g.ownerId, 'deck') ?? g.zoneId,
       })),
     ],
   };

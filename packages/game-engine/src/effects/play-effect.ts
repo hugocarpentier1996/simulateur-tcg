@@ -295,8 +295,8 @@ export function resolvePlayEffect(
             {
               id: gear.id,
               definitionId: gear.definitionId,
-              ownerId: gear.ownerId,
-              zoneId: handOf(gear.ownerId) ?? gear.zoneId,
+              ownerId: gear.cardOwnerId ?? gear.ownerId,
+              zoneId: handOf(gear.cardOwnerId ?? gear.ownerId) ?? gear.zoneId,
             },
           ],
         },

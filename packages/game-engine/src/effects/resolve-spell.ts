@@ -466,6 +466,7 @@ export function resolveSpell(
                 id: top.id,
                 definitionId: top.definitionId,
                 ownerId: entry.casterId,
+                cardOwnerId: top.ownerId,
                 zoneId: base.id,
                 ready: !gear.entersExhausted,
               },

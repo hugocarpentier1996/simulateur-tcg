@@ -1317,3 +1317,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Overt Operation : avec l'option « Toujours demander les you may gratuits », chaque unité Tap buffée est proposée une à une (modes `overt:<id>`, « skip » pour terminer), puis toutes les alliées sont buffées ; sans l'option, accepté automatiquement comme avant.
 - The Grand Plaza (réponse 7) : la victoire à la tenue passe par la pile (effet `hold-win`) ; le nombre d'unités est revérifié à la résolution.
 - Réponse 23 (suite) : le refus du Deflect est aussi possible pour la capacité ciblée d'une unité jouée (`refuseDeflect` sur play-unit) : l'unité est jouée, la capacité visant l'unité Deflect fizzle.
+- Gears : propriétaire de la carte distinct du contrôleur (`cardOwnerId`) ; un gear joué par Blind Fury retourne au cimetière, à la main ou au deck de son propriétaire quand il quitte le jeu.

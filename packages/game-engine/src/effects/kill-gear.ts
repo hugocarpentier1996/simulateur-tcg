@@ -1,7 +1,7 @@
 import type { GameEvent, GameState } from '../types.js';
 
-/** Équipements désignés -> retirés du jeu et placés au cimetière de leur propriétaire
- * (event gear-killed). Ids inconnus ignorés ; aucune autre conséquence. */
+/** Équipements désignés -> retirés du jeu et placés au cimetière du propriétaire de la carte
+ * (cardOwnerId, sinon ownerId) ; l'événement gear-killed désigne le contrôleur. Ids inconnus ignorés ; aucune autre conséquence. */
 export function killGears(
   state: GameState,
   gearIds: readonly string[],
@@ -24,8 +24,8 @@ export function killGears(
         ...killed.map((g) => ({
           id: g.id,
           definitionId: g.definitionId,
-          ownerId: g.ownerId,
-          zoneId: graveyard(g.ownerId),
+          ownerId: g.cardOwnerId ?? g.ownerId,
+          zoneId: graveyard(g.cardOwnerId ?? g.ownerId),
         })),
       ],
     },

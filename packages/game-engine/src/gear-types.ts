@@ -127,6 +127,8 @@ export interface GearState {
   zoneId: string;
   ready: boolean;
   attachedUnitId?: string;
+  /** Propriétaire de la carte quand il diffère du contrôleur (ownerId) : Blind Fury. */
+  cardOwnerId?: string;
   /** Temporary : détruit au début de la Beginning de son propriétaire, avant le score. */
   temporary?: boolean;
 }
