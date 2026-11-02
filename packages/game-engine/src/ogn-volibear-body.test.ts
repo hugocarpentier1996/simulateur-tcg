@@ -1,5 +1,5 @@
 import { expect, it } from 'vitest';
-import { spellScenario, step } from './origins-test-fixtures.js';
+import { spellScenario, step, drain } from './origins-test-fixtures.js';
 import { volibearBody, mobilize } from '../../game-data/src/index.js';
 
 function scenario(volibearZone: string) {
@@ -16,12 +16,14 @@ function scenario(volibearZone: string) {
   s.units[1] = { ...s.units[1]!, zoneId: 'base-b' };
   s.battlefields = s.battlefields.map((f) => ({ ...f, controllerId: null }));
   s.units = s.units.filter((u) => u.id !== 'ally');
-  return step(s, {
-    type: 'move',
-    playerId: 'b',
-    unitId: 'enemy',
-    destinationId: 'g',
-  });
+  return drain(
+    step(s, {
+      type: 'move',
+      playerId: 'b',
+      unitId: 'enemy',
+      destinationId: 'g',
+    }),
+  );
 }
 
 it('Volibear (Body) : un adversaire qui va sur un autre champ fait piocher 1', () => {

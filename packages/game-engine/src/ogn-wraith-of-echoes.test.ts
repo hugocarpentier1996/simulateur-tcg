@@ -4,6 +4,7 @@ import {
   step,
   resolveTop,
   noRunes,
+  drain,
 } from './origins-test-fixtures.js';
 import { wraithOfEchoes, hextechRay } from '../../game-data/src/index.js';
 
@@ -44,6 +45,7 @@ it('Wraith of Echoes : la première mort alliée du tour fait piocher 1, pas la 
       payment: noRunes,
     }),
   );
+  s = drain(s);
   expect(s.cards.find((c) => c.id === 'draw-b-0')?.zoneId).toBe('hand-b');
   s = resolveTop(
     step(s, {
@@ -54,6 +56,7 @@ it('Wraith of Echoes : la première mort alliée du tour fait piocher 1, pas la 
       payment: noRunes,
     }),
   );
+  s = drain(s);
   expect(
     s.cards.filter((c) => c.id.startsWith('draw-b') && c.zoneId === 'hand-b'),
   ).toHaveLength(1);

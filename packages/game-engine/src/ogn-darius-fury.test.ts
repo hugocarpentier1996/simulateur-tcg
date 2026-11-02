@@ -4,6 +4,7 @@ import {
   step,
   resolveTop,
   noRunes,
+  drain,
 } from './origins-test-fixtures.js';
 import { effectiveMight } from './effects/modifiers.js';
 import { dariusFury, hextechRay } from '../../game-data/src/index.js';
@@ -35,6 +36,7 @@ it('Darius (Fury) : à la deuxième carte jouée du tour, +2 Might et se redress
   s = resolveTop(step(s, cast('spell')));
   expect(s.units[0]?.ready).toBe(false);
   s = step(s, cast('ray-2'));
+  s = drain(s);
   expect(s.units[0]?.ready).toBe(true);
   expect(effectiveMight(s.units[0]!, s)).toBe(7);
 });

@@ -4,6 +4,7 @@ import {
   step,
   resolveTop,
   noRunes,
+  drain,
 } from './origins-test-fixtures.js';
 import {
   viktorOrder,
@@ -23,14 +24,16 @@ function scenario(deadDefinition: string) {
   });
   s.units[1] = { ...s.units[1]!, might: 1, definitionId: deadDefinition };
   s.resources.a = { energy: 1, power: { rouge: 1 } };
-  return resolveTop(
-    step(s, {
-      type: 'cast-spell',
-      playerId: 'a',
-      cardId: 'spell',
-      targetId: 'enemy',
-      payment: noRunes,
-    }),
+  return drain(
+    resolveTop(
+      step(s, {
+        type: 'cast-spell',
+        playerId: 'a',
+        cardId: 'spell',
+        targetId: 'enemy',
+        payment: noRunes,
+      }),
+    ),
   );
 }
 const recruits = (s: ReturnType<typeof scenario>) =>

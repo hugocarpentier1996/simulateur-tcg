@@ -9,16 +9,12 @@ import {
   playableFacedown,
   trashLostFacedown,
 } from './effects/hidden.js';
-import { channelForPlayer } from './turn/supplies.js';
 import { buffChoiceEntry, chooseMode } from './effects/mode-choice.js';
 import { spellChosenUnits } from './cost/deflect.js';
 import { choosePick } from './effects/pick.js';
-import { summonToken } from './effects/summon-token.js';
 import { activeLegends } from './effects/legends.js';
 import { isStunned } from './effects/modifiers.js';
-import { drawCardForPlayer } from './turn/draw.js';
 import { battlefieldDefinition } from './effects/battlefield.js';
-import { awardPoints } from './effects/hold-units.js';
 import {
   chooseDefenseShield,
   queueDefenseShield,
@@ -203,11 +199,9 @@ function actOnce(state: GameState, action: GameAction): ActionResult {
           },
         }
       : dispatched;
-  if (
+  const secondCard =
     result !== dispatched &&
-    result.state.cardsPlayedThisTurn?.[action.playerId] === 2
-  )
-    result.state = secondCardTriggers(result.state, action.playerId);
+    result.state.cardsPlayedThisTurn?.[action.playerId] === 2;
   const settled = settleLethalUnits(result.state);
   const attached = syncAttachments(settled.state);
   const queued = queueConquestLegends(attached.state, result.events);
@@ -272,6 +266,16 @@ function actOnce(state: GameState, action: GameAction): ActionResult {
       ownerId,
       effect: { type: 'unit-boost', unitId, ...rule },
     });
+  // Darius (Fury) : deuxième carte jouée ce tour, lui compris -> capacité sur la pile.
+  if (secondCard)
+    for (const u of counted.units) {
+      const rule =
+        u.ownerId === action.playerId
+          ? counted.unitDefinitions?.find((d) => d.id === u.definitionId)
+              ?.onSecondCardPlayed
+          : undefined;
+      if (rule) boost(u.id, u.ownerId, rule);
+    }
   // Jinx (Chaos) : son propriétaire défausse -> capacité sur la pile.
   for (const u of counted.units) {
     const rule = discarders.includes(u.ownerId)
@@ -367,7 +371,7 @@ function actOnce(state: GameState, action: GameAction): ActionResult {
           effect: { type: 'draw' },
         },
       });
-  // Volibear (Body) : déplacement adverse vers un autre champ -> pioche.
+  // Volibear (Body) : déplacement adverse vers un autre champ -> pioche (pile).
   for (const e of events) {
     if (e.type !== 'unit-moved' || e.from === e.to) continue;
     const mover = state.units.find((u) => u.id === e.unitId);
@@ -378,11 +382,13 @@ function actOnce(state: GameState, action: GameAction): ActionResult {
         bear.zoneId !== e.to &&
         shrine.unitDefinitions?.find((d) => d.id === bear.definitionId)
           ?.drawOnEnemyMoveElsewhere
-      ) {
-        const drawn = drawCardForPlayer(shrine, bear.ownerId);
-        shrine = drawn.state;
-        events.push(...drawn.events);
-      }
+      )
+        triggers.push({
+          kind: 'play-effect',
+          sourceId: bear.id,
+          ownerId: bear.ownerId,
+          effect: { type: 'draw', count: 1 },
+        });
   }
   // The Dreaming Tree : premier sort du tour qui choisit une unité alliée sur ce champ.
   if (
@@ -407,35 +413,27 @@ function actOnce(state: GameState, action: GameAction): ActionResult {
         ...shrine,
         dreamingTreeUsed: [...(shrine.dreamingTreeUsed ?? []), action.playerId],
       };
-      const drawn = drawCardForPlayer(shrine, action.playerId);
-      shrine = drawn.state;
-      events.push(...drawn.events);
+      triggers.push({
+        kind: 'play-effect',
+        sourceId: chosen[0]!,
+        ownerId: action.playerId,
+        effect: { type: 'draw', count: 1 },
+      });
     }
   }
-  // Ember Monk : carte jouée depuis Hidden -> bonus de Might ce tour (sans pile).
+  // Ember Monk : carte jouée depuis Hidden -> bonus de Might ce tour (pile).
   if (
     (action.type === 'play-unit' || action.type === 'cast-spell') &&
     state.cards.find((c) => c.id === action.cardId)?.facedown
   )
-    shrine = {
-      ...shrine,
-      units: shrine.units.map((u) => {
-        const bonus =
-          u.ownerId === action.playerId
-            ? shrine.unitDefinitions?.find((d) => d.id === u.definitionId)
-                ?.mightOnHiddenPlay
-            : undefined;
-        return bonus
-          ? {
-              ...u,
-              temporaryEffects: [
-                ...(u.temporaryEffects ?? []),
-                { type: 'modify-might' as const, amount: bonus },
-              ],
-            }
-          : u;
-      }),
-    };
+    for (const u of shrine.units) {
+      const bonus =
+        u.ownerId === action.playerId
+          ? shrine.unitDefinitions?.find((d) => d.id === u.definitionId)
+              ?.mightOnHiddenPlay
+          : undefined;
+      if (bonus) boost(u.id, u.ownerId, { might: bonus, ready: false });
+    }
   // Viktor (Mind) : carte jouée pendant le tour adverse -> Recrue dans la base.
   if (
     (action.type === 'play-unit' ||
@@ -451,15 +449,16 @@ function actOnce(state: GameState, action: GameAction): ActionResult {
         (d) => d.id === viktor.definitionId,
       )?.recruitOnOffTurnPlay;
       if (!token || !base || viktor.ownerId !== action.playerId) continue;
-      const summoned = summonToken(
-        shrine,
-        action.playerId,
-        base.id,
-        token,
-        'here',
-      );
-      shrine = summoned.state;
-      events.push(...summoned.events);
+      triggers.push({
+        kind: 'play-effect',
+        sourceId: viktor.id,
+        ownerId: action.playerId,
+        effect: {
+          type: 'summon-base',
+          destinationId: base.id,
+          definitionId: token,
+        },
+      });
     }
   }
   // Viktor (Order) : chaque autre unité alliée non-Recrue morte -> Recrue dans la base.
@@ -481,15 +480,16 @@ function actOnce(state: GameState, action: GameAction): ActionResult {
         (d) => d.id === viktor.definitionId,
       )?.recruitOnAllyDeath;
       if (!token || !base || viktor.ownerId !== dead.ownerId) continue;
-      const summoned = summonToken(
-        shrine,
-        dead.ownerId,
-        base.id,
-        token,
-        'here',
-      );
-      shrine = summoned.state;
-      events.push(...summoned.events);
+      triggers.push({
+        kind: 'play-effect',
+        sourceId: viktor.id,
+        ownerId: dead.ownerId,
+        effect: {
+          type: 'summon-base',
+          destinationId: base.id,
+          definitionId: token,
+        },
+      });
     }
   }
   // Mistfall : alliée Tap nouvellement buffée -> « you may » payant sur la pile (toujours
@@ -520,29 +520,30 @@ function actOnce(state: GameState, action: GameAction): ActionResult {
         },
       });
   }
-  // Pirate's Haven : alliée redressée pendant cette action (même tour) -> bonus de Might.
+  // Pirate's Haven : alliée redressée pendant cette action (même tour) -> bonus de Might (pile).
   if (shrine.activePlayerId === state.activePlayerId)
     for (const haven of shrine.gears ?? []) {
       const bonus = shrine.gearDefinitions?.find(
         (d) => d.id === haven.definitionId,
       )?.mightOnAllyReadied;
-      if (!bonus) continue;
-      shrine = {
-        ...shrine,
-        units: shrine.units.map((u) =>
-          u.ownerId === haven.ownerId &&
-          u.ready &&
-          state.units.some((o) => o.id === u.id && !o.ready)
-            ? {
-                ...u,
-                temporaryEffects: [
-                  ...(u.temporaryEffects ?? []),
-                  { type: 'modify-might' as const, amount: bonus },
-                ],
-              }
-            : u,
-        ),
-      };
+      if (bonus)
+        for (const u of shrine.units)
+          if (
+            u.ownerId === haven.ownerId &&
+            u.ready &&
+            state.units.some((o) => o.id === u.id && !o.ready)
+          )
+            triggers.push({
+              kind: 'play-effect',
+              sourceId: haven.id,
+              ownerId: haven.ownerId,
+              effect: {
+                type: 'unit-boost',
+                unitId: u.id,
+                might: bonus,
+                ready: false,
+              },
+            });
     }
   // Karma : cartes recyclées par son propriétaire (vers le deck, ou Vision) -> buff allié.
   const recyclers = new Set([
@@ -592,19 +593,21 @@ function actOnce(state: GameState, action: GameAction): ActionResult {
       ...shrine,
       allyDeathThisTurn: [...(shrine.allyDeathThisTurn ?? []), ...firstDeaths],
     };
-    for (const owner of firstDeaths)
-      if (
-        shrine.units.some(
-          (u) =>
-            u.ownerId === owner &&
-            shrine.unitDefinitions?.find((d) => d.id === u.definitionId)
-              ?.drawOnFirstAllyDeath,
-        )
-      ) {
-        const drawn = drawCardForPlayer(shrine, owner);
-        shrine = drawn.state;
-        events.push(...drawn.events);
-      }
+    for (const owner of firstDeaths) {
+      const wraith = shrine.units.find(
+        (u) =>
+          u.ownerId === owner &&
+          shrine.unitDefinitions?.find((d) => d.id === u.definitionId)
+            ?.drawOnFirstAllyDeath,
+      );
+      if (wraith)
+        triggers.push({
+          kind: 'play-effect',
+          sourceId: wraith.id,
+          ownerId: owner,
+          effect: { type: 'draw', count: 1 },
+        });
+    }
   }
   // Flame Chompers : carte défaussée -> capacité « payer pour la jouer » sur la pile.
   const chompers: (ModeChoiceEntry | PlayEffectEntry)[] = triggers.concat(
@@ -660,6 +663,14 @@ function actOnce(state: GameState, action: GameAction): ActionResult {
           payPlayCost: rule,
         });
     }
+  const lostFacedown = trashLostFacedown(shrine);
+  events.push(...lostFacedown.events);
+  shrine = lostFacedown.state;
+  chompers.push(
+    ...scrapheapDraws(shrine, events),
+    ...treasureTroves(shrine, events),
+    ...thirdMovePoints(entered, shrine),
+  );
   if (chompers.length)
     shrine = {
       ...shrine,
@@ -671,15 +682,7 @@ function actOnce(state: GameState, action: GameAction): ActionResult {
         consecutivePasses: 0,
       },
     };
-  const lostFacedown = trashLostFacedown(shrine);
-  events.push(...lostFacedown.events);
-  const scrapped = scrapheapDraws(lostFacedown.state, events);
-  events.push(...scrapped.events);
-  const scrap = treasureTroves(scrapped.state, events);
-  events.push(...scrap.events);
-  const scoredMoves = thirdMovePoints(entered, scrap.state);
-  events.push(...scoredMoves.events);
-  const attacked = queueAttackEffects(state, scoredMoves.state, events);
+  const attacked = queueAttackEffects(state, shrine, events);
   const next = queueDefendRetreat(
     state,
     queueDefenseShield(state, attacked.state, events),
@@ -885,110 +888,93 @@ function countMoves(state: GameState, events: readonly GameEvent[]): GameState {
   };
 }
 
-/** Deuxième carte jouée du tour -> unités onSecondCardPlayed du joueur (Darius Fury). */
-function secondCardTriggers(state: GameState, playerId: string): GameState {
-  return {
-    ...state,
-    units: state.units.map((u) => {
-      const trigger =
-        u.ownerId === playerId
-          ? state.unitDefinitions?.find((d) => d.id === u.definitionId)
-              ?.onSecondCardPlayed
-          : undefined;
-      if (!trigger) return u;
-      return {
-        ...u,
-        ready: u.ready || trigger.ready,
-        temporaryEffects: [
-          ...(u.temporaryEffects ?? []),
-          { type: 'modify-might' as const, amount: trigger.might },
-        ],
-      };
-    }),
-  };
-}
-
-/** Yasuo (Chaos) : unité passée à 3 déplacements ce tour -> 1 point pour son propriétaire. */
+/** Yasuo (Chaos) : unité passée à 3 déplacements ce tour -> capacité « 1 point » empilée. */
 function thirdMovePoints(
   before: GameState,
   state: GameState,
-): { state: GameState; events: GameEvent[] } {
-  let next = state;
-  const events: GameEvent[] = [];
-  for (const unit of state.units) {
+): PlayEffectEntry[] {
+  return state.units.flatMap((unit) => {
     const previous =
       before.units.find((u) => u.id === unit.id)?.movesThisTurn ?? 0;
-    if (
-      previous < 3 &&
+    return previous < 3 &&
       (unit.movesThisTurn ?? 0) >= 3 &&
       state.unitDefinitions?.find((d) => d.id === unit.definitionId)
         ?.scoreOnThirdMove
-    ) {
-      const awarded = awardPoints(next, unit.ownerId, 1, unit.id);
-      next = awarded.state;
-      events.push(...awarded.events);
-    }
-  }
-  return { state: next, events };
+      ? [
+          {
+            kind: 'play-effect' as const,
+            sourceId: unit.id,
+            ownerId: unit.ownerId,
+            effect: { type: 'score-points' as const, amount: 1 },
+          },
+        ]
+      : [];
+  });
 }
 
-/** Treasure Trove : gear détruit (onLeaveDrawChannel) -> son propriétaire pioche 1 puis
- * canalise 1 rune Tap, par événement, sans pile. */
+/** Treasure Trove : gear détruit (onLeaveDrawChannel) -> pioche 1 puis canalise 1 rune Tap,
+ * empilés pour son propriétaire. */
 function treasureTroves(
   state: GameState,
   events: readonly GameEvent[],
-): { state: GameState; events: GameEvent[] } {
-  let next = state;
-  const added: GameEvent[] = [];
-  for (const e of events) {
-    if (e.type !== 'gear-killed' || next.result) continue;
-    const definitionId = next.cards.find(
+): PlayEffectEntry[] {
+  return events.flatMap((e) => {
+    if (e.type !== 'gear-killed') return [];
+    const definitionId = state.cards.find(
       (c) => c.id === e.gearId,
     )?.definitionId;
     if (
-      !next.gearDefinitions?.find((d) => d.id === definitionId)
+      !state.gearDefinitions?.find((d) => d.id === definitionId)
         ?.onLeaveDrawChannel
     )
-      continue;
-    const drawn = drawCardForPlayer(next, e.ownerId);
-    added.push(...drawn.events);
-    const channeled = channelForPlayer(drawn.state, e.ownerId, 1);
-    next = channeled.state;
-    added.push(...channeled.events);
-  }
-  return { state: next, events: added };
+      return [];
+    return [
+      {
+        kind: 'play-effect' as const,
+        sourceId: e.gearId,
+        ownerId: e.ownerId,
+        effect: { type: 'draw' as const, count: 1 },
+      },
+      {
+        kind: 'play-effect' as const,
+        sourceId: e.gearId,
+        ownerId: e.ownerId,
+        effect: { type: 'channel-exhausted' as const, count: 1 },
+      },
+    ];
+  });
 }
 
-/** Scrapheap : gear posé, défaussé ou détruit -> son propriétaire pioche 1 par événement. */
+/** Scrapheap : gear posé, défaussé ou détruit -> pioche 1 empilée par événement. */
 function scrapheapDraws(
   state: GameState,
   events: readonly GameEvent[],
-): { state: GameState; events: GameEvent[] } {
+): PlayEffectEntry[] {
   const drawing = (definitionId: string | undefined) =>
     !!state.gearDefinitions?.find((d) => d.id === definitionId)
       ?.drawOnPlayDiscardOrKill;
-  const owners = events.flatMap((e) => {
-    if (e.type === 'gear-played')
-      return drawing(state.gears?.find((g) => g.id === e.gearId)?.definitionId)
-        ? [e.playerId]
-        : [];
-    if (e.type === 'gear-killed' || e.type === 'card-discarded') {
-      const card = state.cards.find(
-        (c) => c.id === (e.type === 'gear-killed' ? e.gearId : e.cardId),
-      );
-      return drawing(card?.definitionId)
-        ? [e.type === 'gear-killed' ? e.ownerId : e.playerId]
-        : [];
+  return events.flatMap((e) => {
+    let owner: string | undefined;
+    let sourceId = '';
+    if (e.type === 'gear-played') {
+      sourceId = e.gearId;
+      if (drawing(state.gears?.find((g) => g.id === e.gearId)?.definitionId))
+        owner = e.playerId;
+    } else if (e.type === 'gear-killed' || e.type === 'card-discarded') {
+      sourceId = e.type === 'gear-killed' ? e.gearId : e.cardId;
+      const card = state.cards.find((c) => c.id === sourceId);
+      if (drawing(card?.definitionId))
+        owner = e.type === 'gear-killed' ? e.ownerId : e.playerId;
     }
-    return [];
+    return owner
+      ? [
+          {
+            kind: 'play-effect' as const,
+            sourceId,
+            ownerId: owner,
+            effect: { type: 'draw' as const, count: 1 },
+          },
+        ]
+      : [];
   });
-  let next = state;
-  const drawn: GameEvent[] = [];
-  for (const owner of owners) {
-    if (next.result) break;
-    const r = drawCardForPlayer(next, owner);
-    next = r.state;
-    drawn.push(...r.events);
-  }
-  return { state: next, events: drawn };
 }

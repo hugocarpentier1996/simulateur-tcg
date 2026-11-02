@@ -1,5 +1,10 @@
 import { expect, it } from 'vitest';
-import { spellScenario, step, noRunes } from './origins-test-fixtures.js';
+import {
+  spellScenario,
+  step,
+  noRunes,
+  drain,
+} from './origins-test-fixtures.js';
 import {
   viktorMind,
   recruitToken,
@@ -24,13 +29,15 @@ function scenario(active: string) {
       priorityPlayerId: 'a',
       consecutivePasses: 0,
     };
-  return step(s, {
-    type: 'cast-spell',
-    playerId: 'a',
-    cardId: 'spell',
-    targetId: 'enemy',
-    payment: noRunes,
-  });
+  return drain(
+    step(s, {
+      type: 'cast-spell',
+      playerId: 'a',
+      cardId: 'spell',
+      targetId: 'enemy',
+      payment: noRunes,
+    }),
+  );
 }
 const recruits = (s: ReturnType<typeof scenario>) =>
   s.units.filter((u) => u.definitionId === recruitToken.id);

@@ -1,5 +1,5 @@
 import { expect, it } from 'vitest';
-import { spellScenario, step } from './origins-test-fixtures.js';
+import { spellScenario, step, drain } from './origins-test-fixtures.js';
 import { yasuoChaos, mobilize } from '../../game-data/src/index.js';
 
 it('Yasuo (Chaos) : au troisième déplacement du tour, son propriétaire marque 1 point', () => {
@@ -19,6 +19,7 @@ it('Yasuo (Chaos) : au troisième déplacement du tour, son propriétaire marque
     unitId: 'ally',
     destinationId: 'g',
   });
+  s = drain(s);
   expect(s.players.find((p) => p.id === 'a')?.score).toBe(1);
   s = { ...s, units: s.units.map((u) => ({ ...u, ready: true })) };
   s = step(s, {
@@ -27,5 +28,6 @@ it('Yasuo (Chaos) : au troisième déplacement du tour, son propriétaire marque
     unitId: 'ally',
     destinationId: 'f',
   });
+  s = drain(s);
   expect(s.players.find((p) => p.id === 'a')?.score).toBe(1);
 });

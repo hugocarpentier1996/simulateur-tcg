@@ -2,8 +2,8 @@ import { expect, it } from 'vitest';
 import {
   spellScenario,
   step,
-  resolveTop,
   noRunes,
+  drain,
 } from './origins-test-fixtures.js';
 import { theDreamingTree, callToGlory } from '../../game-data/src/index.js';
 
@@ -26,8 +26,9 @@ it('The Dreaming Tree : la première fois du tour qu’un sort choisit une unit�
     targetId: 'ally',
     payment: noRunes,
   });
+  s = drain(s);
   expect(s.cards.find((c) => c.id === 'draw-a-0')?.zoneId).toBe('hand-a');
-  s = resolveTop(s);
+  // pioche et sort résolus
   s = step(s, {
     type: 'cast-spell',
     playerId: 'a',

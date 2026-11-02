@@ -4,6 +4,7 @@ import {
   step,
   resolveTop,
   noRunes,
+  drain,
 } from './origins-test-fixtures.js';
 import { getLegalActions } from './index.js';
 import { thermoBeam, treasureTrove } from '../../game-data/src/index.js';
@@ -29,7 +30,8 @@ function scenario() {
   });
   return s;
 }
-function expectLooted(s: ReturnType<typeof scenario>) {
+function expectLooted(input: ReturnType<typeof scenario>) {
+  const s = drain(input);
   expect(s.gears ?? []).toEqual([]);
   expect(s.cards.find((c) => c.id === 'trove')?.zoneId).toBe('graveyard-a');
   expect(s.cards.find((c) => c.id === 'draw-a-0')?.zoneId).toBe('hand-a');

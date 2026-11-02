@@ -1,5 +1,10 @@
 import { expect, it } from 'vitest';
-import { spellScenario, step, noRunes } from './origins-test-fixtures.js';
+import {
+  spellScenario,
+  step,
+  noRunes,
+  drain,
+} from './origins-test-fixtures.js';
 import { emberMonk, consultThePast } from '../../game-data/src/index.js';
 import { effectiveMight } from './effects/modifiers.js';
 import { startNextTurn } from './turn/progression.js';
@@ -21,6 +26,7 @@ it('Ember Monk : +2 Might ce tour quand son propriétaire joue une carte depuis 
       state.units.find((u) => u.id === 'ally')!,
       state,
     );
+  s = drain(s);
   expect(monk(s)).toBe(4);
   s = startNextTurn(startNextTurn(s).state).state;
   s = step(s, {
@@ -30,5 +36,6 @@ it('Ember Monk : +2 Might ce tour quand son propriétaire joue une carte depuis 
     targetId: 'a',
     payment: noRunes,
   });
+  s = drain(s);
   expect(monk(s)).toBe(6);
 });

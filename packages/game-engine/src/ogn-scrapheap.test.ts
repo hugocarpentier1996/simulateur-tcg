@@ -4,6 +4,7 @@ import {
   step,
   resolveTop,
   noRunes,
+  drain,
 } from './origins-test-fixtures.js';
 import {
   scrapheap,
@@ -31,6 +32,7 @@ it('Scrapheap : posé, son propriétaire pioche 1', () => {
     cardId: 'heap',
     payment: noRunes,
   });
+  s = drain(s);
   expect(hand(s)).toBe(before);
   expect(s.cards.find((c) => c.id === 'draw-a-0')?.zoneId).toBe('hand-a');
 });
@@ -57,6 +59,7 @@ it('Scrapheap : détruit, son propriétaire pioche 1', () => {
       payment: noRunes,
     }),
   );
+  s = drain(s);
   expect(s.cards.find((c) => c.id === 'draw-a-0')?.zoneId).toBe('hand-a');
 });
 
@@ -81,5 +84,6 @@ it('Scrapheap : défaussé, son propriétaire pioche 1', () => {
     }),
   );
   s = step(s, { type: 'choose-discard', playerId: 'a', cardId: 'heap' });
+  s = drain(s);
   expect(s.cards.find((c) => c.id === 'draw-a-0')?.zoneId).toBe('hand-a');
 });
