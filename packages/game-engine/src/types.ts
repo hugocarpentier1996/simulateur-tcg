@@ -714,6 +714,8 @@ export type GameAction =
       effects: readonly {
         sourceId: string;
         targetId?: string;
+        /** Deflect non payé (préférence allowDeflectRefusal) : l'effet sur la cible fizzle. */
+        refuseDeflect?: boolean;
         payment: PaymentPlan;
       }[];
     }

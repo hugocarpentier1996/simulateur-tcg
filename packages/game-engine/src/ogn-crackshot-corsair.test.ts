@@ -165,3 +165,24 @@ it.each(['open', 'defending'])('aucune capacité en %s', (mode) => {
   expect(s.pendingAttackChoices).toBeUndefined();
   expect(s.stack).toBeUndefined();
 });
+it('Deflect refusé (option) : la cible Deflect peut être choisie sans payer, les dégâts sont annulés', () => {
+  let s = setup();
+  s.units[1]!.definitionId = poutyPoro.id;
+  s.resources.a!.power = {};
+  s.preferences = { a: { allowDeflectRefusal: true } };
+  s = step(s, move);
+  const refuse = {
+    ...choose,
+    effects: [
+      {
+        sourceId: 'ally',
+        targetId: 'enemy',
+        refuseDeflect: true,
+        payment: noRunes,
+      },
+    ],
+  };
+  expect(getLegalActions(s, 'a')).toContainEqual(refuse);
+  s = resolveTop(step(s, refuse));
+  expect(s.units[1]!.damage).toBe(0);
+});

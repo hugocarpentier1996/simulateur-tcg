@@ -513,7 +513,8 @@ function actionLabel(
           .map(
             (e) =>
               target(e.sourceId) +
-              (e.targetId ? ' → ' + target(e.targetId) : ' · sans cible'),
+              (e.targetId ? ' → ' + target(e.targetId) : ' · sans cible') +
+              (e.refuseDeflect ? ' (sans payer Deflect, effet annulé)' : ''),
           )
           .join(' ; ')
       );

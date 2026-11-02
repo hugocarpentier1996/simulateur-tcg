@@ -5,7 +5,7 @@ import type {
   PaymentPlan,
   GameEvent,
 } from '../types.js';
-import { withDeflect } from '../cost/deflect.js';
+import { deflectedUnits, withDeflect } from '../cost/deflect.js';
 import { payCost } from '../cost/payment.js';
 import { findPayment } from '../legal/payment.js';
 import { dealEffectDamage } from './effect-damage.js';
@@ -27,7 +27,12 @@ export interface AttackDamageEntry extends AttackDamageTrigger {
   targetId?: string;
 }
 const free = { energy: 0, power: {} };
-type Selection = { sourceId: string; targetId?: string; payment: PaymentPlan };
+type Selection = {
+  sourceId: string;
+  targetId?: string;
+  refuseDeflect?: boolean;
+  payment: PaymentPlan;
+};
 /** Ennemis ici dont Deflect peut être payé ; aucun choix payable -> capacité sans cible. */
 function options(state: GameState, t: AttackDamageTrigger): Selection[] {
   const choices = state.units
@@ -40,8 +45,24 @@ function options(state: GameState, t: AttackDamageTrigger): Selection[] {
       );
       return payment ? [{ sourceId: t.sourceId, targetId: u.id, payment }] : [];
     });
-  return choices.length
-    ? choices
+  // Option allowDeflectRefusal : cibles Deflect sans payer la taxe (effet annulé).
+  const refusals = state.preferences?.[t.ownerId]?.allowDeflectRefusal
+    ? state.units
+        .filter(
+          (u) =>
+            u.ownerId !== t.ownerId &&
+            u.zoneId === t.battlefieldId &&
+            deflectedUnits(state, t.ownerId, [u.id]).length,
+        )
+        .map((u) => ({
+          sourceId: t.sourceId,
+          targetId: u.id,
+          refuseDeflect: true,
+          payment: { energyRunes: [], powerRunes: [] },
+        }))
+    : [];
+  return choices.length || refusals.length
+    ? [...choices, ...refusals]
     : [{ sourceId: t.sourceId, payment: { energyRunes: [], powerRunes: [] } }];
 }
 /** Tous les choix du propriétaire attendu, dans son ordre d'empilement ; coûts payés avant réactions.
@@ -65,13 +86,20 @@ export function chooseAttackTargets(
   const events: GameEvent[] = [];
   for (const choice of action.effects) {
     const t = owned.find((t) => t.sourceId === choice.sourceId);
-    if (!t || !options(next, t).some((o) => o.targetId === choice.targetId))
+    if (
+      !t ||
+      !options(next, t).some(
+        (o) =>
+          o.targetId === choice.targetId &&
+          !!o.refuseDeflect === !!choice.refuseDeflect,
+      )
+    )
       return { ok: false, reason: 'INVALID_TARGET' };
     const cost = withDeflect(
       next,
       action.playerId,
       free,
-      choice.targetId ? [choice.targetId] : [],
+      choice.targetId && !choice.refuseDeflect ? [choice.targetId] : [],
     );
     const paid = payCost(next, action.playerId, cost, choice.payment);
     if (!paid.ok) return paid;
@@ -79,7 +107,9 @@ export function chooseAttackTargets(
     entries.push({
       ...t,
       kind: 'attack-damage',
-      ...(choice.targetId ? { targetId: choice.targetId } : {}),
+      ...(choice.targetId && !choice.refuseDeflect
+        ? { targetId: choice.targetId }
+        : {}),
     });
     if (cost.genericPower)
       events.push({
@@ -135,7 +165,7 @@ export function* attackTargetActions(
             current,
             playerId,
             free,
-            choice.targetId ? [choice.targetId] : [],
+            choice.targetId && !choice.refuseDeflect ? [choice.targetId] : [],
           ),
           choice.payment,
         );

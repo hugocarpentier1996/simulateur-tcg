@@ -1319,3 +1319,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Réponse 23 (suite) : le refus du Deflect est aussi possible pour la capacité ciblée d'une unité jouée (`refuseDeflect` sur play-unit) : l'unité est jouée, la capacité visant l'unité Deflect fizzle.
 - Gears : propriétaire de la carte distinct du contrôleur (`cardOwnerId`) ; un gear joué par Blind Fury retourne au cimetière, à la main ou au deck de son propriétaire quand il quitte le jeu.
 - Réponse 23 (suite) : refus du Deflect aussi pour les capacités Tap (gears, unités, légendes) : coût payé, source couchée, effet sur la cible annulé (une fenêtre de réaction s'ouvre quand même).
+- Réponse 23 (fin) : refus du Deflect aussi pour les capacités d'attaque (Crackshot Corsair…) : la cible Deflect peut être choisie sans payer, l'effet sur elle est annulé. Le refus couvre désormais sorts, mises en jeu, capacités Tap et capacités d'attaque.
