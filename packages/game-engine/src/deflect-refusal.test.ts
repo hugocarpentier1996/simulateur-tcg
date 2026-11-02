@@ -10,6 +10,7 @@ import {
   hextechRay,
   poutyPoro,
   blastconeFae,
+  ironBallista,
 } from '../../game-data/src/index.js';
 
 function scenario(allow: boolean) {
@@ -76,4 +77,30 @@ it('Deflect refusé (option) pour une capacité de mise en jeu : l’unité est 
   expect(s.units.find((u) => u.id === 'enemy')?.temporaryEffects ?? []).toEqual(
     [],
   );
+});
+
+it('Deflect refusé (option) pour une capacité Tap de gear : coût payé, gear couché, effet annulé', () => {
+  const s0 = spellScenario(hextechRay);
+  s0.unitDefinitions = [poutyPoro];
+  s0.gearDefinitions = [ironBallista];
+  s0.units[1] = { ...s0.units[1]!, definitionId: poutyPoro.id, might: 5 };
+  s0.gears = [
+    {
+      id: 'ballista',
+      definitionId: ironBallista.id,
+      ownerId: 'a',
+      zoneId: 'base-a',
+      ready: true,
+    },
+  ];
+  s0.resources.a = { energy: 0, power: {} };
+  s0.preferences = { a: { allowDeflectRefusal: true } };
+  const use = getLegalActions(s0, 'a').find(
+    (a) =>
+      a.type === 'activate-gear' && a.targetId === 'enemy' && a.refuseDeflect,
+  );
+  expect(use).toBeDefined();
+  const s = resolveTop(step(s0, use!));
+  expect(s.gears?.[0]?.ready).toBe(false);
+  expect(s.units.find((u) => u.id === 'enemy')?.damage).toBe(0);
 });

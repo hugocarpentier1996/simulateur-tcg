@@ -281,6 +281,27 @@ function* candidates(
           targetId ? [targetId] : [],
         ),
       );
+      // Option allowDeflectRefusal : cible Deflect sans payer la taxe (effet annulé).
+      const refusal =
+        targetId &&
+        state.preferences?.[playerId]?.allowDeflectRefusal &&
+        deflectedUnits(state, playerId, [targetId]).length
+          ? findPayment(
+              state,
+              playerId,
+              ability.cost ?? { energy: 0, power: {} },
+            )
+          : null;
+      if (refusal)
+        yield {
+          type: 'activate-gear',
+          playerId,
+          gearId: gear.id,
+          targetId: targetId!,
+          refuseDeflect: true,
+          ...(gear.borrowFromId ? { borrowFromId: gear.borrowFromId } : {}),
+          payment: refusal,
+        };
       if (payment)
         for (const destinationId of ability.effect.type ===
           'move-to-or-from-base' &&

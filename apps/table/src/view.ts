@@ -486,7 +486,8 @@ function actionLabel(
         (action.destinationId ? ' vers ' + target(action.destinationId) : '') +
         (action.discardCardId
           ? ' · en défaussant ' + target(action.discardCardId)
-          : '')
+          : '') +
+        (action.refuseDeflect ? ' · sans payer Deflect (effet annulé)' : '')
       );
     case 'activate-spell-energy':
       return (

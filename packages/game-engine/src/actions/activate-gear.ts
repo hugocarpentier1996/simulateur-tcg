@@ -6,7 +6,7 @@ import type { ActionResult, GameAction, GameState } from '../types.js';
 import type { GearBlueprint, GearState } from '../gear-types.js';
 import type { PlayEffectEntry } from '../effects/play-effect.js';
 import { payCost } from '../cost/payment.js';
-import { withDeflect } from '../cost/deflect.js';
+import { deflectedUnits, withDeflect } from '../cost/deflect.js';
 import { canUseTiming } from './timing.js';
 
 /** Gear Ready du demandeur avec capacité ADD -> Tap et ressource dans la réserve flottante.
@@ -302,6 +302,13 @@ function activateTapAbility(
       return { ok: false, reason: 'UNSUPPORTED_DESTINATION' };
   } else if (action.destinationId !== undefined)
     return { ok: false, reason: 'UNSUPPORTED_DESTINATION' };
+  if (
+    action.refuseDeflect &&
+    (!state.preferences?.[action.playerId]?.allowDeflectRefusal ||
+      !action.targetId ||
+      !deflectedUnits(state, action.playerId, [action.targetId]).length)
+  )
+    return { ok: false, reason: 'DEFLECT_REFUSAL_DISABLED' };
   const paid = payCost(
     state,
     action.playerId,
@@ -309,7 +316,7 @@ function activateTapAbility(
       state,
       action.playerId,
       ability.cost ?? { energy: 0, power: {} },
-      action.targetId ? [action.targetId] : [],
+      action.targetId && !action.refuseDeflect ? [action.targetId] : [],
     ),
     action.payment ?? { energyRunes: [], powerRunes: [] },
   );
@@ -356,7 +363,7 @@ function activateTapAbility(
     (ability.recycleTrash && !deck)
   )
     return { ok: false, reason: 'INVALID_ADDITIONAL_COST' };
-  const entry: PlayEffectEntry = {
+  const built: PlayEffectEntry = {
     kind: 'play-effect',
     sourceId: gear.id,
     ownerId: action.playerId,
@@ -424,6 +431,10 @@ function activateTapAbility(
                                   effect: ability.effect,
                                 },
   };
+  // Deflect refusé : la capacité est activée (coût payé) mais son effet fizzle.
+  const entry: PlayEffectEntry = action.refuseDeflect
+    ? { ...built, effect: { type: 'buff-units', unitIds: [] } }
+    : built;
   if (ability.killSelfCost) paid.state = killGears(paid.state, [gear.id]).state;
   return {
     ok: true,

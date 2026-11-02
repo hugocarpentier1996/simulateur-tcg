@@ -752,6 +752,8 @@ export type GameAction =
       type: 'activate-gear';
       playerId: string;
       gearId: string;
+      /** Deflect non payé (préférence allowDeflectRefusal) : l'effet sur la cible fizzle. */
+      refuseDeflect?: boolean;
       /** Capacité Tap ciblée (tapAbility) : unité choisie et paiement du coût éventuel. */
       targetId?: string;
       /** Champ de destination d'un déplacement depuis la base (move-to-or-from-base). */
