@@ -113,14 +113,37 @@ function setPreference(
   };
 }
 
-/** Option « refus automatique des réactions » : tant que la priorité sur une pile non vide
- * revient à un joueur qui l'a activée, sans choix en attente, il passe automatiquement. */
+/** Automatismes après une action : « you may » gratuits acceptés (sauf préférence
+ * askOptional), puis option « refus automatique des réactions » — tant que la priorité sur
+ * une pile non vide revient à un joueur qui l'a activée, sans choix en attente, il passe. */
 function autoPassReactions(
   result: Extract<ActionResult, { ok: true }>,
 ): ActionResult {
   let { state } = result;
   const events = [...result.events];
   for (let i = 0; i < 50; i++) {
+    // « You may » gratuit : accepté d'office sauf si son propriétaire demande à être consulté.
+    const may = state.pendingModeChoice;
+    const accepted =
+      may?.modes.length === 2 && may.modes[0] === 'skip'
+        ? may.modes[1]
+        : undefined;
+    if (
+      may &&
+      accepted &&
+      isFreeMay(accepted) &&
+      !state.preferences?.[may.ownerId]?.askOptional
+    ) {
+      const chosen = actOnce(state, {
+        type: 'choose-mode',
+        playerId: may.ownerId,
+        mode: accepted,
+      });
+      if (!chosen.ok) break;
+      state = chosen.state;
+      events.push(...chosen.events);
+      continue;
+    }
     const priority = state.stack?.priorityPlayerId;
     if (
       !priority ||
@@ -140,6 +163,18 @@ function autoPassReactions(
     events.push(...passed.events);
   }
   return { ok: true, state, events };
+}
+
+/** Modes d'un « you may » sans coût, acceptés automatiquement par défaut (réponse 8) :
+ * suivre un allié, récupérer son champion, piocher, canaliser, renvoyer une unité en base. */
+const FREE_MAYS = new Set([
+  'follow',
+  'return-champion',
+  'draw',
+  'channel-exhausted',
+]);
+function isFreeMay(mode: string): boolean {
+  return FREE_MAYS.has(mode) || mode.startsWith('retreat:');
 }
 
 function actOnce(state: GameState, action: GameAction): ActionResult {
