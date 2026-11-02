@@ -203,4 +203,4 @@ Reste à faire / limites connues (mis à jour) :
   sont désormais proposées (sélections, seconde cible, destination, cartes du cimetière).
 - **Mystic Reversal** : seule la cible principale peut être rechoisie, sans taxe Deflect.
 - **Blind Fury** : un gear révélé est posé sous le contrôle du lanceur et retourne chez son
-  propriétaire quand il quitte le jeu (\`cardOwnerId\`).
+  propriétaire quand il quitte le jeu (`cardOwnerId`).
