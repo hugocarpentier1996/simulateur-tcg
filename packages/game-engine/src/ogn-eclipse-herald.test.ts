@@ -4,6 +4,7 @@ import {
   step,
   resolveTop,
   noRunes,
+  drain,
 } from './origins-test-fixtures.js';
 import { effectiveMight } from './effects/modifiers.js';
 import {
@@ -36,6 +37,7 @@ it('Eclipse Herald : quand son propriétaire étourdit un ennemi, se redresse et
       payment: noRunes,
     }),
   );
+  s = drain(s);
   const herald = s.units.find((u) => u.id === 'herald')!;
   expect(herald.ready).toBe(true);
   expect(effectiveMight(herald, s)).toBe(8);

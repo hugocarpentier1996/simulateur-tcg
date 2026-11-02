@@ -7,7 +7,7 @@ import { payCost } from '../cost/payment.js';
 
 /** Main active hors Showdown + instance en main -> coût payé, gear Ready en base.
  * Refus atomique si mauvaise fenêtre/carte/catalogue/base ou paiement invalide.
- * Seule capacité déclenchée : les unités readyOnGearPlayed du joueur se redressent (Pit Crew). */
+ * Les capacités déclenchées par la pose (Pit Crew) sont empilées par act. */
 export function playGear(
   state: GameState,
   action: Extract<GameAction, { type: 'play-gear' }>,
@@ -84,14 +84,6 @@ export function playGear(
     state: {
       ...paid.state,
       cards: paid.state.cards.filter((c) => c.id !== card.id),
-      units: paid.state.units.map((u) =>
-        u.ownerId === action.playerId &&
-        !u.ready &&
-        state.unitDefinitions?.find((d) => d.id === u.definitionId)
-          ?.readyOnGearPlayed
-          ? { ...u, ready: true }
-          : u,
-      ),
       gears: [
         ...(state.gears ?? []),
         {

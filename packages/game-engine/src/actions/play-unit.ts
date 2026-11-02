@@ -465,14 +465,7 @@ function playUnitCore(
         : {}),
       cards: payment.state.cards.filter((c) => c.id !== card.id),
       units: [
-        ...state.units.map((u) =>
-          u.ownerId === action.playerId &&
-          !u.buffed &&
-          state.unitDefinitions?.find((d) => d.id === u.definitionId)
-            ?.buffOnAllyPlayed
-            ? { ...u, buffed: true }
-            : u,
-        ),
+        ...state.units,
         {
           id: card.id,
           definitionId: card.definitionId,

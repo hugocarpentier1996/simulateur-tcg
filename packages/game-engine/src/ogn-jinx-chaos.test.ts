@@ -4,6 +4,7 @@ import {
   step,
   resolveTop,
   noRunes,
+  drain,
 } from './origins-test-fixtures.js';
 import { effectiveMight } from './effects/modifiers.js';
 import {
@@ -34,6 +35,8 @@ it('Jinx (Chaos) : quand son propriétaire défausse, se redresse et gagne +1 Mi
   );
   expect(s.units[0]?.ready).toBe(false);
   s = step(s, { type: 'choose-discard', playerId: 'a', cardId: 'h0' });
+  expect(s.units[0]?.ready).toBe(false);
+  s = drain(s);
   expect(s.units[0]?.ready).toBe(true);
   expect(effectiveMight(s.units[0]!, s)).toBe(6);
 });

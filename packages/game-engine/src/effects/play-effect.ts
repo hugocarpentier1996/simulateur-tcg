@@ -63,6 +63,9 @@ export interface PlayEffectEntry {
     | { type: 'play-from-trash'; cardId: string }
     /** Buffe chacune des unités indiquées encore en jeu (Kinkou Monk). */
     | { type: 'buff-units'; unitIds: readonly string[] }
+    /** Redresse et/ou donne +Might ce tour à l'unité indiquée encore en jeu (déclencheurs
+     * Jinx Chaos, Eclipse Herald, Pit Crew…). */
+    | { type: 'unit-boost'; unitId: string; might: number; ready: boolean }
     /** Détruit le gear indiqué (capacité kill-self). */
     | { type: 'kill-gear'; gearId: string }
     | NonNullable<UnitBlueprint['onPlayEffect']>
@@ -595,6 +598,32 @@ export function resolvePlayEffect(
     return {
       ok: true,
       state: choice ? { ...state, pendingModeChoice: choice } : state,
+      events: [{ type: 'unit-play-effect-resolved', sourceId: entry.sourceId }],
+    };
+  }
+  if (entry.effect.type === 'unit-boost') {
+    const { unitId, might, ready } = entry.effect;
+    return {
+      ok: true,
+      state: {
+        ...state,
+        units: state.units.map((u) =>
+          u.id === unitId
+            ? {
+                ...u,
+                ready: u.ready || ready,
+                ...(might
+                  ? {
+                      temporaryEffects: [
+                        ...(u.temporaryEffects ?? []),
+                        { type: 'modify-might' as const, amount: might },
+                      ],
+                    }
+                  : {}),
+              }
+            : u,
+        ),
+      },
       events: [{ type: 'unit-play-effect-resolved', sourceId: entry.sourceId }],
     };
   }

@@ -1,3 +1,4 @@
+import type { PlayEffectEntry } from './effects/play-effect.js';
 import type { ModeChoiceEntry } from './effects/mode-choice.js';
 import {
   spendBuffAbility,
@@ -258,27 +259,53 @@ function actOnce(state: GameState, action: GameAction): ActionResult {
       : tracked,
     events,
   );
-  const afterDiscard = discarders.length
-    ? {
-        ...counted,
-        units: counted.units.map((u) => {
-          const trigger = discarders.includes(u.ownerId)
-            ? counted.unitDefinitions?.find((d) => d.id === u.definitionId)
-                ?.onOwnerDiscard
-            : undefined;
-          return trigger
-            ? {
-                ...u,
-                ready: u.ready || trigger.ready,
-                temporaryEffects: [
-                  ...(u.temporaryEffects ?? []),
-                  { type: 'modify-might' as const, amount: trigger.might },
-                ],
-              }
-            : u;
-        }),
-      }
-    : counted;
+  // Capacités déclenchées empilées après l'action (réponse 7 : fenêtre de réaction).
+  const triggers: (ModeChoiceEntry | PlayEffectEntry)[] = [];
+  const boost = (
+    unitId: string,
+    ownerId: string,
+    rule: { might: number; ready: boolean },
+  ) =>
+    triggers.push({
+      kind: 'play-effect',
+      sourceId: unitId,
+      ownerId,
+      effect: { type: 'unit-boost', unitId, ...rule },
+    });
+  // Jinx (Chaos) : son propriétaire défausse -> capacité sur la pile.
+  for (const u of counted.units) {
+    const rule = discarders.includes(u.ownerId)
+      ? counted.unitDefinitions?.find((d) => d.id === u.definitionId)
+          ?.onOwnerDiscard
+      : undefined;
+    if (rule) boost(u.id, u.ownerId, rule);
+  }
+  // Pit Crew : son propriétaire joue un gear ; Cithria : il joue une autre unité.
+  for (const e of events) {
+    if (e.type === 'gear-played')
+      for (const u of counted.units)
+        if (
+          u.ownerId === e.playerId &&
+          counted.unitDefinitions?.find((d) => d.id === u.definitionId)
+            ?.readyOnGearPlayed
+        )
+          boost(u.id, u.ownerId, { might: 0, ready: true });
+    if (e.type === 'unit-played')
+      for (const u of counted.units)
+        if (
+          u.ownerId === e.playerId &&
+          u.id !== e.unitId &&
+          counted.unitDefinitions?.find((d) => d.id === u.definitionId)
+            ?.buffOnAllyPlayed
+        )
+          triggers.push({
+            kind: 'play-effect',
+            sourceId: u.id,
+            ownerId: u.ownerId,
+            effect: { type: 'buff-units', unitIds: [u.id] },
+          });
+  }
+  const afterDiscard = counted;
   // Eclipse Herald / Radiant Dawn : unités ennemies nouvellement Stun -> déclencheurs du
   // joueur qui les a étourdies (byPlayerId ; à défaut, l'adversaire de l'unité).
   const stunners = new Set(
@@ -299,34 +326,21 @@ function actOnce(state: GameState, action: GameAction): ActionResult {
         return by && by !== u.ownerId ? [by] : [];
       }),
   );
-  const afterStun = stunners.size
-    ? {
-        ...afterDiscard,
-        units: afterDiscard.units.map((u) => {
-          const trigger = stunners.has(u.ownerId)
-            ? afterDiscard.unitDefinitions?.find((d) => d.id === u.definitionId)
-                ?.onEnemyStunned
-            : undefined;
-          return trigger
-            ? {
-                ...u,
-                ready: u.ready || trigger.ready,
-                temporaryEffects: [
-                  ...(u.temporaryEffects ?? []),
-                  { type: 'modify-might' as const, amount: trigger.might },
-                ],
-              }
-            : u;
-        }),
-      }
-    : afterDiscard;
+  // Eclipse Herald : capacité sur la pile pour chaque Herald du joueur étourdisseur.
+  for (const u of afterDiscard.units) {
+    const rule = stunners.has(u.ownerId)
+      ? afterDiscard.unitDefinitions?.find((d) => d.id === u.definitionId)
+          ?.onEnemyStunned
+      : undefined;
+    if (rule) boost(u.id, u.ownerId, rule);
+  }
+  const afterStun = afterDiscard;
   const dawn = afterStun;
   // Radiant Dawn : capacité sur la pile, l'unité buffée est choisie à la résolution.
-  const buffEntries: ModeChoiceEntry[] = [];
   for (const player of dawn.players)
     for (const legend of activeLegends(dawn, player.id))
       if (stunners.has(player.id) && legend.definition.buffOnEnemyStunned)
-        buffEntries.push(buffChoiceEntry(legend.card.id, player.id));
+        triggers.push(buffChoiceEntry(legend.card.id, player.id));
   // Solari Shrine : ennemi Stun mort -> gear Ready couché, pioche de son propriétaire.
   const stunnedDead = events.flatMap((e) =>
     e.type === 'unit-died' || e.type === 'token-removed'
@@ -342,7 +356,7 @@ function actOnce(state: GameState, action: GameAction): ActionResult {
       dawn.gearDefinitions?.find((d) => d.id === gear.definitionId)
         ?.drawOnStunnedEnemyKill
     )
-      buffEntries.push({
+      triggers.push({
         kind: 'mode-choice',
         sourceId: gear.id,
         ownerId: gear.ownerId,
@@ -493,7 +507,7 @@ function actOnce(state: GameState, action: GameAction): ActionResult {
         state.units.some((o) => o.id === u.id && !o.buffed),
     );
     if (unit)
-      buffEntries.push({
+      triggers.push({
         kind: 'mode-choice',
         sourceId: mist.id,
         ownerId: mist.ownerId,
@@ -552,7 +566,7 @@ function actOnce(state: GameState, action: GameAction): ActionResult {
         shrine.unitDefinitions?.find((d) => d.id === karma.definitionId)
           ?.buffOnRecycle
       )
-        buffEntries.push(buffChoiceEntry(karma.id, owner));
+        triggers.push(buffChoiceEntry(karma.id, owner));
   // Vanguard Helm : alliée buffée morte -> une autre alliée est buffée, par gear (pile).
   for (const e of events) {
     if (e.type !== 'unit-died' && e.type !== 'token-removed') continue;
@@ -564,7 +578,7 @@ function actOnce(state: GameState, action: GameAction): ActionResult {
         shrine.gearDefinitions?.find((d) => d.id === helm.definitionId)
           ?.buffOnBuffedAllyDeath
       )
-        buffEntries.push({
+        triggers.push({
           ...buffChoiceEntry(helm.id, dead.ownerId),
           excludeId: dead.id,
         });
@@ -593,7 +607,7 @@ function actOnce(state: GameState, action: GameAction): ActionResult {
       }
   }
   // Flame Chompers : carte défaussée -> capacité « payer pour la jouer » sur la pile.
-  const chompers: ModeChoiceEntry[] = buffEntries.concat(
+  const chompers: (ModeChoiceEntry | PlayEffectEntry)[] = triggers.concat(
     events.flatMap((e) => {
       if (e.type !== 'card-discarded') return [];
       const card = shrine.cards.find((c) => c.id === e.cardId);

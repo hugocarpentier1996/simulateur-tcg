@@ -1,5 +1,10 @@
 import { expect, it } from 'vitest';
-import { spellScenario, step, noRunes } from './origins-test-fixtures.js';
+import {
+  spellScenario,
+  step,
+  noRunes,
+  drain,
+} from './origins-test-fixtures.js';
 import { pitCrew, sealOfRage, mobilize } from '../../game-data/src/index.js';
 
 it('Pit Crew : se redresse quand son propriétaire joue un gear', () => {
@@ -21,6 +26,8 @@ it('Pit Crew : se redresse quand son propriétaire joue un gear', () => {
     cardId: 'seal',
     payment: noRunes,
   });
+  expect(s.stack?.entries).toHaveLength(1);
+  s = drain(s);
   expect(s.units.find((u) => u.id === 'ally')?.ready).toBe(true);
   expect(s.units.find((u) => u.id === 'enemy')?.ready).toBe(false);
 });
