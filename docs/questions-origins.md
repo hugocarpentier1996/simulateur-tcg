@@ -183,3 +183,27 @@ implémenté ; chaque point deviendra une correction testée et commitée sépar
   déplacement (il déclenche les effets de mouvement), contrairement au rappel d'égalité et à
   Zhonya. « Le joueur ne peut revenir manuellement en base sur ce bf » est lu comme : hors de
   cet effet, aucun retour manuel en base pendant le showdown (règle déjà appliquée).
+
+### État de mise en œuvre des réponses (2 novembre 2026)
+
+Implémentées (un commit testé par point) : 1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 16, 17, 18,
+19, 20, 21, 23, 24, 25, 26, 27, 28. Confirmées sans changement : 2, 12, 14, 15, 22.
+Point 29 (skins alternatifs) : prévu plus tard, à la création de deck.
+
+Reste à faire / limites connues :
+
+- **The Boss (sauvetage d'une unité buffée)** : toujours appliqué automatiquement quand il
+  est payable. C'est un effet de remplacement au moment de la mort ; le demander exige de
+  suspendre la résolution des morts (chantier à part).
+- **Overt Operation** : les « you may » par unité restent acceptés automatiquement, même
+  avec l'option « Toujours demander les you may gratuits ».
+- **The Grand Plaza** : la victoire à la tenue est appliquée sans passer par la pile.
+- **Refus du Deflect** : disponible pour les sorts seulement (pas encore pour les capacités
+  d'unités, de gears ni d'attaque).
+- **Lancements gratuits** (Blind Fury, Kai'Sa, Ava, Promising Future) et **unités jouées par
+  un effet** : les choix secondaires (sélections multiples, seconde cible, destination,
+  cartes du cimetière) ne sont pas proposés ; ces sorts restent non lançables par ce biais.
+- **Mystic Reversal** : seule la cible principale peut être rechoisie, sans taxe Deflect.
+- **Blind Fury** : un gear révélé est posé sous le contrôle du lanceur, mais il ira dans le
+  cimetière du lanceur s'il est détruit (pas de distinction propriétaire/contrôleur pour les
+  gears).
