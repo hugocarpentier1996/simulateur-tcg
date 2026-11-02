@@ -24,7 +24,7 @@ import { drawCardForPlayer } from '../turn/draw.js';
 import { channelForPlayer } from '../turn/supplies.js';
 import { continueStack } from '../actions/continue-stack.js';
 import { killGears } from './kill-gear.js';
-import { buffUnit } from './buff.js';
+import { buffUnit, spendBuff } from './buff.js';
 
 /** Mode proposé par une capacité « X ou Y » : pioche 1, canalise 1 rune Tap, ne rien faire,
  * ou détruire un gear précis puis buffer la source (`kill-gear:<id>`, Adaptatron). */
@@ -68,7 +68,8 @@ export type EffectMode =
   | `ready-rune:${string}`
   | `play-target:${string}`
   | `retarget:${string}`
-  | `cast-target:${string}`;
+  | `cast-target:${string}`
+  | `overt:${string}`;
 
 const ONE_ENERGY = { energy: 1, power: {} };
 
@@ -133,6 +134,8 @@ export interface ModeChoiceEntry {
   /** « You may » avec coût, toujours demandé (réponse 8) : coucher une source (et payer un
    * Power) pour un effet. Relentless Storm, Solari Shrine, Mistfall. */
   costlyMay?: CostlyMay;
+  /** Overt Operation (option askOptional) : unités déjà redressées en dépensant leur buff. */
+  overtDone?: readonly string[];
   /** The Boss : unité à sauver ; reprise du combat ou des morts suspendues après le choix. */
   bossSave?: {
     unitId: string;
@@ -612,6 +615,32 @@ export function chooseMode(
       !pending.bossSave.combat
       ? continueStack(cleaned, resumed.events)
       : { ok: true, state: cleaned, events: resumed.events };
+  }
+  if (pending.overtDone) {
+    let next: GameState = { ...state, pendingModeChoice: null };
+    const done = [...pending.overtDone];
+    if (action.mode.startsWith('overt:')) {
+      const id = action.mode.slice('overt:'.length);
+      next = spendBuff(next, id) ?? next;
+      next = {
+        ...next,
+        units: next.units.map((u) => (u.id === id ? { ...u, ready: true } : u)),
+      };
+      done.push(id);
+      const again = overtChoice(next, pending.sourceId, pending.ownerId, done);
+      if (again)
+        return {
+          ok: true,
+          state: { ...next, pendingModeChoice: again },
+          events: [],
+        };
+    }
+    // Puis toutes les unités alliées sont buffées.
+    for (const unit of next.units.filter((u) => u.ownerId === pending.ownerId))
+      next = buffUnit(next, unit.id);
+    return continueStack(next, [
+      { type: 'legend-effect-resolved', sourceId: pending.sourceId },
+    ]);
   }
   if (pending.future && action.mode.startsWith('future:')) {
     const next = chooseFuture(
@@ -1994,4 +2023,28 @@ export function lookRecycleEvents(
       ? [{ type: 'cards-recycled' as const, playerId, count: recycled }]
       : []),
   ];
+}
+
+/** Overt Operation : unités alliées Tap et buffées pas encore traitées, à redresser une à une
+ * en dépensant leur buff, ou « skip » pour passer au buff général. */
+export function overtChoice(
+  state: GameState,
+  sourceId: string,
+  ownerId: string,
+  done: readonly string[],
+): ModeChoiceEntry | undefined {
+  const ids = state.units
+    .filter(
+      (u) =>
+        u.ownerId === ownerId && u.buffed && !u.ready && !done.includes(u.id),
+    )
+    .map((u) => u.id);
+  if (!ids.length) return undefined;
+  return {
+    kind: 'mode-choice',
+    sourceId,
+    ownerId,
+    modes: ['skip', ...ids.map((id) => `overt:${id}` as const)],
+    overtDone: done,
+  };
 }

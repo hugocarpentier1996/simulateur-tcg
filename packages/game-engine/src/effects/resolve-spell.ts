@@ -3,6 +3,7 @@ import { futureStep } from './promising-future.js';
 import { hiddenInTrash } from './hidden.js';
 import { playUnitFromTrash } from './play-from-trash.js';
 import {
+  overtChoice,
   hitChoice,
   judgmentStep,
   lookPlayUnitChoice,
@@ -204,6 +205,14 @@ export function resolveSpell(
       continue;
     }
     if (effect.type === 'spend-buffs-ready-then-buff-all') {
+      // « You may » gratuit par unité : demandé une à une avec l'option askOptional.
+      if (state.preferences?.[entry.casterId]?.askOptional) {
+        const choice = overtChoice(state, entry.card.id, entry.casterId, []);
+        if (choice) {
+          state = { ...state, pendingModeChoice: choice };
+          continue;
+        }
+      }
       for (const unit of state.units.filter(
         (u) => u.ownerId === entry.casterId && u.buffed && !u.ready,
       ))
