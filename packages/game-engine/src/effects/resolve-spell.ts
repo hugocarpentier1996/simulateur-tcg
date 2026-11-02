@@ -835,14 +835,6 @@ export function resolveSpell(
       state = {
         ...state,
         units,
-        battlefields: state.battlefields.map((f) =>
-          f.zoneId !== state.showdown?.battlefieldId &&
-          !units.some(
-            (u) => u.zoneId === f.zoneId && u.ownerId === f.controllerId,
-          )
-            ? { ...f, controllerId: null }
-            : f,
-        ),
       };
     } else if (effect.type === 'grant-shield-tank') {
       state = {
@@ -1087,17 +1079,6 @@ export function moveUnit(
     ...state,
     units: state.units.map((u) =>
       u.id === target.id ? { ...u, zoneId: destinationId } : u,
-    ),
-  };
-  state = {
-    ...state,
-    battlefields: state.battlefields.map((f) =>
-      f.zoneId !== state.showdown?.battlefieldId &&
-      !state.units.some(
-        (u) => u.zoneId === f.zoneId && u.ownerId === f.controllerId,
-      )
-        ? { ...f, controllerId: null }
-        : f,
     ),
   };
   if (

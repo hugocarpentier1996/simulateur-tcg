@@ -1809,17 +1809,7 @@ function applyJudgment(state: GameState, kept: readonly string[]): GameState {
       })),
     ],
   };
-  return {
-    ...next,
-    battlefields: next.battlefields.map((f) =>
-      f.zoneId !== next.showdown?.battlefieldId &&
-      !next.units.some(
-        (u) => u.zoneId === f.zoneId && u.ownerId === f.controllerId,
-      )
-        ? { ...f, controllerId: null }
-        : f,
-    ),
-  };
+  return next;
 }
 
 /** Entrée de pile : buff d'une unité alliée choisie à la résolution. */

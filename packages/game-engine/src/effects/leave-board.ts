@@ -27,12 +27,6 @@ export function leaveBoard(
             zoneId: zone.id,
           },
         ],
-    battlefields: state.battlefields.map((f) =>
-      f.zoneId !== state.showdown?.battlefieldId &&
-      !units.some((u) => u.zoneId === f.zoneId && u.ownerId === f.controllerId)
-        ? { ...f, controllerId: null }
-        : f,
-    ),
   };
   const attached = syncAttachments(next);
   return {

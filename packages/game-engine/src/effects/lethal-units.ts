@@ -105,17 +105,6 @@ export function settleLethalUnits(
         triggers: allTriggers,
       },
     };
-  state = {
-    ...state,
-    battlefields: state.battlefields.map((f) =>
-      f.zoneId !== state.showdown?.battlefieldId &&
-      !state.units.some(
-        (u) => u.ownerId === f.controllerId && u.zoneId === f.zoneId,
-      )
-        ? { ...f, controllerId: null }
-        : f,
-    ),
-  };
   return { ok: true, state, events };
 }
 

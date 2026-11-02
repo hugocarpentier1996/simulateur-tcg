@@ -89,7 +89,7 @@ it('fin du tour adverse : la tenue suspend le nouveau tour avant Channel et ne r
   expect(s.cards.filter((c) => c.zoneId === 'runes-a')).toHaveLength(3);
 });
 
-it('une réaction retire le contrôleur, mais la capacité déjà déclenchée se résout avant Channel', () => {
+it('une réaction vide le champ : la capacité déjà déclenchée se résout, le contrôle est perdu en état ouvert', () => {
   const input = setup();
   input.cards[0]!.ownerId = 'b';
   input.cards[0]!.zoneId = 'hand-b';
@@ -105,11 +105,13 @@ it('une réaction retire le contrôleur, mais la capacité déjà déclenchée s
   });
   s = resolveTop(s);
   expect(s.phase).toBe('beginning');
-  expect(s.battlefields[0]!.controllerId).toBeNull();
+  // Réponse 18 : la perte de contrôle n'a lieu qu'au retour à l'état ouvert.
+  expect(s.battlefields[0]!.controllerId).toBe('a');
   s = resolveTop(s);
   s = step(s, { type: 'choose-hold-channel', playerId: 'a', accept: true });
   expect(s.phase).toBe('main');
   expect(s.cards.filter((c) => c.zoneId === 'runes-a')).toHaveLength(3);
+  expect(s.battlefields[0]!.controllerId).toBeNull();
 });
 it('deux Peaks tenus : deux capacités séparées, une seule reprise de Channel/Draw', () => {
   const input = setup(6);

@@ -68,6 +68,16 @@ export function deathScenario(might = 4): GameState {
       a: { energy: 10, power: { 'color-1': 10 } },
       b: { energy: 10, power: {} },
     },
+    // Une carte visible garde « home » sous le contrôle de a (réponse 18).
+    gears: [
+      {
+        id: 'banner',
+        definitionId: 'banner',
+        ownerId: 'a',
+        zoneId: 'home',
+        ready: true,
+      },
+    ],
     battlefields: [
       { zoneId: 'field', controllerId: 'b' },
       { zoneId: 'home', controllerId: 'a' },

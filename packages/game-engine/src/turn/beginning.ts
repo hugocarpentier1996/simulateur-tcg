@@ -1,3 +1,4 @@
+import { settleControl } from '../effects/control.js';
 import type { ModeChoiceEntry } from '../effects/mode-choice.js';
 import { killGears } from '../effects/kill-gear.js';
 import { activeLegends } from '../effects/legends.js';
@@ -38,7 +39,8 @@ export function scoreHolding(
       .filter((g) => g.ownerId === playerId && g.temporary)
       .map((g) => g.id),
   );
-  state = fadingGears.state;
+  // Temporary meurt avant le score : un champ resté sans carte visible est perdu (état ouvert).
+  state = temporary.size ? settleControl(fadingGears.state) : fadingGears.state;
   killed.events.push(...fadingGears.events);
   state = queueBeginningLegends(state, playerId);
   const scored = state.scoredBattlefields[playerId] ?? [];

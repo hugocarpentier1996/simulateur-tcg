@@ -49,14 +49,6 @@ export function resolveFlash(
     state: {
       ...state,
       units,
-      battlefields: state.battlefields.map((f) =>
-        f.zoneId !== state.showdown?.battlefieldId &&
-        !units.some(
-          (u) => u.ownerId === f.controllerId && u.zoneId === f.zoneId,
-        )
-          ? { ...f, controllerId: null }
-          : f,
-      ),
     },
     events,
   };

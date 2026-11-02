@@ -118,7 +118,7 @@ it('les actions légales proposent les répartitions et le sort reste une Action
   };
   expect(act(s, cast)).toEqual({ ok: false, reason: 'SPELL_WINDOW_CLOSED' });
 });
-it('une réponse Flash fait perdre le contrôle : les invocations prévues sur ce champ sont ignorées', () => {
+it('une réponse Flash vide le champ pendant la pile : le contrôle reste acquis (réponse 18), les Recrues arrivent comme prévu', () => {
   let s = step(fixture(), cast);
   s = step(s, {
     type: 'cast-spell',
@@ -131,8 +131,13 @@ it('une réponse Flash fait perdre le contrôle : les invocations prévues sur c
   s = resolve(resolve(s));
   expect(s.units.filter((u) => u.token).map((u) => u.zoneId)).toEqual([
     'base-a',
+    'field',
+    'field',
     'base-a',
   ]);
+  expect(s.battlefields.find((f) => f.zoneId === 'field')?.controllerId).toBe(
+    'a',
+  );
 });
 it('copie les destinations ; les identifiants évitent les collisions ; les jetons morts disparaissent', () => {
   const s = fixture();

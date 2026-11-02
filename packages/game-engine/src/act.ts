@@ -1,3 +1,4 @@
+import { settleControl } from './effects/control.js';
 import { effectPlayEntries } from './effects/effect-play.js';
 import type { UnitPlayEntry } from './effects/unit-play.js';
 import type { PlayEffectEntry } from './effects/play-effect.js';
@@ -715,9 +716,6 @@ function actOnce(state: GameState, action: GameAction): ActionResult {
           payPlayCost: rule,
         });
     }
-  const lostFacedown = trashLostFacedown(shrine);
-  events.push(...lostFacedown.events);
-  shrine = lostFacedown.state;
   chompers.push(
     ...scrapheapDraws(shrine, events),
     ...treasureTroves(shrine, events),
@@ -735,12 +733,16 @@ function actOnce(state: GameState, action: GameAction): ActionResult {
       },
     };
   const attacked = queueAttackEffects(state, shrine, events);
-  const next = queueDefendRetreat(
+  const queuedDefense = queueDefendRetreat(
     state,
     queueDefenseShield(state, attacked.state, events),
     events,
   );
   events.push(...attacked.events);
+  // Contrôle des champs puis cartes cachées perdues, seulement en état ouvert (réponse 18).
+  const lostFacedown = trashLostFacedown(settleControl(queuedDefense));
+  events.push(...lostFacedown.events);
+  const next = lostFacedown.state;
   if (
     next.pendingTurnEnd &&
     !next.result &&

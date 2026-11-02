@@ -48,11 +48,12 @@ it('Kayn : chaque déplacement est compté, puis remis à zéro au tour suivant'
   });
   expect(s.units[0]?.movesThisTurn).toBe(1);
   s = { ...s, units: s.units.map((u) => ({ ...u, ready: true })) };
+  // Retour en base (un champ contrôlé sans carte visible serait perdu en état ouvert).
   s = step(s, {
     type: 'move',
     playerId: 'a',
     unitId: 'ally',
-    destinationId: 'g',
+    destinationId: 'base-a',
   });
   expect(s.units[0]?.movesThisTurn).toBe(2);
   s = step(s, { type: 'end-turn', playerId: 'a' });
