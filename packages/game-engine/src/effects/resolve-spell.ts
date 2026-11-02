@@ -462,6 +462,32 @@ export function resolveSpell(
           ),
         },
       };
+      // « You may make new choices » : nouvelle cible principale au choix du voleur.
+      const kind = stolen.definition.target.kind;
+      const options =
+        kind === 'unit'
+          ? state.units
+              .filter((u) =>
+                spellTarget(state, stolen.definition, u.id, entry.casterId),
+              )
+              .map((u) => u.id)
+          : kind === 'battlefield'
+            ? state.battlefields
+                .map((f) => f.zoneId)
+                .filter((id) => validBattlefieldTarget(state, id))
+            : [];
+      const others = options.filter((id) => id !== stolen.targetId);
+      if (others.length)
+        state = {
+          ...state,
+          pendingModeChoice: {
+            kind: 'mode-choice',
+            sourceId: entry.card.id,
+            ownerId: entry.casterId,
+            modes: ['skip', ...others.map((id) => `retarget:${id}` as const)],
+            retargetSpellId: stolen.card.id,
+          },
+        };
       continue;
     }
     if (effect.type === 'counter-spell') {

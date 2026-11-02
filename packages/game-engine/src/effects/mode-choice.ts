@@ -64,7 +64,8 @@ export type EffectMode =
   | `discard-dmg:${string}`
   | 'accept'
   | `ready-rune:${string}`
-  | `play-target:${string}`;
+  | `play-target:${string}`
+  | `retarget:${string}`;
 
 const ONE_ENERGY = { energy: 1, power: {} };
 
@@ -129,6 +130,8 @@ export interface ModeChoiceEntry {
   /** « You may » avec coût, toujours demandé (réponse 8) : coucher une source (et payer un
    * Power) pour un effet. Relentless Storm, Solari Shrine, Mistfall. */
   costlyMay?: CostlyMay;
+  /** Mystic Reversal : sort volé dont la cible principale peut être changée. */
+  retargetSpellId?: string;
   /** Unité jouée par un effet : cible de sa capacité « when you play me » à choisir. */
   playTargetFor?: string;
   /** Sona (choix manuel) : nombre de runes Tap encore à redresser, une à une. */
@@ -837,6 +840,23 @@ function applyMode(
         cards: state.cards.map((c) =>
           c.id === championId ? { ...c, zoneId: zone.id } : c,
         ),
+      },
+      events: [],
+    };
+  }
+  if (mode.startsWith('retarget:') && pending.retargetSpellId && state.stack) {
+    const targetId = mode.slice('retarget:'.length);
+    return {
+      state: {
+        ...state,
+        stack: {
+          ...state.stack,
+          entries: state.stack.entries.map((e) =>
+            'card' in e && e.card.id === pending.retargetSpellId
+              ? { ...e, targetId }
+              : e,
+          ),
+        },
       },
       events: [],
     };

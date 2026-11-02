@@ -565,221 +565,230 @@ function actionLabel(
             ? 'Canaliser 1 rune Tap'
             : action.mode === 'skip'
               ? 'Ne rien faire'
-              : action.mode.startsWith('play-target:')
-                ? 'Cibler ' + target(action.mode.slice('play-target:'.length))
-                : action.mode.startsWith('ready-rune:')
-                  ? 'Redresser ' +
-                    target(action.mode.slice('ready-rune:'.length))
-                  : action.mode === 'accept'
-                    ? 'Payer et appliquer'
-                    : action.mode.startsWith('discard-dmg:')
-                      ? 'Défausser ' +
-                        target(action.mode.slice('discard-dmg:'.length))
-                      : action.mode.startsWith('buff:')
-                        ? 'Buffer ' + target(action.mode.slice('buff:'.length))
-                        : action.mode.startsWith('future:')
-                          ? 'Choisir ' +
-                            target(action.mode.slice('future:'.length))
-                          : action.mode.startsWith('keep:')
-                            ? 'Garder ' +
-                              action.mode
-                                .slice('keep:'.length)
-                                .split('+')
-                                .map(target)
-                                .join(' et ')
-                            : action.mode.startsWith('kaisa:')
-                              ? 'Rejouer ' +
-                                target(action.mode.slice('kaisa:'.length))
-                              : action.mode.startsWith('ava:')
-                                ? 'Payer 1 Power : jouer ' +
-                                  target(action.mode.slice('ava:'.length)) +
-                                  ' ici'
-                                : action.mode.startsWith('hit:')
-                                  ? 'Toucher ' +
-                                    target(action.mode.slice('hit:'.length))
-                                  : action.mode.startsWith('udyr-damage:')
-                                    ? '2 dégâts à ' +
-                                      target(
-                                        action.mode.slice(
-                                          'udyr-damage:'.length,
-                                        ),
-                                      )
-                                    : action.mode === 'udyr-ready'
-                                      ? 'Se redresser'
-                                      : action.mode === 'udyr-ganking'
-                                        ? 'Gagner Ganking ce tour'
-                                        : action.mode.startsWith('split:')
-                                          ? 'Répartir : ' +
-                                            action.mode
-                                              .slice('split:'.length)
-                                              .split(',')
-                                              .map((part) => {
-                                                const [id, n] = part.split('=');
-                                                return (
-                                                  n + ' → ' + target(id ?? '')
-                                                );
-                                              })
-                                              .join(', ')
-                                          : action.mode.startsWith('tf-fury:')
-                                            ? '2 dégâts à ' +
-                                              target(
-                                                action.mode.slice(
-                                                  'tf-fury:'.length,
-                                                ),
-                                              ) +
-                                              ', 1 aux autres ennemis ici'
-                                            : action.mode.startsWith('stun:')
-                                              ? 'Étourdir ' +
+              : action.mode.startsWith('retarget:')
+                ? 'Nouvelle cible : ' +
+                  target(action.mode.slice('retarget:'.length))
+                : action.mode.startsWith('play-target:')
+                  ? 'Cibler ' + target(action.mode.slice('play-target:'.length))
+                  : action.mode.startsWith('ready-rune:')
+                    ? 'Redresser ' +
+                      target(action.mode.slice('ready-rune:'.length))
+                    : action.mode === 'accept'
+                      ? 'Payer et appliquer'
+                      : action.mode.startsWith('discard-dmg:')
+                        ? 'Défausser ' +
+                          target(action.mode.slice('discard-dmg:'.length))
+                        : action.mode.startsWith('buff:')
+                          ? 'Buffer ' +
+                            target(action.mode.slice('buff:'.length))
+                          : action.mode.startsWith('future:')
+                            ? 'Choisir ' +
+                              target(action.mode.slice('future:'.length))
+                            : action.mode.startsWith('keep:')
+                              ? 'Garder ' +
+                                action.mode
+                                  .slice('keep:'.length)
+                                  .split('+')
+                                  .map(target)
+                                  .join(' et ')
+                              : action.mode.startsWith('kaisa:')
+                                ? 'Rejouer ' +
+                                  target(action.mode.slice('kaisa:'.length))
+                                : action.mode.startsWith('ava:')
+                                  ? 'Payer 1 Power : jouer ' +
+                                    target(action.mode.slice('ava:'.length)) +
+                                    ' ici'
+                                  : action.mode.startsWith('hit:')
+                                    ? 'Toucher ' +
+                                      target(action.mode.slice('hit:'.length))
+                                    : action.mode.startsWith('udyr-damage:')
+                                      ? '2 dégâts à ' +
+                                        target(
+                                          action.mode.slice(
+                                            'udyr-damage:'.length,
+                                          ),
+                                        )
+                                      : action.mode === 'udyr-ready'
+                                        ? 'Se redresser'
+                                        : action.mode === 'udyr-ganking'
+                                          ? 'Gagner Ganking ce tour'
+                                          : action.mode.startsWith('split:')
+                                            ? 'Répartir : ' +
+                                              action.mode
+                                                .slice('split:'.length)
+                                                .split(',')
+                                                .map((part) => {
+                                                  const [id, n] =
+                                                    part.split('=');
+                                                  return (
+                                                    n + ' → ' + target(id ?? '')
+                                                  );
+                                                })
+                                                .join(', ')
+                                            : action.mode.startsWith('tf-fury:')
+                                              ? '2 dégâts à ' +
                                                 target(
                                                   action.mode.slice(
-                                                    'stun:'.length,
+                                                    'tf-fury:'.length,
                                                   ),
-                                                )
-                                              : action.mode === 'follow'
-                                                ? 'Suivre l’unité déplacée'
-                                                : action.mode.startsWith(
-                                                      'ready:',
-                                                    )
-                                                  ? 'Redresser ' +
-                                                    target(
-                                                      action.mode.slice(
-                                                        'ready:'.length,
-                                                      ),
-                                                    )
-                                                  : action.mode === 'pay-play'
-                                                    ? 'Payer 1 Power : jouer la carte'
-                                                    : action.mode ===
-                                                        'pay-return'
-                                                      ? 'Payer 1 énergie : retour en main'
+                                                ) +
+                                                ', 1 aux autres ennemis ici'
+                                              : action.mode.startsWith('stun:')
+                                                ? 'Étourdir ' +
+                                                  target(
+                                                    action.mode.slice(
+                                                      'stun:'.length,
+                                                    ),
+                                                  )
+                                                : action.mode === 'follow'
+                                                  ? 'Suivre l’unité déplacée'
+                                                  : action.mode.startsWith(
+                                                        'ready:',
+                                                      )
+                                                    ? 'Redresser ' +
+                                                      target(
+                                                        action.mode.slice(
+                                                          'ready:'.length,
+                                                        ),
+                                                      )
+                                                    : action.mode === 'pay-play'
+                                                      ? 'Payer 1 Power : jouer la carte'
                                                       : action.mode ===
-                                                          'favor-cards'
-                                                        ? 'Cartes (chacun pioche 1)'
+                                                          'pay-return'
+                                                        ? 'Payer 1 énergie : retour en main'
                                                         : action.mode ===
-                                                            'favor-runes'
-                                                          ? 'Runes (chacun canalise 1 rune Tap)'
-                                                          : action.mode.startsWith(
-                                                                'reinforce:',
-                                                              )
-                                                            ? 'Jouer ' +
-                                                              target(
-                                                                action.mode.slice(
-                                                                  'reinforce:'
-                                                                    .length,
-                                                                ),
-                                                              ) +
-                                                              ' (coût réduit)'
+                                                            'favor-cards'
+                                                          ? 'Cartes (chacun pioche 1)'
+                                                          : action.mode ===
+                                                              'favor-runes'
+                                                            ? 'Runes (chacun canalise 1 rune Tap)'
                                                             : action.mode.startsWith(
-                                                                  'arrange:',
+                                                                  'reinforce:',
                                                                 )
-                                                              ? action.mode ===
-                                                                'arrange:'
-                                                                ? 'Tout recycler'
-                                                                : 'Garder au-dessus : ' +
-                                                                  action.mode
-                                                                    .slice(
-                                                                      'arrange:'
-                                                                        .length,
-                                                                    )
-                                                                    .split('+')
-                                                                    .map(target)
-                                                                    .join(
-                                                                      ' puis ',
-                                                                    ) +
-                                                                  ' (recycler le reste)'
+                                                              ? 'Jouer ' +
+                                                                target(
+                                                                  action.mode.slice(
+                                                                    'reinforce:'
+                                                                      .length,
+                                                                  ),
+                                                                ) +
+                                                                ' (coût réduit)'
                                                               : action.mode.startsWith(
-                                                                    'retreat:',
+                                                                    'arrange:',
                                                                   )
-                                                                ? 'Renvoyer en base ' +
-                                                                  target(
-                                                                    action.mode.slice(
-                                                                      'retreat:'
-                                                                        .length,
-                                                                    ),
-                                                                  )
-                                                                : action.mode ===
-                                                                    'return-champion'
-                                                                  ? 'Ramener le Chosen Champion'
-                                                                  : action.mode.startsWith(
-                                                                        'recycle-any:',
+                                                                ? action.mode ===
+                                                                  'arrange:'
+                                                                  ? 'Tout recycler'
+                                                                  : 'Garder au-dessus : ' +
+                                                                    action.mode
+                                                                      .slice(
+                                                                        'arrange:'
+                                                                          .length,
                                                                       )
-                                                                    ? 'Recycler ' +
-                                                                      target(
-                                                                        action.mode.slice(
-                                                                          'recycle-any:'
-                                                                            .length,
-                                                                        ),
+                                                                      .split(
+                                                                        '+',
                                                                       )
+                                                                      .map(
+                                                                        target,
+                                                                      )
+                                                                      .join(
+                                                                        ' puis ',
+                                                                      ) +
+                                                                    ' (recycler le reste)'
+                                                                : action.mode.startsWith(
+                                                                      'retreat:',
+                                                                    )
+                                                                  ? 'Renvoyer en base ' +
+                                                                    target(
+                                                                      action.mode.slice(
+                                                                        'retreat:'
+                                                                          .length,
+                                                                      ),
+                                                                    )
+                                                                  : action.mode ===
+                                                                      'return-champion'
+                                                                    ? 'Ramener le Chosen Champion'
                                                                     : action.mode.startsWith(
-                                                                          'suffer:',
+                                                                          'recycle-any:',
                                                                         )
-                                                                      ? 'Subir les dégâts sur ' +
+                                                                      ? 'Recycler ' +
                                                                         target(
                                                                           action.mode.slice(
-                                                                            'suffer:'
+                                                                            'recycle-any:'
                                                                               .length,
                                                                           ),
                                                                         )
-                                                                      : action.mode ===
-                                                                          'let-draw'
-                                                                        ? 'Laisser l’adversaire piocher'
-                                                                        : action.mode.startsWith(
-                                                                              'discard-opp:',
-                                                                            )
-                                                                          ? 'Faire défausser ' +
-                                                                            target(
-                                                                              action.mode.slice(
-                                                                                'discard-opp:'
-                                                                                  .length,
-                                                                              ),
-                                                                            )
+                                                                      : action.mode.startsWith(
+                                                                            'suffer:',
+                                                                          )
+                                                                        ? 'Subir les dégâts sur ' +
+                                                                          target(
+                                                                            action.mode.slice(
+                                                                              'suffer:'
+                                                                                .length,
+                                                                            ),
+                                                                          )
+                                                                        : action.mode ===
+                                                                            'let-draw'
+                                                                          ? 'Laisser l’adversaire piocher'
                                                                           : action.mode.startsWith(
-                                                                                'recycle-opp:',
+                                                                                'discard-opp:',
                                                                               )
-                                                                            ? 'Recycler ' +
+                                                                            ? 'Faire défausser ' +
                                                                               target(
                                                                                 action.mode.slice(
-                                                                                  'recycle-opp:'
+                                                                                  'discard-opp:'
                                                                                     .length,
                                                                                 ),
                                                                               )
                                                                             : action.mode.startsWith(
-                                                                                  'return-unit:',
+                                                                                  'recycle-opp:',
                                                                                 )
-                                                                              ? 'Renvoyer en main ' +
+                                                                              ? 'Recycler ' +
                                                                                 target(
                                                                                   action.mode.slice(
-                                                                                    'return-unit:'
+                                                                                    'recycle-opp:'
                                                                                       .length,
                                                                                   ),
                                                                                 )
                                                                               : action.mode.startsWith(
-                                                                                    'kill-own:',
+                                                                                    'return-unit:',
                                                                                   )
-                                                                                ? 'Tuer ' +
+                                                                                ? 'Renvoyer en main ' +
                                                                                   target(
                                                                                     action.mode.slice(
-                                                                                      'kill-own:'
+                                                                                      'return-unit:'
                                                                                         .length,
                                                                                     ),
                                                                                   )
                                                                                 : action.mode.startsWith(
-                                                                                      'discard-return:',
+                                                                                      'kill-own:',
                                                                                     )
-                                                                                  ? 'Défausser ' +
+                                                                                  ? 'Tuer ' +
                                                                                     target(
                                                                                       action.mode.slice(
-                                                                                        'discard-return:'
+                                                                                        'kill-own:'
                                                                                           .length,
                                                                                       ),
-                                                                                    ) +
-                                                                                    ' pour reprendre la carte'
-                                                                                  : 'Détruire ' +
-                                                                                    target(
-                                                                                      action.mode.slice(
-                                                                                        'kill-gear:'
-                                                                                          .length,
-                                                                                      ),
-                                                                                    ))
+                                                                                    )
+                                                                                  : action.mode.startsWith(
+                                                                                        'discard-return:',
+                                                                                      )
+                                                                                    ? 'Défausser ' +
+                                                                                      target(
+                                                                                        action.mode.slice(
+                                                                                          'discard-return:'
+                                                                                            .length,
+                                                                                        ),
+                                                                                      ) +
+                                                                                      ' pour reprendre la carte'
+                                                                                    : 'Détruire ' +
+                                                                                      target(
+                                                                                        action.mode.slice(
+                                                                                          'kill-gear:'
+                                                                                            .length,
+                                                                                        ),
+                                                                                      ))
       );
     case 'choose-hold-channel':
       return (
