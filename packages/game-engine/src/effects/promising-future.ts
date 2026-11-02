@@ -1,3 +1,4 @@
+import { lookRecycleEvents } from './mode-choice.js';
 import { findPayment } from '../legal/payment.js';
 import { payCost } from '../cost/payment.js';
 import type { GameEvent, GameState } from '../types.js';
@@ -64,10 +65,18 @@ export function chooseFuture(
       ...rest.map((id) => state.cards.find((c) => c.id === id)!),
     ],
   };
-  return futureStep(next, sourceId, {
+  const looked = deckTop(state, playerId, 5).map((c) => c.id);
+  const stepped = futureStep(next, sourceId, {
     ...progress,
     chosen: [...progress.chosen, { playerId, cardId }],
   });
+  return {
+    state: stepped.state,
+    events: [
+      ...lookRecycleEvents(playerId, looked, rest.length),
+      ...stepped.events,
+    ],
+  };
 }
 
 /** En commençant par le joueur après le lanceur, chaque carte est jouée en payant son seul

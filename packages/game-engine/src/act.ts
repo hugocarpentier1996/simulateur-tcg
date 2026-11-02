@@ -572,29 +572,53 @@ function actOnce(state: GameState, action: GameAction): ActionResult {
               },
             });
     }
-  // Karma : cartes recyclées par son propriétaire (vers le deck, ou Vision) -> buff allié.
-  const recyclers = new Set([
-    ...events.flatMap((e) => (e.type === 'cards-recycled' ? [e.playerId] : [])),
-    ...shrine.cards
-      .filter(
-        (c) =>
-          shrine.zones.some((z) => z.id === c.zoneId && z.kind === 'deck') &&
-          state.cards.some(
-            (o) =>
-              o.id === c.id &&
-              !state.zones.some((z) => z.id === o.zoneId && z.kind === 'deck'),
-          ),
+  // Karma : chaque effet de recyclage de son propriétaire (événement cards-recycled, ou
+  // cartes arrivées dans son deck sans cet événement) -> une capacité de buff par Karma.
+  const recycleEffects = new Map<string, number>();
+  for (const e of events)
+    if (e.type === 'cards-recycled')
+      recycleEffects.set(e.playerId, (recycleEffects.get(e.playerId) ?? 0) + 1);
+  for (const c of shrine.cards)
+    if (
+      !recycleEffects.has(c.ownerId) &&
+      shrine.zones.some((z) => z.id === c.zoneId && z.kind === 'deck') &&
+      state.cards.some(
+        (o) =>
+          o.id === c.id &&
+          !state.zones.some((z) => z.id === o.zoneId && z.kind === 'deck'),
       )
-      .map((c) => c.ownerId),
-  ]);
-  for (const owner of recyclers)
+    )
+      recycleEffects.set(c.ownerId, 1);
+  for (const [owner, count] of recycleEffects)
     for (const karma of shrine.units)
       if (
         karma.ownerId === owner &&
         shrine.unitDefinitions?.find((d) => d.id === karma.definitionId)
           ?.buffOnRecycle
       )
-        triggers.push(buffChoiceEntry(karma.id, owner));
+        for (let i = 0; i < count; i++)
+          triggers.push(buffChoiceEntry(karma.id, owner));
+  // Nocturne : vu en regardant le dessus de son deck (et resté dans le deck) -> capacité
+  // « le jouer pour 1 Power quelconque » sur la pile.
+  for (const e of events)
+    if (e.type === 'cards-looked')
+      for (const id of e.cardIds) {
+        const card = shrine.cards.find((c) => c.id === id);
+        if (
+          card &&
+          shrine.zones.some((z) => z.id === card.zoneId && z.kind === 'deck') &&
+          shrine.unitDefinitions?.find((d) => d.id === card.definitionId)
+            ?.playWhenSeen
+        )
+          triggers.push({
+            kind: 'mode-choice',
+            sourceId: card.id,
+            ownerId: e.playerId,
+            modes: [],
+            payPlayCost: { energy: 0, power: {}, genericPower: 1 },
+            fromDeck: true,
+          });
+      }
   // Vanguard Helm : alliée buffée morte -> une autre alliée est buffée, par gear (pile).
   for (const e of events) {
     if (e.type !== 'unit-died' && e.type !== 'token-removed') continue;

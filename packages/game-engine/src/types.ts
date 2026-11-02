@@ -935,6 +935,9 @@ export type GameEvent =
   | { type: 'gear-killed'; gearId: string; ownerId: string }
   /** Cartes recyclées sous le deck de leur propriétaire (hors runes). */
   | { type: 'cards-recycled'; playerId: string; count: number }
+  /** Cartes du dessus du deck regardées sans être piochées (Vision, Reinforce, Stacked Deck,
+   * Baited Hook, The Candlelit Sanctum, Promising Future) : Nocturne. */
+  | { type: 'cards-looked'; playerId: string; cardIds: string[] }
   | {
       type: 'card-hidden';
       playerId: string;

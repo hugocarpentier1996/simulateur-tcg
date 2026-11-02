@@ -763,7 +763,13 @@ function applyMode(
         ...rest.map((id) => next.cards.find((c) => c.id === id)!),
       ],
     };
-    return { state: next, events };
+    return {
+      state: next,
+      events: [
+        ...lookRecycleEvents(pending.ownerId, pending.lookedIds, rest.length),
+        ...events,
+      ],
+    };
   }
   if (mode.startsWith('arrange:')) {
     const kept = mode.slice('arrange:'.length).split('+').filter(Boolean);
@@ -792,7 +798,11 @@ function applyMode(
           ...looked.filter((id) => !kept.includes(id)).map(byId),
         ],
       },
-      events: [],
+      events: lookRecycleEvents(
+        pending.ownerId,
+        looked,
+        looked.length - kept.length,
+      ),
     };
   }
   if (mode.startsWith('retreat:')) {
@@ -1853,4 +1863,20 @@ function applyPlayTarget(
     effect,
   });
   return { state: resolved.state, events: resolved.events };
+}
+
+/** Événements d'un regard sur le dessus du deck suivi d'un recyclage éventuel. */
+export function lookRecycleEvents(
+  playerId: string,
+  looked: readonly string[],
+  recycled: number,
+): GameEvent[] {
+  return [
+    ...(looked.length
+      ? [{ type: 'cards-looked' as const, playerId, cardIds: [...looked] }]
+      : []),
+    ...(recycled > 0
+      ? [{ type: 'cards-recycled' as const, playerId, count: recycled }]
+      : []),
+  ];
 }

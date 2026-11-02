@@ -1,3 +1,4 @@
+import { lookRecycleEvents } from './mode-choice.js';
 import type { ActionResult, GameAction, GameState } from '../types.js';
 import { continueStack } from '../actions/continue-stack.js';
 
@@ -49,9 +50,11 @@ export function choosePick(
       ...recycled,
     ],
   };
+  const seen = lookRecycleEvents(action.playerId, pending.cardIds, rest.length);
   return state.stack
     ? continueStack(next, [
+        ...seen,
         { type: 'spell-play-effect-resolved', sourceId: pending.sourceId },
       ])
-    : { ok: true, state: next, events: [] };
+    : { ok: true, state: next, events: seen };
 }
