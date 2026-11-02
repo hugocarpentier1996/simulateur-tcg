@@ -8,6 +8,7 @@ import { withTrashUnitPower } from '../cost/spell-cost.js';
 import { activeLegends } from '../effects/legends.js';
 import {
   borrowedAbility,
+  borrowedResource,
   tapAbilityTargets,
 } from '../actions/activate-gear.js';
 import {
@@ -173,6 +174,25 @@ function* candidates(
           cardId: card.id,
         };
   }
+  // Heimerdinger : copie d'une capacité ADD alliée (gear ou légende ; jamais une rune).
+  for (const heimer of state.units)
+    if (
+      heimer.ownerId === playerId &&
+      heimer.ready &&
+      state.unitDefinitions?.find((d) => d.id === heimer.definitionId)
+        ?.copiesTapAbilities
+    )
+      for (const sourceId of [
+        ...(state.gears ?? []).map((g) => g.id),
+        ...activeLegends(state, playerId).map((l) => l.card.id),
+      ])
+        if (borrowedResource(state, playerId, sourceId))
+          yield {
+            type: 'activate-gear',
+            playerId,
+            gearId: heimer.id,
+            borrowFromId: sourceId,
+          };
   // Capacités Tap ciblées des gears et de la légende du joueur.
   for (const gear of [
     ...(state.gears ?? []).map((g) => ({

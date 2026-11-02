@@ -35,6 +35,32 @@ export function activateGear(
         : undefined
       : state.unitDefinitions?.find((d) => d.id === unit?.definitionId)
           ?.tapAbility;
+    // Heimerdinger : copie d'une capacité ADD alliée en se couchant (réponse 25).
+    const borrowedAdd =
+      unit && action.borrowFromId
+        ? state.unitDefinitions?.find((d) => d.id === unit.definitionId)
+            ?.copiesTapAbilities
+          ? borrowedResource(state, action.playerId, action.borrowFromId)
+          : undefined
+        : undefined;
+    if (unit && borrowedAdd) {
+      if (!unit.ready) return { ok: false, reason: 'GEAR_NOT_READY' };
+      if (borrowedAdd.legion && !state.cardsPlayedThisTurn?.[action.playerId])
+        return { ok: false, reason: 'LEGION_REQUIRED' };
+      if (!canUseTiming(state, action.playerId, 'reaction'))
+        return { ok: false, reason: 'ABILITY_WINDOW_CLOSED' };
+      return addResource(
+        {
+          ...state,
+          units: state.units.map((u) =>
+            u.id === unit.id ? { ...u, ready: false } : u,
+          ),
+        },
+        action.playerId,
+        unit.id,
+        borrowedAdd,
+      );
+    }
     const sacrifice = state.unitDefinitions?.find(
       (d) => d.id === unit?.definitionId,
     )?.sacrificeResource;
@@ -483,6 +509,30 @@ function addResource(
 }
 
 /** Capacité Tap d'une autre source alliée (gear, unité, légende) empruntée par Heimerdinger. */
+/** Capacité ADD d'un gear ou de la légende du joueur, copiable par Heimerdinger (les runes
+ * ne sont pas copiables). */
+export function borrowedResource(
+  state: GameState,
+  playerId: string,
+  sourceId: string,
+):
+  | {
+      readonly energy?: number;
+      readonly power?: string;
+      readonly legion?: boolean;
+      readonly spellPower?: number;
+    }
+  | undefined {
+  const gear = state.gears?.find(
+    (g) => g.id === sourceId && g.ownerId === playerId,
+  );
+  if (gear)
+    return state.gearDefinitions?.find((d) => d.id === gear.definitionId)
+      ?.resourceAbility;
+  return activeLegends(state, playerId).find((l) => l.card.id === sourceId)
+    ?.definition.resourceAbility;
+}
+
 export function borrowedAbility(
   state: GameState,
   playerId: string,
