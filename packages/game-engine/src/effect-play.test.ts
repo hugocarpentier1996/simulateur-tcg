@@ -10,6 +10,7 @@ import {
   blastconeFae,
   lecturingYordle,
   promisingFuture,
+  kinkouMonk,
 } from '../../game-data/src/index.js';
 
 function scenario(definitionId: string) {
@@ -64,4 +65,41 @@ it('Unité jouée par un effet : sa capacité ciblée fait choisir la cible à l
   expect(
     s.units.find((u) => u.id === 'enemy')?.temporaryEffects,
   ).toContainEqual({ type: 'modify-might', amount: -2 });
+});
+
+it('Unité jouée par un effet : sa sélection d’alliées (Kinkou Monk) est demandée à la résolution', () => {
+  const s0 = spellScenario(promisingFuture);
+  s0.unitDefinitions = [kinkouMonk];
+  s0.cards = s0.cards.map((c) =>
+    c.id === 'draw-a-0' ? { ...c, definitionId: kinkouMonk.id } : c,
+  );
+  s0.units.push({ ...s0.units[0]!, id: 'ally2' });
+  s0.resources.a = { energy: 5, power: { bleu: 1, orange: 1 } };
+  let s = resolveTop(
+    step(s0, {
+      type: 'cast-spell',
+      playerId: 'a',
+      cardId: 'spell',
+      targetId: 'a',
+      payment: noRunes,
+    }),
+  );
+  s = step(s, { type: 'choose-mode', playerId: 'a', mode: 'future:draw-a-0' });
+  s = step(s, { type: 'choose-mode', playerId: 'b', mode: 'future:draw-b-0' });
+  s = passUntilChoice(s);
+  const options = s.pendingModeChoice?.playCardOptions ?? [];
+  const index = options.findIndex((ids) => ids.join() === 'ally,ally2');
+  expect(s.pendingModeChoice?.modes[0]).toBe('skip');
+  expect(index).toBeGreaterThanOrEqual(0);
+  s = step(s, {
+    type: 'choose-mode',
+    playerId: 'a',
+    mode: `play-card:${index}`,
+  });
+  expect(
+    s.units
+      .filter((u) => u.buffed)
+      .map((u) => u.id)
+      .sort(),
+  ).toEqual(['ally', 'ally2']);
 });

@@ -1,6 +1,7 @@
 import { resolveCombat } from '../combat/resolve.js';
 import { castFreeOption, freeCastEntry, freeCastOptions } from './free-cast.js';
-import { effectPlayTargets } from './effect-play.js';
+import { effectPlayTargets, playCardOptions } from './effect-play.js';
+import { resolveReturnSpell } from './return-spell.js';
 import { resolvePlayEffect } from './play-effect.js';
 import type { PlayEffectEntry } from './play-effect.js';
 import { chooseFuture, type FutureProgress } from './promising-future.js';
@@ -69,6 +70,7 @@ export type EffectMode =
   | `play-target:${string}`
   | `retarget:${string}`
   | `cast-option:${number}`
+  | `play-card:${number}`
   | `overt:${string}`;
 
 const ONE_ENERGY = { energy: 1, power: {} };
@@ -148,6 +150,9 @@ export interface ModeChoiceEntry {
   castOptions?: readonly Extract<GameAction, { type: 'cast-spell' }>[];
   /** Mystic Reversal : sort volé dont la cible principale peut être changée. */
   retargetSpellId?: string;
+  /** Unité jouée par un effet : choix de cartes (sélection d'alliées, cimetière). */
+  playCardChoice?: { unitId: string; kind: 'select' | 'trash' | 'return' };
+  playCardOptions?: readonly (readonly string[])[];
   /** Unité jouée par un effet : cible de sa capacité « when you play me » à choisir. */
   playTargetFor?: string;
   /** Sona (choix manuel) : nombre de runes Tap encore à redresser, une à une. */
@@ -199,6 +204,32 @@ export function resolveModeChoice(
           ...entry,
           modes: options.map((_, i) => `cast-option:${i}` as const),
           castOptions: options,
+        },
+      },
+      events: [],
+    };
+  }
+  if (entry.playCardChoice) {
+    const { unitId, kind } = entry.playCardChoice;
+    const options = playCardOptions(state, unitId, entry.ownerId, kind);
+    if (!options.length)
+      return {
+        ok: true,
+        state,
+        events: [{ type: 'legend-effect-resolved', sourceId: entry.sourceId }],
+      };
+    // Reprendre une carte est obligatoire s'il y en a ; sélectionner ou jouer est facultatif.
+    return {
+      ok: true,
+      state: {
+        ...state,
+        pendingModeChoice: {
+          ...entry,
+          modes: [
+            ...(kind === 'return' ? [] : (['skip'] as const)),
+            ...options.map((_, i) => `play-card:${i}` as const),
+          ],
+          playCardOptions: options,
         },
       },
       events: [],
@@ -944,6 +975,42 @@ function applyMode(
       },
       events: [],
     };
+  }
+  if (mode.startsWith('play-card:') && pending.playCardChoice) {
+    const ids =
+      pending.playCardOptions?.[Number(mode.slice('play-card:'.length))];
+    if (!ids) return { state, events: [] };
+    const { unitId, kind } = pending.playCardChoice;
+    if (kind === 'return') {
+      const unit = state.units.find((u) => u.id === unitId);
+      const definition = state.unitDefinitions?.find(
+        (d) => d.id === unit?.definitionId,
+      );
+      const returned = resolveReturnSpell(state, {
+        kind: 'return-spell',
+        sourceId: unitId,
+        ownerId: pending.ownerId,
+        targetId: ids[0]!,
+        ...(definition?.onPlayReturnUnit ? { cardKind: 'unit' as const } : {}),
+      });
+      return { state: returned.state, events: returned.events };
+    }
+    const definition = state.unitDefinitions?.find(
+      (d) => d.id === state.units.find((u) => u.id === unitId)?.definitionId,
+    );
+    const effect: PlayEffectEntry['effect'] =
+      kind === 'trash'
+        ? { type: 'play-from-trash', cardId: ids[0]! }
+        : definition?.onPlaySpendBuffsChannel
+          ? { type: 'spend-buffs-channel', unitIds: [...ids] }
+          : { type: 'buff-units', unitIds: [...ids] };
+    const resolved = resolvePlayEffect(state, {
+      kind: 'play-effect',
+      sourceId: unitId,
+      ownerId: pending.ownerId,
+      effect,
+    });
+    return { state: resolved.state, events: resolved.events };
   }
   if (mode.startsWith('cast-option:') && pending.freeCast) {
     const option =
