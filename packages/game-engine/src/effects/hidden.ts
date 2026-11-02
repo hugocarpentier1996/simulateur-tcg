@@ -59,8 +59,8 @@ export function hasHidden(state: GameState, definitionId: string): boolean {
   ].some((d) => d.id === definitionId && 'hidden' in d && d.hidden === true);
 }
 
-/** Cacher : son tour, Main en état ouvert ; carte Hidden en main ; champ contrôlé sans carte
- * facedown ; 1 Power de n'importe quel domaine. La carte devient facedown (fresh) sur le
+/** Cacher : son tour, Main en état ouvert ; carte Hidden en main ; champ qu'il contrôle où il
+ * n'a pas encore de carte facedown (réponse 18) ; 1 Power de n'importe quel domaine. La carte devient facedown (fresh) sur le
  * champ, sans pile ni effet « when you play ». Refus atomique. */
 export function hideCard(
   state: GameState,
@@ -98,8 +98,12 @@ export function hideCard(
       (f) =>
         f.zoneId === action.battlefieldId && f.controllerId === action.playerId,
     ) ||
-    state.cards.filter((c) => c.facedown && c.zoneId === action.battlefieldId)
-      .length >=
+    state.cards.filter(
+      (c) =>
+        c.facedown &&
+        c.zoneId === action.battlefieldId &&
+        c.ownerId === action.playerId,
+    ).length >=
       1 +
         (battlefieldDefinition(state, action.battlefieldId)?.extraHiddenSlots ??
           0)
