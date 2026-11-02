@@ -197,12 +197,10 @@ Reste à faire / limites connues (mis à jour) :
 - **Zhonya's Hourglass** : reste automatique — son texte est obligatoire (« The next time a
   friendly unit would die, kill this instead ») et sans coût, contrairement à The Boss
   (« you may pay … and exhaust me »).
-- **Refus du Deflect** : disponible pour les sorts et les capacités de mise en jeu ; pas
-  encore pour les capacités Tap de gears ni les capacités d'attaque.
-- **Lancements gratuits** (Blind Fury, Kai'Sa, Ava, Promising Future) et **unités jouées par
-  un effet** : les choix secondaires (sélections multiples, seconde cible, destination,
-  cartes du cimetière) ne sont pas proposés ; ces sorts restent non lançables par ce biais.
+- **Refus du Deflect** : disponible partout (sorts, mises en jeu, capacités Tap, capacités
+  d'attaque).
+- **Lancements gratuits** et **unités jouées par un effet** : toutes les variantes de choix
+  sont désormais proposées (sélections, seconde cible, destination, cartes du cimetière).
 - **Mystic Reversal** : seule la cible principale peut être rechoisie, sans taxe Deflect.
-- **Blind Fury** : un gear révélé est posé sous le contrôle du lanceur, mais il ira dans le
-  cimetière du lanceur s'il est détruit (pas de distinction propriétaire/contrôleur pour les
-  gears).
+- **Blind Fury** : un gear révélé est posé sous le contrôle du lanceur et retourne chez son
+  propriétaire quand il quitte le jeu (\`cardOwnerId\`).
