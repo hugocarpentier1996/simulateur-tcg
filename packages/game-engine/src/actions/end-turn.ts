@@ -1,3 +1,4 @@
+import type { ModeChoiceEntry } from '../effects/mode-choice.js';
 import type { PlayEffectEntry } from '../effects/play-effect.js';
 import { endRuneLegend, runeIdsInPlay } from '../effects/end-runes.js';
 import type { ActionResult, GameAction, GameState } from '../types.js';
@@ -24,7 +25,7 @@ export function endTurn(
   if (state.showdown) {
     return { ok: false, reason: 'SHOWDOWN_IN_PROGRESS' };
   }
-  const entries: (ReadyRunesEntry | PlayEffectEntry)[] = [];
+  const entries: (ReadyRunesEntry | PlayEffectEntry | ModeChoiceEntry)[] = [];
   for (const gear of state.gears ?? [])
     if (
       gear.ownerId === action.playerId &&
@@ -56,7 +57,8 @@ export function endTurn(
       runeIds: [...ids],
     });
   }
-  // Sona : sur un champ, redresse jusqu'à N runes alliées, Tap d'abord (sans choix).
+  // Sona : sur un champ, redresse jusqu'à N runes alliées, Tap d'abord (automatique par
+  // défaut, au choix du joueur avec la préférence manualSona).
   for (const unit of state.units) {
     const count = state.unitDefinitions?.find(
       (d) => d.id === unit.definitionId,
@@ -67,6 +69,17 @@ export function endTurn(
       !state.battlefields.some((f) => f.zoneId === unit.zoneId)
     )
       continue;
+    // Option « Choisir à la main les runes de Sona » : choix rune par rune à la résolution.
+    if (state.preferences?.[action.playerId]?.manualSona) {
+      entries.push({
+        kind: 'mode-choice',
+        sourceId: unit.id,
+        ownerId: action.playerId,
+        modes: [],
+        runeReadyLeft: count,
+      });
+      continue;
+    }
     const runes = runeIdsInPlay(state, action.playerId).sort(
       (x, y) =>
         Number(state.cards.find((c) => c.id === x)?.ready !== false) -

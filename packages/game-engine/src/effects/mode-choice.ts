@@ -60,7 +60,8 @@ export type EffectMode =
   | `future:${string}`
   | `buff:${string}`
   | `discard-dmg:${string}`
-  | 'accept';
+  | 'accept'
+  | `ready-rune:${string}`;
 
 const ONE_ENERGY = { energy: 1, power: {} };
 
@@ -125,6 +126,8 @@ export interface ModeChoiceEntry {
   /** « You may » avec coût, toujours demandé (réponse 8) : coucher une source (et payer un
    * Power) pour un effet. Relentless Storm, Solari Shrine, Mistfall. */
   costlyMay?: CostlyMay;
+  /** Sona (choix manuel) : nombre de runes Tap encore à redresser, une à une. */
+  runeReadyLeft?: number;
   /** Get Excited! : unité qui subira le coût en énergie de la carte défaussée. */
   discardDamageTarget?: string;
   /** Unité exclue d'un choix (Vanguard Helm : l'alliée morte). */
@@ -153,6 +156,18 @@ export function resolveModeChoice(
   entry: ModeChoiceEntry,
 ): Extract<ActionResult, { ok: true }> {
   if (entry.runeFateAt) return resolveRuneFate(state, entry, entry.runeFateAt);
+  if (entry.runeReadyLeft) {
+    const choice = runeReadyChoice(state, entry);
+    return choice
+      ? { ok: true, state: { ...state, pendingModeChoice: choice }, events: [] }
+      : {
+          ok: true,
+          state,
+          events: [
+            { type: 'legend-effect-resolved', sourceId: entry.sourceId },
+          ],
+        };
+  }
   if (entry.costlyMay) {
     const may = entry.costlyMay;
     const ready =
@@ -536,6 +551,18 @@ export function chooseMode(
         events: applied.events,
       };
   }
+  if (pending.runeReadyLeft && action.mode.startsWith('ready-rune:')) {
+    const next = runeReadyChoice(applied.state, {
+      ...pending,
+      runeReadyLeft: pending.runeReadyLeft - 1,
+    });
+    if (next)
+      return {
+        ok: true,
+        state: { ...applied.state, pendingModeChoice: next },
+        events: applied.events,
+      };
+  }
   if (pending.recycleLeft && action.mode.startsWith('recycle-any:')) {
     const next = trashRecycleChoice(
       applied.state,
@@ -759,6 +786,20 @@ function applyMode(
         ),
       },
       events: [],
+    };
+  }
+  if (mode.startsWith('ready-rune:')) {
+    const id = mode.slice('ready-rune:'.length);
+    return {
+      state: {
+        ...state,
+        cards: state.cards.map((c) =>
+          c.id === id ? { ...c, ready: true } : c,
+        ),
+      },
+      events: [
+        { type: 'cards-readied', playerId: pending.ownerId, cardIds: [id] },
+      ],
     };
   }
   if (mode === 'accept' && pending.costlyMay)
@@ -1698,5 +1739,32 @@ function acceptCostlyMay(
       ),
     },
     events: [],
+  };
+}
+
+/** Sona (choix manuel) : runes Tap du joueur à redresser, ou « skip » ; rien à redresser ou
+ * compte épuisé : aucun choix. */
+function runeReadyChoice(
+  state: GameState,
+  entry: ModeChoiceEntry,
+): ModeChoiceEntry | undefined {
+  const left = entry.runeReadyLeft ?? 0;
+  const tapped = state.cards.filter(
+    (c) =>
+      c.ownerId === entry.ownerId &&
+      c.ready === false &&
+      !!c.color &&
+      state.zones.some(
+        (z) =>
+          z.id === c.zoneId &&
+          z.kind === 'runes' &&
+          z.ownerId === entry.ownerId,
+      ),
+  );
+  if (left <= 0 || !tapped.length) return undefined;
+  return {
+    ...entry,
+    runeReadyLeft: left,
+    modes: ['skip', ...tapped.map((c) => `ready-rune:${c.id}` as const)],
   };
 }
