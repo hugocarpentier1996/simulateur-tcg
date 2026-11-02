@@ -7,7 +7,11 @@ import type {
 } from '../types.js';
 import type { DeathTrigger } from '../death-types.js';
 import { effectiveMight } from './modifiers.js';
-import { payBossLegends, replaceDeaths } from './replace-death.js';
+import {
+  bossCandidate,
+  payBossLegends,
+  replaceDeaths,
+} from './replace-death.js';
 import { deathTriggers } from './death.js';
 
 /** État après une action/effet + éventuelles morts directes -> résolution des morts.
@@ -30,8 +34,28 @@ export function settleLethalUnits(
     const lethal = state.units.filter(
       (u) => forced.has(u.id) || isLethal(u, state),
     );
-    forced = new Set();
     if (!lethal.length) break;
+    // The Boss : décision demandée avant toute mort de cette vague.
+    const candidate = bossCandidate(state, new Set(lethal.map((u) => u.id)));
+    if (candidate) {
+      state = {
+        ...state,
+        pendingModeChoice: {
+          kind: 'mode-choice',
+          sourceId: candidate.legendId,
+          ownerId: candidate.ownerId,
+          modes: ['skip', 'accept'],
+          bossSave: {
+            unitId: candidate.unitId,
+            forcedIds: [...forced].filter((id) =>
+              state.units.some((u) => u.id === id),
+            ),
+          },
+        },
+      };
+      break;
+    }
+    forced = new Set();
     const replaced = replaceDeaths(state, new Set(lethal.map((u) => u.id)));
     events.push(...replaced.events);
     const triggered = deathTriggers(state, replaced.dead);

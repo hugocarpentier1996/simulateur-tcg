@@ -10,7 +10,11 @@ import type {
 import { finishCombat } from './finish.js';
 import { deathTriggers } from '../effects/death.js';
 import { effectiveMight, preventsDamage } from '../effects/modifiers.js';
-import { payBossLegends, replaceDeaths } from '../effects/replace-death.js';
+import {
+  bossCandidate,
+  payBossLegends,
+  replaceDeaths,
+} from '../effects/replace-death.js';
 
 type Combat = Extract<NonNullable<GameState['showdown']>, { kind: 'combat' }>;
 
@@ -36,6 +40,27 @@ export function resolveCombat(
       ((unit.damage ?? 0) >= Math.max(1, effectiveMight(unit, state)) ||
         isLethal(unit, state)),
   );
+  // The Boss : décision demandée avant les morts du combat ; la résolution reprend ensuite.
+  const candidate = bossCandidate(
+    { ...state, units: damaged },
+    new Set(lethal.map((unit) => unit.id)),
+  );
+  if (candidate)
+    return {
+      ok: true,
+      state: {
+        ...state,
+        showdown: combat,
+        pendingModeChoice: {
+          kind: 'mode-choice',
+          sourceId: candidate.legendId,
+          ownerId: candidate.ownerId,
+          modes: ['skip', 'accept'],
+          bossSave: { unitId: candidate.unitId, combat: true },
+        },
+      },
+      events: [],
+    };
   const replaced = replaceDeaths(
     { ...state, units: damaged },
     new Set(lethal.map((unit) => unit.id)),

@@ -83,8 +83,12 @@ export function replaceDeaths(
                 ?.saveAllyFromDeath,
           )
         : undefined;
+    // The Boss : « you may » payant, seulement si son propriétaire l'a accepté (réponse 8).
     const boss =
-      protection < 0 && !hourglass && unit.buffed
+      protection < 0 &&
+      !hourglass &&
+      unit.buffed &&
+      unit.bossDecision === 'accept'
         ? activeLegends(state, unit.ownerId).find(
             (l) =>
               l.definition.saveBuffedFromDeath &&
@@ -114,6 +118,7 @@ export function replaceDeaths(
       ),
     };
     if (boss) delete recalled.buffed;
+    delete recalled.bossDecision;
     return recalled;
   });
   return {
@@ -124,4 +129,37 @@ export function replaceDeaths(
     bossLegendIds,
     recallPayments,
   };
+}
+
+/** Première unité condamnée que The Boss pourrait sauver et dont le propriétaire n'a pas
+ * encore décidé : la mort est suspendue le temps de lui demander (coût → toujours demandé).
+ * Une protection gratuite ou Zhonya (obligatoires) passent avant et n'appellent aucun choix. */
+export function bossCandidate(
+  state: GameState,
+  lethalIds: ReadonlySet<string>,
+): { unitId: string; legendId: string; ownerId: string } | undefined {
+  for (const unit of state.units) {
+    if (!lethalIds.has(unit.id) || !unit.buffed || unit.bossDecision) continue;
+    if (unit.temporaryEffects?.some((e) => e.type === 'recall-on-death'))
+      continue;
+    if (
+      state.gears?.some(
+        (g) =>
+          g.ownerId === unit.ownerId &&
+          state.gearDefinitions?.find((d) => d.id === g.definitionId)
+            ?.saveAllyFromDeath,
+      )
+    )
+      continue;
+    const legend = activeLegends(state, unit.ownerId).find(
+      (l) => l.definition.saveBuffedFromDeath && l.card.ready !== false,
+    );
+    if (legend && findPayment(state, unit.ownerId, ONE_POWER))
+      return {
+        unitId: unit.id,
+        legendId: legend.card.id,
+        ownerId: unit.ownerId,
+      };
+  }
+  return undefined;
 }

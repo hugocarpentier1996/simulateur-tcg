@@ -1,3 +1,4 @@
+import { resolveCombat } from '../combat/resolve.js';
 import { castFree, freeCastEntry, freeCastTargets } from './free-cast.js';
 import { effectPlayTargets } from './effect-play.js';
 import { resolvePlayEffect } from './play-effect.js';
@@ -132,6 +133,12 @@ export interface ModeChoiceEntry {
   /** « You may » avec coût, toujours demandé (réponse 8) : coucher une source (et payer un
    * Power) pour un effet. Relentless Storm, Solari Shrine, Mistfall. */
   costlyMay?: CostlyMay;
+  /** The Boss : unité à sauver ; reprise du combat ou des morts suspendues après le choix. */
+  bossSave?: {
+    unitId: string;
+    combat?: boolean;
+    forcedIds?: readonly string[];
+  };
   /** Lancement gratuit d'un sort par effet : cible choisie à la mise sur la pile. */
   freeCast?: { cardId: string; recycleOnResolve?: boolean };
   /** Mystic Reversal : sort volé dont la cible principale peut être changée. */
@@ -572,6 +579,40 @@ export function chooseMode(
     return { ok: false, reason: 'NO_PRIORITY' };
   if (!pending.modes.includes(action.mode))
     return { ok: false, reason: 'INVALID_MODE' };
+  if (pending.bossSave) {
+    const decided: GameState = {
+      ...state,
+      pendingModeChoice: null,
+      units: state.units.map((u) =>
+        u.id === pending.bossSave!.unitId
+          ? {
+              ...u,
+              bossDecision: action.mode === 'accept' ? 'accept' : 'decline',
+            }
+          : u,
+      ),
+    };
+    const combat = decided.showdown;
+    const resumed =
+      pending.bossSave.combat && combat?.kind === 'combat'
+        ? resolveCombat(decided, combat)
+        : settleLethalUnits(decided, new Set(pending.bossSave.forcedIds ?? []));
+    const cleaned: GameState = {
+      ...resumed.state,
+      units: resumed.state.units.map((u) => {
+        if (!u.bossDecision || resumed.state.pendingModeChoice?.bossSave)
+          return u;
+        const rest = { ...u };
+        delete rest.bossDecision;
+        return rest;
+      }),
+    };
+    return cleaned.stack &&
+      !cleaned.pendingModeChoice &&
+      !pending.bossSave.combat
+      ? continueStack(cleaned, resumed.events)
+      : { ok: true, state: cleaned, events: resumed.events };
+  }
   if (pending.future && action.mode.startsWith('future:')) {
     const next = chooseFuture(
       state,

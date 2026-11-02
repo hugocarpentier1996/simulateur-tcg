@@ -620,6 +620,8 @@ export interface UnitState {
   tank?: boolean;
   backline?: boolean;
   stunned?: boolean;
+  /** The Boss : décision du joueur pour sauver cette unité de sa mort imminente. */
+  bossDecision?: 'accept' | 'decline';
   cannotDealDamage?: boolean;
   /** Noxian Guillotine : meurt dès que ses dégâts dépassent cette valeur (fin de tour : effacé). */
   killOnDamageAbove?: number;
