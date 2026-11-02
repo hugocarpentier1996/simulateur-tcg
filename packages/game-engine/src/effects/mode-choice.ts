@@ -1,3 +1,5 @@
+import { effectPlayTargets } from './effect-play.js';
+import { resolvePlayEffect } from './play-effect.js';
 import type { PlayEffectEntry } from './play-effect.js';
 import { chooseFuture, type FutureProgress } from './promising-future.js';
 import { hasHidden } from './hidden.js';
@@ -61,7 +63,8 @@ export type EffectMode =
   | `buff:${string}`
   | `discard-dmg:${string}`
   | 'accept'
-  | `ready-rune:${string}`;
+  | `ready-rune:${string}`
+  | `play-target:${string}`;
 
 const ONE_ENERGY = { energy: 1, power: {} };
 
@@ -126,6 +129,8 @@ export interface ModeChoiceEntry {
   /** « You may » avec coût, toujours demandé (réponse 8) : coucher une source (et payer un
    * Power) pour un effet. Relentless Storm, Solari Shrine, Mistfall. */
   costlyMay?: CostlyMay;
+  /** Unité jouée par un effet : cible de sa capacité « when you play me » à choisir. */
+  playTargetFor?: string;
   /** Sona (choix manuel) : nombre de runes Tap encore à redresser, une à une. */
   runeReadyLeft?: number;
   /** Get Excited! : unité qui subira le coût en énergie de la carte défaussée. */
@@ -156,6 +161,44 @@ export function resolveModeChoice(
   entry: ModeChoiceEntry,
 ): Extract<ActionResult, { ok: true }> {
   if (entry.runeFateAt) return resolveRuneFate(state, entry, entry.runeFateAt);
+  if (entry.playTargetFor) {
+    const found = effectPlayTargets(state, entry.playTargetFor, entry.ownerId);
+    const targets = (found?.targets ?? []).filter(
+      (id): id is string => id !== undefined,
+    );
+    const optional = found?.targets.includes(undefined);
+    const done = [
+      { type: 'legend-effect-resolved' as const, sourceId: entry.sourceId },
+    ];
+    if (!found || !targets.length) return { ok: true, state, events: done };
+    if (targets.length === 1 && !optional) {
+      const applied = applyPlayTarget(
+        state,
+        entry,
+        found.definition,
+        targets[0]!,
+      );
+      return {
+        ok: true,
+        state: applied.state,
+        events: [...applied.events, ...done],
+      };
+    }
+    return {
+      ok: true,
+      state: {
+        ...state,
+        pendingModeChoice: {
+          ...entry,
+          modes: [
+            ...(optional ? (['skip'] as const) : []),
+            ...targets.map((id) => `play-target:${id}` as const),
+          ],
+        },
+      },
+      events: [],
+    };
+  }
   if (entry.runeReadyLeft) {
     const choice = runeReadyChoice(state, entry);
     return choice
@@ -787,6 +830,20 @@ function applyMode(
       },
       events: [],
     };
+  }
+  if (mode.startsWith('play-target:') && pending.playTargetFor) {
+    const found = effectPlayTargets(
+      state,
+      pending.playTargetFor,
+      pending.ownerId,
+    );
+    if (!found) return { state, events: [] };
+    return applyPlayTarget(
+      state,
+      pending,
+      found.definition,
+      mode.slice('play-target:'.length),
+    );
   }
   if (mode.startsWith('ready-rune:')) {
     const id = mode.slice('ready-rune:'.length);
@@ -1767,4 +1824,33 @@ function runeReadyChoice(
     runeReadyLeft: left,
     modes: ['skip', ...tapped.map((c) => `ready-rune:${c.id}` as const)],
   };
+}
+
+/** Capacité ciblée de mise en jeu appliquée à la cible choisie, comme sa résolution normale. */
+function applyPlayTarget(
+  state: GameState,
+  entry: ModeChoiceEntry,
+  definition: UnitBlueprint,
+  targetId: string,
+): { state: GameState; events: GameEvent[] } {
+  const effect: PlayEffectEntry['effect'] | undefined =
+    definition.onPlayTargetEffect
+      ? {
+          type: 'targeted',
+          targetId,
+          effect: definition.onPlayTargetEffect.effect,
+        }
+      : definition.onPlayReadyOther
+        ? { type: 'ready-other', targetId }
+        : definition.onPlayMoveToBase
+          ? { type: 'move-to-base', targetId }
+          : undefined;
+  if (!effect) return { state, events: [] };
+  const resolved = resolvePlayEffect(state, {
+    kind: 'play-effect',
+    sourceId: entry.playTargetFor!,
+    ownerId: entry.ownerId,
+    effect,
+  });
+  return { state: resolved.state, events: resolved.events };
 }

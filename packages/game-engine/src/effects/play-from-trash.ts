@@ -2,7 +2,8 @@ import type { GameEvent, GameState, UnitBlueprint } from '../types.js';
 import { graveyardCard } from './graveyard-card.js';
 
 /** Unité du cimetière du joueur -> jouée dans sa base, Tap (sauf entersReady), sans état
- * précédent ni effet de mise en jeu (hypothèse). Carte disparue : état inchangé. */
+ * précédent ; ses effets de mise en jeu sont empilés par act (événement unit-played).
+ * Carte disparue : état inchangé. */
 export function playUnitFromTrash(
   state: GameState,
   playerId: string,

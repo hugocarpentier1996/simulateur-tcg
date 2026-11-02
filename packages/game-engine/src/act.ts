@@ -1,3 +1,5 @@
+import { effectPlayEntries } from './effects/effect-play.js';
+import type { UnitPlayEntry } from './effects/unit-play.js';
 import type { PlayEffectEntry } from './effects/play-effect.js';
 import type { ModeChoiceEntry } from './effects/mode-choice.js';
 import {
@@ -254,7 +256,7 @@ function actOnce(state: GameState, action: GameAction): ActionResult {
     events,
   );
   // Capacités déclenchées empilées après l'action (réponse 7 : fenêtre de réaction).
-  const triggers: (ModeChoiceEntry | PlayEffectEntry)[] = [];
+  const triggers: (ModeChoiceEntry | PlayEffectEntry | UnitPlayEntry)[] = [];
   const boost = (
     unitId: string,
     ownerId: string,
@@ -284,6 +286,13 @@ function actOnce(state: GameState, action: GameAction): ActionResult {
           },
         });
     }
+  // Unités jouées par un effet (réponse 13) : leurs capacités de mise en jeu sont empilées.
+  for (const e of events)
+    if (
+      e.type === 'unit-played' &&
+      !(action.type === 'play-unit' && action.cardId === e.unitId)
+    )
+      triggers.push(...effectPlayEntries(counted, e.unitId, e.playerId));
   // Darius (Fury) : deuxième carte jouée ce tour, lui compris -> capacité sur la pile.
   if (secondCard)
     for (const u of counted.units) {
@@ -628,26 +637,27 @@ function actOnce(state: GameState, action: GameAction): ActionResult {
     }
   }
   // Flame Chompers : carte défaussée -> capacité « payer pour la jouer » sur la pile.
-  const chompers: (ModeChoiceEntry | PlayEffectEntry)[] = triggers.concat(
-    events.flatMap((e) => {
-      if (e.type !== 'card-discarded') return [];
-      const card = shrine.cards.find((c) => c.id === e.cardId);
-      const rule = shrine.unitDefinitions?.find(
-        (d) => d.id === card?.definitionId,
-      )?.playOnDiscard;
-      return card && rule
-        ? [
-            {
-              kind: 'mode-choice' as const,
-              sourceId: card.id,
-              ownerId: card.ownerId,
-              modes: [],
-              payPlayCost: { energy: 0, power: { [rule.power]: 1 } },
-            },
-          ]
-        : [];
-    }),
-  );
+  const chompers: (ModeChoiceEntry | PlayEffectEntry | UnitPlayEntry)[] =
+    triggers.concat(
+      events.flatMap((e) => {
+        if (e.type !== 'card-discarded') return [];
+        const card = shrine.cards.find((c) => c.id === e.cardId);
+        const rule = shrine.unitDefinitions?.find(
+          (d) => d.id === card?.definitionId,
+        )?.playOnDiscard;
+        return card && rule
+          ? [
+              {
+                kind: 'mode-choice' as const,
+                sourceId: card.id,
+                ownerId: card.ownerId,
+                modes: [],
+                payPlayCost: { energy: 0, power: { [rule.power]: 1 } },
+              },
+            ]
+          : [];
+      }),
+    );
   // Immortal Phoenix : une unité meurt des dégâts d'un sort du joueur (pas d'un simple malus
   // sur une unité déjà blessée) -> payer pour la jouer du cimetière, Phoenix compris.
   const spellDamaged = new Set(
