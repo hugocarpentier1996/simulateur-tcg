@@ -27,6 +27,8 @@ Avec Docker Desktop démarré, depuis le dossier du projet :
 docker compose run --rm --service-ports dev sh -c "pnpm install --frozen-lockfile --store-dir /pnpm/store && pnpm dev --host 0.0.0.0"
 ```
 
+Raccourci Windows : double-cliquer sur `lancer-table.cmd` (démarre Docker Desktop si besoin).
+
 Ouvrir **http://127.0.0.1:5173/**. Le port Docker est publié uniquement sur la machine locale.
 Avec Node et pnpm déjà installés : `pnpm install --frozen-lockfile`, puis `pnpm dev`.
 Si le port 5173 est occupé par une table déjà lancée, utiliser celle-ci ou arrêter son terminal.
