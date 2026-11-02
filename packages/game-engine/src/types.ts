@@ -24,7 +24,22 @@ import type { DeathEffect, DeathEntry, DeathTrigger } from './death-types.js';
  * L'appelant fournit un état cohérent ; ce prototype ne valide pas un JSON externe.
  * Les étapes automatiques conduisent jusqu'à Main, sans effets de cartes personnalisés.
  */
+/** Préférences d'ergonomie d'un joueur, modifiables à tout moment (action set-preference). */
+export interface PlayerPreferences {
+  /** Passe automatiquement chaque fenêtre de réaction (priorité sur une pile non vide). */
+  autoPassReactions?: boolean;
+  /** Demande toujours les « you may » sans coût (sinon acceptés automatiquement). */
+  askOptional?: boolean;
+  /** Autorise à cibler une unité Deflect sans payer : l'effet ciblant cette unité fizzle. */
+  allowDeflectRefusal?: boolean;
+  /** Sona : runes à redresser choisies à la main (sinon automatiquement). */
+  manualSona?: boolean;
+}
+export type PreferenceKey = keyof PlayerPreferences;
+
 export interface GameState {
+  /** Préférences d'ergonomie par joueur ; absentes = valeurs par défaut. */
+  preferences?: Readonly<Record<string, PlayerPreferences>>;
   /** Beginning suspendu : reprendre Channel/Draw une seule fois après la pile et les choix. */
   pendingTurnStart?: boolean;
   pendingHoldChannel?:
@@ -678,6 +693,12 @@ export interface CardInstance {
  * `playerId` devra être fourni par le serveur à partir de l'identité authentifiée.
  */
 export type GameAction =
+  | {
+      type: 'set-preference';
+      playerId: string;
+      preference: PreferenceKey;
+      value: boolean;
+    }
   | { type: 'choose-hold-channel'; playerId: string; accept: boolean }
   | {
       type: 'choose-defense-shield';

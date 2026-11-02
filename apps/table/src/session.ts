@@ -13,6 +13,7 @@ import {
   type GameAction,
   type GameEvent,
   type ActionResult,
+  type PreferenceKey,
 } from '../../../packages/game-engine/src/index.js';
 import {
   testUnits,
@@ -806,4 +807,21 @@ export function gearHasResource(state: GameState, gearId: string): boolean {
     state.legendDefinitions?.find((d) => d.id === gear?.definitionId)
       ?.resourceAbility
   );
+}
+
+/** Préférence d'ergonomie d'un joueur modifiée hors historique et hors journal : ce n'est pas
+ * une action de jeu, l'annulation ne doit pas la défaire. */
+export function setPreference(
+  session: Session,
+  playerId: string,
+  preference: PreferenceKey,
+  value: boolean,
+): Session {
+  const result = act(session.state, {
+    type: 'set-preference',
+    playerId,
+    preference,
+    value,
+  });
+  return result.ok ? { ...session, state: result.state, error: null } : session;
 }

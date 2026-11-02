@@ -24,6 +24,8 @@ export type {
   UnitBlueprint,
   PaymentPlan,
   DamageAllocation,
+  PlayerPreferences,
+  PreferenceKey,
 } from './types.js';
 
 export {

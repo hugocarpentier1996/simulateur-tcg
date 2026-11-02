@@ -85,6 +85,64 @@ import { settleLethalUnits } from './effects/lethal-units.js';
  * inéligible est remplacée par une pioche, avec le champ inscrit comme scoré.
  */
 export function act(state: GameState, action: GameAction): ActionResult {
+  if (action.type === 'set-preference') return setPreference(state, action);
+  const result = actOnce(state, action);
+  return result.ok ? autoPassReactions(result) : result;
+}
+
+/** Préférence d'ergonomie enregistrée pour le joueur ; aucun autre changement. */
+function setPreference(
+  state: GameState,
+  action: Extract<GameAction, { type: 'set-preference' }>,
+): ActionResult {
+  if (!state.players.some((p) => p.id === action.playerId))
+    return { ok: false, reason: 'UNKNOWN_PLAYER' };
+  return {
+    ok: true,
+    state: {
+      ...state,
+      preferences: {
+        ...state.preferences,
+        [action.playerId]: {
+          ...state.preferences?.[action.playerId],
+          [action.preference]: action.value,
+        },
+      },
+    },
+    events: [],
+  };
+}
+
+/** Option « refus automatique des réactions » : tant que la priorité sur une pile non vide
+ * revient à un joueur qui l'a activée, sans choix en attente, il passe automatiquement. */
+function autoPassReactions(
+  result: Extract<ActionResult, { ok: true }>,
+): ActionResult {
+  let { state } = result;
+  const events = [...result.events];
+  for (let i = 0; i < 50; i++) {
+    const priority = state.stack?.priorityPlayerId;
+    if (
+      !priority ||
+      !state.preferences?.[priority]?.autoPassReactions ||
+      state.pendingModeChoice ||
+      state.pendingVision ||
+      state.pendingDiscard ||
+      state.pendingPick ||
+      state.pendingAttackChoices?.length ||
+      state.pendingDeaths ||
+      state.result
+    )
+      break;
+    const passed = actOnce(state, { type: 'pass', playerId: priority });
+    if (!passed.ok) break;
+    state = passed.state;
+    events.push(...passed.events);
+  }
+  return { ok: true, state, events };
+}
+
+function actOnce(state: GameState, action: GameAction): ActionResult {
   if (
     (action.type === 'play-unit' ||
       action.type === 'cast-spell' ||
@@ -736,6 +794,8 @@ function dispatch(state: GameState, action: GameAction): ActionResult {
       return passPriority(state, action);
     case 'end-turn':
       return endTurn(state, action);
+    case 'set-preference':
+      return setPreference(state, action);
     default: {
       // TypeScript signale ici tout nouveau type d'action sans traitement associé.
       const unhandled: never = action;

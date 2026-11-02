@@ -1915,3 +1915,29 @@ button.pile.graveyard:hover .pile-face {
 .facedown-card:hover .facedown-face {
   box-shadow: 0 0 10px #e6c48199;
 }
+
+/* Options d'automatisation (préférences par joueur). */
+.options-panel {
+  margin-top: 12px;
+  font-size: 0.85rem;
+}
+.options-panel summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+.options-panel table {
+  width: 100%;
+  margin-top: 8px;
+  border-collapse: collapse;
+}
+.options-panel th,
+.options-panel td {
+  padding: 4px 6px;
+  text-align: left;
+}
+.options-panel td {
+  text-align: center;
+}
+.options-panel tbody th {
+  font-weight: 400;
+}

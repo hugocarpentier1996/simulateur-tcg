@@ -7,6 +7,7 @@ import {
   type CardInstance,
   type GameAction,
   type GameState,
+  type PreferenceKey,
 } from '../../../packages/game-engine/src/index.js';
 import {
   cardName,
@@ -352,7 +353,7 @@ export function renderTable(
     </div>
     <div class="reserve"><span>${escape(playerName(active))} · Réserve flottante</span><span><b>${state.resources[active]?.energy ?? 0}</b> énergie · <b>${escape(powerText(state.resources[active]?.power ?? {}))}</b> Power</span></div>
     <section class="hand-section"><header><h2>Main de ${escape(playerName(handOwner))}</h2><span>${hand.length} cartes · sélectionner pour jouer</span></header>${handFan(hand, selected, (c) => (mulliganTurn && ui.mulligan?.includes(c.id) ? 'mulligan-marked' : state.pendingDiscard?.playerId === handOwner ? 'discard-choice' : ''))}</section></section>
-    <aside><section class="action-panel">${session.error ? `<p role="alert" class="error">${escape(session.error)}</p>` : ''}${pendingReset ? resetPanel(pendingReset) : ui.graveyard ? graveyardPanel(state, ui.graveyard) : mulliganTurn ? mulliganPanel(mulliganTurn, ui.mulligan ?? []) : endRunes && runeChoice ? endRunesPanel(endRunes.length, runeChoice.count) : moves.length ? movementPanel(session, moves) : paymentPanel(session, selected)}</section><section class="journal"><header><h2>Journal de partie</h2><span>${session.log.length}</span></header><ol>${session.log
+    <aside><section class="action-panel">${session.error ? `<p role="alert" class="error">${escape(session.error)}</p>` : ''}${pendingReset ? resetPanel(pendingReset) : ui.graveyard ? graveyardPanel(state, ui.graveyard) : mulliganTurn ? mulliganPanel(mulliganTurn, ui.mulligan ?? []) : endRunes && runeChoice ? endRunesPanel(endRunes.length, runeChoice.count) : moves.length ? movementPanel(session, moves) : paymentPanel(session, selected)}</section>${optionsPanel(state)}<section class="journal"><header><h2>Journal de partie</h2><span>${session.log.length}</span></header><ol>${session.log
       .slice()
       .reverse()
       .map((line) => `<li>${escape(line)}</li>`)
@@ -923,4 +924,48 @@ function mulliganPanel(playerId: string, marked: readonly string[]): string {
     ? `Remplacer ${marked.length} carte${marked.length > 1 ? 's' : ''}`
     : 'Garder ma main';
   return `<div class="eyebrow">Préparation</div><h3>Mulligan · ${escape(playerName(playerId))}</h3><p class="help">Clique jusqu’à 2 cartes de ta main à remplacer (${marked.length} / 2). Elles vont sous ton deck sans mélange, puis tu en pioches autant.</p><div class="choice-list"><button class="primary" data-action="confirm-mulligan">${label}</button></div>`;
+}
+
+/** Préférences d'ergonomie modifiables, dans l'ordre d'affichage. */
+export const PREFERENCE_OPTIONS: readonly {
+  key: PreferenceKey;
+  label: string;
+  help: string;
+}[] = [
+  {
+    key: 'autoPassReactions',
+    label: 'Refuser automatiquement les réactions',
+    help: 'Passe la priorité à chaque fenêtre de réaction sur la pile.',
+  },
+  {
+    key: 'askOptional',
+    label: 'Toujours demander les « you may » gratuits',
+    help: 'Sinon, les effets facultatifs sans coût sont acceptés automatiquement.',
+  },
+  {
+    key: 'allowDeflectRefusal',
+    label: 'Pouvoir refuser de payer Deflect',
+    help: 'Propose aussi de cibler sans payer : l’effet sur cette unité est annulé.',
+  },
+  {
+    key: 'manualSona',
+    label: 'Choisir à la main les runes de Sona',
+    help: 'Sinon, les runes Tap sont redressées automatiquement.',
+  },
+];
+
+/** Panneau repliable des options : une case par joueur et par préférence. */
+export function optionsPanel(state: GameState): string {
+  const rows = PREFERENCE_OPTIONS.map(
+    (option) =>
+      `<tr><th scope="row" title="${escape(option.help)}">${escape(option.label)}</th>${state.players
+        .map(
+          (p) =>
+            `<td><input type="checkbox" data-pref="${option.key}" data-player="${escape(p.id)}" aria-label="${escape(option.label)} · ${escape(playerName(p.id))}" ${state.preferences?.[p.id]?.[option.key] ? 'checked' : ''}></td>`,
+        )
+        .join('')}</tr>`,
+  ).join('');
+  return `<section class="options-panel"><details><summary>Options d’automatisation</summary><table><thead><tr><th></th>${state.players
+    .map((p) => `<th scope="col">${escape(playerName(p.id))}</th>`)
+    .join('')}</tr></thead><tbody>${rows}</tbody></table></details></section>`;
 }

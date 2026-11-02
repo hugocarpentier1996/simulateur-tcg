@@ -23,6 +23,7 @@ import {
   useRune,
   mulliganPlayer,
   confirmMulligan,
+  setPreference,
 } from './session.js';
 import {
   renderTable,
@@ -30,6 +31,7 @@ import {
   type Selection,
   type TableUi,
 } from './view.js';
+import type { PreferenceKey } from '../../../packages/game-engine/src/index.js';
 import './style.css';
 
 const root = document.querySelector<HTMLDivElement>('#app')!;
@@ -342,6 +344,15 @@ root.addEventListener('click', (event) => {
 });
 
 // Clic droit sur une rune : recyclage sous le deck de runes (Power, + énergie si Ready).
+root.addEventListener('change', (event) => {
+  const input = event.target as HTMLInputElement | null;
+  const key = input?.dataset.pref as PreferenceKey | undefined;
+  const player = input?.dataset.player;
+  if (!input || !key || !player) return;
+  session = setPreference(session, player, key, input.checked);
+  render();
+});
+
 root.addEventListener('contextmenu', (event) => {
   const rune = (event.target as HTMLElement).closest<HTMLElement>(
     '[data-rune]',
