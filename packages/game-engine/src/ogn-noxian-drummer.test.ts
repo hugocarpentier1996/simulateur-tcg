@@ -75,3 +75,20 @@ it('la mise en jeu ne compte pas comme un déplacement', () => {
   expect(next.stack).toBeUndefined();
   expect(next.units.some((u) => u.token)).toBe(false);
 });
+it('« here » suit la source déplacée avant la résolution (réponse 1)', () => {
+  let s = step(setup(), {
+    type: 'move',
+    playerId: 'a',
+    unitId: 'ally',
+    destinationId: 'g',
+  });
+  // Déplacement interne simulé avant la résolution : la source revient en base.
+  s = {
+    ...s,
+    units: s.units.map((u) =>
+      u.id === 'ally' ? { ...u, zoneId: 'base-a' } : u,
+    ),
+  };
+  s = resolveTop(s);
+  expect(s.units.find((u) => u.token)?.zoneId).toBe('base-a');
+});

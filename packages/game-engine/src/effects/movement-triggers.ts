@@ -3,7 +3,8 @@ import { startLoot } from './loot.js';
 import type { GameEvent, GameState, ActionResult } from '../types.js';
 import { summonHere } from './summon-here.js';
 
-/** Destination figée au mouvement : une sortie du terrain prive « here » de destination. */
+/** Destination annoncée au mouvement ; à la résolution, « here » suit la position actuelle
+ * de la source. Une sortie du terrain prive « here » de destination. */
 export interface MovementEntry {
   kind: 'movement';
   sourceId: string;

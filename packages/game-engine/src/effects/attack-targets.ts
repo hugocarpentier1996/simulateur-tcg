@@ -158,13 +158,14 @@ export function resolveAttackDamage(
   state: GameState,
   entry: AttackDamageEntry,
 ): Extract<ActionResult, { ok: true }> {
+  // « Here » suit la source : la cible doit être sur le champ où se trouve la source.
+  const source = state.units.find((u) => u.id === entry.sourceId);
   const target = state.units.find(
     (u) =>
       u.id === entry.targetId &&
       u.ownerId !== entry.ownerId &&
-      u.zoneId === entry.battlefieldId,
+      u.zoneId === (source?.zoneId ?? entry.battlefieldId),
   );
-  const source = state.units.find((u) => u.id === entry.sourceId);
   if (target && source && entry.effect === 'weaken') {
     const amount = Math.max(
       -entry.amount,
