@@ -27,6 +27,7 @@ import {
 } from './session.js';
 import {
   renderTable,
+  stackTopKey,
   type PendingReset,
   type Selection,
   type TableUi,
@@ -52,13 +53,32 @@ let graveyard: string | null = null;
 // Cartes marquées pour le mulligan du joueur en cours (remises à zéro à chaque validation).
 let mulliganPick: string[] = [];
 const autoRunes: Record<string, boolean> = {};
+let lastStackTop: string | null = null;
+let reactionOpen = false;
 
 function render() {
   displayedCardActions = selection
     ? cardActions(session, selection.cardId)
     : [];
   const focusId = document.activeElement?.id;
+  // Fenêtre de réaction : rouverte dès qu'une nouvelle entrée arrive au sommet de la pile.
+  // Clé : sommet + joueur prioritaire, pour que chaque joueur voie la fenêtre à son tour.
+  const top = stackTopKey(session.state)
+    ? `${stackTopKey(session.state)}:${session.state.stack?.priorityPlayerId}`
+    : null;
+  if (top !== lastStackTop) {
+    lastStackTop = top;
+    reactionOpen = top !== null;
+  }
+  const blocking =
+    session.state.pendingModeChoice ||
+    session.state.pendingVision ||
+    session.state.pendingPick ||
+    session.state.pendingDiscard ||
+    session.state.pendingDeaths ||
+    session.state.pendingAttackChoices?.length;
   const ui: TableUi = {
+    reactionPopup: reactionOpen && !!session.state.stack && !blocking,
     endRunes,
     autoRunes,
     graveyard,
@@ -170,6 +190,21 @@ root.addEventListener('click', (event) => {
     resetAction !== 'cancel-reset'
   )
     return;
+  // Fenêtre de réaction : passer pour le joueur prioritaire, ou la fermer pour réagir.
+  if (resetAction === 'reaction-pass' && session.state.stack) {
+    session = dispatch(session, {
+      type: 'pass',
+      playerId: session.state.stack.priorityPlayerId,
+    });
+    selection = null;
+    render();
+    return;
+  }
+  if (resetAction === 'reaction-hide') {
+    reactionOpen = false;
+    render();
+    return;
+  }
   // La défausse est une consultation : elle s'ouvre et se ferme dans tous les contextes
   // (déplacements préparés, choix de runes, ciblage), sans toucher à la partie.
   const pile = target.closest<HTMLElement>('[data-graveyard]');

@@ -285,6 +285,8 @@ export interface TableUi {
   graveyard?: string | null;
   endRunes?: readonly string[] | null;
   autoRunes?: Readonly<Record<string, boolean>>;
+  /** Fenêtre de réaction ouverte pour la nouvelle carte arrivée en haut de la pile. */
+  reactionPopup?: boolean;
 }
 
 export function renderTable(
@@ -339,6 +341,7 @@ export function renderTable(
   return `<header class="topbar"><div class="brand"><span class="brand-icon" aria-hidden="true">◇</span><div><h1>Simulateur TCG</h1><p>La table d’essai</p></div></div><div class="local-tag"><span></span> Local · 2 joueurs</div><button id="undo-action" class="quiet" data-action="undo" title="Annuler la dernière action réussie (10 maximum)" ${moves.length || session.history.length === 0 ? 'disabled' : ''}>↶ Annuler l’action (${session.history.length}/10)</button><button class="quiet" data-action="reset" ${moves.length ? 'disabled' : ''}>Nouvelle partie BO1</button><button class="quiet" data-action="bo3" ${moves.length ? 'disabled' : ''}>Choix BO3 · manche d’essai</button></header>
     <main><section class="play-area"><div class="scoreboard">${state.players.map((p) => `<div class="player ${p.id === active ? 'active' : ''}"><span>${escape(playerName(p.id))}<small>${p.id === active ? 'Tour actif' : 'En attente'}</small></span><strong>${p.score}<small> / ${victoryTarget(state, p.id)}</small></strong></div>`).join('')}</div>
     <div class="turnbar"><div><span class="eyebrow">${state.result ? 'Partie terminée' : mulliganTurn ? 'Préparation · Mulligan' : state.showdown ? 'Main · Showdown en cours' : escape(state.phase === 'main' ? 'Phase principale · Main' : state.phase)}</span><h2>${state.result ? `${escape(playerName(state.result.winnerId))} gagne` : `À ${escape(playerName(active))} de jouer`}</h2></div><span class="priority">Priorité : ${escape(playerName(priority))}</span><button class="primary" data-action="end" ${!canEnd ? 'disabled' : ''}>${escape(endLabel)}</button></div>
+    ${stackPanel(state)}
     <div class="board">${state.players.map((p) => victoryTrack(p.id, p.score, p.id !== active)).join('')}
       ${state.players
         .filter((p) => p.id !== active)
@@ -359,7 +362,7 @@ export function renderTable(
       .map((line) => `<li>${escape(line)}</li>`)
       .join(
         '',
-      )}</ol></section></aside></main><footer>Prototype local · Préparation fixe, sans sauvegarde · Déplacements base ↔ champ · Choix et combats pilotés par le moteur</footer>`;
+      )}</ol></section></aside></main>${ui.reactionPopup ? reactionPopup(session) : ''}<footer>Prototype local · Préparation fixe, sans sauvegarde · Déplacements base ↔ champ · Choix et combats pilotés par le moteur</footer>`;
 }
 
 function actionLabel(
@@ -1047,4 +1050,115 @@ export function optionsPanel(state: GameState): string {
   return `<section class="options-panel"><details><summary>Options d’automatisation</summary><table><thead><tr><th></th>${state.players
     .map((p) => `<th scope="col">${escape(playerName(p.id))}</th>`)
     .join('')}</tr></thead><tbody>${rows}</tbody></table></details></section>`;
+}
+
+type StackItem = NonNullable<GameState['stack']>['entries'][number];
+
+/** Source d'une entrée : carte du sort, source de la capacité ou champ concerné. */
+function entrySource(e: StackItem): string {
+  if ('card' in e) return e.card.id;
+  if ('sourceId' in e) return e.sourceId;
+  return 'battlefieldId' in e ? e.battlefieldId : '';
+}
+
+/** Identité de l'entrée au sommet de la pile (change à chaque nouvelle arrivée). */
+export function stackTopKey(state: GameState): string | null {
+  const entries = state.stack?.entries ?? [];
+  const top = entries.at(-1);
+  if (!top) return null;
+  return `${entries.length}:${entrySource(top)}:${'kind' in top ? top.kind : 'spell'}`;
+}
+
+/** Carte représentant une entrée de pile : le sort lui-même, ou la source de la capacité. */
+function stackEntryDefinition(
+  state: GameState,
+  e: StackItem,
+): string | undefined {
+  if ('card' in e) return e.card.definitionId;
+  const id = entrySource(e);
+  return (
+    state.units.find((u) => u.id === id)?.definitionId ??
+    state.gears?.find((g) => g.id === id)?.definitionId ??
+    state.cards.find((c) => c.id === id)?.definitionId ??
+    state.battlefields.find((f) => f.zoneId === id)?.definitionId
+  );
+}
+
+const ENTRY_KINDS: Record<string, string> = {
+  'mode-choice': 'Capacité (choix à la résolution)',
+  'play-effect': 'Capacité',
+  'unit-play': 'Capacité de mise en jeu',
+  'attack-damage': 'Capacité d’attaque',
+  attack: 'Capacité d’attaque',
+  movement: 'Capacité de déplacement',
+  'legend-draw': 'Capacité',
+  'legend-ready-runes': 'Redressement de runes',
+  'return-spell': 'Capacité de mise en jeu',
+  'hold-channel': 'Capacité de tenue',
+  'hold-unit': 'Capacité de tenue',
+  'defense-shield': 'Capacité de défense',
+  death: 'Effet de mort',
+};
+
+/** Libellé lisible d'une entrée : nom, nature, lanceur et cible principale. */
+function stackEntryLabel(
+  state: GameState,
+  e: StackItem,
+): { name: string; detail: string } {
+  const definitionId = stackEntryDefinition(state, e);
+  const name = definitionId ? cardName(definitionId) : 'Effet';
+  if ('card' in e) {
+    const target =
+      e.targetId && !state.players.some((p) => p.id === e.targetId)
+        ? (() => {
+            const u = state.units.find((u) => u.id === e.targetId);
+            const f = state.battlefields.findIndex(
+              (b) => b.zoneId === e.targetId,
+            );
+            const s = state.stack?.entries.find(
+              (x) => 'card' in x && x.card.id === e.targetId,
+            );
+            return u
+              ? cardName(u.definitionId)
+              : f >= 0
+                ? `Champ ${f + 1}`
+                : s && 'card' in s
+                  ? cardName(s.card.definitionId)
+                  : '';
+          })()
+        : '';
+    return {
+      name,
+      detail: `Sort · ${playerName(e.casterId)}${target ? ' → ' + target : ''}`,
+    };
+  }
+  const owner = 'ownerId' in e ? (e.ownerId as string) : undefined;
+  return {
+    name,
+    detail: `${ENTRY_KINDS[e.kind] ?? 'Capacité'}${owner ? ' · ' + playerName(owner) : ''}`,
+  };
+}
+
+/** Pile toujours visible : sommet en premier (c'est lui qui se résout d'abord). */
+export function stackPanel(state: GameState): string {
+  const entries = [...(state.stack?.entries ?? [])].reverse();
+  const items = entries
+    .map((e, i) => {
+      const definitionId = stackEntryDefinition(state, e);
+      const { name, detail } = stackEntryLabel(state, e);
+      return `<li class="stack-item${i === 0 ? ' top' : ''}">${definitionId ? art(definitionId, 'stack-art') : '<span class="stack-art placeholder">◇</span>'}<span><strong>${escape(name)}</strong><small>${escape(detail)}</small>${i === 0 ? '<em>Sommet · se résout en premier</em>' : ''}</span></li>`;
+    })
+    .join('');
+  return `<section class="stack-panel" aria-label="Pile"><header><h2>Pile</h2><span>${entries.length ? `${entries.length} élément${entries.length > 1 ? 's' : ''}${state.stack ? ' · priorité : ' + escape(playerName(state.stack.priorityPlayerId)) : ''}` : 'vide'}</span></header>${entries.length ? `<ol>${items}</ol>` : '<p class="empty">Aucune carte ni capacité en attente.</p>'}</section>`;
+}
+
+/** Fenêtre de réaction : s'ouvre à chaque nouvelle arrivée au sommet de la pile. */
+export function reactionPopup(session: Session): string {
+  const state = session.state;
+  const top = state.stack?.entries.at(-1);
+  if (!top || !state.stack) return '';
+  const definitionId = stackEntryDefinition(state, top);
+  const { name, detail } = stackEntryLabel(state, top);
+  const priority = state.stack.priorityPlayerId;
+  return `<div class="reaction-overlay" role="dialog" aria-modal="true" aria-labelledby="reaction-title"><section class="reaction-dialog"><div class="eyebrow">Nouvelle carte sur la pile</div><h3 id="reaction-title">${escape(name)}</h3>${definitionId ? art(definitionId, 'reaction-art') : ''}<p>${escape(detail)}</p><p class="help">Priorité : <strong>${escape(playerName(priority))}</strong> — réagir ou passer.</p><div class="choice-list"><button class="primary" data-action="reaction-pass">Passer (${escape(playerName(priority))})</button><button class="quiet" data-action="reaction-hide">Réagir : choisir une carte ou une capacité</button></div></section></div>`;
 }

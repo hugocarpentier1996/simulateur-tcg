@@ -1944,3 +1944,86 @@ button.pile.graveyard:hover .pile-face {
 .options-panel thead th {
   white-space: nowrap;
 }
+
+/* Pile toujours visible : sommet en premier. */
+.stack-panel {
+  margin: 8px 0;
+  padding: 8px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.25);
+}
+.stack-panel header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.stack-panel h2 {
+  margin: 0;
+  font-size: 1rem;
+}
+.stack-panel ol {
+  display: flex;
+  gap: 10px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+  overflow-x: auto;
+}
+.stack-item {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  min-width: 180px;
+  padding: 6px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+}
+.stack-item.top {
+  outline: 2px solid #e0b354;
+}
+.stack-item span {
+  display: flex;
+  flex-direction: column;
+}
+.stack-item small,
+.stack-item em {
+  font-size: 0.75rem;
+  opacity: 0.8;
+}
+.stack-art {
+  width: 48px;
+  border-radius: 4px;
+}
+.stack-art.placeholder {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  height: 66px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Fenêtre de réaction. */
+.reaction-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.55);
+}
+.reaction-dialog {
+  max-width: 360px;
+  padding: 18px 22px;
+  border-radius: 14px;
+  background: #1c2230;
+  text-align: center;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+}
+.reaction-art {
+  width: 200px;
+  border-radius: 10px;
+  margin: 8px auto;
+  display: block;
+}

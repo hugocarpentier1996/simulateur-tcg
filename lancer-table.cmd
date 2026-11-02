@@ -3,7 +3,7 @@ rem Lance la table de jeu (Docker Desktop requis) puis ouvrir http://127.0.0.1:5
 cd /d "%~dp0"
 docker info >/dev/null 2>&1 && goto pret
 echo Demarrage de Docker Desktop...
-start "" "C:\Program Files\Docker\Docker\Docker Desktop.exe"
+if exist "%LOCALAPPDATA%\Programs\DockerDesktop\Docker Desktop.exe" (start "" "%LOCALAPPDATA%\Programs\DockerDesktop\Docker Desktop.exe") else (start "" "C:\Program Files\Docker\Docker\Docker Desktop.exe")
 :attente
 timeout /t 3 >nul
 docker info >/dev/null 2>&1 || goto attente
