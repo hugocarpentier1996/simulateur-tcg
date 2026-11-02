@@ -66,6 +66,8 @@ export interface PlayEffectEntry {
     /** Redresse et/ou donne +Might ce tour à l'unité indiquée encore en jeu (déclencheurs
      * Jinx Chaos, Eclipse Herald, Pit Crew…). */
     | { type: 'unit-boost'; unitId: string; might: number; ready: boolean }
+    /** The Grand Plaza : victoire si le propriétaire a encore assez d'unités sur ce champ. */
+    | { type: 'hold-win'; battlefieldId: string; units: number }
     /** Redresse la carte indiquée (légende The Boss à la conquête). */
     | { type: 'ready-card'; cardId: string }
     /** Détruit le gear indiqué (capacité kill-self). */
@@ -601,6 +603,26 @@ export function resolvePlayEffect(
       ok: true,
       state: choice ? { ...state, pendingModeChoice: choice } : state,
       events: [{ type: 'unit-play-effect-resolved', sourceId: entry.sourceId }],
+    };
+  }
+  if (entry.effect.type === 'hold-win') {
+    const { battlefieldId, units } = entry.effect;
+    const done = {
+      type: 'unit-play-effect-resolved' as const,
+      sourceId: entry.sourceId,
+    };
+    if (
+      state.result ||
+      state.units.filter(
+        (u) => u.ownerId === entry.ownerId && u.zoneId === battlefieldId,
+      ).length < units
+    )
+      return { ok: true, state, events: [done] };
+    const result = { winnerId: entry.ownerId, reason: 'GRAND_PLAZA' as const };
+    return {
+      ok: true,
+      state: { ...state, result },
+      events: [done, { type: 'game-ended', ...result }],
     };
   }
   if (entry.effect.type === 'ready-card') {

@@ -53,17 +53,34 @@ export function scoreHolding(
   for (const field of fields) {
     if (current.result) break;
     const needed = battlefieldDefinition(current, field.zoneId)?.holdWinUnits;
+    // The Grand Plaza : capacité de tenue sur la pile, condition revérifiée à la résolution.
     if (
       needed !== undefined &&
       current.units.filter(
         (u) => u.ownerId === playerId && u.zoneId === field.zoneId,
       ).length >= needed
-    ) {
-      const result = { winnerId: playerId, reason: 'GRAND_PLAZA' as const };
-      current = { ...current, result };
-      events.push({ type: 'game-ended', ...result });
-      break;
-    }
+    )
+      current = {
+        ...current,
+        stack: {
+          entries: [
+            ...(current.stack?.entries ?? []),
+            {
+              kind: 'play-effect',
+              sourceId: field.zoneId,
+              ownerId: playerId,
+              effect: {
+                type: 'hold-win',
+                battlefieldId: field.zoneId,
+                units: needed,
+              },
+            },
+          ],
+          initiatorId: current.stack?.initiatorId ?? playerId,
+          priorityPlayerId: current.activePlayerId,
+          consecutivePasses: 0,
+        },
+      };
     const result = scoreBattlefield(current, playerId, field.zoneId, 'HOLD');
     current = queueHoldChannel(result.state, playerId, field.zoneId);
     current = queueHoldDraw(current, playerId, field.zoneId);

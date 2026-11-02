@@ -1,5 +1,5 @@
 import { expect, it } from 'vitest';
-import { spellScenario } from './origins-test-fixtures.js';
+import { spellScenario, drain } from './origins-test-fixtures.js';
 import { startTurn } from './turn/progression.js';
 import { theGrandPlaza, gust } from '../../game-data/src/index.js';
 
@@ -11,10 +11,18 @@ function scenario(count: number) {
   return s;
 }
 
-it('The Grand Plaza : tenir ici avec 7 unités ou plus gagne la partie', () => {
-  expect(startTurn(scenario(6)).state.result ?? null).toBeNull();
-  expect(startTurn(scenario(7)).state.result).toEqual({
+it('The Grand Plaza : tenir ici avec 7 unités ou plus gagne la partie (capacité sur la pile)', () => {
+  expect(drain(startTurn(scenario(6)).state).result ?? null).toBeNull();
+  const held = startTurn(scenario(7)).state;
+  expect(held.result ?? null).toBeNull();
+  expect(drain(held).result).toEqual({
     winnerId: 'a',
     reason: 'GRAND_PLAZA',
   });
+});
+
+it('The Grand Plaza : condition revérifiée à la résolution (une unité retirée en réaction)', () => {
+  const held = startTurn(scenario(7)).state;
+  const reacted = { ...held, units: held.units.filter((u) => u.id !== 'u1') };
+  expect(drain(reacted).result ?? null).toBeNull();
 });
