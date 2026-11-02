@@ -556,6 +556,8 @@ export function targetOptions(
   destinationId?: string,
 ): { actions: GameAction[]; next: string[]; complete: GameAction[] } {
   const state = session.state;
+  const free = freeInstances(session, cardId, picks);
+  if (free) return free;
   const actions = cardActions(session, cardId).filter(
     (action) =>
       action.type !== 'hide-card' &&
@@ -576,6 +578,37 @@ export function targetOptions(
     (action) => targetPlan(state, action).ids.length === picks.length,
   );
   return { actions, next: [...new Set(next)], complete };
+}
+
+/** Sort à nombreuses instructions (Icathian Rain) : le moteur ne propose qu'un représentant
+ * par unité ; ici toute répartition est construite librement (répétitions permises), act
+ * reste seul juge à la validation. undefined pour les autres cartes. */
+function freeInstances(
+  session: Session,
+  cardId: string,
+  picks: readonly string[],
+):
+  | { actions: GameAction[]; next: string[]; complete: GameAction[] }
+  | undefined {
+  const state = session.state;
+  const card = state.cards.find((c) => c.id === cardId);
+  const count = state.spellDefinitions
+    ?.find((d) => d.id === card?.definitionId)
+    ?.effects.flatMap((e) =>
+      e.type === 'damage-instances' ? [e.count] : [],
+    )[0];
+  if (!count || count <= 3) return undefined;
+  const template = cardActions(session, cardId).find(
+    (a) => a.type === 'cast-spell' && a.selectedUnitIds,
+  );
+  if (!template || template.type !== 'cast-spell') return undefined;
+  const candidate = { ...template, selectedUnitIds: [...picks] };
+  return {
+    actions: picks.length <= count ? [template] : [],
+    next: picks.length < count ? state.units.map((u) => u.id) : [],
+    complete:
+      picks.length === count && act(state, candidate).ok ? [candidate] : [],
+  };
 }
 
 /** Bouton « Lancer » -> mode ciblage, sans rien payer. Une carte sans aucune cible à cliquer

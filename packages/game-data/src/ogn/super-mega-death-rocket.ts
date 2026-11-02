@@ -6,7 +6,7 @@ export const superMegaDeathRocket = defineSpell({
   name: 'Super Mega Death Rocket!',
   type: 'spell',
   timing: 'normal',
-  cost: { energy: 4, power: { rouge: 1 } },
+  cost: { energy: 4, power: {}, powerChoice: ['rouge', 'violet'] },
   target: { kind: 'unit', combatRole: 'any' },
   effects: [{ type: 'damage', amount: 5 }],
   returnOnConquerDiscard: true,

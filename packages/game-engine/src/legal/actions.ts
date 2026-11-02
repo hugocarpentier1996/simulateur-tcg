@@ -558,11 +558,23 @@ function* candidates(
               }
             }
           } else if (instances) {
-            for (const selectedUnitIds of multisets(
-              state.units.map((u) => u.id),
-              instances.count,
-            ))
-              yield { ...base, selectedUnitIds };
+            // Au-delà de 3 instructions, l'énumération explose : un représentant par unité
+            // (toutes les instructions sur elle) ; toute autre répartition reste valide pour act.
+            if (instances.count > 3)
+              for (const u of state.units)
+                yield {
+                  ...base,
+                  selectedUnitIds: Array.from(
+                    { length: instances.count },
+                    () => u.id,
+                  ),
+                };
+            else
+              for (const selectedUnitIds of multisets(
+                state.units.map((u) => u.id),
+                instances.count,
+              ))
+                yield { ...base, selectedUnitIds };
           } else if (
             spell.effects.some((e) => e.type === 'duel' || e.type === 'strike')
           )

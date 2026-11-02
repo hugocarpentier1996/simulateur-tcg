@@ -5,30 +5,49 @@ import {
   resolveTop,
   noRunes,
 } from './origins-test-fixtures.js';
+import { act, getLegalActions } from './index.js';
 import { icathianRain } from '../../game-data/src/index.js';
 
-it('Icathian Rain : six fois 2 dégâts, chaque cible choisie à la résolution', () => {
+const cast = (selectedUnitIds: string[]) => ({
+  type: 'cast-spell' as const,
+  playerId: 'a',
+  cardId: 'spell',
+  targetId: 'a',
+  selectedUnitIds,
+  payment: noRunes,
+});
+
+function scenario(power: Record<string, number>) {
   const s0 = spellScenario(icathianRain);
   s0.units = s0.units.map((u) => ({ ...u, might: 20 }));
-  s0.resources.a = { energy: 7, power: { rouge: 2, bleu: 1 } };
-  let s = resolveTop(
-    step(s0, {
-      type: 'cast-spell',
-      playerId: 'a',
-      cardId: 'spell',
-      targetId: 'a',
-      payment: noRunes,
-    }),
+  s0.resources.a = { energy: 7, power };
+  return s0;
+}
+
+it('Icathian Rain : six fois 2 dégâts, les six cibles choisies au lancement (répétitions permises)', () => {
+  const s = resolveTop(
+    step(
+      scenario({ rouge: 2, bleu: 1 }),
+      cast(['enemy', 'enemy', 'enemy', 'enemy', 'ally', 'ally']),
+    ),
   );
-  for (let i = 0; i < 6; i++) {
-    expect(s.pendingModeChoice?.modes).toEqual(['hit:ally', 'hit:enemy']);
-    s = step(s, {
-      type: 'choose-mode',
-      playerId: 'a',
-      mode: i < 4 ? 'hit:enemy' : 'hit:ally',
-    });
-  }
   expect(s.pendingModeChoice ?? null).toBeNull();
   expect(s.units.find((u) => u.id === 'enemy')?.damage).toBe(8);
   expect(s.units.find((u) => u.id === 'ally')?.damage).toBe(4);
+});
+
+it('Icathian Rain : 3 Power répartis au choix entre Fury et Mind ; il faut exactement six cibles', () => {
+  for (const power of [{ rouge: 3 }, { bleu: 3 }, { rouge: 1, bleu: 2 }])
+    expect(act(scenario(power), cast(Array(6).fill('enemy'))).ok).toBe(true);
+  expect(act(scenario({ orange: 3 }), cast(Array(6).fill('enemy'))).ok).toBe(
+    false,
+  );
+  expect(act(scenario({ rouge: 3 }), cast(Array(5).fill('enemy'))).ok).toBe(
+    false,
+  );
+  expect(
+    getLegalActions(scenario({ rouge: 3 }), 'a').filter(
+      (a) => a.type === 'cast-spell',
+    ),
+  ).toHaveLength(2);
 });

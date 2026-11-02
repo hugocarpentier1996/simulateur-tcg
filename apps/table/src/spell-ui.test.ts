@@ -8,6 +8,7 @@ import {
   recruitToken,
   windWall,
   hextechRay,
+  icathianRain,
 } from '../../../packages/game-data/src/index.js';
 import {
   cardActions,
@@ -16,6 +17,7 @@ import {
   tableActions,
   dispatch,
   startTargeting,
+  targetOptions,
   type Session,
 } from './session.js';
 import { renderTable } from './view.js';
@@ -176,4 +178,20 @@ it('Wind Wall : « Lancer » contre directement l’unique sort de la pile', () 
   const cast = startTargeting(s, { cardId: 'spell' });
   expect(cast.selection).toBeNull();
   expect(cast.session.error).toBeNull();
+});
+
+it('Icathian Rain : la table construit librement les six cibles, répétitions comprises', () => {
+  const state = spellScenario(icathianRain);
+  state.units = state.units.map((u) => ({ ...u, might: 20 }));
+  state.resources.a = { energy: 7, power: { bleu: 3 } };
+  const session: Session = { state, log: [], error: null, history: [] };
+  const picks = ['enemy', 'enemy', 'ally', 'enemy', 'enemy', 'ally'];
+  for (let i = 0; i < picks.length; i++)
+    expect(targetOptions(session, 'spell', picks.slice(0, i)).next).toEqual([
+      'ally',
+      'enemy',
+    ]);
+  const done = targetOptions(session, 'spell', picks);
+  expect(done.next).toEqual([]);
+  expect(done.complete).toHaveLength(1);
 });

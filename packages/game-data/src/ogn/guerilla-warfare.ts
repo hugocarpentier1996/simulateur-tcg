@@ -6,7 +6,7 @@ export const guerillaWarfare = defineSpell({
   name: 'Guerilla Warfare',
   type: 'spell',
   timing: 'normal',
-  cost: { energy: 2, power: { bleu: 1 } },
+  cost: { energy: 2, power: {}, powerChoice: ['bleu', 'violet'] },
   target: { kind: 'caster' },
   effects: [{ type: 'return-hidden-free-hide', maximum: 2 }],
   text: 'Return up to two cards with [Hidden] from your trash to your hand. You can hide cards ignoring costs this turn.',
