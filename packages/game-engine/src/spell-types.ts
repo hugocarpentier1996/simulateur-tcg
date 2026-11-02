@@ -149,7 +149,8 @@ export interface SpellBlueprint {
     | { readonly type: 'stun-with-enemy-here' }
     /** Shield temporaire (+shield en défense) et Tank jusqu'à la fin du tour (Block). */
     | { readonly type: 'grant-shield-tank'; readonly shield: number }
-    /** Défausse discardCardId (choisie au lancement) puis inflige à la cible son coût en énergie. */
+    /** À la résolution, le lanceur choisit une carte de sa main à défausser, puis la cible
+     * subit son coût en énergie (Get Excited!). */
     | { readonly type: 'discard-for-damage' }
     /** Regarde les `count` cartes du dessus de son deck, en garde 1 en main, recycle le reste. */
     | { readonly type: 'look-pick'; readonly count: number }
@@ -277,8 +278,6 @@ export interface SpellEntry {
   selectedUnitIds?: readonly string[];
   /** Après résolution, la carte est recyclée sous le deck (Kai'Sa Mind). */
   recycleOnResolve?: boolean;
-  /** Carte de la main à défausser à la résolution (discard-for-damage). */
-  discardCardId?: string;
   /** Adversaire du duel choisi au lancement ; requis pour l'effet duel. */
   secondaryTargetId?: string;
   destinationId?: string;

@@ -781,8 +781,6 @@ export type GameAction =
       destinationId?: string;
       /** Coût X (sort variablePower) : Power quelconque supplémentaire, entier >= 0. */
       xPower?: number;
-      /** Carte de la main à défausser (discard-for-damage), choisie au lancement. */
-      discardCardId?: string;
       /** Unité alliée dont le buff est dépensé pour ignorer le coût (spendBuffForFreeCast). */
       spendBuffUnitId?: string;
       payment: PaymentPlan;

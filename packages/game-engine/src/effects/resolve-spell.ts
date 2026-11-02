@@ -625,46 +625,26 @@ export function resolveSpell(
       state = left.state;
       events.push(...left.events);
     } else if (effect.type === 'discard-for-damage') {
-      const discarded = state.cards.find(
-        (c) =>
-          c.id === entry.discardCardId &&
-          state.zones.some(
-            (z) =>
-              z.id === c.zoneId &&
-              z.kind === 'hand' &&
-              z.ownerId === entry.casterId,
-          ),
-      );
-      const grave = state.zones.find(
-        (z) => z.kind === 'graveyard' && z.ownerId === entry.casterId,
-      );
-      if (!discarded || !grave) continue;
-      state = {
-        ...state,
-        cards: state.cards.map((c) =>
-          c.id === discarded.id ? { ...c, zoneId: grave.id } : c,
+      // Carte choisie par le lanceur à la résolution ; main vide : rien.
+      const hand = state.cards.filter((c) =>
+        state.zones.some(
+          (z) =>
+            z.id === c.zoneId &&
+            z.kind === 'hand' &&
+            z.ownerId === entry.casterId,
         ),
-      };
-      events.push({
-        type: 'card-discarded',
-        playerId: entry.casterId,
-        cardId: discarded.id,
-      });
-      const energy =
-        [
-          ...(state.unitDefinitions ?? []),
-          ...(state.spellDefinitions ?? []),
-          ...(state.gearDefinitions ?? []),
-        ].find((d) => d.id === discarded.definitionId)?.cost.energy ?? 0;
-      const damaged = dealSpellDamage(
-        state,
-        entry.card.id,
-        entry.casterId,
-        [target],
-        energy,
       );
-      state = damaged.state;
-      events.push(...damaged.events);
+      if (hand.length)
+        state = {
+          ...state,
+          pendingModeChoice: {
+            kind: 'mode-choice',
+            sourceId: entry.card.id,
+            ownerId: entry.casterId,
+            modes: hand.map((c) => `discard-dmg:${c.id}` as const),
+            discardDamageTarget: target.id,
+          },
+        };
     } else if (effect.type === 'kill-unit') {
       const killed = settleLethalUnits(state, new Set([target.id]));
       state = killed.state;

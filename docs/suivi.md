@@ -1293,3 +1293,4 @@ Demande utilisateur : implémenter les cartes restantes de `ListeCartes/OGN - Or
 - Réponse 6 : Divine Judgment confirmé ; test ajouté : un gear attaché resté en jeu compte parmi les 2 gears gardés.
 - Réponse 10 : Dr. Mundo (capacité de début de Beginning sur la pile) et Garbage Grabber (coût payé avant d'empiler la pioche) font choisir au joueur, une à une, les cartes de son propre cimetière à recycler (modes `recycle-any:`, sans « skip »).
 - Réponses 11 (et 7 pour ces cartes) : Navori Fighting Pit, Radiant Dawn, Vanguard Helm et Karma empilent leur capacité ; à la résolution le joueur choisit l'unité alliée buffée (modes `buff:<id>`, appliqué d'office s'il n'y a qu'une candidate). Karma : une capacité par Karma et par action de recyclage.
+- Réponse 3 : Get Excited! choisit sa cible au lancement, mais la carte à défausser est choisie à la résolution parmi la main du moment (modes `discard-dmg:<id>`) ; main vide : aucun dégât.

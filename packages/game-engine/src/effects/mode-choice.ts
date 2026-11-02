@@ -57,7 +57,8 @@ export type EffectMode =
   | `kaisa:${string}`
   | `keep:${string}`
   | `future:${string}`
-  | `buff:${string}`;
+  | `buff:${string}`
+  | `discard-dmg:${string}`;
 
 const ONE_ENERGY = { energy: 1, power: {} };
 
@@ -119,6 +120,8 @@ export interface ModeChoiceEntry {
   retreatFrom?: string;
   /** Recyclages restant à choisir dans les cimetières (Forge of the Future). */
   recycleLeft?: number;
+  /** Get Excited! : unité qui subira le coût en énergie de la carte défaussée. */
+  discardDamageTarget?: string;
   /** Unité exclue d'un choix (Vanguard Helm : l'alliée morte). */
   excludeId?: string;
   /** Buff d'une unité alliée choisie à la résolution ; buffHere limite au champ indiqué
@@ -724,6 +727,48 @@ function applyMode(
         ),
       },
       events: [],
+    };
+  }
+  if (mode.startsWith('discard-dmg:')) {
+    const card = state.cards.find(
+      (c) => c.id === mode.slice('discard-dmg:'.length),
+    );
+    const grave = state.zones.find(
+      (z) => z.kind === 'graveyard' && z.ownerId === pending.ownerId,
+    );
+    if (!card || !grave) return { state, events: [] };
+    const discarded: GameState = {
+      ...state,
+      cards: state.cards.map((c) =>
+        c.id === card.id ? { ...c, zoneId: grave.id } : c,
+      ),
+    };
+    const energy =
+      [
+        ...(state.unitDefinitions ?? []),
+        ...(state.spellDefinitions ?? []),
+        ...(state.gearDefinitions ?? []),
+      ].find((d) => d.id === card.definitionId)?.cost.energy ?? 0;
+    const target = discarded.units.find(
+      (u) => u.id === pending.discardDamageTarget,
+    );
+    const discardEvent = {
+      type: 'card-discarded' as const,
+      playerId: pending.ownerId,
+      cardId: card.id,
+    };
+    if (!target) return { state: discarded, events: [discardEvent] };
+    const damaged = dealSpellDamage(
+      discarded,
+      pending.sourceId,
+      pending.ownerId,
+      [target],
+      energy,
+    );
+    const settled = settleLethalUnits(damaged.state);
+    return {
+      state: settled.state,
+      events: [discardEvent, ...damaged.events, ...settled.events],
     };
   }
   if (mode.startsWith('buff:'))

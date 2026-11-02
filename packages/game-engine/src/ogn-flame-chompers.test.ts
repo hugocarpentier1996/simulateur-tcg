@@ -18,16 +18,20 @@ function cast(rouge: number) {
     zoneId: 'hand-a',
   });
   s.resources.a = { energy: 2, power: { rouge: 1 + rouge } };
-  return resolveTop(
+  const resolved = resolveTop(
     step(s, {
       type: 'cast-spell',
       playerId: 'a',
       cardId: 'spell',
       targetId: 'enemy',
-      discardCardId: 'chomp',
       payment: noRunes,
     }),
   );
+  return step(resolved, {
+    type: 'choose-mode',
+    playerId: 'a',
+    mode: 'discard-dmg:chomp',
+  });
 }
 
 it('Flame Chompers : défaussée, peut être jouée pour 1 Power Fury', () => {

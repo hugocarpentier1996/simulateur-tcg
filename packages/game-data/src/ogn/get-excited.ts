@@ -1,5 +1,5 @@
 import { defineSpell } from '../spell-definition.js';
-/** OGN-008 : Action ; défausse 1 carte (choisie au lancement, hypothèse) et inflige son coût
+/** OGN-008 : Action ; défausse 1 carte (choisie à la résolution) et inflige son coût
  * en énergie à une unité sur un champ. */
 export const getExcited = defineSpell({
   id: 'ogn-008-298',
