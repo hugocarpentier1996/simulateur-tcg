@@ -1,5 +1,6 @@
 import type { GameAction, GameEvent, GameState } from '../types.js';
 import type { ModeChoiceEntry } from './mode-choice.js';
+import type { SpellEntry } from '../spell-types.js';
 import { castSpell } from '../actions/cast-spell.js';
 import { spellCastVariants } from '../legal/actions.js';
 import { findPayment } from '../legal/payment.js';
@@ -86,6 +87,64 @@ export function castFreeOption(
         entries: next.stack.entries.map((e) =>
           'card' in e && e.card.id === option.cardId
             ? { ...e, recycleOnResolve: true }
+            : e,
+        ),
+      },
+    },
+    events: cast.events,
+  };
+}
+
+/** Mystic Reversal : nouveaux choix complets (toutes les cibles, sélections, destination…)
+ * pour le sort volé, au nom du voleur ; taxe Deflect due. Les choix identiques aux choix
+ * actuels sont exclus (« skip » les garde). */
+export function rechooseOptions(
+  state: GameState,
+  stolen: SpellEntry,
+  casterId: string,
+): CastAction[] {
+  const view: GameState = { ...state, cards: [...state.cards, stolen.card] };
+  const same = (o: CastAction) =>
+    o.targetId === stolen.targetId &&
+    (o.secondaryTargetId ?? null) === (stolen.secondaryTargetId ?? null) &&
+    (o.destinationId ?? null) === (stolen.destinationId ?? null) &&
+    (o.selectedUnitIds ?? []).join() ===
+      (stolen.selectedUnitIds ?? []).join() &&
+    (o.tokenDestinations ?? []).join() ===
+      (stolen.tokenDestinations ?? []).join();
+  return freeCastOptions(view, stolen.card.id, casterId).filter(
+    (o) => !same(o),
+  );
+}
+
+/** Nouveaux choix appliqués au sort volé : taxe payée, l'entrée garde sa place sur la pile. */
+export function applyRechoice(
+  state: GameState,
+  stolenCardId: string,
+  option: CastAction,
+): { state: GameState; events: GameEvent[] } {
+  const stack = state.stack;
+  const old = stack?.entries.find(
+    (e) => 'card' in e && e.card.id === stolenCardId,
+  ) as SpellEntry | undefined;
+  if (!stack || !old) return { state, events: [] };
+  const view: GameState = { ...state, cards: [...state.cards, old.card] };
+  const cast = castFreeOption(view, option);
+  const entries = cast.state.stack?.entries ?? [];
+  const fresh = entries.at(-1) as SpellEntry | undefined;
+  if (!fresh || !('card' in fresh) || fresh.card.id !== stolenCardId)
+    return { state, events: [] };
+  return {
+    state: {
+      ...cast.state,
+      stack: {
+        ...cast.state.stack!,
+        entries: entries.slice(0, -1).map((e) =>
+          e === old || ('card' in e && e.card.id === stolenCardId)
+            ? {
+                ...fresh,
+                ...(old.recycleOnResolve ? { recycleOnResolve: true } : {}),
+              }
             : e,
         ),
       },

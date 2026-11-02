@@ -1,6 +1,4 @@
-import { withDeflect } from '../cost/deflect.js';
-import { findPayment } from '../legal/payment.js';
-import { freeCastEntry } from './free-cast.js';
+import { freeCastEntry, rechooseOptions } from './free-cast.js';
 import { futureStep } from './promising-future.js';
 import { hiddenInTrash } from './hidden.js';
 import { playUnitFromTrash } from './play-from-trash.js';
@@ -496,40 +494,26 @@ export function resolveSpell(
           ),
         },
       };
-      // « You may make new choices » : nouvelle cible principale au choix du voleur.
-      const kind = stolen.definition.target.kind;
-      const options =
-        kind === 'unit'
-          ? state.units
-              .filter((u) =>
-                spellTarget(state, stolen.definition, u.id, entry.casterId),
-              )
-              .map((u) => u.id)
-          : kind === 'battlefield'
-            ? state.battlefields
-                .map((f) => f.zoneId)
-                .filter((id) => validBattlefieldTarget(state, id))
-            : [];
-      // Nouvelle cible Deflect : la taxe est due par le voleur ; seules les cibles payables
-      // sont proposées.
-      const others = options.filter(
-        (id) =>
-          id !== stolen.targetId &&
-          findPayment(
-            state,
-            entry.casterId,
-            withDeflect(state, entry.casterId, { energy: 0, power: {} }, [id]),
-          ),
+      // « You may make new choices » : tous les choix du sort volé peuvent être refaits par
+      // le voleur (taxe Deflect due) ; « skip » garde les choix actuels.
+      const retargets = rechooseOptions(
+        state,
+        { ...stolen, casterId: entry.casterId },
+        entry.casterId,
       );
-      if (others.length)
+      if (retargets.length)
         state = {
           ...state,
           pendingModeChoice: {
             kind: 'mode-choice',
             sourceId: entry.card.id,
             ownerId: entry.casterId,
-            modes: ['skip', ...others.map((id) => `retarget:${id}` as const)],
+            modes: [
+              'skip',
+              ...retargets.map((_, i) => `cast-option:${i}` as const),
+            ],
             retargetSpellId: stolen.card.id,
+            castOptions: retargets,
           },
         };
       continue;

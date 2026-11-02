@@ -1,6 +1,10 @@
-import { withDeflect } from '../cost/deflect.js';
 import { resolveCombat } from '../combat/resolve.js';
-import { castFreeOption, freeCastEntry, freeCastOptions } from './free-cast.js';
+import {
+  applyRechoice,
+  castFreeOption,
+  freeCastEntry,
+  freeCastOptions,
+} from './free-cast.js';
 import { effectPlayTargets, playCardOptions } from './effect-play.js';
 import { resolveReturnSpell } from './return-spell.js';
 import { resolvePlayEffect } from './play-effect.js';
@@ -69,7 +73,6 @@ export type EffectMode =
   | 'accept'
   | `ready-rune:${string}`
   | `play-target:${string}`
-  | `retarget:${string}`
   | `cast-option:${number}`
   | `play-card:${number}`
   | `overt:${string}`;
@@ -1019,33 +1022,11 @@ function applyMode(
     if (!option) return { state, events: [] };
     return castFreeOption(state, option, pending.freeCast.recycleOnResolve);
   }
-  if (mode.startsWith('retarget:') && pending.retargetSpellId && state.stack) {
-    const targetId = mode.slice('retarget:'.length);
-    // Taxe Deflect de la nouvelle cible payée par le voleur.
-    const tax = withDeflect(state, pending.ownerId, { energy: 0, power: {} }, [
-      targetId,
-    ]);
-    let taxed = state;
-    if (tax.genericPower) {
-      const plan = findPayment(state, pending.ownerId, tax);
-      const paid = plan && payCost(state, pending.ownerId, tax, plan);
-      if (!paid || !paid.ok || !paid.state.stack) return { state, events: [] };
-      taxed = paid.state;
-    }
-    return {
-      state: {
-        ...taxed,
-        stack: {
-          ...taxed.stack!,
-          entries: taxed.stack!.entries.map((e) =>
-            'card' in e && e.card.id === pending.retargetSpellId
-              ? { ...e, targetId }
-              : e,
-          ),
-        },
-      },
-      events: [],
-    };
+  if (mode.startsWith('cast-option:') && pending.retargetSpellId) {
+    const option =
+      pending.castOptions?.[Number(mode.slice('cast-option:'.length))];
+    if (!option) return { state, events: [] };
+    return applyRechoice(state, pending.retargetSpellId, option);
   }
   if (mode.startsWith('play-target:') && pending.playTargetFor) {
     const found = effectPlayTargets(

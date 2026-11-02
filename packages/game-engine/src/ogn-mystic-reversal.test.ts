@@ -1,4 +1,5 @@
 import { expect, it } from 'vitest';
+import type { GameState } from './types.js';
 import {
   spellScenario,
   step,
@@ -9,6 +10,7 @@ import {
   mysticReversal,
   hextechRay,
   poutyPoro,
+  fallingStar,
 } from '../../game-data/src/index.js';
 
 function scenario() {
@@ -37,6 +39,11 @@ function scenario() {
   return s;
 }
 
+const targets = (s: GameState) =>
+  (s.pendingModeChoice?.castOptions ?? []).map((o) => o.targetId);
+const pick = (s: GameState, id: string) =>
+  `cast-option:${targets(s).indexOf(id)}` as const;
+
 it('Mystic Reversal : prend le contrôle d’un sort de la pile, qui peut garder ses cibles', () => {
   const s = scenario();
   let after = resolveTop(
@@ -49,7 +56,7 @@ it('Mystic Reversal : prend le contrôle d’un sort de la pile, qui peut garder
     }),
   );
   expect(after.stack?.entries[0]).toMatchObject({ casterId: 'a' });
-  expect(after.pendingModeChoice?.modes).toEqual(['skip', 'retarget:ally']);
+  expect(targets(after)).toEqual(['ally']);
   after = resolveTop(
     step(after, { type: 'choose-mode', playerId: 'a', mode: 'skip' }),
   );
@@ -69,15 +76,11 @@ it('Mystic Reversal : « you may make new choices » — nouvelle cible valide a
       payment: noRunes,
     }),
   );
-  expect(after.pendingModeChoice?.modes).toEqual([
-    'skip',
-    'retarget:ally',
-    'retarget:enemy2',
-  ]);
+  expect(targets(after)).toEqual(['ally', 'enemy2']);
   after = step(after, {
     type: 'choose-mode',
     playerId: 'a',
-    mode: 'retarget:enemy2',
+    mode: pick(after, 'enemy2'),
   });
   after = resolveTop(after);
   expect(after.units.some((u) => u.id === 'enemy2')).toBe(false);
@@ -99,13 +102,56 @@ it('Mystic Reversal : une nouvelle cible Deflect impose sa taxe au voleur (propo
     payment: noRunes,
   };
   const poor = resolveTop(step(base(), cast));
-  expect(poor.pendingModeChoice?.modes).not.toContain('retarget:poro');
+  expect(targets(poor)).not.toContain('poro');
   const rich = base();
   rich.resources.a = { energy: 4, power: { vert: 4 } };
   let s = resolveTop(step(rich, cast));
-  expect(s.pendingModeChoice?.modes).toContain('retarget:poro');
-  s = step(s, { type: 'choose-mode', playerId: 'a', mode: 'retarget:poro' });
+  expect(targets(s)).toContain('poro');
+  s = step(s, { type: 'choose-mode', playerId: 'a', mode: pick(s, 'poro') });
   expect(s.resources.a?.power.vert).toBe(0);
   s = resolveTop(s);
   expect(s.units.some((u) => u.id === 'poro')).toBe(false);
+});
+
+it('Mystic Reversal : tous les choix du sort volé peuvent être refaits (sélection de Falling Star)', () => {
+  const s = scenario();
+  s.spellDefinitions = [mysticReversal, fallingStar];
+  s.units = s.units.map((u) => ({ ...u, might: 9 }));
+  s.stack!.entries = [
+    {
+      card: {
+        id: 'star',
+        definitionId: fallingStar.id,
+        ownerId: 'b',
+        zoneId: 'hand-b',
+      },
+      definition: fallingStar,
+      casterId: 'b',
+      targetId: 'b',
+      selectedUnitIds: ['ally', 'ally'],
+    },
+  ];
+  let after = resolveTop(
+    step(s, {
+      type: 'cast-spell',
+      playerId: 'a',
+      cardId: 'spell',
+      targetId: 'star',
+      payment: noRunes,
+    }),
+  );
+  const options = after.pendingModeChoice?.castOptions ?? [];
+  const index = options.findIndex(
+    (o) => o.selectedUnitIds?.join() === 'enemy,enemy',
+  );
+  expect(index).toBeGreaterThanOrEqual(0);
+  after = step(after, {
+    type: 'choose-mode',
+    playerId: 'a',
+    mode: `cast-option:${index}`,
+  });
+  expect(after.stack?.entries).toHaveLength(1);
+  after = resolveTop(after);
+  expect(after.units.find((u) => u.id === 'enemy')?.damage).toBe(6);
+  expect(after.units.find((u) => u.id === 'ally')?.damage).toBe(0);
 });
