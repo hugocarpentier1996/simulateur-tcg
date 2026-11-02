@@ -421,6 +421,8 @@ function actionLabel(
         );
       if (action.exhaustUnitId)
         parts.push('Épuiser ' + target(action.exhaustUnitId));
+      if (action.refuseDeflect)
+        parts.push('sans payer Deflect (effet annulé sur cette cible)');
       return 'Lancer' + (parts.length ? ' · ' + parts.join(' · ') : ' le sort');
     }
     case 'play-unit':

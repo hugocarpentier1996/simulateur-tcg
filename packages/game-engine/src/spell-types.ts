@@ -276,6 +276,8 @@ export interface SpellEntry {
   targetId: string;
   /** Flash : sélection de 0 à 2 unités alliées, copiée au lancement. */
   selectedUnitIds?: readonly string[];
+  /** Unités Deflect dont la taxe a été refusée : les effets qui les visent fizzle. */
+  fizzledIds?: readonly string[];
   /** Après résolution, la carte est recyclée sous le deck (Kai'Sa Mind). */
   recycleOnResolve?: boolean;
   /** Adversaire du duel choisi au lancement ; requis pour l'effet duel. */

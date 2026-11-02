@@ -24,6 +24,19 @@ export function withDeflect(
   }, 0);
   return tax ? { ...cost, genericPower: (cost.genericPower ?? 0) + tax } : cost;
 }
+/** Unités choisies soumises à la taxe Deflect (ennemies avec Deflect). */
+export function deflectedUnits(
+  state: GameState,
+  playerId: string,
+  ids: readonly string[],
+): string[] {
+  return [...new Set(ids)].filter((id) => {
+    const unit = state.units.find((u) => u.id === id);
+    return (
+      !!unit && unit.ownerId !== playerId && hasKeyword(unit, state, 'deflect')
+    );
+  });
+}
 /** Extrait seulement les unités réellement choisies par le texte du sort, jamais son champ cible. */
 export function spellChosenUnits(
   definition: SpellBlueprint,

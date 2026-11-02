@@ -22,7 +22,11 @@ import {
 } from '../effects/target.js';
 import { defenseShieldActions } from '../effects/defense-shield.js';
 import { attackTargetActions } from '../effects/attack-targets.js';
-import { withDeflect, spellChosenUnits } from '../cost/deflect.js';
+import {
+  deflectedUnits,
+  withDeflect,
+  spellChosenUnits,
+} from '../cost/deflect.js';
 import { spellCost, castCost } from '../cost/spell-cost.js';
 import { playTargetChoices } from '../effects/play-targets.js';
 import { endTurnChoices } from '../effects/end-runes.js';
@@ -51,6 +55,7 @@ export function getLegalActions(
   if (state.result || !state.players.some((p) => p.id === playerId)) return [];
   return [...candidates(state, playerId)]
     .flatMap((action) => optionalCosts(state, action))
+    .flatMap((action) => deflectRefusals(state, action))
     .flatMap((action) => targetPayment(state, action))
     .filter((action) => act(state, action).ok);
 }
@@ -656,6 +661,25 @@ function* tokenPlacements(
 }
 
 /** Coût facultatif : une variante par allié Ready, puis validation atomique par act. */
+/** Préférence allowDeflectRefusal : variante de sort qui refuse la taxe Deflect (l'effet sur
+ * ces unités fizzle), proposée en plus de la variante payante. */
+function deflectRefusals(state: GameState, action: GameAction): GameAction[] {
+  if (
+    action.type !== 'cast-spell' ||
+    !state.preferences?.[action.playerId]?.allowDeflectRefusal
+  )
+    return [action];
+  const definition = state.spellDefinitions?.find(
+    (d) =>
+      d.id === state.cards.find((c) => c.id === action.cardId)?.definitionId,
+  );
+  return definition &&
+    deflectedUnits(state, action.playerId, spellChosenUnits(definition, action))
+      .length
+    ? [action, { ...action, refuseDeflect: true }]
+    : [action];
+}
+
 function optionalCosts(state: GameState, action: GameAction): GameAction[] {
   if (action.type === 'play-unit') {
     const card = state.cards.find((c) => c.id === action.cardId);
@@ -739,7 +763,11 @@ function targetPayment(state: GameState, action: GameAction): GameAction[] {
               ),
             ),
           ),
-          spellChosenUnits(definition, action),
+          spellChosenUnits(definition, action).filter(
+            (id) =>
+              !action.refuseDeflect ||
+              !deflectedUnits(state, action.playerId, [id]).length,
+          ),
         )
       : withDeflect(
           state,

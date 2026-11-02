@@ -789,6 +789,9 @@ export type GameAction =
   | { type: 'mulligan'; playerId: string; cardIds: readonly string[] }
   | {
       type: 'cast-spell';
+      /** Deflect non payé (préférence allowDeflectRefusal) : l'effet visant ces unités
+       * Deflect fizzle, les autres effets s'appliquent. */
+      refuseDeflect?: boolean;
       exhaustUnitId?: string;
       /** Une destination par Recrue, choisie à l'empilement ; répétitions autorisées. */
       tokenDestinations?: readonly string[];

@@ -4,7 +4,11 @@ import {
   hiddenInTrash,
   playableFacedown,
 } from '../effects/hidden.js';
-import { withDeflect, spellChosenUnits } from '../cost/deflect.js';
+import {
+  deflectedUnits,
+  withDeflect,
+  spellChosenUnits,
+} from '../cost/deflect.js';
 import { castCost, withTrashUnitPower } from '../cost/spell-cost.js';
 import { spendBuff } from '../effects/buff.js';
 import { graveyardCard } from '../effects/graveyard-card.js';
@@ -275,6 +279,17 @@ export function castSpell(
       ))
   )
     return { ok: false, reason: 'INVALID_ADDITIONAL_COST' };
+  if (
+    action.refuseDeflect &&
+    !state.preferences?.[action.playerId]?.allowDeflectRefusal
+  )
+    return { ok: false, reason: 'DEFLECT_REFUSAL_DISABLED' };
+  const chosen = spellChosenUnits(definition, action);
+  const fizzled = action.refuseDeflect
+    ? deflectedUnits(state, action.playerId, chosen)
+    : [];
+  if (action.refuseDeflect && !fizzled.length)
+    return { ok: false, reason: 'NO_DEFLECT_TO_REFUSE' };
   const cost = withDeflect(
     state,
     action.playerId,
@@ -293,7 +308,7 @@ export function castSpell(
         ),
       ),
     ),
-    spellChosenUnits(definition, action),
+    chosen.filter((id) => !fizzled.includes(id)),
   );
   // Sur la pile, la carte est révélée : plus de marque facedown.
   const revealed = { ...card };
@@ -363,6 +378,7 @@ export function castSpell(
               ? { destinationId: action.destinationId }
               : {}),
             ...(action.xPower ? { xPower: action.xPower } : {}),
+            ...(fizzled.length ? { fizzledIds: fizzled } : {}),
           },
         ],
         initiatorId: state.stack?.initiatorId ?? action.playerId,

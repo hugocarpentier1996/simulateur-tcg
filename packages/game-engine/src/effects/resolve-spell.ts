@@ -619,7 +619,8 @@ export function resolveSpell(
       entry.targetId,
       entry.casterId,
     );
-    if (!target) continue;
+    // Deflect refusé : l'effet visant cette unité fizzle.
+    if (!target || entry.fizzledIds?.includes(target.id)) continue;
     if (effect.type === 'return-unit-to-hand') {
       const left = leaveBoard(state, target, 'hand');
       state = left.state;
