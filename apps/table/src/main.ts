@@ -33,6 +33,7 @@ import {
   type TableUi,
 } from './view.js';
 import type { PreferenceKey } from '../../../packages/game-engine/src/index.js';
+import { zoomImage, zoomPosition } from './zoom.js';
 import './style.css';
 
 const root = document.querySelector<HTMLDivElement>('#app')!;
@@ -476,3 +477,41 @@ root.addEventListener('pointercancel', () => {
 });
 
 render();
+
+// Agrandissement au survol : aperçu flottant hors de #app (survit aux rendus).
+const zoom = document.createElement('div');
+zoom.id = 'card-zoom';
+zoom.setAttribute('aria-hidden', 'true');
+document.body.append(zoom);
+function hideZoom() {
+  zoom.classList.remove('visible');
+  zoom.innerHTML = '';
+}
+function placeZoom(x: number, y: number) {
+  const rect = zoom.getBoundingClientRect();
+  const { left, top } = zoomPosition(
+    x,
+    y,
+    rect.width,
+    rect.height,
+    window.innerWidth,
+    window.innerHeight,
+  );
+  zoom.style.left = `${left}px`;
+  zoom.style.top = `${top}px`;
+}
+root.addEventListener('pointerover', (event) => {
+  if (event.pointerType === 'touch' || event.buttons) return;
+  const img = zoomImage(event.target as Element);
+  if (!img) return hideZoom();
+  const landscape = img.naturalWidth > img.naturalHeight;
+  zoom.className = `visible${landscape ? ' landscape' : ''}`;
+  zoom.innerHTML = `<img src="${img.src}" alt="">`;
+  placeZoom(event.clientX, event.clientY);
+});
+root.addEventListener('pointermove', (event) => {
+  if (zoom.classList.contains('visible'))
+    placeZoom(event.clientX, event.clientY);
+});
+root.addEventListener('pointerleave', hideZoom);
+root.addEventListener('pointerdown', hideZoom);

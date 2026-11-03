@@ -2027,3 +2027,24 @@ button.pile.graveyard:hover .pile-face {
   margin: 8px auto;
   display: block;
 }
+
+/* Agrandissement d'une carte au survol. */
+#card-zoom {
+  position: fixed;
+  z-index: 60;
+  display: none;
+  width: 320px;
+  pointer-events: none;
+  filter: drop-shadow(0 12px 30px rgba(0, 0, 0, 0.6));
+}
+#card-zoom.landscape {
+  width: 460px;
+}
+#card-zoom.visible {
+  display: block;
+}
+#card-zoom img {
+  display: block;
+  width: 100%;
+  border-radius: 14px;
+}
