@@ -24,10 +24,12 @@ import {
   mulliganPlayer,
   confirmMulligan,
   setPreference,
+  clickChoices,
 } from './session.js';
 import {
   renderTable,
   stackTopKey,
+  cursorHint,
   type PendingReset,
   type Selection,
   type TableUi,
@@ -232,6 +234,17 @@ root.addEventListener('click', (event) => {
           plan!.allocations.map((a) => a.targetId),
           unitId,
         );
+      render();
+      return;
+    }
+  }
+  // Choix du moteur désignant une carte ou une zone (Fortified Position, buffs, cibles de
+  // capacités…) : un clic sur l'élément le déclenche.
+  const clickedId = targetId(target);
+  if (!selection && !moves.length && clickedId) {
+    const choice = clickChoices(session).get(clickedId);
+    if (choice) {
+      session = dispatch(session, choice);
       render();
       return;
     }
@@ -560,3 +573,32 @@ root.addEventListener('pointermove', (event) => {
 });
 root.addEventListener('pointerleave', hideZoom);
 root.addEventListener('pointerdown', hideZoom);
+
+/** Identifiant de l'élément de jeu sous le pointeur : carte, unité, gear, rune ou zone. */
+function targetId(target: Element | null): string | undefined {
+  const el = target?.closest<HTMLElement>(
+    '[data-card],[data-gear],[data-rune],[data-zone]',
+  );
+  return (
+    el?.dataset.card ?? el?.dataset.gear ?? el?.dataset.rune ?? el?.dataset.zone
+  );
+}
+
+// Indication près du curseur : effet appliqué ou choix demandé par le clic.
+const hint = document.createElement('div');
+hint.id = 'cursor-hint';
+hint.setAttribute('role', 'status');
+document.body.append(hint);
+root.addEventListener('pointermove', (event) => {
+  const id = targetId(event.target as Element);
+  const text = id ? cursorHint(session, selection, { damagePicks }, id) : null;
+  if (!text) {
+    hint.classList.remove('visible');
+    return;
+  }
+  hint.textContent = text;
+  hint.classList.add('visible');
+  hint.style.left = `${Math.min(event.clientX + 16, window.innerWidth - hint.offsetWidth - 8)}px`;
+  hint.style.top = `${Math.max(8, event.clientY - 34)}px`;
+});
+root.addEventListener('pointerleave', () => hint.classList.remove('visible'));

@@ -858,3 +858,41 @@ export function setPreference(
   });
   return result.ok ? { ...session, state: result.state, error: null } : session;
 }
+
+/** Élément cliquable (unité, gear, carte, rune ou zone) -> choix du moteur qu'il déclenche :
+ * Shield de Fortified Position, choix de mode qui désigne une carte (buff:, stun:, play-target:…),
+ * capacités d'attaque à une seule source, défausse, carte gardée, destination d'un effet de
+ * mort. Un même élément garde le premier choix proposé. */
+const clickCache = new WeakMap<GameState, Map<string, GameAction>>();
+export function clickChoices(session: Session): Map<string, GameAction> {
+  const cached = clickCache.get(session.state);
+  if (cached) return cached;
+  const map = new Map<string, GameAction>();
+  clickCache.set(session.state, map);
+  const put = (id: string | undefined, action: GameAction) => {
+    if (id && !map.has(id)) map.set(id, action);
+  };
+  for (const action of session.state.players.flatMap((p) =>
+    getLegalActions(session.state, p.id),
+  )) {
+    if (action.type === 'choose-defense-shield') put(action.targetId, action);
+    else if (action.type === 'choose-discard' || action.type === 'choose-pick')
+      put(action.cardId, action);
+    else if (
+      action.type === 'choose-attack-targets' &&
+      action.effects.length === 1
+    )
+      put(action.effects[0]!.targetId, action);
+    else if (
+      action.type === 'queue-death-effects' &&
+      action.effects.length === 1 &&
+      action.effects[0]!.destinationId
+    )
+      put(action.effects[0]!.destinationId, action);
+    else if (action.type === 'choose-mode') {
+      const [, id] = action.mode.split(/:(.*)/s);
+      if (id && !id.includes('+') && !/^\d+$/.test(id)) put(id, action);
+    }
+  }
+  return map;
+}

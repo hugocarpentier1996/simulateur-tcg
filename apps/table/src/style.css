@@ -2105,3 +2105,21 @@ button.pile.graveyard:hover .pile-face {
   padding: 4px 8px;
   font-size: 0.75rem;
 }
+
+/* Indication près du curseur (effet du clic). */
+#cursor-hint {
+  position: fixed;
+  z-index: 70;
+  display: none;
+  max-width: 320px;
+  padding: 4px 10px;
+  border: 1px solid #e0b354;
+  border-radius: 8px;
+  background: rgba(20, 24, 34, 0.95);
+  color: #f5e6c4;
+  font-size: 0.8rem;
+  pointer-events: none;
+}
+#cursor-hint.visible {
+  display: block;
+}

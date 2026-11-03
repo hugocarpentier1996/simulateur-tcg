@@ -21,6 +21,7 @@ import {
   playerName,
   boardOptions,
   type Session,
+  clickChoices,
 } from './session.js';
 import { fanLayout } from './fan.js';
 import { damageAssigner, damagePlan, type DamagePlan } from './damage-plan.js';
@@ -310,22 +311,28 @@ export function renderTable(
     ? (selected.picks ?? [])
     : (damage?.allocations.map((a) => a.targetId) ?? []);
   // Zones de dépôt et cibles cliquables partagent la surbrillance ; le moteur les fournit.
+  // Choix du moteur désignant une carte ou une zone : cliquables directement sur la table.
+  const clickable = damage || selected ? [] : [...clickChoices(session).keys()];
   const destinations = damage
     ? damage.next
-    : selected &&
-        (!moves.length || state.units.some((u) => u.id === selected.cardId))
-      ? [
-          ...boardOptions(state, selected.cardId).map((a) => a.destinationId!),
-          ...(selected.targeting
-            ? targetOptions(
-                session,
-                selected.cardId,
-                selected.picks ?? [],
-                selected.destinationId,
-              ).next
-            : []),
-        ]
-      : [];
+    : clickable.length
+      ? clickable
+      : selected &&
+          (!moves.length || state.units.some((u) => u.id === selected.cardId))
+        ? [
+            ...boardOptions(state, selected.cardId).map(
+              (a) => a.destinationId!,
+            ),
+            ...(selected.targeting
+              ? targetOptions(
+                  session,
+                  selected.cardId,
+                  selected.picks ?? [],
+                  selected.destinationId,
+                ).next
+              : []),
+          ]
+        : [];
   const active = state.activePlayerId;
   const priority =
     state.stack?.priorityPlayerId ??
@@ -377,7 +384,7 @@ export function renderTable(
       )}</ol></section></aside></main>${ui.reactionPopup ? reactionPopup(session) : ''}<footer>Prototype local · Préparation fixe, sans sauvegarde · Déplacements base ↔ champ · Choix et combats pilotés par le moteur</footer>`;
 }
 
-function actionLabel(
+export function actionLabel(
   session: Session,
   action: import('../../../packages/game-engine/src/index.js').GameAction,
 ): string {
@@ -1186,4 +1193,69 @@ function damageBox(state: GameState, plan: DamagePlan): string {
     )
     .join('');
   return `<aside class="damage-box" aria-label="Répartition des dégâts"><div class="eyebrow">Dégâts · ${escape(playerName(plan.playerId))}</div><p class="damage-total"><b>${plan.power}</b> à infliger · reste <b>${plan.remaining}</b></p>${rows ? `<ol>${rows}</ol>` : '<p class="help">Clique une unité adverse éclairée : elle reçoit de quoi mourir, ou tout le reste si ce n’est pas assez.</p>'}<div class="choice-list"><button class="primary" data-action="damage-confirm" ${plan.valid ? '' : 'disabled'}>Valider</button><button class="quiet" data-action="damage-reset" ${plan.allocations.length ? '' : 'disabled'}>Effacer</button></div></aside>`;
+}
+
+/** Texte affiché près du curseur au survol d'un élément cliquable : l'effet qui sera appliqué
+ * ou ce qui est demandé. null si le clic ne fait rien de particulier. */
+export function cursorHint(
+  session: Session,
+  selection: Selection | null,
+  ui: TableUi,
+  id: string,
+): string | null {
+  const state = session.state;
+  const name = (x: string) => {
+    const u = state.units.find((u) => u.id === x);
+    const g = state.gears?.find((g) => g.id === x);
+    const c = state.cards.find((c) => c.id === x);
+    const definitionId = u?.definitionId ?? g?.definitionId ?? c?.definitionId;
+    return definitionId ? cardName(definitionId) : x;
+  };
+  const assigner = damageAssigner(state);
+  if (assigner) {
+    const plan = damagePlan(state, assigner, ui.damagePicks ?? []);
+    if (plan?.allocations.some((a) => a.targetId === id))
+      return `Retirer ${name(id)} de la répartition`;
+    if (plan?.next.includes(id)) {
+      const after = damagePlan(state, assigner, [
+        ...(ui.damagePicks ?? []),
+        id,
+      ]);
+      const amount = after?.allocations.find((a) => a.targetId === id)?.amount;
+      return amount
+        ? `Infliger ${amount} dégât${amount > 1 ? 's' : ''} à ${name(id)}`
+        : null;
+    }
+    return null;
+  }
+  if (selection?.targeting) {
+    const options = targetOptions(
+      session,
+      selection.cardId,
+      selection.picks ?? [],
+      selection.destinationId,
+    );
+    const source =
+      state.cards.find((c) => c.id === selection.cardId) ??
+      state.units.find((u) => u.id === selection.cardId);
+    const label = source ? cardName(source.definitionId) : 'Effet';
+    if ((selection.picks ?? []).includes(id))
+      return `${label} : retirer ${name(id)}`;
+    if (options.next.includes(id)) {
+      const text = source ? (cardInfo(source.definitionId)?.text ?? '') : '';
+      const first = text.split('\n').find((l) => l && !l.startsWith('['));
+      return `${label} · cible ${(selection.picks ?? []).length + 1} : ${name(id)}${first ? ' — ' + first : ''}`;
+    }
+    return null;
+  }
+  const choice = clickChoices(session).get(id);
+  if (choice) return actionLabel(session, choice);
+  if (
+    selection &&
+    boardOptions(state, selection.cardId).some((a) => a.destinationId === id)
+  )
+    return state.units.some((u) => u.id === selection.cardId)
+      ? 'Déplacer ici'
+      : `Jouer ${name(selection.cardId)} ici`;
+  return null;
 }
