@@ -896,3 +896,58 @@ export function clickChoices(session: Session): Map<string, GameAction> {
   }
   return map;
 }
+
+/** Choix du moteur qui désignent plusieurs cartes à la fois (Divine Judgment « garder 2 »,
+ * plusieurs capacités d'attaque) : chaque action avec la liste de ses cibles. */
+const multiCache = new WeakMap<
+  GameState,
+  { action: GameAction; ids: string[] }[]
+>();
+export function multiChoices(
+  session: Session,
+): { action: GameAction; ids: string[] }[] {
+  const cached = multiCache.get(session.state);
+  if (cached) return cached;
+  const list: { action: GameAction; ids: string[] }[] = [];
+  for (const action of session.state.players.flatMap((p) =>
+    getLegalActions(session.state, p.id),
+  )) {
+    if (action.type === 'choose-mode') {
+      const [, rest] = action.mode.split(/:(.*)/s);
+      if (rest?.includes('+')) list.push({ action, ids: rest.split('+') });
+    } else if (
+      action.type === 'choose-attack-targets' &&
+      action.effects.length > 1 &&
+      action.effects.every((e) => e.targetId)
+    )
+      list.push({ action, ids: action.effects.map((e) => e.targetId!) });
+  }
+  multiCache.set(session.state, list);
+  return list;
+}
+
+/** Cibles déjà cliquées -> cibles encore possibles et actions complètes (même multi-ensemble). */
+export function multiPickOptions(
+  session: Session,
+  picks: readonly string[],
+): { next: string[]; complete: GameAction[]; active: boolean } {
+  const all = multiChoices(session);
+  const rest = (ids: readonly string[]) => {
+    const left = [...ids];
+    for (const p of picks) {
+      const i = left.indexOf(p);
+      if (i < 0) return null;
+      left.splice(i, 1);
+    }
+    return left;
+  };
+  const fitting = all.flatMap((c) => {
+    const left = rest(c.ids);
+    return left ? [{ ...c, left }] : [];
+  });
+  return {
+    active: all.length > 0,
+    next: [...new Set(fitting.flatMap((c) => c.left))],
+    complete: fitting.filter((c) => !c.left.length).map((c) => c.action),
+  };
+}

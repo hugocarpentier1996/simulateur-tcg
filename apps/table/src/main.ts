@@ -25,6 +25,7 @@ import {
   confirmMulligan,
   setPreference,
   clickChoices,
+  multiPickOptions,
 } from './session.js';
 import {
   renderTable,
@@ -61,6 +62,9 @@ let lastStackTop: string | null = null;
 // Dégâts de combat : unités cliquées (remises à zéro quand le joueur à répartir change).
 let damagePicks: string[] = [];
 let damageKey: string | null = null;
+// Choix à plusieurs cibles : cartes cliquées (remises à zéro quand l'état change de choix).
+let multiPicks: string[] = [];
+let multiKey: unknown = null;
 let reactionOpen = false;
 
 function render() {
@@ -92,7 +96,14 @@ function render() {
     damageKey = key;
     damagePicks = [];
   }
+  const pendingChoice =
+    session.state.pendingModeChoice ?? session.state.pendingAttackChoices;
+  if (pendingChoice !== multiKey) {
+    multiKey = pendingChoice;
+    multiPicks = [];
+  }
   const ui: TableUi = {
+    multiPicks,
     damagePicks,
     reactionPopup: reactionOpen && !!session.state.stack && !blocking,
     endRunes,
@@ -241,6 +252,26 @@ root.addEventListener('click', (event) => {
   // Choix du moteur désignant une carte ou une zone (Fortified Position, buffs, cibles de
   // capacités…) : un clic sur l'élément le déclenche.
   const clickedId = targetId(target);
+  // Plusieurs cibles : cliquer ajoute ou retire ; dès qu'un choix complet et unique est
+  // atteint, il est envoyé.
+  if (!selection && !moves.length && clickedId) {
+    const multi = multiPickOptions(session, multiPicks);
+    if (
+      multi.active &&
+      (multi.next.includes(clickedId) || multiPicks.includes(clickedId))
+    ) {
+      multiPicks = multiPicks.includes(clickedId)
+        ? multiPicks.filter((id) => id !== clickedId)
+        : [...multiPicks, clickedId];
+      const after = multiPickOptions(session, multiPicks);
+      if (after.complete.length === 1 && !after.next.length) {
+        session = dispatch(session, after.complete[0]!);
+        multiPicks = [];
+      }
+      render();
+      return;
+    }
+  }
   if (!selection && !moves.length && clickedId) {
     const choice = clickChoices(session).get(clickedId);
     if (choice) {

@@ -22,6 +22,7 @@ import {
   boardOptions,
   type Session,
   clickChoices,
+  multiPickOptions,
 } from './session.js';
 import { fanLayout } from './fan.js';
 import { damageAssigner, damagePlan, type DamagePlan } from './damage-plan.js';
@@ -130,7 +131,11 @@ function zone(
     }${movePreviews(state, zoneId, moves)}</div>${destinations.includes(zoneId) ? '<button type="button" class="place-here">Choisir cette destination</button>' : ''}${damage?.battlefieldId === zoneId ? damageBox(state, damage) : ''}</section>`;
 }
 
-function paymentPanel(session: Session, selection: Selection | null): string {
+function paymentPanel(
+  session: Session,
+  selection: Selection | null,
+  ui: TableUi = {},
+): string {
   if (selection) {
     const instance = session.state.cards.find((c) => c.id === selection.cardId);
     const options = cardActions(session, selection.cardId);
@@ -195,7 +200,25 @@ function paymentPanel(session: Session, selection: Selection | null): string {
       const priority = state.stack?.priorityPlayerId ?? show.priorityPlayerId;
       return `<section class="showdown-panel">${vision}<div class="eyebrow">${show.kind === 'combat' ? 'Combat Showdown' : 'Open Showdown'}</div><h3>Champ de bataille ${state.battlefields.findIndex((b) => b.zoneId === show.battlefieldId) + 1}</h3><p>Priorité : ${escape(playerName(priority))}</p><p class="help">${state.stack ? 'Réactions' : show.kind === 'combat' && show.stage === 'damage' ? 'Répartir les dégâts' : show.kind === 'combat' ? 'Les passes ouvrent la répartition des dégâts.' : 'Les passes clôturent la fenêtre de conquête.'}</p><p>${show.consecutivePasses} / ${show.participants.length} passes</p><div class="choice-list">${choices.map((a, i) => (a.type === 'assign-damage' ? '' : `<button class="${a.type === 'pass' ? 'primary' : 'quiet'}" data-choice="${i}">${escape(actionLabel(session, a))}</button>`)).join('')}</div>${damageAssigner(state) ? '<p class="help">Répartis les dégâts en cliquant les unités adverses éclairées sur le champ, puis valide.</p>' : ''}</section>`;
     }
-    return `<div class="eyebrow">Choix du moteur</div><h3>${heading}</h3>${vision}<p class="help">${state.pendingDiscard ? 'Clique la carte de ta main à défausser, ou choisis-la ci-dessous.' : 'Les boutons proposent uniquement les actions actuellement autorisées.'}</p><div class="choice-list">${choices.map((a, i) => `<button class="quiet" data-choice="${i}">${escape(actionLabel(session, a))}</button>`).join('')}</div>`;
+    // Cartes de défausse désignées par un choix : affichées ici pour être cliquées.
+    const multi = multiPickOptions(session, ui.multiPicks ?? []);
+    const wanted = new Set([
+      ...clickChoices(session).keys(),
+      ...(multi.active ? multi.next : []),
+      ...(ui.multiPicks ?? []),
+    ]);
+    const trash = state.cards.filter(
+      (c) =>
+        wanted.has(c.id) &&
+        state.zones.some((z) => z.id === c.zoneId && z.kind === 'graveyard'),
+    );
+    const trashList = trash.length
+      ? `<p class="help">Cartes de défausse à choisir : clique la carte.</p><ol class="graveyard-list pick-list">${trash.map((c) => `<li data-card="${escape(c.id)}" class="${(ui.multiPicks ?? []).includes(c.id) ? 'picked' : 'targetable'}" title="${escape(cardInfo(c.definitionId)?.text ?? '')}">${art(c.definitionId, 'graveyard-art')}<span>${escape(cardName(c.definitionId))}</span></li>`).join('')}</ol>`
+      : '';
+    const multiHelp = multi.active
+      ? `<p class="help">Clique les cartes à choisir sur la table (${(ui.multiPicks ?? []).length} choisie${(ui.multiPicks ?? []).length > 1 ? 's' : ''}) ; un clic sur une carte choisie la retire.</p>`
+      : '';
+    return `<div class="eyebrow">Choix du moteur</div><h3>${heading}</h3>${vision}${multiHelp}${trashList}<p class="help">${state.pendingDiscard ? 'Clique la carte de ta main à défausser, ou choisis-la ci-dessous.' : 'Les boutons proposent uniquement les actions actuellement autorisées.'}</p><div class="choice-list">${choices.map((a, i) => `<button class="quiet" data-choice="${i}">${escape(actionLabel(session, a))}</button>`).join('')}</div>`;
   }
   const unit = session.state.units.find((u) => u.id === selection?.cardId);
   if (unit) {
@@ -288,6 +311,8 @@ export interface TableUi {
   graveyard?: string | null;
   endRunes?: readonly string[] | null;
   autoRunes?: Readonly<Record<string, boolean>>;
+  /** Cartes cliquées pour un choix à plusieurs cibles (Divine Judgment…). */
+  multiPicks?: readonly string[];
   /** Unités cliquées pour répartir les dégâts de combat, dans l'ordre. */
   damagePicks?: readonly string[];
   /** Fenêtre de réaction ouverte pour la nouvelle carte arrivée en haut de la pile. */
@@ -309,10 +334,17 @@ export function renderTable(
     : null;
   const picked = selected?.targeting
     ? (selected.picks ?? [])
-    : (damage?.allocations.map((a) => a.targetId) ?? []);
+    : damage
+      ? damage.allocations.map((a) => a.targetId)
+      : [...(ui.multiPicks ?? [])];
   // Zones de dépôt et cibles cliquables partagent la surbrillance ; le moteur les fournit.
   // Choix du moteur désignant une carte ou une zone : cliquables directement sur la table.
-  const clickable = damage || selected ? [] : [...clickChoices(session).keys()];
+  const multi =
+    damage || selected ? null : multiPickOptions(session, ui.multiPicks ?? []);
+  const clickable =
+    damage || selected
+      ? []
+      : [...clickChoices(session).keys(), ...(multi?.active ? multi.next : [])];
   const destinations = damage
     ? damage.next
     : clickable.length
@@ -375,7 +407,7 @@ export function renderTable(
     </div>
     <div class="reserve"><span>${escape(playerName(active))} · Réserve flottante</span><span><b>${state.resources[active]?.energy ?? 0}</b> énergie · <b>${escape(powerText(state.resources[active]?.power ?? {}))}</b> Power</span></div>
     <section class="hand-section"><header><h2>Main de ${escape(playerName(handOwner))}</h2><span>${hand.length} cartes · sélectionner pour jouer</span></header>${handFan(hand, selected, (c) => (mulliganTurn && ui.mulligan?.includes(c.id) ? 'mulligan-marked' : state.pendingDiscard?.playerId === handOwner ? 'discard-choice' : ''))}</section></section>
-    <aside><section class="action-panel">${session.error ? `<p role="alert" class="error">${escape(session.error)}</p>` : ''}${pendingReset ? resetPanel(pendingReset) : ui.graveyard ? graveyardPanel(state, ui.graveyard) : mulliganTurn ? mulliganPanel(mulliganTurn, ui.mulligan ?? []) : endRunes && runeChoice ? endRunesPanel(endRunes.length, runeChoice.count) : moves.length ? movementPanel(session, moves) : paymentPanel(session, selected)}</section>${optionsPanel(state)}<section class="journal"><header><h2>Journal de partie</h2><span>${session.log.length}</span></header><ol>${session.log
+    <aside><section class="action-panel">${session.error ? `<p role="alert" class="error">${escape(session.error)}</p>` : ''}${pendingReset ? resetPanel(pendingReset) : ui.graveyard ? graveyardPanel(state, ui.graveyard) : mulliganTurn ? mulliganPanel(mulliganTurn, ui.mulligan ?? []) : endRunes && runeChoice ? endRunesPanel(endRunes.length, runeChoice.count) : moves.length ? movementPanel(session, moves) : paymentPanel(session, selected, ui)}</section>${optionsPanel(state)}<section class="journal"><header><h2>Journal de partie</h2><span>${session.log.length}</span></header><ol>${session.log
       .slice()
       .reverse()
       .map((line) => `<li>${escape(line)}</li>`)
@@ -1016,7 +1048,7 @@ function graveyardPanel(state: GameState, ownerId: string): string {
       ),
     )
     .reverse();
-  return `<div class="eyebrow">Défausse</div><h3>Défausse de ${escape(playerName(ownerId))} · ${cards.length} carte${cards.length > 1 ? 's' : ''}</h3>${cards.length ? `<ol class="graveyard-list">${cards.map((c) => `<li title="${escape(cardInfo(c.definitionId)?.text ?? '')}">${art(c.definitionId, 'graveyard-art')}<span>${escape(cardName(c.definitionId))}</span></li>`).join('')}</ol>` : '<p class="help">Aucune carte dans cette défausse.</p>'}<button class="quiet" data-action="close-graveyard">Fermer</button>`;
+  return `<div class="eyebrow">Défausse</div><h3>Défausse de ${escape(playerName(ownerId))} · ${cards.length} carte${cards.length > 1 ? 's' : ''}</h3>${cards.length ? `<ol class="graveyard-list">${cards.map((c) => `<li data-card="${escape(c.id)}" title="${escape(cardInfo(c.definitionId)?.text ?? '')}">${art(c.definitionId, 'graveyard-art')}<span>${escape(cardName(c.definitionId))}</span></li>`).join('')}</ol>` : '<p class="help">Aucune carte dans cette défausse.</p>'}<button class="quiet" data-action="close-graveyard">Fermer</button>`;
 }
 
 /** Mulligan du joueur en cours : les cartes se marquent dans la main (2 au plus). */
@@ -1247,6 +1279,13 @@ export function cursorHint(
       return `${label} · cible ${(selection.picks ?? []).length + 1} : ${name(id)}${first ? ' — ' + first : ''}`;
     }
     return null;
+  }
+  const multi = multiPickOptions(session, ui.multiPicks ?? []);
+  if (multi.active) {
+    if ((ui.multiPicks ?? []).includes(id))
+      return `Retirer ${name(id)} du choix`;
+    if (multi.next.includes(id))
+      return `Choisir ${name(id)} (${(ui.multiPicks ?? []).length + 1}e choix)`;
   }
   const choice = clickChoices(session).get(id);
   if (choice) return actionLabel(session, choice);
