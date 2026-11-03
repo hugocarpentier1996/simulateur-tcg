@@ -62,7 +62,7 @@ export function isTank(unit: UnitState): boolean {
 }
 
 /** Cible + adversaires encore prioritaires -> respect de Tank et Backline. */
-function canTarget(
+export function canTarget(
   target: UnitState,
   available: readonly UnitState[],
 ): boolean {

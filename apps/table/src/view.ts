@@ -23,6 +23,7 @@ import {
   type Session,
 } from './session.js';
 import { fanLayout } from './fan.js';
+import { damageAssigner, damagePlan, type DamagePlan } from './damage-plan.js';
 
 /** Sélection locale, sans conséquence sur la partie avant validation par act. */
 export interface Selection {
@@ -92,6 +93,7 @@ function zone(
   destinations: readonly string[] = [],
   moves: readonly PlannedMove[] = [],
   picked: readonly string[] = [],
+  damage: DamagePlan | null = null,
 ): string {
   const units = state.units.filter((u) => u.zoneId === zoneId);
   const gears = (state.gears ?? []).filter((g) => g.zoneId === zoneId);
@@ -124,7 +126,7 @@ function zone(
         : moves.some((m) => m.destinationId === zoneId)
           ? ''
           : `<p class="empty">${battlefield ? 'Aucune unité sur ce champ' : 'Aucune unité en base'}</p>`
-    }${movePreviews(state, zoneId, moves)}</div>${destinations.includes(zoneId) ? '<button type="button" class="place-here">Choisir cette destination</button>' : ''}</section>`;
+    }${movePreviews(state, zoneId, moves)}</div>${destinations.includes(zoneId) ? '<button type="button" class="place-here">Choisir cette destination</button>' : ''}${damage?.battlefieldId === zoneId ? damageBox(state, damage) : ''}</section>`;
 }
 
 function paymentPanel(session: Session, selection: Selection | null): string {
@@ -190,7 +192,7 @@ function paymentPanel(session: Session, selection: Selection | null): string {
     if (state.showdown) {
       const show = state.showdown;
       const priority = state.stack?.priorityPlayerId ?? show.priorityPlayerId;
-      return `<section class="showdown-panel">${vision}<div class="eyebrow">${show.kind === 'combat' ? 'Combat Showdown' : 'Open Showdown'}</div><h3>Champ de bataille ${state.battlefields.findIndex((b) => b.zoneId === show.battlefieldId) + 1}</h3><p>Priorité : ${escape(playerName(priority))}</p><p class="help">${state.stack ? 'Réactions' : show.kind === 'combat' && show.stage === 'damage' ? 'Répartir les dégâts' : show.kind === 'combat' ? 'Les passes ouvrent la répartition des dégâts.' : 'Les passes clôturent la fenêtre de conquête.'}</p><p>${show.consecutivePasses} / ${show.participants.length} passes</p><div class="choice-list">${choices.map((a, i) => `<button class="${a.type === 'pass' ? 'primary' : 'quiet'}" data-choice="${i}">${escape(actionLabel(session, a))}</button>`).join('')}</div></section>`;
+      return `<section class="showdown-panel">${vision}<div class="eyebrow">${show.kind === 'combat' ? 'Combat Showdown' : 'Open Showdown'}</div><h3>Champ de bataille ${state.battlefields.findIndex((b) => b.zoneId === show.battlefieldId) + 1}</h3><p>Priorité : ${escape(playerName(priority))}</p><p class="help">${state.stack ? 'Réactions' : show.kind === 'combat' && show.stage === 'damage' ? 'Répartir les dégâts' : show.kind === 'combat' ? 'Les passes ouvrent la répartition des dégâts.' : 'Les passes clôturent la fenêtre de conquête.'}</p><p>${show.consecutivePasses} / ${show.participants.length} passes</p><div class="choice-list">${choices.map((a, i) => (a.type === 'assign-damage' ? '' : `<button class="${a.type === 'pass' ? 'primary' : 'quiet'}" data-choice="${i}">${escape(actionLabel(session, a))}</button>`)).join('')}</div>${damageAssigner(state) ? '<p class="help">Répartis les dégâts en cliquant les unités adverses éclairées sur le champ, puis valide.</p>' : ''}</section>`;
     }
     return `<div class="eyebrow">Choix du moteur</div><h3>${heading}</h3>${vision}<p class="help">${state.pendingDiscard ? 'Clique la carte de ta main à défausser, ou choisis-la ci-dessous.' : 'Les boutons proposent uniquement les actions actuellement autorisées.'}</p><div class="choice-list">${choices.map((a, i) => `<button class="quiet" data-choice="${i}">${escape(actionLabel(session, a))}</button>`).join('')}</div>`;
   }
@@ -285,6 +287,8 @@ export interface TableUi {
   graveyard?: string | null;
   endRunes?: readonly string[] | null;
   autoRunes?: Readonly<Record<string, boolean>>;
+  /** Unités cliquées pour répartir les dégâts de combat, dans l'ordre. */
+  damagePicks?: readonly string[];
   /** Fenêtre de réaction ouverte pour la nouvelle carte arrivée en haut de la pile. */
   reactionPopup?: boolean;
 }
@@ -297,11 +301,19 @@ export function renderTable(
   ui: TableUi = {},
 ): string {
   const state = session.state;
-  const picked = selected?.targeting ? (selected.picks ?? []) : [];
+  // Répartition des dégâts de combat au clic : cibles éclairées et choix déjà faits.
+  const assigner = damageAssigner(state);
+  const damage = assigner
+    ? damagePlan(state, assigner, ui.damagePicks ?? [])
+    : null;
+  const picked = selected?.targeting
+    ? (selected.picks ?? [])
+    : (damage?.allocations.map((a) => a.targetId) ?? []);
   // Zones de dépôt et cibles cliquables partagent la surbrillance ; le moteur les fournit.
-  const destinations =
-    selected &&
-    (!moves.length || state.units.some((u) => u.id === selected.cardId))
+  const destinations = damage
+    ? damage.next
+    : selected &&
+        (!moves.length || state.units.some((u) => u.id === selected.cardId))
       ? [
           ...boardOptions(state, selected.cardId).map((a) => a.destinationId!),
           ...(selected.targeting
@@ -350,7 +362,7 @@ export function renderTable(
             `<div class="opponent-hand" aria-label="Main adverse : ${count(state, p.id, 'hand')} cartes">${Array.from({ length: Math.min(count(state, p.id, 'hand'), 12) }, () => '<span class="card-back" aria-hidden="true">◇</span>').join('')}<small>${count(state, p.id, 'hand')} cartes en main</small></div>${resourceRow(state, p.id, true)}${playerBase(state, p.id, selected, true, destinations, moves, {}, picked)}`,
         )
         .join('')}
-      <div class="battlefields" style="--fields:${Math.max(1, state.battlefields.length)}">${state.battlefields.map((b, i) => zone(state, b.zoneId, b.definitionId && cardInfo(b.definitionId) ? cardName(b.definitionId) : `Champ de bataille ${i + 1}`, b.controllerId ? `Contrôlé par ${playerName(b.controllerId)}` : 'Neutre', true, destinations, moves, picked)).join('')}</div>
+      <div class="battlefields" style="--fields:${Math.max(1, state.battlefields.length)}">${state.battlefields.map((b, i) => zone(state, b.zoneId, b.definitionId && cardInfo(b.definitionId) ? cardName(b.definitionId) : `Champ de bataille ${i + 1}`, b.controllerId ? `Contrôlé par ${playerName(b.controllerId)}` : 'Neutre', true, destinations, moves, picked, damage)).join('')}</div>
       ${playerBase(state, active, selected, false, destinations, moves, ui, picked)}
       ${resourceRow(state, active, false, endRunes)}
     </div>
@@ -1161,4 +1173,17 @@ export function reactionPopup(session: Session): string {
   const { name, detail } = stackEntryLabel(state, top);
   const priority = state.stack.priorityPlayerId;
   return `<div class="reaction-overlay" role="dialog" aria-modal="true" aria-labelledby="reaction-title"><section class="reaction-dialog"><div class="eyebrow">Nouvelle carte sur la pile</div><h3 id="reaction-title">${escape(name)}</h3>${definitionId ? art(definitionId, 'reaction-art') : ''}<p>${escape(detail)}</p><p class="help">Priorité : <strong>${escape(playerName(priority))}</strong> — réagir ou passer.</p><div class="choice-list"><button class="primary" data-action="reaction-pass">Passer (${escape(playerName(priority))})</button><button class="quiet" data-action="reaction-hide">Réagir : choisir une carte ou une capacité</button></div></section></div>`;
+}
+
+/** Encadré de répartition des dégâts, sur le côté du champ du combat. */
+function damageBox(state: GameState, plan: DamagePlan): string {
+  const unitName = (id: string) =>
+    cardName(state.units.find((u) => u.id === id)?.definitionId ?? id);
+  const rows = plan.allocations
+    .map(
+      (a) =>
+        `<li><span>${escape(unitName(a.targetId))}</span><b>${a.amount}</b></li>`,
+    )
+    .join('');
+  return `<aside class="damage-box" aria-label="Répartition des dégâts"><div class="eyebrow">Dégâts · ${escape(playerName(plan.playerId))}</div><p class="damage-total"><b>${plan.power}</b> à infliger · reste <b>${plan.remaining}</b></p>${rows ? `<ol>${rows}</ol>` : '<p class="help">Clique une unité adverse éclairée : elle reçoit de quoi mourir, ou tout le reste si ce n’est pas assez.</p>'}<div class="choice-list"><button class="primary" data-action="damage-confirm" ${plan.valid ? '' : 'disabled'}>Valider</button><button class="quiet" data-action="damage-reset" ${plan.allocations.length ? '' : 'disabled'}>Effacer</button></div></aside>`;
 }

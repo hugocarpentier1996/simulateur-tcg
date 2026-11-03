@@ -34,6 +34,7 @@ import {
 } from './view.js';
 import type { PreferenceKey } from '../../../packages/game-engine/src/index.js';
 import { zoomImage, zoomPosition } from './zoom.js';
+import { damageAssigner, damagePlan, toggleDamagePick } from './damage-plan.js';
 import './style.css';
 
 const root = document.querySelector<HTMLDivElement>('#app')!;
@@ -55,6 +56,9 @@ let graveyard: string | null = null;
 let mulliganPick: string[] = [];
 const autoRunes: Record<string, boolean> = {};
 let lastStackTop: string | null = null;
+// Dégâts de combat : unités cliquées (remises à zéro quand le joueur à répartir change).
+let damagePicks: string[] = [];
+let damageKey: string | null = null;
 let reactionOpen = false;
 
 function render() {
@@ -78,7 +82,16 @@ function render() {
     session.state.pendingDiscard ||
     session.state.pendingDeaths ||
     session.state.pendingAttackChoices?.length;
+  const assigner = damageAssigner(session.state);
+  const key = assigner
+    ? `${assigner}:${session.state.showdown?.battlefieldId}`
+    : null;
+  if (key !== damageKey) {
+    damageKey = key;
+    damagePicks = [];
+  }
   const ui: TableUi = {
+    damagePicks,
     reactionPopup: reactionOpen && !!session.state.stack && !blocking,
     endRunes,
     autoRunes,
@@ -191,6 +204,38 @@ root.addEventListener('click', (event) => {
     resetAction !== 'cancel-reset'
   )
     return;
+  // Répartition des dégâts au clic, puis validation.
+  const assigner = damageAssigner(session.state);
+  if (assigner) {
+    const unitId = target.closest<HTMLElement>('[data-card]')?.dataset.card;
+    if (resetAction === 'damage-confirm') {
+      const plan = damagePlan(session.state, assigner, damagePicks);
+      if (plan?.valid)
+        session = dispatch(session, {
+          type: 'assign-damage',
+          playerId: assigner,
+          allocations: plan.allocations,
+        });
+      render();
+      return;
+    }
+    if (resetAction === 'damage-reset') {
+      damagePicks = [];
+      render();
+      return;
+    }
+    if (unitId && session.state.units.some((u) => u.id === unitId)) {
+      const plan = damagePlan(session.state, assigner, damagePicks);
+      const chosen = plan?.allocations.some((a) => a.targetId === unitId);
+      if (chosen || plan?.next.includes(unitId))
+        damagePicks = toggleDamagePick(
+          plan!.allocations.map((a) => a.targetId),
+          unitId,
+        );
+      render();
+      return;
+    }
+  }
   // Fenêtre de réaction : passer pour le joueur prioritaire, ou la fermer pour réagir.
   if (resetAction === 'reaction-pass' && session.state.stack) {
     session = dispatch(session, {

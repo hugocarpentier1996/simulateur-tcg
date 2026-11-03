@@ -2048,3 +2048,60 @@ button.pile.graveyard:hover .pile-face {
   width: 100%;
   border-radius: 14px;
 }
+
+/* Répartition des dégâts de combat, sur le côté du champ. */
+.zone.battlefield {
+  position: relative;
+}
+.damage-box {
+  position: absolute;
+  top: 34px;
+  right: 8px;
+  z-index: 5;
+  width: 220px;
+  padding: 10px 12px;
+  border: 1px solid #e0b354;
+  border-radius: 10px;
+  background: rgba(20, 24, 34, 0.94);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+}
+.damage-total {
+  margin: 4px 0 6px;
+}
+.damage-total b {
+  font-size: 1.2rem;
+  color: #e0b354;
+}
+.damage-box ol {
+  margin: 0 0 8px;
+  padding: 0;
+  list-style: none;
+}
+.damage-box li {
+  display: flex;
+  justify-content: space-between;
+  padding: 2px 0;
+}
+.damage-box {
+  top: 30px;
+  bottom: 8px;
+  overflow-y: auto;
+  font-size: 0.8rem;
+}
+.damage-box .eyebrow {
+  font-size: 0.65rem;
+}
+.damage-total {
+  margin: 2px 0 4px;
+}
+.damage-total b {
+  font-size: 1rem;
+}
+.damage-box .choice-list {
+  display: flex;
+  gap: 6px;
+}
+.damage-box .choice-list button {
+  padding: 4px 8px;
+  font-size: 0.75rem;
+}
